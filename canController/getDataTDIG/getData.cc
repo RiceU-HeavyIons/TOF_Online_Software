@@ -7,10 +7,10 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getData.cc,v 1.1 2004-08-20 20:43:51 jschamba Exp $";
+"$Id: getData.cc,v 1.2 2004-08-20 21:40:25 jschamba Exp $";
 #endif /* lint */
 
-#define LOCAL_DEBUG
+//#define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
@@ -113,7 +113,7 @@ int getData(unsigned int nodeID,
 #endif
 
   // create the file or append to the existing file
-  if ( (fp = fopen(dataFileName, "w")) == (FILE *)NULL) {
+  if ( (fp = fopen(dataFileName, "a")) == (FILE *)NULL) {
     perror("getData: fopen()");
     my_private_exit(errno);
   }
