@@ -1,4 +1,4 @@
-// @(#)root/test:$Name: not supported by cvs2svn $:$Id: hsimple.cxx,v 1.1.1.1 2003-07-03 18:34:51 jschamba Exp $
+// @(#)root/test:$Name: not supported by cvs2svn $:$Id: hsimple.cxx,v 1.2 2003-10-06 21:00:50 jschamba Exp $
 // Author: Rene Brun   19/08/96
 
 //*-*-*-*-*-*-*Simple examples with histograms created/filled and saved*-*-*-*

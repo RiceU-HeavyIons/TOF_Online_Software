@@ -1,8 +1,3 @@
-#ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
-"$Id$";
-#endif /* lint */
-
 /* File name     : daqloop.c
  * Creation date : 4/15/02
  * Author        : J. Schambach, UT Physics
