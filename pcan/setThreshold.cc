@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: setThreshold.cc,v 1.1 2005-01-21 22:40:45 jschamba Exp $";
+"$Id: setThreshold.cc,v 1.2 2005-01-24 21:47:53 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -27,15 +27,18 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 
+// use one of the two following definition for debug printouts:
+const bool debug = true;
+//const bool debug = false;
 
 //****************************************************************************
 int main(int argc, char *argv[])
 {
   unsigned int nodeID;
   double tVal;
-  char cmdString[255];
+  //char cmdString[255];
 
-  cout << vcid << endl;
+  if (debug) cout << vcid << endl;
   cout.flush();
 
   if ( argc < 3 ) {
@@ -59,18 +62,27 @@ int main(int argc, char *argv[])
   unsigned short DATA0 = (decVal>>8) & 0x000F;
   unsigned short DATA1 = decVal & 0x00FF;
 
-  cout << "nodeID = " << nodeID
-       << ", thresholdVal = " << tVal
-       << "mV;  msgID = " << showbase << hex << ID
-       << " DATA[0] = " << DATA0
-       << " DATA[1] = " << DATA1 << endl;
+  if (debug)
+    cout << "nodeID = " << nodeID
+	 << ", thresholdVal = " << tVal
+	 << "mV;  msgID = " << showbase << hex << ID
+	 << " DATA[0] = " << DATA0
+	 << " DATA[1] = " << DATA1 << endl;
 
 
-  sprintf(cmdString, "./pc \"m s 0x%x 2 0x%x 0x%x\"", ID, DATA0, DATA1);
-  cout << "cmdString = " << cmdString << endl;
+  //sprintf(cmdString, "./pc \"m s 0x%x 2 0x%x 0x%x\"", ID, DATA0, DATA1);
 
-  int status = system(cmdString);
-  cout << "\"system\" call returned " << status << endl;
+  string cmdString;
+  stringstream ss;
+  ss << "./pc \"m s " << showbase << hex << ID
+     << " 2 " << DATA0
+     << " " << DATA1 << "\"";
+  cmdString = ss.str();
+
+  if (debug) cout << "cmdString = " << cmdString << endl;
+
+  int status = system(cmdString.c_str());
+  if (debug) cout << "\"system\" call returned " << status << endl;
 
   return 0;
 }
