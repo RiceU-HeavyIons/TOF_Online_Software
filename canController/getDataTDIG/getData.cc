@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getData.cc,v 1.2 2004-08-20 21:40:25 jschamba Exp $";
+"$Id: getData.cc,v 1.3 2004-08-20 22:04:03 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -268,7 +268,7 @@ int getData(unsigned int nodeID,
 	      uc_ptr[11-i] = m.DATA[i];
 	    if ( (buffer[1] & 0xF0000000) == 0x60000000 ) {
 #ifdef LOCAL_DEBUG
-	      cout << "Error word: 0x" << hex << buffer[0] << endl;
+	      cout << "Error word: 0x" << hex << buffer[1] << endl;
 #endif
 	      continue;
 	    }
