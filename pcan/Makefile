@@ -1,15 +1,18 @@
 # $Id$
-all:		pcanloop pc p_config change_mcu_program
+all:		pcanloop pc p_config change_mcu_program pcan_find
 
 pcanloop:	pcanloop.cc
-	$(CXX) $^ -o $@ -lpcan
+	$(CXX) -Wall $^ -o $@ -lpcan
 
 pc:	pc.c
-	$(CC) $^ -o $@
+	$(CC) -Wall $^ -o $@
 
 p_config:	p_config.cc
-	$(CXX) $^ -o $@ -lpcan
+	$(CXX) -Wall $^ -o $@ -lpcan
 
 change_mcu_program:	change_mcu_program.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
+pcan_find:	pcan_find.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
 
