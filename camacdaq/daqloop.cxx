@@ -1,9 +1,9 @@
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqloop.cxx,v 1.6 2003-07-03 18:42:48 jschamba Exp $";
+"$Id: daqloop.cxx,v 1.7 2003-07-03 18:43:43 jschamba Exp $";
 #endif /* lint */
 
-/* File name     : daqloop6.cxx
+/* File name     : daqloop7.cxx
  * Creation date : 4/15/02
  * Author        : J. Schambach, UT Physics
  * Modified date : 6/16/03
@@ -41,8 +41,9 @@ using namespace std;
 #define  MASK_2249 (1<<(ADC_2249-1))
 
 #define TDC_2228 6
+#define  MASK_2228 (1<<(TDC_2228-1))
 
-#define TRIGGER_CHANNEL	4
+#define TRIGGER_CHANNEL	5
 #define TRIGGER_SLOT	21
 #define MASK_TRIGGER (1<<(TRIGGER_SLOT-1))
 
@@ -94,6 +95,7 @@ int main(int argc, char *argv[])
 
 int hdaq()
 {
+  unsigned int counter;
   int fifofd;
   FILE *fifofp;
   char tempstr[80], tempstr2[80];
@@ -122,6 +124,9 @@ int hdaq()
 
   /* Initialize CAMAC modules */
 
+  /* 2249: Disable LAM */
+  //if( (status = CAMAC(NAF(ADC_2249, 0, 24), &data, &q, &x)) ) error_exit(status);
+  //printf("ADC F24: q=%d, x=%d\n", q, x);  
   /* 2249: Enable LAM */
   if( (status = CAMAC(NAF(ADC_2249, 0, 26), &data, &q, &x)) ) error_exit(status);
   printf("ADC F26: q=%d, x=%d\n", q, x);  
@@ -130,8 +135,11 @@ int hdaq()
   printf("ADC F9: q=%d, x=%d\n", q, x);  
   
   /* 2228: Disable LAM */
-  if( (status = CAMAC(NAF(TDC_2228, 0, 24), &data, &q, &x)) ) error_exit(status);
-  printf("TDC F24: q=%d, x=%d\n", q, x);  
+  //if( (status = CAMAC(NAF(TDC_2228, 0, 24), &data, &q, &x)) ) error_exit(status);
+  //printf("TDC F24: q=%d, x=%d\n", q, x);  
+  /* 2228: Enable LAM */
+  if( (status = CAMAC(NAF(TDC_2228, 0, 26), &data, &q, &x)) ) error_exit(status);
+  printf("TDC F26: q=%d, x=%d\n", q, x);  
   /* 2228: Clear module and LAM */
   if( (status = CAMAC(NAF(TDC_2228, 0, 9), &data, &q, &x)) ) error_exit(status);
   printf("TDC F9: q=%d, x=%d\n", q, x);
@@ -149,10 +157,16 @@ int hdaq()
   /* TRIGGER: Disable LAM request */
   if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 24), &data, &q, &x)) ) error_exit(status);
   printf("TRIGGER F24 A0: q=%d, x=%d\n", q, x);
+  /* TRIGGER: Enable LAM request */
+  //if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 26), &data, &q, &x)) ) error_exit(status);
+  //printf("TRIGGER F26 A0: q=%d, x=%d\n", q, x);
 
-  // enable crate controller LAM on ADC2249 module slot
-  if( (status = CENLAM (MASK_2249)) ) error_exit(status);
-  printf("enabled lam, will now wait for LAM...\n");
+  // enable crate controller LAM on TRIGGER module slot
+  //if( (status = CENLAM (MASK_TRIGGER)) ) error_exit(status);
+  //printf("enabled lam, will now wait for LAM...\n");
+  // enable crate controller LAM on 2249 module slot
+  //if( (status = CENLAM (MASK_2228)) ) error_exit(status);
+  //printf("enabled lam, will now wait for LAM...\n");
 
 
   TMapFile::SetMapAddress(0x411aa000);
@@ -203,16 +217,20 @@ int hdaq()
       }
     }
 
-    /* Remove Inhibit */
-    if( (status = CREMI()) ) 	error_exit(status);
-
     // Clear trigger channel
     data = TRIGGER_CHANNEL;
     if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
 
+    /* Remove Inhibit */
+    //if( (status = CREMI()) ) 	error_exit(status);
+
     // wait for trigger
-    while( (lamstatus = CWTLAM(1000)) != 0 ) {
-      printf("CWTLAM returned with status = %d: timeout\n", lamstatus);
+    q = 0;
+    CAMACW(NAF(TDC_2228, 0, 8), &sdata, &q, &x); // q=1, if LAM (finished conversion)
+    
+    counter = 0;
+    while( q == 0 ) {
+      //printf("CWTLAM returned with status = %d: timeout\n", lamstatus);
       result = fgets(tempstr, 80, fifofp);
       if (result != NULL) {
 	if (strncmp(tempstr, "e", 1) == 0) {
@@ -221,13 +239,20 @@ int hdaq()
 	  break;
 	}
       }
+      counter++;
+      if ((counter % 500000) == 0) {
+	printf("Event %d: waited %d iterations\r", ev, counter);
+	fflush(stdout);
+      }
+      CAMACW(NAF(TDC_2228, 0, 8), &sdata, &q, &x); // q=1, if LAM (finished conversion)
     }
     
     // set inhibit to prevent further triggers coming in
-    if( (status = CSETI()) != 0 ) 	error_exit(status);
+    //if( (status = CSETI()) != 0 ) 	error_exit(status);
 
+    if (q == 0) break;
     // check that we actually got a LAM
-    if (lamstatus != 0) break;
+    //if (lamstatus != 0) break;
 
     //printf("Received LAM, now reading out...\n");
     //printf("------ event %d ---------\n", ev);
@@ -245,9 +270,9 @@ int hdaq()
 
     //for (int i=0; i<12; i++) adcdata[i] = 0;
 
-    q = 0;
-    while(q == 0)
-      CAMACW(NAF(ADC_2249, 0, 8), &sdata, &q, &x); // q=1, if LAM
+    //q = 0;
+    //while(q == 0)
+    // CAMACW(NAF(ADC_2249, 0, 8), &sdata, &q, &x); // q=1, if LAM (finished conversion)
      
     // readout ADC's
     status = CDMAW(CC_K_MODES_QSCAN, NAF(ADC_2249,0,2),
