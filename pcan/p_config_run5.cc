@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config_run5.cc,v 1.1 2005-02-07 23:49:58 jschamba Exp $";
+"$Id: p_config_run5.cc,v 1.2 2005-02-09 17:06:05 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
   // first leading edge:
   leConf >> tempStr;
   leConf00 << tempStr << endl;
+  leConf05 << tempStr << endl;
   leConf06 << tempStr << endl;
   leConf09 << tempStr << endl;
   leConf10 << tempStr << endl;
@@ -97,7 +98,6 @@ int main(int argc, char *argv[])
   leConf01 << tempStr << endl;
   leConf02 << tempStr << endl;
   leConf04 << tempStr << endl;
-  leConf05 << tempStr << endl;
   leConf08 << tempStr << endl;
   leConf13 << tempStr << endl;
   leConf14 << tempStr << endl;
