@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcan_find.cc,v 1.1 2004-10-29 15:44:04 jschamba Exp $";
+"$Id: pcan_find.cc,v 1.2 2004-10-29 17:47:23 jschamba Exp $";
 #endif /* lint */
 
 
@@ -28,21 +28,10 @@ static char  __attribute__ ((unused)) vcid[] =
 
 //****************************************************************************
 // DEFINES
-#define FIFO_FILE "/tmp/pcanfifo"
 
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
-FILE *fifofp = (FILE *)NULL;
-
-#define LOCAL_STRING_LEN 64       // length of internal used strings
-typedef struct
-{
-  char szVersionString[LOCAL_STRING_LEN];
-  char szDevicePath[LOCAL_STRING_LEN];
-  int  nFileNo;
-} PCAN_DESCRIPTOR;
-
 
 //****************************************************************************
 // LOCALS
@@ -58,7 +47,7 @@ void check_err(__u32  err,  char *txtbuff)
 #define CAN_ERR_ILLNET    0x1800  // Netzhandle war ungueltig
 #define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
 
-  strcpy(txtbuff, "Error: ") ;
+  strcpy(txtbuff, "Errorflags set: ") ;
   if ( err == CAN_ERR_OK )        strcpy(txtbuff, "OK ") ;
   if ( err & CAN_ERR_XMTFULL )    strcat(txtbuff, "XMTFULL ") ;
   if ( err & CAN_ERR_OVERRUN )    strcat(txtbuff, "OVERRUN ") ;
@@ -171,8 +160,14 @@ int main(int argc, char *argv[])
     
     // get the hardware ID from the diag structure:
     LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
+    printf("\tDevice at %s: Hardware ID = 0x%x, wErrorFlag = 0x%x\n", 
+	   devName, 
+	   my_PDiag.wIrqLevel,
+	   my_PDiag.wErrorFlag);
+    if (my_PDiag.wErrorFlag != 0) {
+	  check_err(my_PDiag.wErrorFlag, txt);
+	  printf("\t--%s\n", txt);
+    }      
     
     CAN_Close(h);
     
