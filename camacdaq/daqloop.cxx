@@ -1,6 +1,6 @@
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqloop.cxx,v 1.1.1.1 2003-07-03 18:34:51 jschamba Exp $";
+"$Id: daqloop.cxx,v 1.2 2003-07-03 18:39:27 jschamba Exp $";
 #endif /* lint */
 
 /* File name     : daqloop.cxx
@@ -37,6 +37,10 @@ int hdaq();
 #define  MASK_2249 (1<<(ADC_2249-1))
 
 #define TDC_2228 6
+
+#define TRIGGER_CHANNEL	4
+#define TRIGGER_SLOT	21
+#define MASK_TRIGGER (1<<(TRIGGER_SLOT-1))
 
 const int N_ADC = 1;
 const int N_TDC = 1;
@@ -113,22 +117,36 @@ int hdaq()
 
   /* Initialize CAMAC modules */
 
+  /* 2249: Disable LAM */
+  if( (status = CAMAC(NAF(ADC_2249, 0, 24), &data, &q, &x)) ) error_exit(status);
+  printf("ADC F24: q=%d, x=%d\n", q, x);  
   /* 2249: Clear module and LAM */
   if( (status = CAMAC(NAF(ADC_2249, 0, 9), &data, &q, &x)) ) error_exit(status);
   printf("ADC F9: q=%d, x=%d\n", q, x);  
-  /* 2249: Enable LAM */
-  if( (status = CAMAC(NAF(ADC_2249, 0, 26), &data, &q, &x)) ) error_exit(status);
-  printf("ADC F26: q=%d, x=%d\n", q, x);  
   
   /* 2228: Disable LAM */
   if( (status = CAMAC(NAF(TDC_2228, 0, 24), &data, &q, &x)) ) error_exit(status);
   printf("TDC F24: q=%d, x=%d\n", q, x);  
   /* 2228: Clear module and LAM */
   if( (status = CAMAC(NAF(TDC_2228, 0, 9), &data, &q, &x)) ) error_exit(status);
-  printf("TDC F9: q=%d, x=%d\n", q, x);  
+  printf("TDC F9: q=%d, x=%d\n", q, x);
+
+  /* TRIGGER: Set Channel mask */
+  data = TRIGGER_CHANNEL;
+  if( (status = CAMAC(NAF(TRIGGER_SLOT, 2, 16), &data, &q, &x)) ) error_exit(status);
+  printf("TRIGGER F16 A2: q=%d, x=%d\n", q, x);
+
+  /* TRIGGER: Set Channel busy */
+  data = TRIGGER_CHANNEL;
+  if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 16), &data, &q, &x)) ) error_exit(status);
+  printf("TRIGGER F16 A0: q=%d, x=%d\n", q, x);
+
+  /* TRIGGER: Enable LAM request */
+  if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 26), &data, &q, &x)) ) error_exit(status);
+  printf("TRIGGER F26 A0: q=%d, x=%d\n", q, x);
 
   // enable crate controller LAM on ADC2249 module slot
-  if( (status = CENLAM (MASK_2249)) ) error_exit(status);
+  if( (status = CENLAM (MASK_TRIGGER)) ) error_exit(status);
   printf("enabled lam, will now wait for LAM...\n");
 
 
@@ -167,6 +185,9 @@ int hdaq()
   fifofd = open(FIFO_FILE, O_RDONLY | O_NONBLOCK);
   fifofp = fdopen(fifofd, "r");
 
+  /* Remove Inhibit */
+  if( (status = CREMI()) ) 	error_exit(status);
+
   for ( Int_t ev=0; ev<numberofevents; ev++) {
     char *result = fgets(tempstr, 80, fifofp);
     if (result != NULL) {
@@ -176,8 +197,13 @@ int hdaq()
 	break;
       }
     }
-    /* Remove Inhibit */
-    if( (status = CREMI()) ) 	error_exit(status);
+
+    // Clear trigger channel
+    data = TRIGGER_CHANNEL;
+    if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
+    // TRIGGER: Clear LAM STATUS
+    if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 10), &data, &q, &x)) ) error_exit(status);
+
     // wait for trigger
     while( (lamstatus = CWTLAM(1000)) != 0 ) {
       printf("CWTLAM returned with status = %d: timeout\n", status);
@@ -192,7 +218,7 @@ int hdaq()
     }
     
     // set inhibit to prevent further triggers coming in
-    if( (status = CSETI()) != 0 ) 	error_exit(status);
+    //if( (status = CSETI()) != 0 ) 	error_exit(status);
 
     // check that we actually got a LAM
     if (lamstatus != 0) break;
@@ -210,6 +236,10 @@ int hdaq()
     // ... and event number
     event.evno = ev;
 
+    q = 0;
+    while(q == 0)
+      CAMACW(NAF(ADC_2249, 0, 8), &sdata, &q, &x); // q=1, if LAM
+     
     // readout ADC's
     for (int i=0; i<N_ADC; i++) {
       int N = ADC_2249+i;
@@ -228,8 +258,8 @@ int hdaq()
     for (int i=0; i<N_TDC; i++) {
       int N = TDC_2228+i;
       for (int A=0; A<8; A++) {
-	CAMACW(NAF(N, A, 2), &sdata, &q, &x); // A=11 should clear module & LAM
-	//printf("Q=%d, X=%d, data = %d\n", q, x, sdata);
+	CAMACW(NAF(N, A, 2), &sdata, &q, &x); // A=7 should clear module & LAM
+	//printf("TDC: Q=%d, X=%d, data = %d\n", q, x, sdata);
 	event.ftdc[i*8+A] = (int)sdata;
 	htdc[i*8+A]->Fill(sdata);
       }
@@ -241,6 +271,12 @@ int hdaq()
 
     tree->Fill();
   }
+
+  // set inhibit to prevent further triggers coming in
+  if( (status = CSETI()) != 0 ) 	error_exit(status);
+  
+  // Disable LAM mask
+  CDSLAM(); 
 
   // Save all objects in this file
   printf("Closing root binary file...\n");
