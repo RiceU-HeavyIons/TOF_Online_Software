@@ -1,6 +1,6 @@
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqloop.cxx,v 1.4 2003-07-03 18:41:10 jschamba Exp $";
+"$Id: daqloop.cxx,v 1.5 2003-07-03 18:42:03 jschamba Exp $";
 #endif /* lint */
 
 /* File name     : daqloop.cxx
@@ -92,9 +92,8 @@ int hdaq()
 {
   int fifofd;
   FILE *fifofp;
-  char tempstr[80], tempstr2[80];
+  char tempstr[80];
   int status, lamstatus, data, q, x;
-  unsigned short sdata;
   int return_length, error;
   struct event_t {
     UShort_t fadc[N_ADC_CHANNEL];
@@ -151,35 +150,6 @@ int hdaq()
   printf("enabled lam, will now wait for LAM...\n");
 
 
-  TMapFile::SetMapAddress(0x411aa000);
-  TMapFile *mfile = TMapFile::Create("hsimple.map","RECREATE", 100000,
-                            "Memory mapped file with histograms");
-  // Create some histograms and an ntuple
-  TH1F *hadc[N_ADC_CHANNEL]; // ADC histos
-  for (int i=0; i<N_ADC_CHANNEL; i++) {
-    sprintf(tempstr, "hadc%d", i);
-    sprintf(tempstr2, "ADC %d distribution", i);
-    hadc[i] = new TH1F(tempstr, tempstr2, 1024,-0.5,1023.5);
-  }
-
-  TH1F *htdc[N_TDC_CHANNEL]; // TDC histos
-  for (int i=0; i<N_TDC_CHANNEL; i++) {
-    sprintf(tempstr, "htdc%d", i);
-    sprintf(tempstr2, "TDC %d distribution", i);
-    htdc[i] = new TH1F(tempstr, tempstr2, 2048,-0.5,2047.5);
-  }
-
-  mfile->Print();
-
-  // Create a new ROOT binary machine independent file.
-  // This file is now becoming the current directory.
-  TFile hfile(filename,"RECREATE","DAQ ROOT file with histograms");
-
-  //TNtuple *ntuple = new TNtuple("ntuple","Demo ntuple","px:py:pz:random:i");
-  TTree *tree = new TTree("Event", "Event");
-  sprintf(tempstr, "fadc[%d]/s:ftdc[%d]:evno/I:timestamp", N_ADC_CHANNEL, N_TDC_CHANNEL);
-  tree->Branch("nEvent", &event, tempstr);
-
   // control FIFO
   umask(0);
   mknod(FIFO_FILE, S_IFIFO|0666, 0);
@@ -199,11 +169,6 @@ int hdaq()
       }
     }
 
-#ifdef NOTNOW
-    /* Remove Inhibit */
-    if( (status = CREMI()) ) 	error_exit(status);
-#endif
-
     // Clear trigger channel
     data = TRIGGER_CHANNEL;
     if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
@@ -221,16 +186,11 @@ int hdaq()
       }
     }
     
-    // set inhibit to prevent further triggers coming in
-    // if( (status = CSETI()) != 0 ) 	error_exit(status);
-
     // check that we actually got a LAM
     if (lamstatus != 0) break;
 
-    //printf("Received LAM, now reading out...\n");
-    //printf("------ event %d ---------\n", ev);
-    printf("------ event %d ---------\r", ev);
-    fflush(stdout);
+    //printf("------ event %d ---------\r", ev);
+    //fflush(stdout);
 
     // record the timestamp...
     time(thetime);
@@ -241,23 +201,19 @@ int hdaq()
     // ... and event number
     event.evno = ev;
 
-    //for (int i=0; i<12; i++) adcdata[i] = 0;
-
-    q = 0;
-    while(q == 0)
-      CAMACW(NAF(ADC_2249, 0, 8), &sdata, &q, &x); // q=1, if LAM
-     
     // readout ADC's
     status = CDMAW(CC_K_MODES_QSCAN, NAF(ADC_2249,0,2),
     		   event.fadc, N_ADC_CHANNEL, &return_length, &error );
 
+#ifdef NOTNOW
     for (int i=0; i<N_ADC; i++) {
       for (int A=0; A<12; A++) {
 	//event.fadc[i*12+A] = (int)adcdata[i*12+A];
 	// fill histo and tree with structure data
-	hadc[i*12+A]->Fill(event.fadc[i*12+A]);
+	//hadc[i*12+A]->Fill(event.fadc[i*12+A]);
       }
     }
+#endif
 
     //q = 0;
     //while(q == 0)
@@ -266,9 +222,8 @@ int hdaq()
     // readout TDC's
     status = CDMAW(CC_K_MODES_QSCAN, NAF(TDC_2228,0,2),
 		   event.ftdc, N_TDC_CHANNEL, &return_length, &error );
-    //printf("CDMAW TDC: status %d, return_length %d, error 0x%x\n", 
-    //	   status, return_length, error);
 
+#ifdef NOTNOW
     for (int i=0; i<N_TDC; i++) {
       for (int A=0; A<8; A++) {
 	//event.ftdc[i*8+A] = (int)tdcdata[i*8+A];
@@ -276,11 +231,12 @@ int hdaq()
       }
     }
     // finished reading TDC's
+#endif
 
-    mfile->Update();
+    //mfile->Update();
     //mfile->ls();
 
-    tree->Fill();
+    //tree->Fill();
   }
 
   // set inhibit to prevent further triggers coming in
@@ -290,12 +246,12 @@ int hdaq()
   CDSLAM(); 
 
   // Save all objects in this file
-  printf("Closing root binary file...\n");
-  hfile.Write();
+  //printf("Closing root binary file...\n");
+  //hfile.Write();
 
   // Close the file. Note that this is automatically done when you leave
   // the application.
-  hfile.Close();
+  //hfile.Close();
 
   // close CAMAC device
   CCLOSE();
