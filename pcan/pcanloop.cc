@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.5 2004-10-29 16:37:48 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.6 2004-11-24 16:33:34 jschamba Exp $";
 #endif /* lint */
 
 
@@ -109,7 +109,8 @@ int main(int argc, char *argv[])
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   __u16 wBTR0BTR1 = CAN_BAUD_1M;
-  int   nExtended = CAN_INIT_TYPE_ST;
+  //int   nExtended = CAN_INIT_TYPE_ST;
+  int   nExtended = CAN_INIT_TYPE_EX; // open for "extended" message IDs
   int iteration = 0;
   char txt[255]; // temporary string storage
   bool saveit = false;
@@ -289,13 +290,14 @@ int main(int argc, char *argv[])
 	    printf("0x%02x ", m.DATA[i]);
 	  printf("\n");
 	  
-	  if (!(m.MSGTYPE & MSGTYPE_EXTENDED)) {  
-	    // send the message
-	    if ( (errno = CAN_Write(h, &m)) ) {
-	      perror("pcanloop: CAN_Write()");
-	      my_private_exit(errno);
-	    }
+	  // new: send the message even with extended message IDs
+	  //if (!(m.MSGTYPE & MSGTYPE_EXTENDED)) {  
+	  // send the message
+	  if ( (errno = CAN_Write(h, &m)) ) {
+	    perror("pcanloop: CAN_Write()");
+	    my_private_exit(errno);
 	  }
+	  //}
 	}
       }
       
