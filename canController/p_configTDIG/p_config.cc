@@ -7,10 +7,10 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.1 2004-08-20 20:44:02 jschamba Exp $";
+"$Id: p_config.cc,v 1.2 2004-09-02 19:20:23 jschamba Exp $";
 #endif /* lint */
 
-#define LOCAL_DEBUG
+//#define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
@@ -187,35 +187,35 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
   
   cout << "Starting Configuration Procedure....\n";
 
-  TPCANMsg m;
+  TPCANMsg m, ms;
   __u32 status;
     
   struct pollfd pfd;
   pfd.fd = pcd->nFileNo;
   pfd.events = POLLIN;
     
-  m.MSGTYPE = CAN_INIT_TYPE_ST;
-  m.ID = 0x200 | TDCVal | nodeID;
-  m.LEN = 1;
+  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.ID = 0x200 | TDCVal | nodeID;
+  ms.LEN = 1;
 
   // "CONFIGURE_TDC:Start"
-  sendData = m.DATA[0] = 0;
+  sendData = ms.DATA[0] = 0;
 
 #ifdef LOCAL_DEBUG
   cout << "\nSending START command:\n";
   printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 m.ID, 
-	 m.LEN); 
-  for (i = 0; i < m.LEN; i++)
-    printf("0x%02x ", m.DATA[i]);
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (i = 0; i < ms.LEN; i++)
+    printf("0x%02x ", ms.DATA[i]);
   printf("\n");
 #endif
 
   
   // send the message
-  if ( (errno = CAN_Write(h, &m)) ) {
+  if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_config: CAN_Write()");
     my_private_exit(errno);
   }
@@ -289,27 +289,27 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
 
 
   // "CONFIGURE_TDC:Data", 11 messages with 7 bytes each
-  m.LEN = 8;
+  ms.LEN = 8;
 
   for (i=1; i<12; i++) {
-    sendData = m.DATA[0] = 0x40 | i;
-    for (j=0; j<7; j++) m.DATA[j+1] = confByte[(i-1)*7+j];
+    sendData = ms.DATA[0] = 0x40 | i;
+    for (j=0; j<7; j++) ms.DATA[j+1] = confByte[(i-1)*7+j];
     
 #ifdef LOCAL_DEBUG
     cout << "\nSending DATA packet:\n";
     printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	   (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	   (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	   m.ID, 
-	   m.LEN); 
-    for (j = 0; j < m.LEN; j++)
-      printf("0x%02x ", m.DATA[j]);
+	   (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	   (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	   ms.ID, 
+	   ms.LEN); 
+    for (j = 0; j < ms.LEN; j++)
+      printf("0x%02x ", ms.DATA[j]);
     printf("\n");
 #endif
     
     
     // send the message
-    if ( (errno = CAN_Write(h, &m)) ) {
+    if ( (errno = CAN_Write(h, &ms)) ) {
       perror("p_config: CAN_Write()");
       my_private_exit(errno);
     }
@@ -332,8 +332,8 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
 	       m.ID, 
 	       m.LEN); 
 	
-	for (i = 0; i < m.LEN; i++)
-	  printf("0x%02x ", m.DATA[i]);
+	for (j = 0; j < m.LEN; j++)
+	  printf("0x%02x ", m.DATA[j]);
 	printf("\n");
 #endif
 	
@@ -384,26 +384,26 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
 
 
   // "CONFIGURE_TDC:Data", ... and 1 last message with 4 bytes
-  m.LEN = 5;
+  ms.LEN = 5;
 
-  sendData = m.DATA[0] = 0x4c;
-  for (j=0; j<4; j++) m.DATA[j+1] = confByte[77+j];
+  sendData = ms.DATA[0] = 0x4c;
+  for (j=0; j<4; j++) ms.DATA[j+1] = confByte[77+j];
   
 #ifdef LOCAL_DEBUG
   cout << "\nSending DATA packet 12:\n";
   printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 m.ID, 
-	 m.LEN); 
-  for (j = 0; j < m.LEN; j++)
-    printf("0x%02x ", m.DATA[j]);
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
   printf("\n");
 #endif
   
   
   // send the message
-  if ( (errno = CAN_Write(h, &m)) ) {
+  if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_config: CAN_Write()");
     my_private_exit(errno);
   }
@@ -476,24 +476,24 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
   }
 
   // "CONFIGURE_TDC:Config_end"
-  m.LEN = 1;
-  m.DATA[0] = sendData = 0x80;
+  ms.LEN = 1;
+  ms.DATA[0] = sendData = 0x80;
   
 #ifdef LOCAL_DEBUG
   cout << "\nSending Config_end command:\n";
   printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 m.ID, 
-	 m.LEN); 
-  for (j = 0; j < m.LEN; j++)
-    printf("0x%02x ", m.DATA[j]);
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
   printf("\n");
 #endif
   
   
   // send the message
-  if ( (errno = CAN_Write(h, &m)) ) {
+  if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_config: CAN_Write()");
     my_private_exit(errno);
   }
@@ -566,23 +566,23 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
   }
 
   // "CONFIGURE_TDC:Program"
-  m.DATA[0] = sendData = 0xc0;
+  ms.DATA[0] = sendData = 0xc0;
   
 #ifdef LOCAL_DEBUG
   cout << "\nSending Program command:\n";
   printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 m.ID, 
-	 m.LEN); 
-  for (j = 0; j < m.LEN; j++)
-    printf("0x%02x ", m.DATA[j]);
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
   printf("\n");
 #endif
   
   
   // send the message
-  if ( (errno = CAN_Write(h, &m)) ) {
+  if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_config: CAN_Write()");
     my_private_exit(errno);
   }
