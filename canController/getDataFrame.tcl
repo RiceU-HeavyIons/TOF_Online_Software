@@ -1,4 +1,4 @@
-# $Id: getDataFrame.tcl,v 1.1 2004-08-20 20:26:40 jschamba Exp $
+# $Id: getDataFrame.tcl,v 1.2 2004-08-23 22:22:44 jschamba Exp $
 ################################################################
 #
 #Adds TDC data-fetchin' components to canController GUI
@@ -400,18 +400,18 @@ proc getDataFrame {canControllerFrame} {
 		if {$collectAllBool} {	
 			set state disabled
 			set oppositeState normal
-			set foregroundText SystemDisabledText
+			#set foregroundText SystemDisabledText
 		} else {
 			set state normal
 			set oppositeState disabled
-			set foregroundText SystemButtonText
+			#set foregroundText SystemButtonText
 		}
 		
-		$dataChanSelFrame configure -foreground $foregroundText
+		#$dataChanSelFrame configure -foreground $foregroundText
 		foreach child [winfo children $dataChanSelFrame] {
 			$child configure -state $state
 		}
-		$tampFrame  configure -foreground $foregroundText
+		#$tampFrame  configure -foreground $foregroundText
 		foreach child [winfo children $tampFrame] {
 			$child configure -state $state
 		}
@@ -426,16 +426,17 @@ proc getDataFrame {canControllerFrame} {
 		foreach child [winfo children $dataTypeFrame] {
 			$child configure -state $state
 		}
-		$dataTypeFrame configure -foreground $foregroundText
-		$edgeTypeFrame configure -foreground $foregroundText
+		#$dataTypeFrame configure -foreground $foregroundText
+		#$edgeTypeFrame configure -foreground $foregroundText
 		foreach child [winfo children $edgeTypeFrame] {
 			$child configure -state $state
 		}
-		$cableDelayFrame configure -foreground $foregroundText
+		#$cableDelayFrame configure -foreground $foregroundText
 		foreach child [winfo children $cableDelayFrame] {
 			$child configure -state $state
 		}
-		$cableDelayFrame.calcDelayEntry configure -state readonly -foreground $foregroundText
+		#$cableDelayFrame.calcDelayEntry configure -state readonly -foreground $foregroundText
+		$cableDelayFrame.calcDelayEntry configure -state readonly
 		setDataFileList
 	}
 
