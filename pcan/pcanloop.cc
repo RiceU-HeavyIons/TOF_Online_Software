@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.6 2004-11-24 16:33:34 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.7 2005-03-03 22:12:53 jschamba Exp $";
 #endif /* lint */
 
 
@@ -314,7 +314,7 @@ int main(int argc, char *argv[])
       }
       else { // data read
 	if (printReceived) {
-	  printf("pcanloop: message received: %c %c 0x%08x %1d  ", 
+	  printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
 		 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
 		 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
 		 m.ID, 
@@ -336,7 +336,7 @@ int main(int argc, char *argv[])
 	  else
 	    printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
 	} 
-	else if (m.MSGTYPE == MSGTYPE_STANDARD) {
+	else if ((m.MSGTYPE == MSGTYPE_STANDARD) || (m.MSGTYPE == MSGTYPE_EXTENDED)) {
 	  if ((m.ID & 0x780) == 0x0)
 	    if (saveit) {
 	      for (i=0; i<4; i++)
