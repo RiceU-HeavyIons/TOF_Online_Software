@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.1 2003-09-23 15:03:33 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.2 2004-10-25 22:20:18 jschamba Exp $";
 #endif /* lint */
 
 
@@ -72,11 +72,43 @@ typedef union {
 //****************************************************************************
 // CODE 
 
+void check_err(__u32  err,  char *txtbuff)
+{
+#define CAN_ERR_HWINUSE   0x0400  // Hardware ist von Netz belegt
+#define CAN_ERR_NETINUSE  0x0800  // an Netz ist Client angeschlossen
+#define CAN_ERR_ILLHW     0x1400  // Hardwarehandle war ungueltig
+#define CAN_ERR_ILLNET    0x1800  // Netzhandle war ungueltig
+#define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
+
+  strcpy(txtbuff, "Error: ") ;
+  if ( err == CAN_ERR_OK )        strcpy(txtbuff, "OK ") ;
+  if ( err & CAN_ERR_XMTFULL )    strcat(txtbuff, "XMTFULL ") ;
+  if ( err & CAN_ERR_OVERRUN )    strcat(txtbuff, "OVERRUN ") ;
+  if ( err & CAN_ERR_BUSLIGHT )   strcat(txtbuff, "BUSLIGHT ") ;
+  if ( err & CAN_ERR_BUSHEAVY )   strcat(txtbuff, "BUSHEAVY ") ;
+  if ( err & CAN_ERR_BUSOFF )     strcat(txtbuff, "BUSOFF ") ;
+  if ( err & CAN_ERR_QRCVEMPTY )  strcat(txtbuff, "QRCVEMPTY ") ;
+  if ( err & CAN_ERR_QOVERRUN )   strcat(txtbuff, "QOVERRUN ") ;
+  if ( err & CAN_ERR_QXMTFULL )   strcat(txtbuff, "QXMTFULL ") ;
+  if ( err & CAN_ERR_REGTEST )    strcat(txtbuff, "REGTEST ") ;
+  if ( err & CAN_ERR_NOVXD )      strcat(txtbuff, "NOVXD ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) strcat(txtbuff, "HWINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) strcat(txtbuff, "NETINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLHW )strcat(txtbuff, "ILLHW ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLCLIENT )strcat(txtbuff, "ILLCLIENT ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLNET ) strcat(txtbuff, "ILLNET ") ;
+  if ( err & CAN_ERR_RESOURCE ) strcat(txtbuff, "RESOURCE ") ;
+  if ( err & CAN_ERR_ILLPARAMTYPE ) strcat(txtbuff, "ILLPARAMTYPE ") ;
+  if ( err & CAN_ERR_ILLPARAMVAL ) strcat(txtbuff, "ILLPARAMVAL ") ;
+  return;
+}
+
 // centralized entry point for all exits
 static void my_private_exit(int error)
 {
   if (h)
   {
+    printf("Closing pcan\n");
     CAN_Close(h); 
   }
   printf("pcanloop: finished (%d).\n\n", error);
@@ -100,11 +132,14 @@ int main(int argc, char *argv[])
   int nType = HW_PCI;
   __u32 dwPort = 0;
   __u16 wIrq = 0;
-  __u16 wBTR0BTR1 = CAN_BAUD_250K;
+  //__u16 wBTR0BTR1 = CAN_BAUD_250K;
+  __u16 wBTR0BTR1 = CAN_BAUD_1M;
   int   nExtended = CAN_INIT_TYPE_ST;
   int iteration = 0;
   char txt[255]; // temporary string storage
   bool saveit = false;
+  bool filterit = false;
+  bool printReceived = true;
   FILE *fp = NULL;
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
@@ -219,8 +254,8 @@ int main(int argc, char *argv[])
     pfd.events = POLLIN;
     
     iteration++;
-    printf("Iteration %d\r", iteration);
-    fflush(stdout);
+    //printf("Iteration %d\r", iteration);
+    //fflush(stdout);
 
     char *result = fgets(txt, 80, fifofp);
     if (result != NULL) {
@@ -234,7 +269,7 @@ int main(int argc, char *argv[])
       if (strncmp(txt, "s", 1) == 0) {
 	char *ptr = txt;
 	void skip_blanks(char **);
-	printf("Save command received strlen = %d\n", strlen(txt));
+	printf("Save command received. ");
 	if (strlen(txt) != 1) {
 	  ptr++;
 	  skip_blanks(&ptr);
@@ -245,14 +280,34 @@ int main(int argc, char *argv[])
 	  else
 	    fp = fopen (ptr, "w");
 	}
+	else
+	  printf("No filename specified. No file opened\n");
       }
       else if (strncmp(txt, "c", 1) == 0) {
 	printf("Close command received\n");
+	saveit = false;
 	if (fp != (FILE *)NULL) {
 	  fclose(fp);
 	  fp = (FILE *)NULL;
 	}
       }	
+      else if (strncmp(txt, "f", 1) == 0) {
+	printf("Filter command received\n");
+	filterit = true;
+      }	
+      else if (strncmp(txt, "n", 1) == 0) {
+	printf("NoFilter command received\n");
+	filterit = false;
+      }	
+      else if (strncmp(txt, "q", 1) == 0) {
+	printf("quietReceive command received\n");
+	printReceived = false;
+      }	
+      else if (strncmp(txt, "d", 1) == 0) {
+	printf("printReceived packets command received\n");
+	printReceived = true;
+      }	
+
       else {
 	errno = parse_input_message(txt, &m);
 	if (errno == 0) {
@@ -287,16 +342,17 @@ int main(int argc, char *argv[])
 	my_private_exit(errno);
       }
       else { // data read
-	printf("pcanloop: message received: %c %c 0x%08x %1d  ", 
-	       (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	       (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	       m.ID, 
-	       m.LEN); 
-
-	for (i = 0; i < m.LEN; i++)
-	  printf("0x%02x ", m.DATA[i]);
-	printf("\n");
-	
+	if (printReceived) {
+	  printf("pcanloop: message received: %c %c 0x%08x %1d  ", 
+		 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+		 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+		 m.ID, 
+		 m.LEN); 
+	  
+	  for (i = 0; i < m.LEN; i++)
+	    printf("0x%02x ", m.DATA[i]);
+	  printf("\n");
+	}
 	
 	// check if a CAN status is pending	     
 	if (m.MSGTYPE & MSGTYPE_STATUS) {
@@ -314,17 +370,42 @@ int main(int argc, char *argv[])
 	    if (saveit) {
 	      for (i=0; i<4; i++)
 		uc_ptr[3-i] = m.DATA[i];
-	      fprintf(fp, "0x%08x\n", buffer[0]);
+	      if(filterit) {
+		if ( (buffer[0]&0xf0000000) != 0xe0000000)
+		  fprintf(fp, "0x%08x\n", buffer[0]);
+	      }
+	      else
+		fprintf(fp, "0x%08x\n", buffer[0]);
 	      if (m.LEN == 8) {
 		for (i=4; i<8; i++)
 		  uc_ptr[11-i] = m.DATA[i];
-		fprintf(fp, "0x%08x\n", buffer[1]);
+		if(filterit) {
+		  if ( (buffer[1]&0xf0000000) != 0xe0000000)
+		    fprintf(fp, "0x%08x\n", buffer[1]);
+		}
+		else
+		  fprintf(fp, "0x%08x\n", buffer[1]);
 	      }
 	    }
 	}
 
       } // data read
     } // data received
+    else {
+      status = CAN_Status(h);
+      if ((int)status < 0) {
+	errno = nGetLastError();
+	perror("pcanloop: CAN_Status()");
+	my_private_exit(errno);
+      }
+      else {
+	if (status != CAN_ERR_QRCVEMPTY) {
+	  //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	  check_err(status, txt);
+	  printf("%s\n", txt);
+	}
+      }
+    }
   } // while (1)
   
   return errno;
