@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.2 2004-10-25 22:20:18 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.3 2004-10-29 15:42:25 jschamba Exp $";
 #endif /* lint */
 
 
@@ -143,8 +143,8 @@ int main(int argc, char *argv[])
   FILE *fp = NULL;
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
-
   int fifofd;
+  TPDIAG my_PDiag;
 
 #ifdef NOTNOW
   TPCANMsg m;
@@ -232,6 +232,10 @@ int main(int argc, char *argv[])
     }
   }
   
+  // get the hardware ID from the diag structure:
+  LINUX_CAN_Statistics(h,&my_PDiag);
+  printf("pcanloop: Device Hardware ID = 0x%x\n", my_PDiag.wIrqLevel);
+
   // create or open control FIFO
   sprintf(txt, "%s-%d", FIFO_FILE, getuid());
   umask(0);
