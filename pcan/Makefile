@@ -1,5 +1,5 @@
 # $Id$
-all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold
+all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold p_config_run5
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
