@@ -7,10 +7,10 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.6 2005-02-10 21:17:05 jschamba Exp $";
+"$Id: p_config.cc,v 1.7 2005-02-10 21:18:21 jschamba Exp $";
 #endif /* lint */
 
-#define LOCAL_DEBUG
+// #define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
