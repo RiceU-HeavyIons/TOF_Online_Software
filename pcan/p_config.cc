@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.3 2004-11-04 15:54:53 jschamba Exp $";
+"$Id: p_config.cc,v 1.4 2004-11-17 21:08:32 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -73,7 +73,7 @@ static void signal_handler(int signal)
 
 //**********************************************
 // here all is done
-int p_config(const char *filename, unsigned int nodeID, int TDC)
+int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 {
   //__u32 dwPort = 0;
   //__u16 wIrq = 0;
@@ -90,9 +90,13 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
   unsigned int tempval;
   char buffer[255];
 
+  TPDIAG my_PDiag;
+  char devName[255];
+
   cout << "Configuring TDC " << TDC
        << " at NodeID 0x" << hex << nodeID
-       << " with filename " << filename << "...\n";
+       << " with filename " << filename 
+       << " on CANbus ID 0x" << hex << devID << "...\n";
 
   errno = 0;
   
@@ -148,16 +152,35 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
   // HW_USB  -- this is the one we are using
 
   //h = CAN_Open(HW_USB, dwPort, wIrq);
-  h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
-  
-  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
-  
+  //h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
+
+  // search for correct device ID:
+  for (int i=0; i<8; i++) {
+    sprintf(devName, "/dev/pcan%d", 32+i);
+    //h = CAN_Open(HW_USB, dwPort, wIrq);
+    h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
+    if (h == NULL) {
+      //printf("Failed to open device %s\n", devName);
+      //my_private_exit(errno);
+      continue;
+    }
+    // get the hardware ID from the diag structure:
+    LINUX_CAN_Statistics(h,&my_PDiag);
+    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+	   my_PDiag.wIrqLevel);
+    if (my_PDiag.wIrqLevel == devID) break;
+    CAN_Close(h);
+  }
+
   if (!h) {
+    printf("Device ID 0x%x not found, exiting\n", devID);
     errno = nGetLastError();
-    perror("p_config: LINUX_CAN_Open()");
+    perror("p_config: CAN_Open()");
     my_private_exit(errno);
   }
 
+  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
+  
     
   // get version info
   errno = CAN_VersionInfo(h, txt);
@@ -663,12 +686,13 @@ int p_config(const char *filename, unsigned int nodeID, int TDC)
 int main(int argc, char *argv[])
 {
   unsigned int nodeID;
+  WORD devID = 255;
 
-  cout << "p_config, last modified November 4, 2004" << endl;
+  cout << vcid << endl;
   cout.flush();
   
-  if ( argc != 4 ) {
-    cout << "USAGE: " << argv[0] << " <TDC ID> <node ID> <fileName> \n";
+  if ( argc < 4 ) {
+    cout << "USAGE: " << argv[0] << " <TDC ID> <node ID> <fileName> <devID>\n";
     return 1;
   }
   
@@ -685,5 +709,13 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  return p_config(argv[3], nodeID, TDC);
+  if (argc == 5) {
+    devID = atoi(argv[4]);
+    if (devID > 255) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      return -1;
+    }
+  }
+  
+  return p_config(argv[3], nodeID, TDC, devID);
 }
