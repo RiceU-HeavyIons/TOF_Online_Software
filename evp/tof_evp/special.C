@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 	      else if ((data_word & 0xF8000000) == 0xE0000000) {	// TDIG separator word
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
-		if ((data_word & 0xFF000000) == 0xE0000000) halftray = 1;
+		if (ii == 0) { if ((data_word & 0xFF000000) == 0xE0000000) halftray = 1; }
 		if (ii == 2) tdig = 8;
 		else tdig = (data_word & 0x0F000000) >> 24;
 		sep_mask |= (1<<tdig);
@@ -275,7 +275,8 @@ int main(int argc, char *argv[])
 
 	if (firstTime) firstTime = false;
 	if (sep_mask != 0x1F3) {
-	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing, mask = 0x%3x\n", sep_mask);
+	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing (0x%3x); size DDLR 1: %d, 3: %d\n", 
+		  sep_mask, tof.ddl_words[0], tof.ddl_words[2]);
 	  firstTime = true;
 	  tofbad++;
 	}
