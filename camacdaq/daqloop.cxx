@@ -1,6 +1,6 @@
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqloop.cxx,v 1.2 2003-07-03 18:39:27 jschamba Exp $";
+"$Id: daqloop.cxx,v 1.3 2003-07-03 18:40:26 jschamba Exp $";
 #endif /* lint */
 
 /* File name     : daqloop.cxx
@@ -94,7 +94,8 @@ int hdaq()
   FILE *fifofp;
   char tempstr[80], tempstr2[80];
   int status, lamstatus, data, q, x;
-  short unsigned int sdata;
+  unsigned short sdata;
+  int return_length, error;
   struct event_t {
     UShort_t fadc[N_ADC_CHANNEL];
     UShort_t ftdc[N_TDC_CHANNEL];
@@ -200,13 +201,14 @@ int hdaq()
 
     // Clear trigger channel
     data = TRIGGER_CHANNEL;
-    if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
+    //if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
     // TRIGGER: Clear LAM STATUS
     if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 10), &data, &q, &x)) ) error_exit(status);
+    //if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 25), &data, &q, &x)) ) error_exit(status);
 
     // wait for trigger
     while( (lamstatus = CWTLAM(1000)) != 0 ) {
-      printf("CWTLAM returned with status = %d: timeout\n", status);
+      printf("CWTLAM returned with status = %d: timeout\n", lamstatus);
       result = fgets(tempstr, 80, fifofp);
       if (result != NULL) {
 	if (strncmp(tempstr, "e", 1) == 0) {
@@ -224,6 +226,7 @@ int hdaq()
     if (lamstatus != 0) break;
 
     //printf("Received LAM, now reading out...\n");
+    //printf("------ event %d ---------\n", ev);
     printf("------ event %d ---------\r", ev);
     fflush(stdout);
 
@@ -236,32 +239,38 @@ int hdaq()
     // ... and event number
     event.evno = ev;
 
+    //for (int i=0; i<12; i++) adcdata[i] = 0;
+
     q = 0;
     while(q == 0)
       CAMACW(NAF(ADC_2249, 0, 8), &sdata, &q, &x); // q=1, if LAM
      
     // readout ADC's
+    status = CDMAW(CC_K_MODES_QSCAN, NAF(ADC_2249,0,2),
+    		   event.fadc, N_ADC_CHANNEL, &return_length, &error );
+
     for (int i=0; i<N_ADC; i++) {
-      int N = ADC_2249+i;
       for (int A=0; A<12; A++) {
-	CAMACW(NAF(N, A, 2), &sdata, &q, &x); // A=11 should clear module & LAM
-	//printf("Q=%d, X=%d, data = %d\n", q, x, sdata);
-	event.fadc[i*12+A] = (int)sdata;
+	//event.fadc[i*12+A] = (int)adcdata[i*12+A];
 	// fill histo and tree with structure data
-	hadc[i*12+A]->Fill(sdata);
+	hadc[i*12+A]->Fill(event.fadc[i*12+A]);
       }
     }
-    // finished reading ADC's
-    
+
+    //q = 0;
+    //while(q == 0)
+    //  CAMACW(NAF(TDC_2228, 0, 0), &sdata, &q, &x); // q=1, if conversion is finished
 
     // readout TDC's
+    status = CDMAW(CC_K_MODES_QSCAN, NAF(TDC_2228,0,2),
+		   event.ftdc, N_TDC_CHANNEL, &return_length, &error );
+    //printf("CDMAW TDC: status %d, return_length %d, error 0x%x\n", 
+    //	   status, return_length, error);
+
     for (int i=0; i<N_TDC; i++) {
-      int N = TDC_2228+i;
       for (int A=0; A<8; A++) {
-	CAMACW(NAF(N, A, 2), &sdata, &q, &x); // A=7 should clear module & LAM
-	//printf("TDC: Q=%d, X=%d, data = %d\n", q, x, sdata);
-	event.ftdc[i*8+A] = (int)sdata;
-	htdc[i*8+A]->Fill(sdata);
+	//event.ftdc[i*8+A] = (int)tdcdata[i*8+A];
+	htdc[i*8+A]->Fill(event.ftdc[i*8+A]);
       }
     }
     // finished reading TDC's
