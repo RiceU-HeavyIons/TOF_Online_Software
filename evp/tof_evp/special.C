@@ -30,13 +30,16 @@ int main(int argc, char *argv[])
   char *datap ;
   class evpReader *evp = NULL ;
   int good = 0, bad = 0 ;
-  int tofbad = 0;
+  int tofbad1 = 0, tofbad2 = 0, tofbad3 = 0;
   static char mountpoint[32] ;
   int fcount ;
   char *fnames[1000] ;	// up to 1000 files, hope that's enough...
   int i ;
   int dump_det ;
   int check_only ;
+  // for TOF:
+  u_int expectedMask = 0x3f3;
+  int nExpected = 8;
   // parse command line arguments
   // but set the defaults before...
 
@@ -48,7 +51,7 @@ int main(int argc, char *argv[])
 
   dump_det = -1 ;	// default is no dump
 
-  while((c = getopt(argc,argv,"Ct:d:m:w:D:")) != EOF)
+  while((c = getopt(argc,argv,"Ct:d:m:w:D:s:n:")) != EOF)
     switch(c) {
     case 't' :
       evtype = atoi(optarg) ;		// request type
@@ -62,12 +65,20 @@ int main(int argc, char *argv[])
     case 'C' :				// only run sanity checks
       check_only = 1 ;
       break ;
+    case 's':
+      expectedMask = strtoul(optarg, NULL, 16);
+      break;
+    case 'n':
+      nExpected = atoi(optarg);
+      break;
+
     case '?' :
-      fprintf(stdout,"Usage: %s [-t type ] [-C] [-m mountpoint] [-D det_id] <files...>\n",argv[0]) ;
+      fprintf(stdout,"Usage: %s [-t type ] [-C] [-m mountpoint] [-D det_id] [-s separatorMask] [-n nSeparators] <files...>\n",argv[0]) ;
       return -1 ;
       break ;
     }
 
+  printf("sepMask = 0x%x, nsep = %d\n", expectedMask, nExpected);
   // repack pointers to filenames
   fcount = 0 ;
   if(optind < argc) {
@@ -103,7 +114,7 @@ int main(int argc, char *argv[])
       if(fnames[i]) fprintf(stdout,"Calling constructor [%d/%d], with filename %s\n",(i+1),fcount,fnames[i]) ;
       else fprintf(stdout,"Calling constructor [%d/%d], with filename NULL",(i+1),(fcount+1)) ;
 
-    tofbad = 0;
+    tofbad1 = tofbad2 = tofbad3 = 0;
     evp = new evpReader(fnames[i]) ;
 
     // MUST CHECK THE STATUS!!!
@@ -135,6 +146,7 @@ int main(int argc, char *argv[])
     // for TOF checks:
     bool firstTime = true;
     u_int triggerCtr[10] = {0,0,0,0,0,0,0,0,0,0};
+    int nSeparators;
       
     // The EVENT LOOP!!!!
     for(;;) {
@@ -223,6 +235,7 @@ int main(int argc, char *argv[])
 	u_int tdcVal;
 	bool jsErr = false;
 	sep_mask = 0;
+	nSeparators = 0;
 	for (int ii = 0; ii<4; ii++) { // 4 DDLR banks
 	  halftray = 0;
 	  if (DEBUG) fprintf(stdout,"TOFDDLR %d: length %d words\n",ii+1, tof.ddl_words[ii]);
@@ -232,6 +245,7 @@ int main(int argc, char *argv[])
 	      if ((data_word & 0xF00F0000) == 0xA0040000)	// header trigger word
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 	      else if ((data_word & 0xF8000000) == 0xE0000000) {	// TDIG separator word
+		nSeparators++;
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 		if (ii == 1) tdig = 9;
 		else if (ii == 2) tdig = 8;
@@ -251,7 +265,7 @@ int main(int argc, char *argv[])
 	      }
 	      else if ((data_word & 0xF0000000) == 0xC0000000) {	// geographical word
 		halftray = data_word & 0x1;
-		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X, halftray %d\n",ii+1,data_word, halftray) ;
+		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 	      }
 	      else if ((data_word & 0x80000000) == 0x80000000) {	// other header words, end-of-event separator
 		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
@@ -278,16 +292,22 @@ int main(int argc, char *argv[])
 	} // for (int ii = ....
 
 	if (firstTime) firstTime = false;
-	if (sep_mask != 0x3F3) {
-	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing (0x%3x); size DDLR 1: %d, 3: %d\n", 
+	if (sep_mask != expectedMask) {
+	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing (0x%03x); size DDLR 1: %d, 3: %d\n", 
 		  sep_mask, tof.ddl_words[0], tof.ddl_words[2]);
 	  firstTime = true;
-	  tofbad++;
+	  tofbad1++;
 	}
 	if (jsErr) {
 	  firstTime = true;
-	  tofbad++;
+	  tofbad2++;
 	}
+	if (nSeparators > nExpected) {
+	  fprintf(stdout, "\t***JS:ERROR: number of separators: %d\n", nSeparators);
+	  tofbad3++;
+	  firstTime = true;
+	}
+
 	
       } // else
       
@@ -295,7 +315,8 @@ int main(int argc, char *argv[])
 
 
     fprintf(stdout,"Processed %s: %d good, %d bad events total...\n",fnames[i],good,bad) ;
-    fprintf(stdout,"%d events with TOF problems\n", tofbad); 
+    fprintf(stdout,"%d bad1, %d bad2, %d bad3 events with TOF problems\n", 
+	    tofbad1, tofbad2, tofbad3); 
 
     delete evp ;
   }	// end of input file loop
