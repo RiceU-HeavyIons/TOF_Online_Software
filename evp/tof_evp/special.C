@@ -1,5 +1,7 @@
 // $Id$
-// JS: This is a tof reader program based on Tonko's "special.C" program, which allows to read .daq files and to decode them.
+
+// JS: This is a tof reader program based on Tonko's "special.C" program, 
+// which allows to read .daq files and to decode them.
 //
 
 #include <stdio.h>
@@ -28,6 +30,7 @@ int main(int argc, char *argv[])
   char *datap ;
   class evpReader *evp = NULL ;
   int good = 0, bad = 0 ;
+  int tofbad = 0;
   static char mountpoint[32] ;
   int fcount ;
   char *fnames[1000] ;	// up to 1000 files, hope that's enough...
@@ -65,8 +68,6 @@ int main(int argc, char *argv[])
       break ;
     }
 
-
-
   // repack pointers to filenames
   fcount = 0 ;
   if(optind < argc) {
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
 
 
   good = bad = 0 ;
-
+  
   for(i=0;i<fcount;i++) {
     // One must first call the constructor of the data
     // stream.
@@ -102,6 +103,7 @@ int main(int argc, char *argv[])
       if(fnames[i]) fprintf(stdout,"Calling constructor [%d/%d], with filename %s\n",(i+1),fcount,fnames[i]) ;
       else fprintf(stdout,"Calling constructor [%d/%d], with filename NULL",(i+1),(fcount+1)) ;
 
+    tofbad = 0;
     evp = new evpReader(fnames[i]) ;
 
     // MUST CHECK THE STATUS!!!
@@ -129,10 +131,15 @@ int main(int argc, char *argv[])
     evp->setEvpDisk(mountpoint) ;
 
 
-    // The EVENT LOOP!!!!
 
+    // for TOF checks:
+    bool firstTime = true;
+    u_int triggerCtr[9] = {0,0,0,0,0,0,0,0,0};
+      
+    // The EVENT LOOP!!!!
     for(;;) {
       int end_of_file ;
+
 
       mem = evp->get(0,evtype) ;	// get the next event!
 
@@ -178,8 +185,8 @@ int main(int argc, char *argv[])
 	  fprintf(stdout,"Events processed %d...\n",good) ;
 	}
 
-      fprintf(stdout,"**** Event %d: bytes %d, token %d, trg_cmd %d, FILE %s\n",evp->event_number,evp->bytes,
-	      evp->token,evp->trgcmd,evp->file_name) ;
+      fprintf(stdout,"\n**** Event %d: bytes %d, token %d, trg_cmd %d, FILE %s\n",
+	      evp->event_number,evp->bytes,evp->token,evp->trgcmd,evp->file_name) ;
 
       // make humanly readable time from the UNIX time...
       char *stime ;
@@ -191,17 +198,12 @@ int main(int argc, char *argv[])
 
       if(check_only) continue ;
 
-      //if(evp->token != 0) continue ;
-
       // the return value of the "get" method points to datap so one may
-      // use it of one knows what one is doing (unlikely)
+      // use it if one knows what one is doing (unlikely)
 
       datap = mem ;
 
-      // everything beyond this point is up to the user
-      // and all the calls are optional
-      // i.e. the FTPC guys would just call the ftpReader(datap)
-
+      // here the TOF specific stuff starts
 
       ret = tofReader(datap) ;
       if(ret <= 0) {
@@ -215,22 +217,80 @@ int main(int argc, char *argv[])
       else {
 	if (DEBUG) fprintf(stdout,"TOF: %d bytes\n",ret) ;
 	// now do something:
-
+	u_int sep_mask;
+	int channel, halftray;
+	int tdig, tdc;
+	u_int tdcVal;
+	bool jsErr = false;
+	sep_mask = 0;
 	for (int ii = 0; ii<4; ii++) {
+	  halftray = 0;
 	  if (DEBUG) fprintf(stdout,"TOFDDLR %d: length %d words\n",ii+1, tof.ddl_words[ii]);
 	  if (tof.ddl_words[ii] != 0) {
 	    for(int jj=0; jj<tof.ddl_words[ii]; jj++) {
-	      fprintf(stdout, "DDLR %d: %3d: 0x%08X\n",ii+1,i,l2h32(tof.ddl_word_p[ii][jj])) ;
+	      u_int data_word = l2h32(tof.ddl_word_p[ii][jj]);
+	      if ((data_word & 0xF00F0000) == 0xA0040000)
+		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
+	      else if ((data_word & 0xF8000000) == 0xE0000000) {
+		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
+		if ((data_word & 0xFF000000) == 0xE0000000) halftray = 1;
+		if (ii == 2) tdig = 8;
+		else tdig = (data_word & 0x0F000000) >> 24;
+		sep_mask |= (1<<tdig);
+		data_word &= 0x000000FF;
+		if(DEBUG) fprintf(stdout, "\ttrgCtr new = 0x%x, old = 0x%x\n", data_word, triggerCtr[tdig]);
+		if (!firstTime) {
+		  if (data_word != ((triggerCtr[tdig]+1)&0xFF)) {
+		    fprintf(stdout, "\t*****JS:ERROR: trgCtr new = 0x%x, old = 0x%x ******\n", 
+			    data_word, triggerCtr[tdig]);
+		    jsErr = true;
+		  }
+		}
+		
+		triggerCtr[tdig] = data_word;
+	      }
+	      else if ((data_word & 0x80000000) == 0x80000000) {
+		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
+	      }
+	      else {
+		if (dump_det == 2) {
+		  fprintf(stdout, "DDLR %d: 0x%08X", ii+1,data_word) ;
+		  tdc = (data_word & 0x0F000000) >> 24;
+		  if ((data_word & 0xF0000000) == 0x40000000) {
+		    channel = ((data_word & 0x00E00000) >> 21) + (tdc&0x3)*8 + (tdc>>2)*24 + halftray*96;
+		    tdcVal =  ((data_word & 0x00180000) >> 19) + ((data_word & 0x0007FFFF) << 2);
+		    fprintf(stdout, " le: ch %3d t 0x%08x", channel, tdcVal);
+		  }
+		  else if ((data_word & 0xF0000000) == 0x50000000) {
+		    channel = ((data_word & 0x00F80000) >> 19) + (tdc>>2)*24 + halftray*96;
+		    tdcVal =  (data_word & 0x0007FFFF)<<2;
+		    fprintf(stdout, " te: ch %3d t 0x%08x", channel, tdcVal);
+		  }
+		  fprintf(stdout, "\n");
+		}
+	      }
 	    }
-	  }
+	  } // if (tof.ddl_words[ii] != 0)
+	} // for (int ii = ....
+
+	if (firstTime) firstTime = false;
+	if (sep_mask != 0x1F3) {
+	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing, mask = 0x%3x\n", sep_mask);
+	  firstTime = true;
+	  tofbad++;
 	}
-
+	if (jsErr) {
+	  firstTime = true;
+	  tofbad++;
+	}
+	
       } // else
-
+      
     }	// end of EVENT LOOP
 
 
     fprintf(stdout,"Processed %s: %d good, %d bad events total...\n",fnames[i],good,bad) ;
+    fprintf(stdout,"%d events with TOF problems\n", tofbad); 
 
     delete evp ;
   }	// end of input file loop
