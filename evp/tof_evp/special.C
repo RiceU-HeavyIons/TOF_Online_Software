@@ -1,3 +1,4 @@
+// $Id$
 // JS: This is a tof reader program based on Tonko's "special.C" program, which allows to read .daq files and to decode them.
 //
 
@@ -14,6 +15,7 @@
 
 extern int sanityCheck(char *datap) ;
 
+const bool DEBUG = false;
 
 
 int main(int argc, char *argv[])
@@ -96,8 +98,9 @@ int main(int argc, char *argv[])
     // current LIVE! run
 	
 
-    if(fnames[i]) fprintf(stdout,"Calling constructor [%d/%d], with filename %s\n",(i+1),(fcount+1),fnames[i]) ;
-    else fprintf(stdout,"Calling constructor [%d/%d], with filename NULL",(i+1),(fcount+1)) ;
+    if (DEBUG)
+      if(fnames[i]) fprintf(stdout,"Calling constructor [%d/%d], with filename %s\n",(i+1),fcount,fnames[i]) ;
+      else fprintf(stdout,"Calling constructor [%d/%d], with filename NULL",(i+1),(fcount+1)) ;
 
     evp = new evpReader(fnames[i]) ;
 
@@ -170,9 +173,10 @@ int main(int argc, char *argv[])
 
       // once evp->get returns a valid pointer the event is available
       good++ ;
-      if((good%1000)==0) {
-	fprintf(stdout,"Events processed %d...\n",good) ;
-      }
+      if (DEBUG)
+	if((good%1000)==0) {
+	  fprintf(stdout,"Events processed %d...\n",good) ;
+	}
 
       fprintf(stdout,"**** Event %d: bytes %d, token %d, trg_cmd %d, FILE %s\n",evp->event_number,evp->bytes,
 	      evp->token,evp->trgcmd,evp->file_name) ;
@@ -182,8 +186,8 @@ int main(int argc, char *argv[])
       stime = ctime((long int *)&evp->evt_time) ;
       *(stime+strlen(stime)-1) = 0 ;
 
-      fprintf(stdout, "     Trigger Word 0x%02X, time %u (%s), daqbits 0x%04X\n",
-	      evp->trgword,evp->evt_time,stime,evp->daqbits) ;
+      if (DEBUG) fprintf(stdout, "     Trigger Word 0x%02X, time %u (%s), daqbits 0x%04X\n",
+			 evp->trgword,evp->evt_time,stime,evp->daqbits) ;
 
       if(check_only) continue ;
 
@@ -209,11 +213,11 @@ int main(int argc, char *argv[])
 	}
       }
       else {
-	fprintf(stdout,"TOF: %d bytes\n",ret) ;
+	if (DEBUG) fprintf(stdout,"TOF: %d bytes\n",ret) ;
 	// now do something:
 
 	for (int ii = 0; ii<4; ii++) {
-	  fprintf(stdout,"TOFDDLR %d: length %d words\n",ii+1, tof.ddl_words[ii]);
+	  if (DEBUG) fprintf(stdout,"TOFDDLR %d: length %d words\n",ii+1, tof.ddl_words[ii]);
 	  if (tof.ddl_words[ii] != 0) {
 	    for(int jj=0; jj<tof.ddl_words[ii]; jj++) {
 	      fprintf(stdout, "DDLR %d: %3d: 0x%08X\n",ii+1,i,l2h32(tof.ddl_word_p[ii][jj])) ;
