@@ -223,15 +223,15 @@ int main(int argc, char *argv[])
 	u_int tdcVal;
 	bool jsErr = false;
 	sep_mask = 0;
-	for (int ii = 0; ii<4; ii++) {
+	for (int ii = 0; ii<4; ii++) { // 4 DDLR banks
 	  halftray = 0;
 	  if (DEBUG) fprintf(stdout,"TOFDDLR %d: length %d words\n",ii+1, tof.ddl_words[ii]);
 	  if (tof.ddl_words[ii] != 0) {
 	    for(int jj=0; jj<tof.ddl_words[ii]; jj++) {
-	      u_int data_word = l2h32(tof.ddl_word_p[ii][jj]);
-	      if ((data_word & 0xF00F0000) == 0xA0040000)
+	      u_int data_word = l2h32(tof.ddl_word_p[ii][jj]); 	// tof.ddl_word_p[ii] points to the DDLR ii data
+	      if ((data_word & 0xF00F0000) == 0xA0040000)	// header trigger word
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
-	      else if ((data_word & 0xF8000000) == 0xE0000000) {
+	      else if ((data_word & 0xF8000000) == 0xE0000000) {	// TDIG separator word
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 		if ((data_word & 0xFF000000) == 0xE0000000) halftray = 1;
 		if (ii == 2) tdig = 8;
@@ -249,19 +249,19 @@ int main(int argc, char *argv[])
 		
 		triggerCtr[tdig] = data_word;
 	      }
-	      else if ((data_word & 0x80000000) == 0x80000000) {
+	      else if ((data_word & 0x80000000) == 0x80000000) {	// other header words, end-of-event separator
 		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 	      }
-	      else {
+	      else {	// this should be all the HPTDC words
 		if (dump_det == 2) {
 		  fprintf(stdout, "DDLR %d: 0x%08X", ii+1,data_word) ;
 		  tdc = (data_word & 0x0F000000) >> 24;
-		  if ((data_word & 0xF0000000) == 0x40000000) {
+		  if ((data_word & 0xF0000000) == 0x40000000) {	// leading edge, 25ps
 		    channel = ((data_word & 0x00E00000) >> 21) + (tdc&0x3)*8 + (tdc>>2)*24 + halftray*96;
 		    tdcVal =  ((data_word & 0x00180000) >> 19) + ((data_word & 0x0007FFFF) << 2);
 		    fprintf(stdout, " le: ch %3d t 0x%08x", channel, tdcVal);
 		  }
-		  else if ((data_word & 0xF0000000) == 0x50000000) {
+		  else if ((data_word & 0xF0000000) == 0x50000000) {	// trailing edge, 100ps
 		    channel = ((data_word & 0x00F80000) >> 19) + (tdc>>2)*24 + halftray*96;
 		    tdcVal =  (data_word & 0x0007FFFF)<<2;
 		    fprintf(stdout, " te: ch %3d t 0x%08x", channel, tdcVal);
