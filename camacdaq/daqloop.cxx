@@ -1,6 +1,6 @@
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqloop.cxx,v 1.3 2003-07-03 18:40:26 jschamba Exp $";
+"$Id: daqloop.cxx,v 1.4 2003-07-03 18:41:10 jschamba Exp $";
 #endif /* lint */
 
 /* File name     : daqloop.cxx
@@ -118,9 +118,9 @@ int hdaq()
 
   /* Initialize CAMAC modules */
 
-  /* 2249: Disable LAM */
-  if( (status = CAMAC(NAF(ADC_2249, 0, 24), &data, &q, &x)) ) error_exit(status);
-  printf("ADC F24: q=%d, x=%d\n", q, x);  
+  /* 2249: Enable LAM */
+  if( (status = CAMAC(NAF(ADC_2249, 0, 26), &data, &q, &x)) ) error_exit(status);
+  printf("ADC F26: q=%d, x=%d\n", q, x);  
   /* 2249: Clear module and LAM */
   if( (status = CAMAC(NAF(ADC_2249, 0, 9), &data, &q, &x)) ) error_exit(status);
   printf("ADC F9: q=%d, x=%d\n", q, x);  
@@ -142,12 +142,12 @@ int hdaq()
   if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 16), &data, &q, &x)) ) error_exit(status);
   printf("TRIGGER F16 A0: q=%d, x=%d\n", q, x);
 
-  /* TRIGGER: Enable LAM request */
-  if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 26), &data, &q, &x)) ) error_exit(status);
-  printf("TRIGGER F26 A0: q=%d, x=%d\n", q, x);
+  /* TRIGGER: Disable LAM request */
+  if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 24), &data, &q, &x)) ) error_exit(status);
+  printf("TRIGGER F24 A0: q=%d, x=%d\n", q, x);
 
   // enable crate controller LAM on ADC2249 module slot
-  if( (status = CENLAM (MASK_TRIGGER)) ) error_exit(status);
+  if( (status = CENLAM (MASK_2249)) ) error_exit(status);
   printf("enabled lam, will now wait for LAM...\n");
 
 
@@ -199,12 +199,14 @@ int hdaq()
       }
     }
 
+#ifdef NOTNOW
+    /* Remove Inhibit */
+    if( (status = CREMI()) ) 	error_exit(status);
+#endif
+
     // Clear trigger channel
     data = TRIGGER_CHANNEL;
-    //if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
-    // TRIGGER: Clear LAM STATUS
-    if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 10), &data, &q, &x)) ) error_exit(status);
-    //if( (status = CAMAC(NAF(TRIGGER_SLOT, 0, 25), &data, &q, &x)) ) error_exit(status);
+    if( (status = CAMAC(NAF(TRIGGER_SLOT, 1, 16), &data, &q, &x)) ) error_exit(status);
 
     // wait for trigger
     while( (lamstatus = CWTLAM(1000)) != 0 ) {
@@ -220,7 +222,7 @@ int hdaq()
     }
     
     // set inhibit to prevent further triggers coming in
-    //if( (status = CSETI()) != 0 ) 	error_exit(status);
+    // if( (status = CSETI()) != 0 ) 	error_exit(status);
 
     // check that we actually got a LAM
     if (lamstatus != 0) break;
