@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.3 2004-10-29 15:42:25 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.4 2004-10-29 15:47:40 jschamba Exp $";
 #endif /* lint */
 
 
@@ -127,11 +127,9 @@ static void signal_handler(int signal)
 // here all is done
 int main(int argc, char *argv[])
 {
-  char *ptr;
-  int i;
-  int nType = HW_PCI;
-  __u32 dwPort = 0;
-  __u16 wIrq = 0;
+  //int nType = HW_USB;
+  //__u32 dwPort = 0;
+  //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   __u16 wBTR0BTR1 = CAN_BAUD_1M;
   int   nExtended = CAN_INIT_TYPE_ST;
@@ -524,7 +522,7 @@ int parse_input_message(char *buffer, TPCANMsg *Message)
     
   // read data elements up to message len
   i = 0;
-  while (i < dwLen)
+  while (i < (int)dwLen)
   {
     if (skip_blanks_and_test_for_CR(&ptr))
     goto reject;
