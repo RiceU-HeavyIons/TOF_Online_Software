@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getUncorrelatedData.cc,v 1.2 2004-08-23 16:17:05 jschamba Exp $";
+"$Id: getUncorrelatedData.cc,v 1.3 2004-08-23 22:21:32 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -141,7 +141,9 @@ int getUncorrelatedData(unsigned int nodeID,
   for(i=0; i<24; i++) {
     if(chanList[i]) {
       stringstream ss;
-      ss << dirName << "/Ch" << setw(2) << setfill('0') << i;
+      //ss << dirName << "/Ch" << setw(2) << setfill('0') << i;
+      // tcl file uses "Ch0" instead of "Ch00", i.e. single digit in format for i<10
+      ss << dirName << "/Ch" << i;
       filename = ss.str();
       stat = mkdir (filename.c_str(), 0755);
       //cout << "mkdir " << filename << " returned " << stat << " errno = " << errno << endl;
