@@ -1,1 +1,1 @@
-hsimple daqloop daqctl
+hsimple daqloop daqctl daqloop? *.ps *.root *.map
