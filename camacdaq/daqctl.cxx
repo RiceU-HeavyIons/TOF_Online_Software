@@ -1,8 +1,3 @@
-#ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
-"$Id: daqctl.cxx,v 1.1.1.1 2003-07-03 18:34:51 jschamba Exp $";
-#endif /* lint */
-
 /*****************************************************************************
  Excerpt from "Linux Programmer's Guide - Chapter 6"
  (C)opyright 1994-1995, Scott Burkett
