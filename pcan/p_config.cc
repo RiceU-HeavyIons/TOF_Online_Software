@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.2 2004-09-03 14:41:31 jschamba Exp $";
+"$Id: p_config.cc,v 1.3 2004-11-04 15:54:53 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -664,7 +664,7 @@ int main(int argc, char *argv[])
 {
   unsigned int nodeID;
 
-  cout << "p_config, last modified August 18, 2004" << endl;
+  cout << "p_config, last modified November 4, 2004" << endl;
   cout.flush();
   
   if ( argc != 4 ) {
@@ -679,9 +679,9 @@ int main(int argc, char *argv[])
   }
 
   nodeID = atoi(argv[2]);
-  if ((nodeID < 1) || (nodeID > 8)) { 
+  if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
-	 << " is an invalid entry.  Use a value between 1 and 8 instead.\n";
+	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
     return 1;
   }
   
