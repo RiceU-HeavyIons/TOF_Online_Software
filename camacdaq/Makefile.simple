@@ -1,0 +1,25 @@
+#
+#	Makefile for DAQ program
+#
+
+CAMAC_LIB_DIR = /home/jschamba/ks2915/lib
+CAMAC_INC_DIR = /home/jschamba/ks2915/include
+
+BIN = daqloop
+
+CFLAGS = -O2
+CLIB = -L$(CAMAC_LIB_DIR) -lcamac
+CLIB2915 = -L$(CAMAC_LIB_DIR) -lks2915
+INCDIR = -I$(CAMAC_INC_DIR)
+
+all: $(BIN)
+
+.c.o:
+	@echo Making $*
+	$(CC) $(CFLAGS) -c $< $(INCDIR)
+
+daqloop:	daqloop.o
+	$(CC) $(CFLAGS) -o $@ $< $(CLIB)
+
+clean:
+	rm -f $(BIN) *.o *~ core
