@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getData.cc,v 1.3 2004-08-20 22:04:03 jschamba Exp $";
+"$Id: getData.cc,v 1.4 2004-08-20 22:22:43 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -279,7 +279,7 @@ int getData(unsigned int nodeID,
 	      if ((TDC % 4) == 3)
 		chan = (buffer[1] & 0x00f80000) >> 19; // low res TDC
 	      else {
-		chan = (buffer[0] & 0x00e00000) >> 21; // hi res TDC
+		chan = (buffer[1] & 0x00e00000) >> 21; // hi res TDC
 		chan += (TDC % 4) * 8;
 	      }
 #ifdef LOCAL_DEBUG
