@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.4 2004-11-17 21:08:32 jschamba Exp $";
+"$Id: p_config.cc,v 1.5 2005-02-10 20:29:15 jschamba Exp $";
 #endif /* lint */
 
 //#define LOCAL_DEBUG
@@ -45,6 +45,7 @@ typedef struct
   int  nFileNo;
 } PCAN_DESCRIPTOR;
 
+struct pollfd pfd;
 
 //****************************************************************************
 // LOCALS
@@ -70,6 +71,104 @@ static void signal_handler(int signal)
 {
   my_private_exit(0);
 }
+
+
+
+//
+//****************************************************************************
+void printCANMsg(const TPCANMsg &msg, const char *msgTxt)
+{
+  printf("%s: %c %c 0x%03x %1d  ",
+	 msgTxt,
+	 (msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 msg.ID, 
+	 msg.LEN); 
+  for (int i = 0; i < msg.LEN; i++)
+    printf("0x%02x ", msg.DATA[i]);
+  printf("\n");
+}
+
+//****************************************************************************
+int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
+{
+  TPCANMsg mr;
+  __u32 status;
+#ifdef LOCAL_DEBUG
+  char msgTxt[256];
+#endif
+
+  // send the message
+  if ( (errno = CAN_Write(h, &ms)) ) {
+    perror("change_mcu_program: CAN_Write()");
+    return(errno);
+  }
+
+  errno = poll(&pfd, 1, 1000); // timeout = 1 seconds
+    
+  if (errno == 1) { // data received
+    if ((errno = CAN_Read(h, &mr))) {
+      perror("change_mcu_program: CAN_Read()");
+      return(errno);
+    }
+    else { // data read
+#ifdef LOCAL_DEBUG
+      sprintf(msgTxt, "%s, message received", errorMsg);
+      printCANMsg(mr, msgTxt);
+#endif
+      // check if a CAN status is pending	     
+      if (mr.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+	  perror("change_mcu_program: CAN_Status()");
+	  return(errno);
+	}
+	else
+	  cout << "change_mcu_program: pending CAN status " << showbase << hex << status << " read.\n";
+      } 
+      else if (mr.MSGTYPE == MSGTYPE_STANDARD) {
+	// now interprete the received message:
+	if ( mr.ID != (0x380 | (ms.ID&0x00f)) ) { // check if it's a CHANGE_MCU_PROGRAM response
+	  cout << "change_mcu_program request: Got smething other than change_mcu_program response: ID " 
+	       << showbase << hex << (unsigned int)mr.ID 
+	       << ", expected " << (unsigned int)ms.ID << endl;	
+	  return (-2);
+	}
+	if (mr.LEN != ms.LEN) { // check for correct length
+	  cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length" 
+	       << dec << (int)mr.LEN << ", expected " << (int)ms.LEN << endl;
+	  cout << errorMsg << " response: first byte: " 
+	       << showbase << hex << (unsigned int)mr.DATA[0] 
+	       << " expected " << (unsigned int)ms.DATA[0] << endl;
+	  return (-3);
+	}
+	if (mr.DATA[0] != ms.DATA[0]) {
+	  cout << errorMsg << " response: first byte: " 
+	       << showbase << hex << (unsigned int)mr.DATA[0] 
+	       << " expected " << (unsigned int)ms.DATA[0] << endl;
+	  return (-4);
+	}
+	// Message is good, continue
+
+      }
+      
+    } // data read
+  } // data received
+  else {	
+    cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within 1 sec" << endl;
+    return (-5);
+  }
+  return 0;
+}
+
+
+
+
+
+
+
+
 
 //**********************************************
 // here all is done
@@ -213,7 +312,6 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   TPCANMsg m, ms;
   __u32 status;
     
-  struct pollfd pfd;
   pfd.fd = pcd->nFileNo;
   pfd.events = POLLIN;
     
@@ -225,18 +323,9 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   sendData = ms.DATA[0] = 0;
 
 #ifdef LOCAL_DEBUG
-  cout << "\nSending START command:\n";
-  printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
-	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 ms.ID, 
-	 ms.LEN); 
-  for (i = 0; i < ms.LEN; i++)
-    printf("0x%02x ", ms.DATA[i]);
-  printf("\n");
+  printCANMSG(ms, "p_config: Sending START command:");
 #endif
 
-  
   // send the message
   if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_config: CAN_Write()");
@@ -280,7 +369,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
       else if (m.MSGTYPE == MSGTYPE_STANDARD) {
 	// now interprete the received message:
 	if (m.ID != (0x180 | TDCVal | nodeID)) { // check if it's a p_config response
-	  cout << "p_config request: Got smething other than p_config response: ID 0x" 
+	  cout << "p_config request: Got something other than p_config response: ID 0x" 
 	       << hex << m.ID 
 	       << ", expected 0x" << (0x180 | TDCVal | nodeID) << endl;	
 	  my_private_exit(errno);
@@ -374,7 +463,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 	else if (m.MSGTYPE == MSGTYPE_STANDARD) {
 	  // now interprete the received message:
 	  if (m.ID != (0x180 | TDCVal | nodeID)) { // check if it's a p_config response
-	    cout << "CONFIGURE_TDC:Data: Got smething other than p_config response: ID 0x" 
+	    cout << "CONFIGURE_TDC:Data: Got something other than p_config response: ID 0x" 
 		 << hex << m.ID 
 		 << ", expected 0x" << (0x180 | TDCVal | nodeID) << endl;	
 	    my_private_exit(errno);
@@ -468,7 +557,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
       else if (m.MSGTYPE == MSGTYPE_STANDARD) {
 	// now interprete the received message:
 	if (m.ID != (0x180 | TDCVal | nodeID)) { // check if it's a p_config response
-	  cout << "CONFIGURE_TDC:Data: Got smething other than p_config response: ID 0x" 
+	  cout << "CONFIGURE_TDC:Data: Got something other than p_config response: ID 0x" 
 	       << hex << m.ID 
 	       << ", expected 0x" << (0x180 | TDCVal | nodeID) << endl;	
 	  my_private_exit(errno);
@@ -558,7 +647,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
       else if (m.MSGTYPE == MSGTYPE_STANDARD) {
 	// now interprete the received message:
 	if (m.ID != (0x180 | TDCVal | nodeID)) { // check if it's a p_config response
-	  cout << "CONFIGURE_TDC:Config_end: Got smething other than p_config response: ID 0x" 
+	  cout << "CONFIGURE_TDC:Config_end: Got something other than p_config response: ID 0x" 
 	       << hex << m.ID 
 	       << ", expected 0x" << (0x180 | TDCVal | nodeID) << endl;	
 	  my_private_exit(errno);
@@ -647,7 +736,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
       else if (m.MSGTYPE == MSGTYPE_STANDARD) {
 	// now interprete the received message:
 	if (m.ID != (0x180 | TDCVal | nodeID)) { // check if it's a p_config response
-	  cout << "CONFIGURE_TDC:Program: Got smething other than p_config response: ID 0x" 
+	  cout << "CONFIGURE_TDC:Program: Got something other than p_config response: ID 0x" 
 	       << hex << m.ID 
 	       << ", expected 0x" << (0x180 | TDCVal | nodeID) << endl;	
 	  my_private_exit(errno);
@@ -667,7 +756,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #ifdef LOCAL_DEBUG
 	cout << "Received Program response\n";
 #endif
-	cout << "... Configuration finished successfully.\n";
+	//cout << "... Configuration finished successfully.\n";
 	
       }
       
@@ -676,6 +765,271 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   else {	
     cout << "ERROR: Sent TDC_CONFIGURE:Program packet, but did not receive response within 1 sec" << endl;
   }
+
+
+
+
+  // "TDC Reset at the end
+  ms.ID = 0x500 | nodeID;
+  ms.LEN = 3;
+  
+  sendData = ms.DATA[0] = 0xbb;
+  sendData = ms.DATA[1] = 0x04;
+  sendData = ms.DATA[2] = 0x01;
+  
+#ifdef LOCAL_DEBUG
+  cout << "\nSending DATA packet 12:\n";
+  printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
+  printf("\n");
+#endif
+  
+  
+  // send the message
+  if ( (errno = CAN_Write(h, &ms)) ) {
+    perror("p_config: CAN_Write()");
+    my_private_exit(errno);
+  }
+  
+  
+  errno = poll(&pfd, 1, 1000); // timeout = 1 seconds
+  //printf("poll returned 0x%x\n", errno);
+  //printf("revents = 0x%x\n", pfd.revents);
+  
+  if (errno == 1) { // data received
+    if ((errno = CAN_Read(h, &m))) {
+      perror("p_config: CAN_Read()");
+      my_private_exit(errno);
+    }
+    else { // data read
+#ifdef LOCAL_DEBUG
+      printf("p_config: message received : %c %c 0x%08x %1d  ", 
+	     (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	     (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	     m.ID, 
+	     m.LEN); 
+      
+      for (i = 0; i < m.LEN; i++)
+	printf("0x%02x ", m.DATA[i]);
+      printf("\n");
+#endif
+      
+      // check if a CAN status is pending	     
+      if (m.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+	  perror("p_config: CAN_Status()");
+	  my_private_exit(errno);
+	}
+	else
+	  printf("p_config: pending CAN status 0x%04x read.\n", (__u16)status);
+      } 
+      else if (m.MSGTYPE == MSGTYPE_STANDARD) {
+	// now interprete the received message:
+	if (m.ID != (0x480 | nodeID)) { // check if it's a "DEBUG" response
+	  cout << "DEBUG:TDC Reset: Got something other than DEBUG response: ID 0x" 
+	       << hex << m.ID 
+	       << ", expected 0x" << (0x480 | nodeID) << endl;	
+	  my_private_exit(errno);
+	}
+	if (m.LEN != 3) { // check for correct length
+	  cout << "ERROR: DEBUG:TDC Reset: Got msg with incorrect data length" 
+	       << dec << m.LEN << ", expected 3\n";
+	  my_private_exit(errno);
+	}
+	// Message is good, continue
+#ifdef LOCAL_DEBUG
+	cout << "Received DEBUG response:\n";
+#endif
+      }
+      
+    } // data read
+  } // data received
+  else {	
+    cout << "ERROR: Sent DEBUG:Reset TDC packet, but did not receive response within 1 sec" << endl;
+    my_private_exit(errno);
+  }
+
+  // "TDC Reset at the end, de-assert
+  sendData = ms.DATA[2] = 0x00;
+  
+#ifdef LOCAL_DEBUG
+  cout << "\nSending DATA packet 12:\n";
+  printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
+  printf("\n");
+#endif
+  
+  
+  // send the message
+  if ( (errno = CAN_Write(h, &ms)) ) {
+    perror("p_config: CAN_Write()");
+    my_private_exit(errno);
+  }
+  
+  
+  errno = poll(&pfd, 1, 1000); // timeout = 1 seconds
+  //printf("poll returned 0x%x\n", errno);
+  //printf("revents = 0x%x\n", pfd.revents);
+  
+  if (errno == 1) { // data received
+    if ((errno = CAN_Read(h, &m))) {
+      perror("p_config: CAN_Read()");
+      my_private_exit(errno);
+    }
+    else { // data read
+#ifdef LOCAL_DEBUG
+      printf("p_config: message received : %c %c 0x%08x %1d  ", 
+	     (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	     (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	     m.ID, 
+	     m.LEN); 
+      
+      for (i = 0; i < m.LEN; i++)
+	printf("0x%02x ", m.DATA[i]);
+      printf("\n");
+#endif
+      
+      // check if a CAN status is pending	     
+      if (m.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+	  perror("p_config: CAN_Status()");
+	  my_private_exit(errno);
+	}
+	else
+	  printf("p_config: pending CAN status 0x%04x read.\n", (__u16)status);
+      } 
+      else if (m.MSGTYPE == MSGTYPE_STANDARD) {
+	// now interprete the received message:
+	if (m.ID != (0x480 | nodeID)) { // check if it's a "DEBUG" response
+	  cout << "DEBUG:TDC Reset: Got something other than DEBUG response: ID 0x" 
+	       << hex << m.ID 
+	       << ", expected 0x" << (0x480 | nodeID) << endl;	
+	  my_private_exit(errno);
+	}
+	if (m.LEN != 3) { // check for correct length
+	  cout << "ERROR: DEBUG:TDC Reset: Got msg with incorrect data length" 
+	       << dec << m.LEN << ", expected 3\n";
+	  my_private_exit(errno);
+	}
+	// Message is good, continue
+#ifdef LOCAL_DEBUG
+	cout << "Received Data response:\n";
+#endif
+      }
+      
+    } // data read
+  } // data received
+  else {	
+    cout << "ERROR: Sent DEBUG:Reset TDC packet, but did not receive response within 1 sec" << endl;
+    my_private_exit(errno);
+  }
+
+
+
+
+  // "... and finally, a PLD Reset at the end
+  ms.LEN = 4;
+  
+  sendData = ms.DATA[0] = 0x69;
+  sendData = ms.DATA[1] = 0x96;
+  sendData = ms.DATA[2] = 0xa5;
+  sendData = ms.DATA[3] = 0x5a;
+  
+#ifdef LOCAL_DEBUG
+  cout << "\nSending DEBUG message:\n";
+  printf("p_config: message assembled: %c %c 0x%08x %1d  ", 
+	 (ms.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	 (ms.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	 ms.ID, 
+	 ms.LEN); 
+  for (j = 0; j < ms.LEN; j++)
+    printf("0x%02x ", ms.DATA[j]);
+  printf("\n");
+#endif
+  
+  
+  // send the message
+  if ( (errno = CAN_Write(h, &ms)) ) {
+    perror("p_config: CAN_Write()");
+    my_private_exit(errno);
+  }
+  
+  
+  errno = poll(&pfd, 1, 1000); // timeout = 1 seconds
+  //printf("poll returned 0x%x\n", errno);
+  //printf("revents = 0x%x\n", pfd.revents);
+  
+  if (errno == 1) { // data received
+    if ((errno = CAN_Read(h, &m))) {
+      perror("p_config: CAN_Read()");
+      my_private_exit(errno);
+    }
+    else { // data read
+#ifdef LOCAL_DEBUG
+      printf("p_config: message received : %c %c 0x%08x %1d  ", 
+	     (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	     (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	     m.ID, 
+	     m.LEN); 
+      
+      for (i = 0; i < m.LEN; i++)
+	printf("0x%02x ", m.DATA[i]);
+      printf("\n");
+#endif
+      
+      // check if a CAN status is pending	     
+      if (m.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+	  perror("p_config: CAN_Status()");
+	  my_private_exit(errno);
+	}
+	else
+	  printf("p_config: pending CAN status 0x%04x read.\n", (__u16)status);
+      } 
+      else if (m.MSGTYPE == MSGTYPE_STANDARD) {
+	// now interprete the received message:
+	if (m.ID != (0x480 | nodeID)) { // check if it's a "DEBUG" response
+	  cout << "DEBUG:PLD Reset: Got something other than DEBUG response: ID 0x" 
+	       << hex << m.ID 
+	       << ", expected 0x" << (0x480 | nodeID) << endl;	
+	  my_private_exit(errno);
+	}
+	if (m.LEN != 4) { // check for correct length
+	  cout << "ERROR: DEBUG:PLD Reset: Got msg with incorrect data length" 
+	       << dec << m.LEN << ", expected 4\n";
+	  my_private_exit(errno);
+	}
+	// Message is good, continue
+#ifdef LOCAL_DEBUG
+	cout << "Received DEBUG response:\n";
+#endif
+      }
+      
+    } // data read
+  } // data received
+  else {	
+    cout << "ERROR: Sent DEBUG:Reset PLD packet, but did not receive response within 1 sec" << endl;
+    my_private_exit(errno);
+  }
+
+  cout << "... Configuration finished successfully.\n";
+
 
   my_private_exit(errno);
   
