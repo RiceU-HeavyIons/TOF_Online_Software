@@ -366,27 +366,11 @@ DAQLOOPO      = daqloop.$(ObjSuf)
 DAQLOOPS      = daqloop.$(SrcSuf)
 DAQLOOP       = daqloop$(ExeSuf)
 
-DAQLOOP2O      = daqloop2.$(ObjSuf)
-DAQLOOP2S      = daqloop2.$(SrcSuf)
-DAQLOOP2       = daqloop2$(ExeSuf)
-
-DAQLOOP3O      = daqloop3.$(ObjSuf)
-DAQLOOP3S      = daqloop3.$(SrcSuf)
-DAQLOOP3       = daqloop3$(ExeSuf)
-
-DAQLOOP4O      = daqloop4.$(ObjSuf)
-DAQLOOP4S      = daqloop4.$(SrcSuf)
-DAQLOOP4       = daqloop4$(ExeSuf)
-
-DAQLOOP5O      = daqloop5.$(ObjSuf)
-DAQLOOP5S      = daqloop5.$(SrcSuf)
-DAQLOOP5       = daqloop5$(ExeSuf)
-
 DAQCTL	      = daqctl$(Execsuf)
 
-OBJS          = $(HSIMPLEO) $(DAQLOOPO) $(DAQLOOP2O) $(DAQLOOP3O) $(DAQLOOP4O) $(DAQLOOP5O)
+OBJS          = $(HSIMPLEO) $(DAQLOOPO)
 
-PROGRAMS      = $(HSIMPLE) $(DAQLOOP) $(DAQCTL) $(DAQLOOP2) $(DAQLOOP3) $(DAQLOOP4) $(DAQLOOP5)
+PROGRAMS      = $(HSIMPLE) $(DAQCTL) $(DAQLOOP)
 
 #------------------------------------------------------------------------------
 
@@ -399,22 +383,6 @@ $(HSIMPLE):     $(HSIMPLEO)
 		@echo "$@ done"
 
 $(DAQLOOP):     $(DAQLOOPO)
-		$(LD) $(LDFLAGS) $^ $(LIBS) $(USERLIBS) $(OutPutOpt)$@
-		@echo "$@ done"
-
-$(DAQLOOP2):    $(DAQLOOP2O)
-		$(LD) $(LDFLAGS) $^ $(LIBS) $(USERLIBS) $(OutPutOpt)$@
-		@echo "$@ done"
-
-$(DAQLOOP3):    $(DAQLOOP3O)
-		$(LD) $(LDFLAGS) $^ $(LIBS) $(USERLIBS) $(OutPutOpt)$@
-		@echo "$@ done"
-
-$(DAQLOOP4):    $(DAQLOOP4O)
-		$(LD) $(LDFLAGS) $^ $(LIBS) $(USERLIBS) $(OutPutOpt)$@
-		@echo "$@ done"
-
-$(DAQLOOP5):    $(DAQLOOP5O)
 		$(LD) $(LDFLAGS) $^ $(LIBS) $(USERLIBS) $(OutPutOpt)$@
 		@echo "$@ done"
 
