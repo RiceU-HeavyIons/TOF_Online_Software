@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
     // for TOF checks:
     bool firstTime = true;
-    u_int triggerCtr[9] = {0,0,0,0,0,0,0,0,0};
+    u_int triggerCtr[10] = {0,0,0,0,0,0,0,0,0,0};
       
     // The EVENT LOOP!!!!
     for(;;) {
@@ -233,8 +233,8 @@ int main(int argc, char *argv[])
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
 	      else if ((data_word & 0xF8000000) == 0xE0000000) {	// TDIG separator word
 		fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
-		if (ii == 0) { if ((data_word & 0xFF000000) == 0xE0000000) halftray = 1; }
-		if (ii == 2) tdig = 8;
+		if (ii == 1) tdig = 9;
+		else if (ii == 2) tdig = 8;
 		else tdig = (data_word & 0x0F000000) >> 24;
 		sep_mask |= (1<<tdig);
 		data_word &= 0x000000FF;
@@ -248,6 +248,10 @@ int main(int argc, char *argv[])
 		}
 		
 		triggerCtr[tdig] = data_word;
+	      }
+	      else if ((data_word & 0xF0000000) == 0xC0000000) {	// geographical word
+		halftray = data_word & 0x1;
+		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X, halftray %d\n",ii+1,data_word, halftray) ;
 	      }
 	      else if ((data_word & 0x80000000) == 0x80000000) {	// other header words, end-of-event separator
 		if (dump_det == 2) fprintf(stdout, "DDLR %d: 0x%08X\n",ii+1,data_word) ;
@@ -274,7 +278,7 @@ int main(int argc, char *argv[])
 	} // for (int ii = ....
 
 	if (firstTime) firstTime = false;
-	if (sep_mask != 0x1F3) {
+	if (sep_mask != 0x3F3) {
 	  fprintf(stdout, "\t*****JS:ERROR: Separator(s) missing (0x%3x); size DDLR 1: %d, 3: %d\n", 
 		  sep_mask, tof.ddl_words[0], tof.ddl_words[2]);
 	  firstTime = true;
