@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.4 2004-10-29 15:47:40 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.5 2004-10-29 16:37:48 jschamba Exp $";
 #endif /* lint */
 
 
@@ -42,29 +42,6 @@ typedef struct
   char szDevicePath[LOCAL_STRING_LEN];
   int  nFileNo;
 } PCAN_DESCRIPTOR;
-
-#ifdef NOTNOW
-typedef union {
-  int data;
-  struct {
-    unsigned int ntdc:8;
-    unsigned int token:12;
-    unsigned int daqcmd:4;
-    unsigned int trg:4;
-    unsigned int id:4;
-  }trigdata;
-} TRIGDATA;
-
-typedef union {
-  unsigned int data;
-  struct {
-    unsigned int data:21;
-    unsigned int channel:3;
-    unsigned int tdc:4;
-    unsigned int id:4;
-  } tdc;
-} _tofjtdc;
-#endif
 
 //****************************************************************************
 // LOCALS
@@ -143,50 +120,25 @@ int main(int argc, char *argv[])
   unsigned char *uc_ptr =  (unsigned char *)buffer;
   int fifofd;
   TPDIAG my_PDiag;
+  WORD devID;
+  char devName[255];
 
-#ifdef NOTNOW
-  TPCANMsg m;
-  unsigned int *data;
-  unsigned int buffer[2];
-  unsigned char *uc_ptr;
-  TRIGDATA *trigdata;
-  _tofjtdc *tofjtdc;
-
-  data = (unsigned int *)m.DATA;
-  printf("data: 0x%08x 0x%08x\n", data[0], data[1]);
-
-  uc_ptr = (unsigned char *)buffer;
-  for (i=0; i<4; i++)
-    uc_ptr[3-i] = m.DATA[i];
-  for (i=4; i<8; i++)
-    uc_ptr[11-i] = m.DATA[i];
-  printf("buffer: 0x%08x 0x%08x\n", buffer[0], buffer[1]);
-
-  tofjtdc = (_tofjtdc *)buffer;
-  printf("tofjtdc: data 0x%08x id 0x%x tdc 0x%x channel 0x%x data 0x%x\n",
-	 tofjtdc->data,
-	 tofjtdc->tdc.id,
-	 tofjtdc->tdc.tdc,
-	 tofjtdc->tdc.channel,
-	 tofjtdc->tdc.data);
-
-  trigdata = (TRIGDATA *)buffer;
-  printf("trigdata: data 0x%08x id 0x%x, trg 0x%x daqcmd 0x%x token 0x%x ntdc 0x%x\n",
-	 trigdata->data,
-	 trigdata->trigdata.id,
-	 trigdata->trigdata.trg,
-	 trigdata->trigdata.daqcmd,
-	 trigdata->trigdata.token,
-	 trigdata->trigdata.ntdc);
-#endif
-  
   errno = 0;
+  devID = 255;
   
+  if (argc >1) {
+    devID = atoi(argv[1]);
+    if (devID > 255) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      return 1;
+    }
+  }
+
   // give some information back
   if (wBTR0BTR1)
-    printf("PCAN init with BTR0BTR1=0x%04x\n", wBTR0BTR1);
+    printf("Trying to open PCAN for Device ID 0x%x with BTR0BTR1=0x%04x\n", devID, wBTR0BTR1);
   else
-    printf("PCAN init with 500 kbit/sec.\n");
+    printf("Trying to open PCAN for Device ID 0x%x with 500 kbit/sec.\n", devID);
   
   
   // install signal handler for manual break
@@ -200,17 +152,32 @@ int main(int argc, char *argv[])
   // HW_PCI 
   // HW_USB  -- this is the one we are using
 
-  //h = CAN_Open(HW_USB, dwPort, wIrq);
-  h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
-  
-  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
-  
+  for (int i=0; i<8; i++) {
+    sprintf(devName, "/dev/pcan%d", 32+i);
+    //h = CAN_Open(HW_USB, dwPort, wIrq);
+    h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
+    if (h == NULL) {
+      //printf("Failed to open device %s\n", devName);
+      //my_private_exit(errno);
+      continue;
+    }
+    // get the hardware ID from the diag structure:
+    LINUX_CAN_Statistics(h,&my_PDiag);
+    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+	   my_PDiag.wIrqLevel);
+    if (my_PDiag.wIrqLevel == devID) break;
+    CAN_Close(h);
+
+  }
+
   if (!h) {
+    printf("Device ID 0x%x not found, exiting\n", devID);
     errno = nGetLastError();
     perror("pcanloop: CAN_Open()");
     my_private_exit(errno);
   }
 
+  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
     
   // get version info
   errno = CAN_VersionInfo(h, txt);
