@@ -7,16 +7,19 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getUncorrelatedData.cc,v 1.1 2004-08-20 20:44:02 jschamba Exp $";
+"$Id: getUncorrelatedData.cc,v 1.2 2004-08-23 16:17:05 jschamba Exp $";
 #endif /* lint */
 
-#define LOCAL_DEBUG
+//#define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
 // C++ header file
 #include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <string>
+#include <sstream>
 using namespace std;
 
 // other headers
@@ -37,8 +40,9 @@ using namespace std;
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
-FILE *fp = NULL;
+FILE *fp[24];
 
+ofstream dataFile[24];
 
 #define LOCAL_STRING_LEN 64       // length of internal used strings
 typedef struct
@@ -62,8 +66,12 @@ static void my_private_exit(int error)
   {
     CAN_Close(h); 
   }
-  if (fp != (FILE *)NULL)
-    fclose(fp);
+  if (fp[0] != (FILE *)NULL)
+    fclose(fp[0]);
+
+  for (int i=0; i<24; i++)
+    if (dataFile[i].is_open())
+      dataFile[i].close();
   
 #ifdef LOCAL_DEBUG
   cout << "getUncorrelatedData: finished (" << error << ")\n";
@@ -90,7 +98,7 @@ int getUncorrelatedData(unsigned int nodeID,
   //__u32 dwPort = 0;
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
-  int i;
+  int i, stat;
   char txt[255]; // temporary string storage
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
@@ -102,8 +110,9 @@ int getUncorrelatedData(unsigned int nodeID,
   time_t startTime;
 
 #ifdef LOCAL_DEBUG
-  cout << "Input args: nodeID = " << hex << nodeID << ", numWordsRequested = " 
-       << dec << numWordsRequested << ", dataFileName = " << dataFileName 
+  cout << "getUncorrelatedData:  nodeID = " << hex << nodeID << ", numWordsRequested = " 
+       << dec << numWordsRequested << ", directory " << dirName
+       << ", dataFileName = " << dataFileName 
        << "\nchanList = {";
   for(i=0; i<24; i++) {
     if(chanList[i]) {
@@ -113,12 +122,50 @@ int getUncorrelatedData(unsigned int nodeID,
   cout << "}" << endl;
 #endif
 
-  // create the file or append to the existing file
-  if ( (fp = fopen(dataFileName, "w")) == (FILE *)NULL) {
-    perror("getUncorrelatedData: fopen()");
-    my_private_exit(errno);
+  // create top directory
+  errno = 0;
+  stat = mkdir (dirName, 0755);
+  //cout << "mkdir returned " << stat << " errno = " << errno << endl;
+
+  if (stat != 0) {
+    if (errno != EEXIST) {
+      cout << "mkdir " << dirName << " returned " << stat << " errno = " << errno << endl;
+      perror("getUncorrelatedData: mkdir");
+      return 1;
+    }
   }
-  
+
+  // create channel directories
+  errno = 0;
+  string filename;
+  for(i=0; i<24; i++) {
+    if(chanList[i]) {
+      stringstream ss;
+      ss << dirName << "/Ch" << setw(2) << setfill('0') << i;
+      filename = ss.str();
+      stat = mkdir (filename.c_str(), 0755);
+      //cout << "mkdir " << filename << " returned " << stat << " errno = " << errno << endl;
+      if (stat != 0) {
+	if (errno != EEXIST) {
+	  cout << "mkdir " << filename << " returned " << stat << " errno = " << errno << endl;
+	  perror("getUncorrelatedData: mkdir");
+	  my_private_exit(errno);
+	}
+      }
+      ss << "/" << dataFileName;
+      filename = ss.str();
+#ifdef LOCAL_DEBUG
+      cout << "Opening data file: " << filename << endl;
+#endif
+      dataFile[i].open( filename.c_str(), ofstream::out | ofstream::app );
+      if ( !(dataFile[i].good()) ) {
+	cout << "ERROR: " << filename << ": file error\n";
+	perror("getUncorrelatedData:file.open");
+	my_private_exit(errno);
+      }
+    }
+  }
+
   errno = 0;
   
   // install signal handler for manual break
@@ -186,9 +233,9 @@ int getUncorrelatedData(unsigned int nodeID,
   while (1) { // loop forever
     if (numWordsRead >= numWordsRequested) break;
     if ( (time(0) - startTime) > acqTimeout) break; 
+
+
     errno = poll(&pfd, 1, timeout);
-    //printf("poll returned 0x%x\n", errno);
-    //printf("revents = 0x%x\n", pfd.revents);
     
     if (errno == 1) { // data received
       if ((errno = CAN_Read(h, &m))) {
@@ -246,14 +293,12 @@ int getUncorrelatedData(unsigned int nodeID,
 #endif
 	  }
 	  else { // good data word, analyze and save
-	    numWordsRead++;
-
 	    TDC = (buffer[0] & 0x0f000000) >> 24;
-	    if ((TDC % 4) == 3)
+	    if ((TDC % 4) == 3) // low res TDC has IDs 3, 7, 11, or 15
 	      chan = (buffer[0] & 0x00f80000) >> 19; // low res TDC
 	    else {
 	      chan = (buffer[0] & 0x00e00000) >> 21; // hi res TDC
-	      chan += (TDC % 4) * 8;
+	      chan += (TDC % 4) * 8; // TDC with channel 0 has IDs 0, 4, 8, or 12
 	    }
 #ifdef LOCAL_DEBUG
 	    cout << "Got data from " 
@@ -261,7 +306,16 @@ int getUncorrelatedData(unsigned int nodeID,
 		 << " TDC " << dec << TDC
 		 << ", chan " << chan << endl;
 #endif
-	    fprintf(fp, "0x%08x\n", buffer[0]);
+	    if (!chanList[chan]) {
+	      cout << "ERROR: Get Uncorrelated Data: Data coming from unexpected channel "
+		   << dec << chan << ". Check data collection settings.\n";
+	      my_private_exit(-1);
+	    }
+	    else {
+	      numWordsRead++;
+	      dataFile[chan] << hex << showbase << buffer[0] << "\n";
+	      //fprintf(fp[0], "0x%08x\n", buffer[0]);
+	    }
 	  }
 	    
 	  if (m.LEN == 8) {
@@ -269,27 +323,35 @@ int getUncorrelatedData(unsigned int nodeID,
 	      uc_ptr[11-i] = m.DATA[i];
 	    if ( (buffer[1] & 0xF0000000) == 0x60000000 ) {
 #ifdef LOCAL_DEBUG
-	      cout << "Error word: 0x" << hex << buffer[0] << endl;
+	      cout << "Error word: 0x" << hex << buffer[1] << endl;
 #endif
 	      continue;
 	    }
 	    else { // good data word, analyze and save
-	      numWordsRead++;
 	      
 	      TDC = (buffer[1] & 0x0f000000) >> 24;
-	      if ((TDC % 4) == 3)
+	      if ((TDC % 4) == 3) // low res TDC has IDs 3, 7, 11, or 15
 		chan = (buffer[1] & 0x00f80000) >> 19; // low res TDC
 	      else {
-		chan = (buffer[0] & 0x00e00000) >> 21; // hi res TDC
-		chan += (TDC % 4) * 8;
+		chan = (buffer[1] & 0x00e00000) >> 21; // hi res TDC
+		chan += (TDC % 4) * 8; // TDC with channel 0 has IDs 0, 4, 8, or 12
 	      }
 #ifdef LOCAL_DEBUG
-	    cout << "Got data from " 
-		 << ( ((TDC % 4) == 3) ? "lo res" : "hi res" ) 
-		 << " TDC " << dec << TDC
-		 << ", chan " << chan << endl;
+	      cout << "Got data from " 
+		   << ( ((TDC % 4) == 3) ? "lo res" : "hi res" ) 
+		   << " TDC " << dec << TDC
+		   << ", chan " << chan << endl;
 #endif
-	      fprintf(fp, "0x%08x\n", buffer[1]);
+	      if (!chanList[chan]) {
+		cout << "ERROR: Get Uncorrelated Data: Data coming from unexpected channel "
+		     << dec << chan << ". Check data collection settings.\n";
+		my_private_exit(-1);
+	      }
+	      else {
+		numWordsRead++;
+		dataFile[chan] << hex << showbase << buffer[1] << "\n";
+		//fprintf(fp[0], "0x%08x\n", buffer[1]);
+	      }
 	    }
 	  } // ... if (m.LEN == 8)
 	  
