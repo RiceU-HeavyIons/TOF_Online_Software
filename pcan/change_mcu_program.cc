@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: change_mcu_program.cc,v 1.1 2004-10-25 22:45:17 jschamba Exp $";
+"$Id: change_mcu_program.cc,v 1.2 2004-11-17 23:39:03 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -251,7 +251,7 @@ int send_64bytes(unsigned char *bytes,
 
 //**********************************************
 // here all is done
-int change_mcu_program(const char *filename, unsigned int nodeID)
+int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 {
   char txt[255]; // temporary string storage
   string buf;
@@ -259,9 +259,13 @@ int change_mcu_program(const char *filename, unsigned int nodeID)
   unsigned int startAddr, endAddr;
   unsigned  char pgmByte[64];
 
+  TPDIAG my_PDiag;
+  char devName[255];
+
 
   cout << "Changing MCU program at NodeID 0x" << hex << nodeID
-       << " with filename " << filename << "...\n";
+       << " with filename " << filename 
+       << " at devID 0x" << hex << devID << "...\n";
 
 
   // initialize:
@@ -286,11 +290,30 @@ int change_mcu_program(const char *filename, unsigned int nodeID)
   signal(SIGINT, signal_handler);
   
   // open the CAN port
-  h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
-  
+  //h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
+
+  // search for correct device ID:
+  for (int i=0; i<8; i++) {
+    sprintf(devName, "/dev/pcan%d", 32+i);
+    //h = CAN_Open(HW_USB, dwPort, wIrq);
+    h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
+    if (h == NULL) {
+      //printf("Failed to open device %s\n", devName);
+      //my_private_exit(errno);
+      continue;
+    }
+    // get the hardware ID from the diag structure:
+    LINUX_CAN_Statistics(h,&my_PDiag);
+    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+	   my_PDiag.wIrqLevel);
+    if (my_PDiag.wIrqLevel == devID) break;
+    CAN_Close(h);
+  }
+
   if (!h) {
+    printf("Device ID 0x%x not found, exiting\n", devID);
     errno = nGetLastError();
-    perror("change_mcu_program: LINUX_CAN_Open()");
+    perror("change_mcu_program: CAN_Open()");
     my_private_exit(errno);
   }
 
@@ -538,9 +561,14 @@ int change_mcu_program(const char *filename, unsigned int nodeID)
 int main(int argc, char *argv[])
 {
   unsigned int nodeID;
+  WORD devID = 255;
 
-  if ( argc != 3 ) {
-    cout << "USAGE: " << argv[0] << " <node ID> <fileName> \n";
+
+  cout << vcid << endl;
+  cout.flush();
+
+  if ( argc < 3 ) {
+    cout << "USAGE: " << argv[0] << " <node ID> <fileName> [<devID>]\n";
     return 1;
   }
   
@@ -548,8 +576,16 @@ int main(int argc, char *argv[])
   if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
 	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
-    return 1;
+    return -1;
   }
   
-  return change_mcu_program(argv[2], nodeID);
+  if (argc == 4) {
+    devID = atoi(argv[3]);
+    if (devID > 255) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      return -1;
+    }
+  }
+
+  return change_mcu_program(argv[2], nodeID, devID);
 }
