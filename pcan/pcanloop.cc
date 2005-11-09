@@ -7,12 +7,16 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.7 2005-03-03 22:12:53 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.8 2005-11-09 20:06:06 jschamba Exp $";
 #endif /* lint */
 
 
 //****************************************************************************
 // INCLUDES
+#include <iostream>
+//#include <fstream>
+using namespace std;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -114,6 +118,7 @@ int main(int argc, char *argv[])
   int iteration = 0;
   char txt[255]; // temporary string storage
   bool saveit = false;
+  bool doTimedSave = false;
   bool filterit = false;
   bool printReceived = true;
   FILE *fp = NULL;
@@ -123,6 +128,13 @@ int main(int argc, char *argv[])
   TPDIAG my_PDiag;
   WORD devID;
   char devName[255];
+  // timing variables
+  int total_time = 0;
+  int start_time = 0;
+  int curr_time = 0;
+  int elapsed_time = 0;
+  time_t *theTime = new time_t;
+  int numEvents = 0;
 
   errno = 0;
   devID = 255;
@@ -227,12 +239,26 @@ int main(int argc, char *argv[])
     //printf("Iteration %d\r", iteration);
     //fflush(stdout);
 
+    if (doTimedSave && (elapsed_time > total_time)) {
+      cout << "Saved " << numEvents <<" events in "<< elapsed_time << " seconds!" << endl;
+      saveit = false;
+      doTimedSave = false;
+      total_time = 0;
+      fprintf(fp, "Event %d time %d \n", numEvents, elapsed_time);
+      if (fp != (FILE *)NULL) {
+	fclose(fp);
+	fp = (FILE *)NULL;
+      }
+    }     
+
     char *result = fgets(txt, 80, fifofp);
     if (result != NULL) {
       if (strncmp(txt, "e", 1) == 0) {
 	printf("End command received\n");
-	if (fp != (FILE *)NULL)
+	if (fp != (FILE *)NULL) {
 	  fclose(fp);
+	  fp = (FILE *)NULL;
+	}
 	my_private_exit(0);
       }
 
@@ -252,6 +278,26 @@ int main(int argc, char *argv[])
 	}
 	else
 	  printf("No filename specified. No file opened\n");
+      }
+      else if (strncmp(txt, "t", 1) == 0) {
+	char *ptr = txt;
+	void skip_blanks(char **);
+	int scan_unsigned_number(char **, __u32 *);
+	printf("DoTimedSave command received, ");
+	if (strlen(txt) != 1) {
+	  ptr++;
+	  skip_blanks(&ptr);
+	  if(scan_unsigned_number(&ptr, (__u32 *)&total_time) != 0)
+	    printf("but no proper time format specified. Ignoring...\n");
+	  else {
+	    doTimedSave = true;
+	    printf("total_time = %d\n", total_time);
+	  }
+	  
+	}
+	else
+	  printf("but no time specified. Ignoring...\n");
+	
       }
       else if (strncmp(txt, "c", 1) == 0) {
 	printf("Close command received\n");
@@ -337,27 +383,34 @@ int main(int argc, char *argv[])
 	    printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
 	} 
 	else if ((m.MSGTYPE == MSGTYPE_STANDARD) || (m.MSGTYPE == MSGTYPE_EXTENDED)) {
-	  if ((m.ID & 0x780) == 0x0)
-	    if (saveit) {
-	      for (i=0; i<4; i++)
-		uc_ptr[3-i] = m.DATA[i];
-	      if(filterit) {
-		if ( (buffer[0]&0xf0000000) != 0xe0000000)
-		  fprintf(fp, "0x%08x\n", buffer[0]);
-	      }
-	      else
+	  if (((m.ID &  0x1F000780) == 0x0) && saveit) { // a DATA_TO_PC packet
+	    numEvents++;
+	    // save start time
+	    if (numEvents == 1) {
+	      start_time = time(theTime);
+	    }
+	    curr_time = time(theTime);
+	    elapsed_time = curr_time - start_time;
+
+	    for (i=0; i<4; i++)
+	      uc_ptr[3-i] = m.DATA[i];
+	    if(filterit) {
+	      if ( (buffer[0]&0xf0000000) != 0xe0000000)
 		fprintf(fp, "0x%08x\n", buffer[0]);
-	      if (m.LEN == 8) {
-		for (i=4; i<8; i++)
-		  uc_ptr[11-i] = m.DATA[i];
-		if(filterit) {
-		  if ( (buffer[1]&0xf0000000) != 0xe0000000)
-		    fprintf(fp, "0x%08x\n", buffer[1]);
-		}
-		else
+	    }
+	    else
+	      fprintf(fp, "0x%08x\n", buffer[0]);
+	    if (m.LEN == 8) {
+	      for (i=4; i<8; i++)
+		uc_ptr[11-i] = m.DATA[i];
+	      if(filterit) {
+		if ( (buffer[1]&0xf0000000) != 0xe0000000)
 		  fprintf(fp, "0x%08x\n", buffer[1]);
 	      }
+	      else
+		fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
+	  }
 	}
 
       } // data read
