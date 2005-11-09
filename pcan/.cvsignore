@@ -1,1 +1,1 @@
-pcan_find p_config pc pcanloop *.txt change_mcu_program
+cfig* *.dat pcan_find p_config pc pcanloop *.txt change_mcu_program
