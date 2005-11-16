@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.1 2005-11-04 15:43:34 jschamba Exp $
+# $Id: config.py,v 1.2 2005-11-16 17:27:57 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
 version = '1.0'
@@ -1165,6 +1165,12 @@ class Configurator:
             parseSV(self.output, 459+i*3, 461+i*3, self.dllAdjust[i])
         for i in range(4):
             parseSV(self.output, 555+i*3, 557+i*3, self.rcAdjust[i])
+
+        ### calculate parity
+        parity = 0
+        for i in range(len(self.output)):
+            parity += int(self.output[i])
+        self.output[646] = str(parity % 2)
 
     ############### LOAD PRESET ######################################################
     def loadPreset(self):
