@@ -17,3 +17,6 @@ change_mcu_program:	change_mcu_program.cc
 pcan_find:	pcan_find.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
 
+pcanloop2:	pcanloop2.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
