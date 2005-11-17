@@ -1,0 +1,18 @@
+#!/usr/bin/expectk -f
+
+# disable terminal output
+log_user 0
+
+spawn -noecho /homes/jschamba/tof/pcan/pcanloop
+set shell $spawn_id
+text .shell -relief sunken -bd 1 -width 90 -height 24 -yscrollcommand {.scroll set}
+scrollbar .scroll -command {.shell yview}
+pack .scroll -side right -fill y
+pack .shell -side bottom -expand true -fill both
+
+expect_background {
+    -i $shell -re "\[^\x0d]+" {
+	.shell insert end $expect_out(0,string)
+	.shell yview -pickplace insert
+    }
+}
