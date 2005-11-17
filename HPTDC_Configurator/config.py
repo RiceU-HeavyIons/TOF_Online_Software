@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.2 2005-11-16 17:27:57 jschamba Exp $
+# $Id: config.py,v 1.3 2005-11-17 20:30:31 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.0'
+version = '1.3'
 
 import sys
 from Tkinter import *
@@ -40,9 +40,9 @@ class Configurator:
 		#command = PrintOne('Action: go button pressed'),
 		command = self.writeFile,
 		label = 'Write Config File')
-	menuBar.addmenuitem('File', 'command', 'Test this window',
-		command = self.print_testSelect,
-		label = 'Test')
+	#menuBar.addmenuitem('File', 'command', 'Test this window',
+	#	command = self.print_testSelect,
+	#	label = 'Test')
 	menuBar.addmenuitem('File', 'separator')
 	menuBar.addmenuitem('File', 'command', 'Exit the application',
                             command = parent.destroy,
