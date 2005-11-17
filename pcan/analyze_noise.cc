@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: analyze_noise.cc,v 1.2 2005-11-09 21:21:46 jschamba Exp $";
+"$Id: analyze_noise.cc,v 1.3 2005-11-17 20:31:41 jschamba Exp $";
 #endif /* lint */
 
 
@@ -15,6 +15,7 @@ static char  __attribute__ ((unused)) vcid[] =
 #include <string>
 #include <iomanip>
 #include <stdio.h>
+#include <math.h>
 
 using namespace std;
 
