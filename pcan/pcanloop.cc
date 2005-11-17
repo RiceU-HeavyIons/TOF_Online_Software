@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.8 2005-11-09 20:06:06 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.9 2005-11-17 20:33:11 jschamba Exp $";
 #endif /* lint */
 
 
@@ -92,7 +92,7 @@ static void my_private_exit(int error)
     printf("Closing pcan\n");
     CAN_Close(h); 
   }
-  printf("pcanloop: finished (%d).\n\n", error);
+  printf("pcanloop: finished (%d).\n\n", error);fflush(stdout);
   if (fifofp != (FILE *)NULL)
     fclose(fifofp);
   exit(error);
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
   if (argc >1) {
     devID = atoi(argv[1]);
     if (devID > 255) {
-      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);fflush(stdout);
       return 1;
     }
   }
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
     printf("Trying to open PCAN for Device ID 0x%x with BTR0BTR1=0x%04x\n", devID, wBTR0BTR1);
   else
     printf("Trying to open PCAN for Device ID 0x%x with 500 kbit/sec.\n", devID);
-  
+  fflush(stdout);
   
   // install signal handler for manual break
   signal(SIGINT, signal_handler);
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
     // get the hardware ID from the diag structure:
     LINUX_CAN_Statistics(h,&my_PDiag);
     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
+	   my_PDiag.wIrqLevel); fflush(stdout);
     if (my_PDiag.wIrqLevel == devID) break;
     CAN_Close(h);
 
@@ -187,6 +187,7 @@ int main(int argc, char *argv[])
     printf("Device ID 0x%x not found, exiting\n", devID);
     errno = nGetLastError();
     perror("pcanloop: CAN_Open()");
+    fflush(stdout);
     my_private_exit(errno);
   }
 
@@ -212,7 +213,7 @@ int main(int argc, char *argv[])
   
   // get the hardware ID from the diag structure:
   LINUX_CAN_Statistics(h,&my_PDiag);
-  printf("pcanloop: Device Hardware ID = 0x%x\n", my_PDiag.wIrqLevel);
+  printf("pcanloop: Device Hardware ID = 0x%x\n", my_PDiag.wIrqLevel); fflush(stdout);
 
   // create or open control FIFO
   sprintf(txt, "%s-%d", FIFO_FILE, getuid());
@@ -278,6 +279,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	  printf("No filename specified. No file opened\n");
+	fflush(stdout);
       }
       else if (strncmp(txt, "t", 1) == 0) {
 	char *ptr = txt;
@@ -298,9 +300,10 @@ int main(int argc, char *argv[])
 	else
 	  printf("but no time specified. Ignoring...\n");
 	
+	fflush(stdout);
       }
       else if (strncmp(txt, "c", 1) == 0) {
-	printf("Close command received\n");
+	printf("Close command received\n");fflush(stdout);
 	saveit = false;
 	if (fp != (FILE *)NULL) {
 	  fclose(fp);
@@ -308,19 +311,19 @@ int main(int argc, char *argv[])
 	}
       }	
       else if (strncmp(txt, "f", 1) == 0) {
-	printf("Filter command received\n");
+	printf("Filter command received\n");fflush(stdout);
 	filterit = true;
       }	
       else if (strncmp(txt, "n", 1) == 0) {
-	printf("NoFilter command received\n");
+	printf("NoFilter command received\n");fflush(stdout);
 	filterit = false;
       }	
       else if (strncmp(txt, "q", 1) == 0) {
-	printf("quietReceive command received\n");
+	printf("quietReceive command received\n");fflush(stdout);
 	printReceived = false;
       }	
       else if (strncmp(txt, "d", 1) == 0) {
-	printf("printReceived packets command received\n");
+	printf("printReceived packets command received\n");fflush(stdout);
 	printReceived = true;
       }	
 
@@ -334,7 +337,7 @@ int main(int argc, char *argv[])
 		 m.LEN); 
 	  for (i = 0; i < m.LEN; i++)
 	    printf("0x%02x ", m.DATA[i]);
-	  printf("\n");
+	  printf("\n");fflush(stdout);
 	  
 	  // new: send the message even with extended message IDs
 	  //if (!(m.MSGTYPE & MSGTYPE_EXTENDED)) {  
@@ -368,7 +371,7 @@ int main(int argc, char *argv[])
 	  
 	  for (i = 0; i < m.LEN; i++)
 	    printf("0x%02x ", m.DATA[i]);
-	  printf("\n");
+	  printf("\n");fflush(stdout);
 	}
 	
 	// check if a CAN status is pending	     
@@ -381,6 +384,7 @@ int main(int argc, char *argv[])
 	  }
 	  else
 	    printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	  fflush(stdout);
 	} 
 	else if ((m.MSGTYPE == MSGTYPE_STANDARD) || (m.MSGTYPE == MSGTYPE_EXTENDED)) {
 	  if (((m.ID &  0x1F000780) == 0x0) && saveit) { // a DATA_TO_PC packet
@@ -427,6 +431,7 @@ int main(int argc, char *argv[])
 	  //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
 	  check_err(status, txt);
 	  printf("%s\n", txt);
+	  fflush(stdout);
 	}
       }
     }
