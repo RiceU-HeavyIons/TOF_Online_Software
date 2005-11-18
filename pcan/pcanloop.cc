@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.10 2005-11-18 16:45:47 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.11 2005-11-18 21:08:07 jschamba Exp $";
 #endif /* lint */
 
 
@@ -23,7 +23,6 @@ using namespace std;
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
-#include <stdlib.h>
 #include <fcntl.h>
 #include <libpcan.h>
 #include <sys/poll.h>
@@ -33,11 +32,13 @@ using namespace std;
 //****************************************************************************
 // DEFINES
 #define FIFO_FILE "/tmp/pcanfifo"
+#define FIFO_RESPONSE "/tmp/pcanfifoRsp"
 
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
 FILE *fifofp = (FILE *)NULL;
+int respFifoFd = -1;
 
 #define LOCAL_STRING_LEN 64       // length of internal used strings
 typedef struct
@@ -126,6 +127,7 @@ int main(int argc, char *argv[])
   bool doTimedSave = false;
   bool filterit = false;
   bool printReceived = true;
+  bool writeResponse = false;
   FILE *fp = NULL;
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
@@ -333,7 +335,26 @@ int main(int argc, char *argv[])
 	printf("printReceived packets command received\n");fflush(stdout);
 	printReceived = true;
       }	
+      else if (strncmp(txt, "w", 1) == 0) {
+	printf("Write Reponse command received\n");fflush(stdout);
+	// the following call blocks until the other side is open as well
+	respFifoFd = open(FIFO_RESPONSE, O_WRONLY); 
+	//respFifoFd = open(FIFO_RESPONSE, O_WRONLY | O_NONBLOCK);
+	if(respFifoFd == -1) 
+	  perror("open response FIFO");
+	else
+	  writeResponse = true;
+      }	
+      else if (strncmp(txt, "r", 1) == 0) {
+	printf("No Write Reponse command received\n");fflush(stdout);
+	writeResponse = false;
+	if (respFifoFd != -1) {
+	  close(respFifoFd);
+	  respFifoFd = -1;
+	}
+      }	
 
+      
       else {
 	errno = parse_input_message(txt, &m);
 	if (errno == 0) {
@@ -379,6 +400,10 @@ int main(int argc, char *argv[])
 	  for (i = 0; i < m.LEN; i++)
 	    printf("0x%02x ", m.DATA[i]);
 	  printf("\n");fflush(stdout);
+	}
+	
+	if (writeResponse) {
+	  write(respFifoFd, &m, sizeof(m));
 	}
 	
 	// check if a CAN status is pending	     
