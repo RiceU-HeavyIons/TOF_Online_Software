@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.11 2005-11-18 21:08:07 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.12 2006-01-04 20:03:53 jschamba Exp $";
 #endif /* lint */
 
 
@@ -63,17 +63,17 @@ void check_err(__u32  err,  char *txtbuff)
 #define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
 
   strcpy(txtbuff, "Error: ") ;
-  if ( err == CAN_ERR_OK )        strcpy(txtbuff, "OK ") ;
-  if ( err & CAN_ERR_XMTFULL )    strcat(txtbuff, "XMTFULL ") ;
-  if ( err & CAN_ERR_OVERRUN )    strcat(txtbuff, "OVERRUN ") ;
-  if ( err & CAN_ERR_BUSLIGHT )   strcat(txtbuff, "BUSLIGHT ") ;
-  if ( err & CAN_ERR_BUSHEAVY )   strcat(txtbuff, "BUSHEAVY ") ;
-  if ( err & CAN_ERR_BUSOFF )     strcat(txtbuff, "BUSOFF ") ;
-  if ( err & CAN_ERR_QRCVEMPTY )  strcat(txtbuff, "QRCVEMPTY ") ;
-  if ( err & CAN_ERR_QOVERRUN )   strcat(txtbuff, "QOVERRUN ") ;
-  if ( err & CAN_ERR_QXMTFULL )   strcat(txtbuff, "QXMTFULL ") ;
-  if ( err & CAN_ERR_REGTEST )    strcat(txtbuff, "REGTEST ") ;
-  if ( err & CAN_ERR_NOVXD )      strcat(txtbuff, "NOVXD ") ;
+  if ( err == CAN_ERR_OK )        strcpy(txtbuff, "OK ") ; 		// no error (0x0000)
+  if ( err & CAN_ERR_XMTFULL )    strcat(txtbuff, "XMTFULL ") ; 	// transmit buffer full (0x0001)
+  if ( err & CAN_ERR_OVERRUN )    strcat(txtbuff, "OVERRUN ") ; 	// overrun in receive buffer (0x0002)
+  if ( err & CAN_ERR_BUSLIGHT )   strcat(txtbuff, "BUSLIGHT ") ; 	// bus error, errorcounter limit reached (0x0004)
+  if ( err & CAN_ERR_BUSHEAVY )   strcat(txtbuff, "BUSHEAVY ") ; 	// bus error, errorcounter limit reached (0x0008)
+  if ( err & CAN_ERR_BUSOFF )     strcat(txtbuff, "BUSOFF ") ; 		// bus error, 'bus off' state entered (0x0010)
+  if ( err & CAN_ERR_QRCVEMPTY )  strcat(txtbuff, "QRCVEMPTY ") ; 	// receive queue is empty (0x0020)
+  if ( err & CAN_ERR_QOVERRUN )   strcat(txtbuff, "QOVERRUN ") ; 	// receive queue overrun (0x0040)
+  if ( err & CAN_ERR_QXMTFULL )   strcat(txtbuff, "QXMTFULL ") ; 	// transmit queue full (0x0080)
+  if ( err & CAN_ERR_REGTEST )    strcat(txtbuff, "REGTEST ") ; 	// test of controller registers failed (0x0100)
+  if ( err & CAN_ERR_NOVXD )      strcat(txtbuff, "NOVXD ") ; 		// Win95/98/ME only (0x0200)
   if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) strcat(txtbuff, "HWINUSE ") ;
   if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) strcat(txtbuff, "NETINUSE ") ;
   if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLHW )strcat(txtbuff, "ILLHW ") ;
@@ -298,10 +298,16 @@ int main(int argc, char *argv[])
 	if (strlen(txt) != 1) {
 	  ptr++;
 	  skip_blanks(&ptr);
-	  if(scan_unsigned_number(&ptr, (__u32 *)&total_time) != 0)
+	  if(scan_unsigned_number(&ptr, (__u32 *)&total_time) != 0) {
+	    total_time = 0;
 	    printf("but no proper time format specified. Ignoring...\n");
+	  }
 	  else {
 	    doTimedSave = true;
+	    start_time = 0;
+	    curr_time = 0;
+	    elapsed_time = 0;
+	    numEvents = 0;
 	    printf("total_time = %d\n", total_time);
 	  }
 	  
@@ -414,8 +420,11 @@ int main(int argc, char *argv[])
 	    perror("pcanloop: CAN_Status()");
 	    my_private_exit(errno);
 	  }
-	  else
-	    printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	  else {
+	    check_err(status, txt);
+	    printf("%s\n", txt);
+	    //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	  }
 	  fflush(stdout);
 	} 
 	else if ((m.MSGTYPE == MSGTYPE_STANDARD) || (m.MSGTYPE == MSGTYPE_EXTENDED)) {
