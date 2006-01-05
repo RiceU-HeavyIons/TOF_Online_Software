@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 #
-# $Id: pcanGUI.py,v 1.1 2005-11-17 20:34:06 jschamba Exp $
+# $Id: pcanGUI.py,v 1.2 2006-01-05 17:01:59 jschamba Exp $
 #
 
 rtitle = 'pcan GUI'
 version = '1.1'
+cvsVerString = '$Id: pcanGUI.py,v 1.2 2006-01-05 17:01:59 jschamba Exp $'
 
 import os
 import sys
@@ -27,7 +28,7 @@ class PcanGUI:
             shell = pCmd
         args = string.split(shell)
 
-        print "shell", shell, "args", args
+        #print "shell", shell, "args", args
 
         self.tk = parent
         mainFrame = Frame(parent)
