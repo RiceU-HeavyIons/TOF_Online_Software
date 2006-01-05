@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #
-# $Id: pcanGUI.py,v 1.2 2006-01-05 17:01:59 jschamba Exp $
+# $Id: pcanGUI.py,v 1.3 2006-01-05 17:15:12 jschamba Exp $
 #
 
 rtitle = 'pcan GUI'
-version = '1.1'
-cvsVerString = '$Id: pcanGUI.py,v 1.2 2006-01-05 17:01:59 jschamba Exp $'
+cvsVerString = '$Id: pcanGUI.py,v 1.3 2006-01-05 17:15:12 jschamba Exp $'
+version = cvsVerString.split()[2]
 
 import os
 import sys
