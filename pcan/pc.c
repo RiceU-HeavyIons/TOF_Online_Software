@@ -12,6 +12,8 @@ static char  __attribute__ ((unused)) vcid[] =
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #define FIFO_FILE       "/tmp/pcanfifo"
 
