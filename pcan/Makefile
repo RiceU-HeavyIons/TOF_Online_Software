@@ -22,3 +22,7 @@ pcanloop2:	pcanloop2.cc
 
 clientpc:	clientpc.c
 	$(CXX) -Wall $^ -o $@ -lpcan
+
+clean:
+	rm -f *.o analyze_noise change_mcu_program clientpc pc pcan_find pcanloop \
+	p_config p_config_bench p_config_run5 setThreshold
