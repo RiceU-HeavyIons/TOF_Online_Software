@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
-# $Id: pcanGUI.py,v 1.3 2006-01-05 17:15:12 jschamba Exp $
+# $Id: pcanGUI.py,v 1.4 2006-01-21 19:15:40 jschamba Exp $
 #
 
 rtitle = 'pcan GUI'
-cvsVerString = '$Id: pcanGUI.py,v 1.3 2006-01-05 17:15:12 jschamba Exp $'
+cvsVerString = '$Id: pcanGUI.py,v 1.4 2006-01-21 19:15:40 jschamba Exp $'
 version = cvsVerString.split()[2]
 
 import os
@@ -47,13 +47,16 @@ class PcanGUI:
         mainFrame.pack(fill=BOTH, expand=YES)
 
         self.pid, self.fromchild, self.tochild = spawn(pCmd, args)
-        self.tk.createfilehandler(self.fromchild, READABLE,
+#        self.tk.createfilehandler(self.fromchild, READABLE,
+#                                  self.outputhandler)
+        tkinter.createfilehandler(self.fromchild, READABLE,
                                   self.outputhandler)
 
     def outputhandler(self, file, mask):
         data = os.read(file, BUFSIZE)
         if not data:
-            self.tk.deletefilehandler(file)
+#            self.tk.deletefilehandler(file)
+            tkinter.deletefilehandler(file)
             pid, sts = os.waitpid(self.pid, 0)
             print 'pid', pid, 'status', sts
             self.pid = None
