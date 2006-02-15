@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.12 2006-01-04 20:03:53 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.13 2006-02-15 17:39:04 jschamba Exp $";
 #endif /* lint */
 
 
@@ -24,6 +24,7 @@ using namespace std;
 #include <signal.h>
 #include <string.h>
 #include <fcntl.h>
+#include <time.h>
 #include <libpcan.h>
 #include <sys/poll.h>
 #include <sys/types.h>
@@ -128,6 +129,7 @@ int main(int argc, char *argv[])
   bool filterit = false;
   bool printReceived = true;
   bool writeResponse = false;
+  bool addTime = false;
   FILE *fp = NULL;
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
@@ -359,6 +361,14 @@ int main(int argc, char *argv[])
 	  respFifoFd = -1;
 	}
       }	
+      else if (strncmp(txt, "a", 1) == 0) {
+	printf("addTime command received\n");fflush(stdout);
+	addTime = true;
+      }	
+      else if (strncmp(txt, "A", 1) == 0) {
+	printf("don't addTime command received\n");fflush(stdout);
+	addTime = false;
+      }	
 
       
       else {
@@ -443,8 +453,12 @@ int main(int argc, char *argv[])
 	      if ( (buffer[0]&0xf0000000) != 0xe0000000)
 		fprintf(fp, "0x%08x\n", buffer[0]);
 	    }
-	    else
+	    else {
+	      if (addTime)
+		if ( (buffer[0]&0xff000000) == 0xea000000)
+		  buffer[0] |= (curr_time & 0x00ffffff);
 	      fprintf(fp, "0x%08x\n", buffer[0]);
+	    }
 	    if (m.LEN == 8) {
 	      for (i=4; i<8; i++)
 		uc_ptr[11-i] = m.DATA[i];
@@ -452,8 +466,12 @@ int main(int argc, char *argv[])
 		if ( (buffer[1]&0xf0000000) != 0xe0000000)
 		  fprintf(fp, "0x%08x\n", buffer[1]);
 	      }
-	      else
+	      else {
+		if (addTime)
+		  if ( (buffer[1]&0xff000000) == 0xea000000)
+		    buffer[1] |= (curr_time & 0x00ffffff);
 		fprintf(fp, "0x%08x\n", buffer[1]);
+	      }
 	    }
 	  }
 	}
