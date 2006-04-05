@@ -3,8 +3,12 @@ CXX = g++
 CC = gcc
 LD = g++ 
 
+ROOTCFLAGS   := $(shell root-config --cflags)
+ROOTLIBS     := $(shell root-config --new --libs)
+ROOTGLIBS    := $(shell root-config --glibs)
+
 CFLAGS = -O3  -I. -ITPC
-CXXFLAGS = ${CFLAGS}
+CXXFLAGS = ${CFLAGS} $(ROOTCFLAGS)
 
 #Uncomment for Solaris
 #LDLIBS = -lsocket -lnsl
@@ -16,8 +20,12 @@ READER_FILES = msgNQLib.o evpSupport.o evpReader.o tpcReader.o svtReader.o ftpRe
 
 AUX_FILES = rtsLogUnix.o
 
+ROOTCFLAGS   := $(shell root-config --cflags)
+ROOTLIBS     := $(shell root-config --new --libs)
+ROOTGLIBS    := $(shell root-config --glibs)
+
 special: special.o libevp.a
-	${CXX} special.o libevp.a ${LDLIBS} -o special
+	${CXX} special.o libevp.a ${LDLIBS} -o special $(ROOTLIBS)
 
 libevp.a : ${READER_FILES} ${AUX_FILES}
 	ar -rucv libevp.a $?
