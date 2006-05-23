@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.13 2006-02-15 17:39:04 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.14 2006-05-23 21:03:56 jschamba Exp $";
 #endif /* lint */
 
 
@@ -491,6 +491,16 @@ int main(int argc, char *argv[])
 	  check_err(status, txt);
 	  printf("%s\n", txt);
 	  fflush(stdout);
+
+	  if ((status & CAN_ERR_ANYBUSERR) != 0) {
+	    // in case of any BUSERR re-initialize to see if it goes away
+	    errno = CAN_Init(h, wBTR0BTR1, nExtended);
+	    if (errno) {
+	      perror("pcanloop: CAN_Init()");
+	      my_private_exit(errno);
+	    }
+	  }
+
 	}
       }
     }
