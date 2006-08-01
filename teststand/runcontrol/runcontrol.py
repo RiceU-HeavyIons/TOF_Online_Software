@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
-# $Id: runcontrol.py,v 1.1 2006-08-01 21:09:39 jschamba Exp $
+# $Id: runcontrol.py,v 1.2 2006-08-01 21:22:29 jschamba Exp $
 #
 
 rtitle = 'Cosmic Test Stand Run Control'
-cvsVerString = '$Id: runcontrol.py,v 1.1 2006-08-01 21:09:39 jschamba Exp $'
+cvsVerString = '$Id: runcontrol.py,v 1.2 2006-08-01 21:22:29 jschamba Exp $'
 version = cvsVerString.split()[2]
 
 import os
@@ -177,6 +177,7 @@ class PcanGUI:
                 msg = "killed by signal %d" % (cause & 0x7f)
                 if cause & 0x80:
                     msg = msg + " -- core dumped"
+            sys.exit()
             return
         self.textBox.appendtext(data)
 
@@ -397,7 +398,7 @@ def test():
     if pCmdArgs:
         w = PcanGUI(root, pCmdArgs=pCmdArgs)
     else:
-        w = PcanGUI(root, "255")
+        w = PcanGUI(root, "1")
 
     root.mainloop()
 
