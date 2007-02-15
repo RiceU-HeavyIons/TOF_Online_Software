@@ -1,9 +1,12 @@
-# $Id: gasmon.cron,v 1.1 2007-02-15 15:52:47 jschamba Exp $
+# $Id: gasmon.cron,v 1.2 2007-02-15 16:08:12 jschamba Exp $
 # $Log: not supported by cvs2svn $
+# Revision 1.1  2007/02/15 15:52:47  jschamba
+# original gas monitoring files from Frank Geurts
+#
 # Revision 1.2  2003/09/30 20:41:50  geurts
 # Added CVS keywords
 #
 #
 # -- TOFr GasMonitor Cron Job
 #
-* * * * * $HOME/bin/gasmon -readout >> /data/tofr/gasmon.log
+* * * * * $HOME/bin/gasmon -readout >> /data/tof/gasmon.log

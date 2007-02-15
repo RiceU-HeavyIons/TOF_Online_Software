@@ -1,5 +1,8 @@
-// $Id: gasmon.cxx,v 1.1 2007-02-15 15:52:47 jschamba Exp $
+// $Id: gasmon.cxx,v 1.2 2007-02-15 16:08:12 jschamba Exp $
 // $Log: not supported by cvs2svn $
+// Revision 1.1  2007/02/15 15:52:47  jschamba
+// original gas monitoring files from Frank Geurts
+//
 // Revision 1.2  2003/09/30 20:41:50  geurts
 // Added CVS keywords
 //
@@ -79,7 +82,7 @@ void readConfigFile(){
   if (Verbose) printf("#-- reading config file --#\n");
   char str[80];
   FILE *configFile;
-  if ((configFile=fopen("/home/tofp/gasmon/gasmon.conf","r")) ==NULL){
+  if ((configFile=fopen("/home/tof/gasmon/gasmon.conf","r")) ==NULL){
     printf("Unable to open configuration file");
     exit(0);
   }
@@ -136,7 +139,7 @@ void doCalibration(){
 
   // Open calibration file in "append" mode
   FILE *calibFile;
-  if ((calibFile=fopen("/home/tofp/gasmon/gasmon.caldat","a")) ==NULL){
+  if ((calibFile=fopen("/home/tof/gasmon/gasmon.caldat","a")) ==NULL){
     printf("Cannot open calibration data file.\n");
     return;
   }
@@ -184,7 +187,7 @@ void readCalibration(){
   if (Verbose) printf("#-- Read calibration results --#\n");
   int adc, calibrated=0, notCalibrated=0;
   FILE *calResultFile;
-  calResultFile=fopen("/home/tofp/gasmon/gasmon.calres","r");
+  calResultFile=fopen("/home/tof/gasmon/gasmon.calres","r");
   if (calResultFile){
     double c0,c1,cov00,cov01,cov11,chisq;
     for (int i=0;i<MAXDEV;i++){
@@ -226,7 +229,7 @@ void recalcCalibration(){
   while(1){
     // Always reopen calibration file in "read" mode
     FILE *calibDataFile;
-    if ((calibDataFile=fopen("/home/tofp/gasmon/gasmon.caldat","r")) ==NULL){
+    if ((calibDataFile=fopen("/home/tof/gasmon/gasmon.caldat","r")) ==NULL){
       printf("Cannot open calibration data file.\n");
       return;
     }
@@ -257,7 +260,7 @@ void recalcCalibration(){
   }
 
   // recreate the updated calibration results file
-  FILE *calResultFile=fopen("/home/tofp/gasmon/gasmon.calres","w");
+  FILE *calResultFile=fopen("/home/tof/gasmon/gasmon.calres","w");
   for (int i=0;i<MAXDEV;i++)
     fprintf(calResultFile,"%d %lE %lE %lE %lE %lE %lE \n",
 	    i,mc0[i],mc1[i],mcov00[i],mcov01[i],mcov11[i],mchisq[i]);
@@ -386,7 +389,7 @@ void readCommandLine(int argc, char **argv){
 int main(int argc, char **argv)
 {
   Verbose = false;
-  if (Verbose) printf("+---- TOFr GAS Monitor v1.0 (%s - %s)\n" ,__DATE__,__TIME__);
+  if (Verbose) printf("+---- TOFr GAS Monitor v1.1 (%s - %s)\n" ,__DATE__,__TIME__);
 
   openDevices();
   readConfigFile();
