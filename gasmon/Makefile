@@ -5,7 +5,7 @@
 #
 #
 gasmon: gasmon.cxx /usr/local/include/pci-das08.h
-	gcc -Wall gasmon.cxx -o gasmon /usr/lib/libgsl.a
+	gcc -Wall gasmon.cxx -o gasmon -Wl,--rpath -Wl,/usr/local/lib -L/usr/local/lib -lgsl -lgslcblas -lstdc++
 
 clean:
 	rm gasmon
