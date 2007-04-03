@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.1 2006-08-29 16:11:52 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.2 2007-04-03 21:54:21 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -119,7 +119,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
     else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
       // now interprete the received message:
       // check if it's a proper response
-      if ( mr.Msg.ID != 0x003 ) {
+      if ( mr.Msg.ID != 0x403 ) {
 	cout << "p_progPLD request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
 	     << ", expected response to " << (unsigned int)ms.ID << endl;	
@@ -160,7 +160,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
 }
 
 
-int p_progPLD(const char *filename)
+int p_progPLD(const char *filename, int pldNum)
 {
   char txt[255]; // temporary string storage
   ifstream conf;
@@ -191,7 +191,7 @@ int p_progPLD(const char *filename)
   noPages = fileSize/256;
 
   timesp.tv_sec = 0;
-  timesp.tv_nsec = 1000000;	// 1 ms
+  timesp.tv_nsec = 1000;	// 1 ms
 
   cout << "Filesize = " << fileSize << " bytes, " << fileSize/1024 << " kbytes, "
        << noPages << " pages\n";
@@ -256,10 +256,12 @@ int p_progPLD(const char *filename)
   // ************** progPLD:Start ****************************************
 
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  ms.ID = 0x012;
-  ms.LEN = 1;
+  ms.ID = 0x0402;
+  ms.LEN = 2;
 
   ms.DATA[0] = 0x20;
+  ms.DATA[1] = pldNum;
+  //ms.DATA[1] = 0x02;	// program FPGA B (2)
 
   cout << "Starting Bulk Erase...\n";
 #ifdef LOCAL_DEBUG
@@ -333,7 +335,12 @@ int p_progPLD(const char *filename)
       	perror("p_progPLD: CAN_Write()");
       	return(errno);
       }
-      errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 econds
+      // waste some time, so packets aren't sent too fast
+      //nanosleep(&timesp, NULL);
+      for (int j=0; j<4300000; j++) ;
+
+      /*
+      errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
       if (errno != 0) {
 	if (errno == CAN_ERR_QRCVEMPTY)
 	  cout << "Timeout during progPLD:WriteDataBytes, page " << page << endl;
@@ -341,6 +348,7 @@ int p_progPLD(const char *filename)
 	  cout << "CAN_Read_Timeout returned " << errno 
 	       << " during progPLD:WriteDataBytes, page " << page << endl;
       }
+      */
       
     }
     
@@ -361,10 +369,10 @@ int p_progPLD(const char *filename)
       my_private_exit(errno);
     }
     
-#ifdef LOCAL_DEBUG
+    //#ifdef LOCAL_DEBUG
     if(page<11) cout << "Page " << dec << page << "...\n";
     else if((page%100) == 0) cout << "Page " << dec << page << "...\n";
-#endif
+    //#endif
 
 
   } // for (int page
@@ -400,11 +408,13 @@ int main(int argc, char *argv[])
   cout << vcid << endl;
   cout.flush();
   
-  if ( argc != 2 ) {
-    cout << "USAGE: " << argv[0] << " <fileName>\n";
+  if ( argc != 3 ) {
+    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #>\n";
     return 1;
   }
   
+  int pldNum = atoi(argv[2]);
   
-  return p_progPLD(argv[1]);
+  
+  return p_progPLD(argv[1], pldNum);
 }
