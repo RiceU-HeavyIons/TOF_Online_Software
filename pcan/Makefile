@@ -1,8 +1,12 @@
 # $Id$
 all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold \
-		p_config_run5 p_config_bench analyze_noise clientpc
+		p_config_run5 p_config_bench analyze_noise clientpc \
+		p_progPLD pcanloop_TDIGD p_progMCU
 
 pcanloop:	pcanloop.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
+pcanloop_TDIGD:	pcanloop_TDIGD.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
 
 pc:	pc.c
@@ -23,6 +27,13 @@ pcanloop2:	pcanloop2.cc
 clientpc:	clientpc.c
 	$(CXX) -Wall $^ -o $@ -lpcan
 
+p_progPLD:	p_progPLD.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
+p_progMCU:	p_progMCU.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
 clean:
-	rm -f *.o analyze_noise change_mcu_program clientpc pc pcan_find pcanloop \
-	p_config p_config_bench p_config_run5 setThreshold
+	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
+		p_config_run5 p_config_bench analyze_noise clientpc \
+		p_progPLD pcanloop_TDIGD
