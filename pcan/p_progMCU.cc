@@ -7,10 +7,10 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.1 2007-04-19 21:44:35 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.2 2007-04-20 15:00:32 jschamba Exp $";
 #endif /* lint */
 
-//#define LOCAL_DEBUG
+// #define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
@@ -430,6 +430,12 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
       cout << endl;
 #endif
       if (firstRecord) {
+	if(addr < 0x4000) { // make sure the lower address doesn't get overriden
+	  cout << "Program begins below allowed program region at 0x4000\n"
+	       << " Program first address is 0x" << hex << addr
+	       << "quitting\n";
+	  my_private_exit(-10);
+	}
 	startAddr = endAddr = addr;
 	firstRecord = false;
       }
