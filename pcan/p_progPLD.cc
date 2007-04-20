@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.2 2007-04-03 21:54:21 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.3 2007-04-20 15:00:54 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -120,7 +120,8 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
       // now interprete the received message:
       // check if it's a proper response
       if ( mr.Msg.ID != 0x403 ) {
-	cout << "p_progPLD request: Got something other than writeResponse: ID " 
+	cout << "ERROR: " << errorMsg
+	     << " request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
 	     << ", expected response to " << (unsigned int)ms.ID << endl;	
 	printCANMsg(mr.Msg, "p_progPLD: response:");
@@ -291,10 +292,10 @@ int p_progPLD(const char *filename, int pldNum)
 
     // ************** progPLD:WriteAddress ****************************************
 
-    ms.DATA[0] = 0x21;	// write Address
-    ms.DATA[1] = ((EPCS_Address & 0xFF0000) >> 16);
+    ms.DATA[0] = 0x21;	// write Address, lowest to highest byte
+    ms.DATA[1] = (EPCS_Address & 0x0000FF);
     ms.DATA[2] = ((EPCS_Address & 0x00FF00) >> 8);
-    ms.DATA[3] = (EPCS_Address & 0x0000FF);
+    ms.DATA[3] = ((EPCS_Address & 0xFF0000) >> 16);
     ms.LEN = 4;
 #ifdef LOCAL_DEBUG
     printCANMsg(ms, "p_progPLD: Sending progPLD:WriteAddress command:");
