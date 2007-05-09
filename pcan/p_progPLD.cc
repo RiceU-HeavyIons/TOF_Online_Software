@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.3 2007-04-20 15:00:54 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.4 2007-05-09 21:55:26 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -93,6 +93,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
   char msgTxt[256];
 #endif
   
+  unsigned int expectedID = ms.ID + 1;
   // send the message
   if ( (errno = CAN_Write(h, &ms)) ) {
     perror("p_progPLD: CAN_Write()");
@@ -119,7 +120,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
     else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
       // now interprete the received message:
       // check if it's a proper response
-      if ( mr.Msg.ID != 0x403 ) {
+      if ( mr.Msg.ID != expectedID ) {
 	cout << "ERROR: " << errorMsg
 	     << " request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
@@ -161,7 +162,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
 }
 
 
-int p_progPLD(const char *filename, int pldNum)
+int p_progPLD(const char *filename, int pldNum, int nodeID)
 {
   char txt[255]; // temporary string storage
   ifstream conf;
@@ -174,7 +175,9 @@ int p_progPLD(const char *filename, int pldNum)
 
   struct timespec timesp;
 
-  cout << "Configuring PLD with filename " << filename << "...\n";
+  cout << "Configuring PLD " << pldNum 
+       << " on nodeID 0x" << hex << nodeID
+       << " with filename " << filename << "...\n";
 
   errno = 0;
 
@@ -255,14 +258,14 @@ int p_progPLD(const char *filename, int pldNum)
   // ***************************************************************************
 
   // ************** progPLD:Start ****************************************
+  // this is a write message (msgID = 0x002)
 
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  ms.ID = 0x0402;
+  ms.ID = 0x002 | (nodeID << 4);
   ms.LEN = 2;
 
   ms.DATA[0] = 0x20;
   ms.DATA[1] = pldNum;
-  //ms.DATA[1] = 0x02;	// program FPGA B (2)
 
   cout << "Starting Bulk Erase...\n";
 #ifdef LOCAL_DEBUG
@@ -409,13 +412,14 @@ int main(int argc, char *argv[])
   cout << vcid << endl;
   cout.flush();
   
-  if ( argc != 3 ) {
-    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #>\n";
+  if ( argc != 4 ) {
+    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #> <nodeID>\n";
     return 1;
   }
   
+  
   int pldNum = atoi(argv[2]);
-  
-  
-  return p_progPLD(argv[1], pldNum);
+  int nodeID = strtol(argv[3], (char **)NULL, 0);
+
+  return p_progPLD(argv[1], pldNum, nodeID);
 }

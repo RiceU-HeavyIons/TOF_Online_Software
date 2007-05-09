@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.2 2007-04-20 15:00:32 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.3 2007-05-09 21:55:26 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -101,7 +101,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
 #ifdef LOCAL_DEBUG
   char msgTxt[256];
 #endif
-  
+  unsigned int expectedID = ms.ID + 1;
 
   // send the message
   if ( (errno = CAN_Write(h, &ms)) ) {
@@ -129,7 +129,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
     else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
       // now interprete the received message:
       // check if it's a proper response
-      if ( mr.Msg.ID != 0x403 ) {
+      if ( mr.Msg.ID != expectedID ) {
 	cout << "ERROR: " << errorMsg 
 	     << " request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
@@ -185,8 +185,8 @@ int send_64bytes(unsigned char *bytes,
   // ************** progMCU:WriteAddress ****************************************
   
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  // ms.ID = 0x2 | nodeID;
-  ms.ID = 0x402;
+  ms.ID = 0x002 | (nodeID << 4);
+  //ms.ID = 0x402;
 
   ms.DATA[0] = 0x21;	// write Address
   ms.DATA[1] = (startAddr & 0x0000FF);
@@ -564,8 +564,8 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
   // And jump to the new program:
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  //ms.ID = 0x2 | nodeID;
-  ms.ID = 0x402;
+  ms.ID = 0x002 | (nodeID<<4);
+  //ms.ID = 0x402;
   ms.LEN = 2;
 
   // "CHANGE_MCU_PROGRAM:Jump_PC"
@@ -599,7 +599,7 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  nodeID = atoi(argv[1]);
+  nodeID = strtol(argv[1], (char **)NULL, 0);
   /*
   if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
@@ -609,7 +609,7 @@ int main(int argc, char *argv[])
   */
   
   if (argc == 4) {
-    devID = atoi(argv[3]);
+    devID = strtol(argv[3],(char **)NULL, 0);
     if (devID > 255) {
       printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
       return -1;
