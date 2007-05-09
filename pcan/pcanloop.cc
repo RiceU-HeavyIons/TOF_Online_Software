@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.14 2006-05-23 21:03:56 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.15 2007-05-09 21:02:34 jschamba Exp $";
 #endif /* lint */
 
 
@@ -64,25 +64,27 @@ void check_err(__u32  err,  char *txtbuff)
 #define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
 
   strcpy(txtbuff, "Error: ") ;
-  if ( err == CAN_ERR_OK )        strcpy(txtbuff, "OK ") ; 		// no error (0x0000)
-  if ( err & CAN_ERR_XMTFULL )    strcat(txtbuff, "XMTFULL ") ; 	// transmit buffer full (0x0001)
-  if ( err & CAN_ERR_OVERRUN )    strcat(txtbuff, "OVERRUN ") ; 	// overrun in receive buffer (0x0002)
-  if ( err & CAN_ERR_BUSLIGHT )   strcat(txtbuff, "BUSLIGHT ") ; 	// bus error, errorcounter limit reached (0x0004)
-  if ( err & CAN_ERR_BUSHEAVY )   strcat(txtbuff, "BUSHEAVY ") ; 	// bus error, errorcounter limit reached (0x0008)
-  if ( err & CAN_ERR_BUSOFF )     strcat(txtbuff, "BUSOFF ") ; 		// bus error, 'bus off' state entered (0x0010)
-  if ( err & CAN_ERR_QRCVEMPTY )  strcat(txtbuff, "QRCVEMPTY ") ; 	// receive queue is empty (0x0020)
-  if ( err & CAN_ERR_QOVERRUN )   strcat(txtbuff, "QOVERRUN ") ; 	// receive queue overrun (0x0040)
-  if ( err & CAN_ERR_QXMTFULL )   strcat(txtbuff, "QXMTFULL ") ; 	// transmit queue full (0x0080)
-  if ( err & CAN_ERR_REGTEST )    strcat(txtbuff, "REGTEST ") ; 	// test of controller registers failed (0x0100)
-  if ( err & CAN_ERR_NOVXD )      strcat(txtbuff, "NOVXD ") ; 		// Win95/98/ME only (0x0200)
-  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) strcat(txtbuff, "HWINUSE ") ;
-  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) strcat(txtbuff, "NETINUSE ") ;
-  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLHW )strcat(txtbuff, "ILLHW ") ;
-  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLCLIENT )strcat(txtbuff, "ILLCLIENT ") ;
-  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLNET ) strcat(txtbuff, "ILLNET ") ;
-  if ( err & CAN_ERR_RESOURCE ) strcat(txtbuff, "RESOURCE ") ;
-  if ( err & CAN_ERR_ILLPARAMTYPE ) strcat(txtbuff, "ILLPARAMTYPE ") ;
-  if ( err & CAN_ERR_ILLPARAMVAL ) strcat(txtbuff, "ILLPARAMVAL ") ;
+  if ( err == CAN_ERR_OK  )		strcpy(txtbuff, "OK ") ;		// 0x0000  // no error
+  if ( err & CAN_ERR_XMTFULL )		strcpy(txtbuff, "XMTFULL ") ;        	// 0x0001  // transmit buffer full
+  if ( err & CAN_ERR_OVERRUN  )		strcpy(txtbuff, "OVERRUN ") ;       	// 0x0002  // overrun in receive buffer
+  if ( err & CAN_ERR_BUSLIGHT )		strcpy(txtbuff, " BUSLIGHT ") ;      	// 0x0004  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSHEAVY )		strcpy(txtbuff, "BUSHEAVY ") ;       	// 0x0008  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSOFF  )		strcpy(txtbuff, "BUSOFF ") ;        	// 0x0010  // bus error, 'bus off' state entered
+  if ( err & CAN_ERR_QRCVEMPTY )	strcpy(txtbuff, "QRCVEMPTY ") ;      	// 0x0020  // receive queue is empty
+  if ( err & CAN_ERR_QOVERRUN )		strcpy(txtbuff, "QOVERRUN") ;    	// 0x0040  // receive queue overrun
+  if ( err & CAN_ERR_QXMTFULL )		strcpy(txtbuff, "QXMTFULL ") ;       	// 0x0080  // transmit queue full 
+  if ( err & CAN_ERR_REGTEST )		strcpy(txtbuff, "REGTEST ") ;        	// 0x0100  // test of controller registers failed
+  if ( err & CAN_ERR_NOVXD )        	strcpy(txtbuff, "NOVXD  ") ;         	// 0x0200  // Win95/98/ME only
+  if ( err & CAN_ERR_RESOURCE )        	strcpy(txtbuff, "RESOURCE  ") ;      	// 0x2000  // can't create resource
+  if ( err & CAN_ERR_ILLPARAMTYPE )	strcpy(txtbuff, "ILLPARAMTYPE  ") ;  	// 0x4000  // illegal parameter
+  if ( err & CAN_ERR_ILLPARAMVAL )     	strcpy(txtbuff, "ILLPARAMVAL ") ;    	// 0x8000  // value out of range
+
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) 	strcat(txtbuff, "HWINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) 	strcat(txtbuff, "NETINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLHW )		strcat(txtbuff, "ILLHW ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLCLIENT )	strcat(txtbuff, "ILLCLIENT ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLNET ) 	strcat(txtbuff, "ILLNET ") ;
+
   return;
 }
 
@@ -121,8 +123,8 @@ int main(int argc, char *argv[])
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   __u16 wBTR0BTR1 = CAN_BAUD_1M;
   //int   nExtended = CAN_INIT_TYPE_ST;
-  int   nExtended = CAN_INIT_TYPE_EX; // open for "extended" message IDs
-  int iteration = 0;
+  int  nExtended = CAN_INIT_TYPE_EX; // open for "extended" message IDs
+  int  iteration = 0;
   char txt[255]; // temporary string storage
   bool saveit = false;
   bool doTimedSave = false;
@@ -167,20 +169,10 @@ int main(int argc, char *argv[])
   signal(SIGINT, signal_handler);
   
   // open the CAN port
-  // please use what is appropriate  
-  // HW_DONGLE_SJA 
-  // HW_DONGLE_SJA_EPP 
-  // HW_ISA_SJA 
-  // HW_PCI 
-  // HW_USB  -- this is the one we are using
-
   for (int i=0; i<8; i++) {
     sprintf(devName, "/dev/pcan%d", 32+i);
-    //h = CAN_Open(HW_USB, dwPort, wIrq);
     h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
     if (h == NULL) {
-      //printf("Failed to open device %s\n", devName);
-      //my_private_exit(errno);
       continue;
     }
     // get the hardware ID from the diag structure:
@@ -189,7 +181,6 @@ int main(int argc, char *argv[])
 	   my_PDiag.wIrqLevel); fflush(stdout);
     if (my_PDiag.wIrqLevel == devID) break;
     CAN_Close(h);
-
   }
 
   if (!h) {
@@ -200,8 +191,6 @@ int main(int argc, char *argv[])
     my_private_exit(errno);
   }
 
-  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
-    
   // get version info
   errno = CAN_VersionInfo(h, txt);
   if (!errno)
@@ -238,14 +227,10 @@ int main(int argc, char *argv[])
   // read in endless loop until Ctrl-C
   while (1) {	//**************** big while loop here ************************
     TPCANMsg m;
+    TPCANRdMsg mr;
     __u32 status;
     int i;
     int parse_input_message(char *, TPCANMsg *);
-    
-    
-    struct pollfd pfd;
-    pfd.fd = pcd->nFileNo;
-    pfd.events = POLLIN;
     
     iteration++;
     //printf("Iteration %d\r", iteration);
@@ -384,99 +369,91 @@ int main(int argc, char *argv[])
 	  printf("\n");fflush(stdout);
 	  
 	  // new: send the message even with extended message IDs
-	  //if (!(m.MSGTYPE & MSGTYPE_EXTENDED)) {  
 	  // send the message
 	  if ( (errno = CAN_Write(h, &m)) ) {
 	    perror("pcanloop: CAN_Write()");
 	    my_private_exit(errno);
 	  }
-	  //}
 	}
       }
       
     }
 
-    errno = poll(&pfd, 1, 1000); // timeout = 1 second
-    //printf("poll returned 0x%x\n", errno);
-    //printf("revents = 0x%x\n", pfd.revents);
-    
-    if (errno == 1) { // data received
-      if ((errno = CAN_Read(h, &m))) {
-	perror("pcanloop: CAN_Read()");
-	my_private_exit(errno);
+
+    errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
+
+    if (errno == 0) { // data received
+
+      if (printReceived) {
+	printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
+	       (mr.Msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+	       (mr.Msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+	       mr.Msg.ID, 
+	       mr.Msg.LEN); 
+	
+	for (i = 0; i < mr.Msg.LEN; i++)
+	  printf("0x%02x ", mr.Msg.DATA[i]);
+	printf("\n");fflush(stdout);
       }
-      else { // data read
-	if (printReceived) {
-	  printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
-		 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-		 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-		 m.ID, 
-		 m.LEN); 
+      
+      if (writeResponse) {
+	write(respFifoFd, &(mr.Msg), sizeof(m));
+      }
+      
+      // check if a CAN status is pending	     
+      if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+	  perror("pcanloop: CAN_Status()");
+	  my_private_exit(errno);
+	}
+	else {
+	  check_err(status, txt);
+	  printf("%s\n", txt);
+	  //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	}
+	fflush(stdout);
+      } 
+      else if ((mr.Msg.MSGTYPE == MSGTYPE_STANDARD) || (mr.Msg.MSGTYPE == MSGTYPE_EXTENDED)) {
+	if (((mr.Msg.ID &  0x00000FFF) == 0x101) && saveit) { // a DATA_TO_PC packet
+	  numEvents++;
+	  // save start time
+	  if (numEvents == 1) {
+	    start_time = time(theTime);
+	  }
+	  curr_time = time(theTime);
+	  elapsed_time = curr_time - start_time;
 	  
-	  for (i = 0; i < m.LEN; i++)
-	    printf("0x%02x ", m.DATA[i]);
-	  printf("\n");fflush(stdout);
-	}
-	
-	if (writeResponse) {
-	  write(respFifoFd, &m, sizeof(m));
-	}
-	
-	// check if a CAN status is pending	     
-	if (m.MSGTYPE & MSGTYPE_STATUS) {
-	  status = CAN_Status(h);
-	  if ((int)status < 0) {
-	    errno = nGetLastError();
-	    perror("pcanloop: CAN_Status()");
-	    my_private_exit(errno);
+	  for (i=0; i<4; i++)
+	    uc_ptr[i] = mr.Msg.DATA[i];
+	  if(filterit) {
+	    if ( (buffer[0]&0xf0000000) != 0xe0000000)
+	      fprintf(fp, "0x%08x\n", buffer[0]);
 	  }
 	  else {
-	    check_err(status, txt);
-	    printf("%s\n", txt);
-	    //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	    if (addTime)
+	      if ( (buffer[0]&0xff000000) == 0xea000000)
+		buffer[0] |= (curr_time & 0x00ffffff);
+	    fprintf(fp, "0x%08x\n", buffer[0]);
 	  }
-	  fflush(stdout);
-	} 
-	else if ((m.MSGTYPE == MSGTYPE_STANDARD) || (m.MSGTYPE == MSGTYPE_EXTENDED)) {
-	  if (((m.ID &  0x1F000780) == 0x0) && saveit) { // a DATA_TO_PC packet
-	    numEvents++;
-	    // save start time
-	    if (numEvents == 1) {
-	      start_time = time(theTime);
-	    }
-	    curr_time = time(theTime);
-	    elapsed_time = curr_time - start_time;
-
-	    for (i=0; i<4; i++)
-	      uc_ptr[3-i] = m.DATA[i];
+	  if (mr.Msg.LEN == 8) {
+	    for (i=4; i<8; i++)
+	      uc_ptr[i] = mr.Msg.DATA[i];
 	    if(filterit) {
-	      if ( (buffer[0]&0xf0000000) != 0xe0000000)
-		fprintf(fp, "0x%08x\n", buffer[0]);
+	      if ( (buffer[1]&0xf0000000) != 0xe0000000)
+		fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
 	    else {
 	      if (addTime)
-		if ( (buffer[0]&0xff000000) == 0xea000000)
-		  buffer[0] |= (curr_time & 0x00ffffff);
-	      fprintf(fp, "0x%08x\n", buffer[0]);
-	    }
-	    if (m.LEN == 8) {
-	      for (i=4; i<8; i++)
-		uc_ptr[11-i] = m.DATA[i];
-	      if(filterit) {
-		if ( (buffer[1]&0xf0000000) != 0xe0000000)
-		  fprintf(fp, "0x%08x\n", buffer[1]);
-	      }
-	      else {
-		if (addTime)
-		  if ( (buffer[1]&0xff000000) == 0xea000000)
-		    buffer[1] |= (curr_time & 0x00ffffff);
-		fprintf(fp, "0x%08x\n", buffer[1]);
-	      }
+		if ( (buffer[1]&0xff000000) == 0xea000000)
+		  buffer[1] |= (curr_time & 0x00ffffff);
+	      fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
 	  }
 	}
-
-      } // data read
+      }
+      
     } // data received
     else {
       status = CAN_Status(h);
