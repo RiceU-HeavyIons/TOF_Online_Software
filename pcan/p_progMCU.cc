@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.3 2007-05-09 21:55:26 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.4 2007-05-11 16:50:50 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -16,42 +16,27 @@ static char  __attribute__ ((unused)) vcid[] =
 // INCLUDES
 // C++ header file
 #include <iostream>
-#include <iomanip>
 #include <fstream>
-#include <sstream>
-#include <string>
 using namespace std;
 
 // other headers
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <sys/poll.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 // pcan include file
 #include <libpcan.h>
+
+// local utilities
+#include "can_utils.h"
+
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
 ifstream hexfile;
 
-#define LOCAL_STRING_LEN 64       // length of internal used strings
-typedef struct
-{
-  char szVersionString[LOCAL_STRING_LEN];
-  char szDevicePath[LOCAL_STRING_LEN];
-  int  nFileNo;
-} PCAN_DESCRIPTOR;
-PCAN_DESCRIPTOR *pcd;
-
-struct pollfd pfd;
-
 //****************************************************************************
 // LOCALS
-
 
 
 //****************************************************************************
@@ -76,98 +61,6 @@ static void my_private_exit(int error)
 static void signal_handler(int signal)
 {
   my_private_exit(0);
-}
-
-//
-//****************************************************************************
-void printCANMsg(const TPCANMsg &msg, const char *msgTxt)
-{
-  printf("%s: %c %c 0x%03x %1d  ",
-	 msgTxt,
-	 (msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 msg.ID, 
-	 msg.LEN); 
-  for (int i = 0; i < msg.LEN; i++)
-    printf("0x%02x ", msg.DATA[i]);
-  printf("\n");
-}
-
-//****************************************************************************
-int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
-{
-  TPCANRdMsg mr;
-  __u32 status;
-#ifdef LOCAL_DEBUG
-  char msgTxt[256];
-#endif
-  unsigned int expectedID = ms.ID + 1;
-
-  // send the message
-  if ( (errno = CAN_Write(h, &ms)) ) {
-    perror("p_progMCU: CAN_Write()");
-    return(errno);
-  }
-  
-  errno = LINUX_CAN_Read_Timeout(h, &mr, 60000000); // timeout = 60 seconds
-  if (errno == 0 ) { // data received
-#ifdef LOCAL_DEBUG
-    sprintf(msgTxt, "%s, message received", errorMsg);
-    printCANMsg(mr.Msg, msgTxt);
-#endif
-    // check if a CAN status is pending	     
-    if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
-      status = CAN_Status(h);
-      if ((int)status < 0) {
-	errno = nGetLastError();
-	perror("p_progMCU: CAN_Status()");
-	return(errno);
-      }
-      else
-	cout << "p_progMCU: pending CAN status " << showbase << hex << status << " read.\n";
-    } 
-    else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
-      // now interprete the received message:
-      // check if it's a proper response
-      if ( mr.Msg.ID != expectedID ) {
-	cout << "ERROR: " << errorMsg 
-	     << " request: Got something other than writeResponse: ID " 
-	     << showbase << hex << (unsigned int)mr.Msg.ID 
-	     << ", expected response to " << (unsigned int)ms.ID << endl;	
-	printCANMsg(mr.Msg, "p_progMCU: response:");
-	return (-2);
-      }
-      if (mr.Msg.LEN != ms.LEN) { // check for correct length
-	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
-	     << dec << (int)mr.Msg.LEN << ", expected " << (int)ms.LEN << endl;
-	cout << errorMsg << " response: first byte: " 
-	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
-	     << " expected " << (unsigned int)ms.DATA[0] << endl;
-	printCANMsg(mr.Msg, "p_progMCU: response");
-	return (-3);
-      }
-      if (mr.Msg.DATA[0] != ms.DATA[0]) {
-	cout << errorMsg << " response: first byte: " 
-	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
-	     << " expected " << (unsigned int)ms.DATA[0] << endl;
-	printCANMsg(mr.Msg, "p_progMCU: response:");
-	return (-4);
-      }
-      // Message is good, continue
-      
-      
-    } // data read
-  } // data received
-  else if (errno == CAN_ERR_QRCVEMPTY) {	
-    cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within 60 sec" << endl;
-    return (-5);
-  }
-  else {// other read error
-    cout << "LINUX_CAN_Read_Timeout returned " << errno << endl;
-    return (-6);
-  }
-
-  return 0;
 }
 
 
@@ -258,7 +151,7 @@ int send_64bytes(unsigned char *bytes,
   printCANMsg(ms, "p_progMCU: Sending progMCU:Program64 command:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_progMCU: progMCU:Program64") != 0) {
+  if ( sendCAN_and_Compare(ms, "p_progMCU: progMCU:Program64", 1000000) != 0) { // timeout = 1 sec
     my_private_exit(errno);
   }
   
@@ -271,14 +164,10 @@ int send_64bytes(unsigned char *bytes,
 // here all is done
 int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 {
-  char txt[255]; // temporary string storage
   string buf;
   int checksum_64, final_checksum;
   unsigned int startAddr, endAddr;
   unsigned  char pgmByte[64];
-
-  TPDIAG my_PDiag;
-  char devName[255];
   bool firstRecord;
 
   cout << "Changing MCU program at NodeID 0x" << hex << nodeID
@@ -308,49 +197,10 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   signal(SIGINT, signal_handler);
   
 
-  // search for correct device ID:
-  for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
-    h = LINUX_CAN_Open(devName, O_RDWR);
-    if (h == NULL) {
-      //printf("Failed to open device %s\n", devName);
-      //my_private_exit(errno);
-      continue;
-    }
-    // get the hardware ID from the diag structure:
-    LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
-    if (my_PDiag.wIrqLevel == devID) break;
-    CAN_Close(h);
-  }
-
-  if (!h) {
-    printf("Device ID 0x%x not found, exiting\n", devID);
-    errno = nGetLastError();
-    perror("p_progMCU: CAN_Open()");
+  if((errno = openCAN(devID)) != 0) {
     my_private_exit(errno);
   }
 
-    
-  // get version info
-  errno = CAN_VersionInfo(h, txt);
-  if (!errno) {
-#ifdef LOCAL_DEBUG
-    cout << "p_progMCU: driver version = "<< txt << endl;
-#endif
-  }
-  else {
-    perror("p_progMCU: CAN_VersionInfo()");
-    my_private_exit(errno);
-  }
-
-  // open CAN Port, init PCAN-USB
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
-  if (errno) {
-    perror("p_progMCU: CAN_Init()");
-    my_private_exit(errno);
-  } 
   
   // swallow any packets that might be present first
   TPCANRdMsg mr;
@@ -539,7 +389,9 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   // Do a final checksum
 
   TPCANMsg ms;
-  /*
+
+#ifdef OLD_TDIG
+
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
   ms.ID = 0x2 | nodeID;
   ms.LEN = 2;
@@ -556,11 +408,10 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #endif
   
   errno = 0;
-  if ( sendCAN_and_Compare(ms, "CHANGE_MCU_PROGRAM:Final_chksum") != 0)
+  if ( sendCAN_and_Compare(ms, "CHANGE_MCU_PROGRAM:Final_chksum", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
-  */
-
+#endif
 
   // And jump to the new program:
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
@@ -577,7 +428,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #endif
 
   errno = 0;
-  sendCAN_and_Compare(ms, "CHANGE_MCU_PROGRAM:Jump_PC");
+  sendCAN_and_Compare(ms, "CHANGE_MCU_PROGRAM:Jump_PC", 5000000); // timeout = 5 sec
   
   my_private_exit(errno);
   

@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.4 2007-05-09 21:55:26 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.5 2007-05-11 16:50:50 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -23,12 +23,13 @@ using namespace std;
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
-#include <fcntl.h>
+//#include <time.h>
+
+// pcan include file
 #include <libpcan.h>
-#include <sys/poll.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <time.h>
+
+// local utilities
+#include "can_utils.h"
 
 //****************************************************************************
 // DEFINES
@@ -68,112 +69,14 @@ static void signal_handler(int signal)
 }
 
 
-
-//
-//****************************************************************************
-void printCANMsg(const TPCANMsg &msg, const char *msgTxt)
+// everything happens here
+int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 {
-  printf("%s: %c %c 0x%03x %1d  ",
-	 msgTxt,
-	 (msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 msg.ID, 
-	 msg.LEN); 
-  for (int i = 0; i < msg.LEN; i++)
-    printf("0x%02x ", msg.DATA[i]);
-  printf("\n");
-}
-
-//****************************************************************************
-int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
-{
-  TPCANRdMsg mr;
-  __u32 status;
-#ifdef LOCAL_DEBUG
-  char msgTxt[256];
-#endif
-  
-  unsigned int expectedID = ms.ID + 1;
-  // send the message
-  if ( (errno = CAN_Write(h, &ms)) ) {
-    perror("p_progPLD: CAN_Write()");
-    return(errno);
-  }
-  
-  errno = LINUX_CAN_Read_Timeout(h, &mr, 60000000); // timeout = 60 seconds
-  if (errno == 0 ) { // data received
-#ifdef LOCAL_DEBUG
-    sprintf(msgTxt, "%s, message received", errorMsg);
-    printCANMsg(mr.Msg, msgTxt);
-#endif
-    // check if a CAN status is pending	     
-    if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
-      status = CAN_Status(h);
-      if ((int)status < 0) {
-	errno = nGetLastError();
-	perror("p_progPLD: CAN_Status()");
-	return(errno);
-      }
-      else
-	cout << "p_progPLD: pending CAN status " << showbase << hex << status << " read.\n";
-    } 
-    else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
-      // now interprete the received message:
-      // check if it's a proper response
-      if ( mr.Msg.ID != expectedID ) {
-	cout << "ERROR: " << errorMsg
-	     << " request: Got something other than writeResponse: ID " 
-	     << showbase << hex << (unsigned int)mr.Msg.ID 
-	     << ", expected response to " << (unsigned int)ms.ID << endl;	
-	printCANMsg(mr.Msg, "p_progPLD: response:");
-	return (-2);
-      }
-      if (mr.Msg.LEN != ms.LEN) { // check for correct length
-	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
-	     << dec << (int)mr.Msg.LEN << ", expected " << (int)ms.LEN << endl;
-	cout << errorMsg << " response: first byte: " 
-	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
-	     << " expected " << (unsigned int)ms.DATA[0] << endl;
-	printCANMsg(mr.Msg, "p_progPLD: response:");
-	return (-3);
-      }
-      if (mr.Msg.DATA[0] != ms.DATA[0]) {
-	cout << errorMsg << " response: first byte: " 
-	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
-	     << " expected " << (unsigned int)ms.DATA[0] << endl;
-	printCANMsg(mr.Msg, "p_progPLD: response:");
-	return (-4);
-      }
-      // Message is good, continue
-      
-      
-    } // data read
-  } // data received
-  else if (errno == CAN_ERR_QRCVEMPTY) {	
-    cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within 60 sec" << endl;
-    return (-5);
-  }
-  else {// other read error
-    cout << "LINUX_CAN_Read_Timeout returned " << errno << endl;
-    return (-6);
-  }
-
-  return 0;
-}
-
-
-int p_progPLD(const char *filename, int pldNum, int nodeID)
-{
-  char txt[255]; // temporary string storage
   ifstream conf;
   unsigned char confByte[256];
   int fileSize, noPages;
 
-  TPDIAG my_PDiag;
-  char devName[255];
-  WORD devID = 255;
-
-  struct timespec timesp;
+  // struct timespec timesp;
 
   cout << "Configuring PLD " << pldNum 
        << " on nodeID 0x" << hex << nodeID
@@ -194,58 +97,17 @@ int p_progPLD(const char *filename, int pldNum, int nodeID)
   fileSize = conf.tellg();
   noPages = fileSize/256;
 
-  timesp.tv_sec = 0;
-  timesp.tv_nsec = 1000;	// 1 ms
+  // timesp.tv_sec = 0;
+  // timesp.tv_nsec = 1000;	// 1 ms
 
   cout << "Filesize = " << fileSize << " bytes, " << fileSize/1024 << " kbytes, "
        << noPages << " pages\n";
 
   conf.seekg(0,ios::beg);    // move file pointer to beginning of file
 
-
-  // search for correct device ID:
-  for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
-    h = LINUX_CAN_Open(devName, O_RDWR);
-    if (h == NULL) {
-      //printf("Failed to open device %s\n", devName);
-      //my_private_exit(errno);
-      continue;
-    }
-    // get the hardware ID from the diag structure:
-    LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
-    if (my_PDiag.wIrqLevel == devID) break;
-    CAN_Close(h);
-  }
-
-  if (!h) {
-    printf("Device ID 0x%x not found, exiting\n", devID);
-    errno = nGetLastError();
-    perror("p_progPLD: CAN_Open()");
+  if((errno = openCAN(devID)) != 0) {
     my_private_exit(errno);
   }
-
-    
-  // get version info
-  errno = CAN_VersionInfo(h, txt);
-  if (!errno) {
-#ifdef LOCAL_DEBUG
-    cout << "p_progPLD: driver version = "<< txt << endl;
-#endif
-  }
-  else {
-    perror("p_progPLD: CAN_VersionInfo()");
-    my_private_exit(errno);
-  }
-
-  // open CAN Port for TDIG, init PCAN-USB
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
-  if (errno) {
-    perror("p_progPLD: CAN_Init()");
-    my_private_exit(errno);
-  } 
   
   cout << "Starting Configuration Procedure....\n";
 
@@ -272,7 +134,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID)
   printCANMsg(ms, "p_progPLD: Sending progPLD:Start command:");
 #endif
 
-  if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Start") != 0)
+  if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Start", 60000000) != 0) // timeout = 60 sec
     my_private_exit(errno);
 
   cout << "Bulk Erase finished...\nStarting page programming...\n";
@@ -368,7 +230,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID)
     printCANMsg(ms, "p_progPLD: Sending progPLD:Program256 command:");
 #endif
     
-    if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Program256") != 0) {
+    if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Program256", 1000000) != 0) { // timeout = 1sec
       cout << "page = " << dec << page << endl;
       my_private_exit(errno);
     }
@@ -388,7 +250,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID)
     printCANMsg(ms, "p_progPLD: Sending progPLD:asDone command:");
 #endif
 
-    if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:asDone") != 0)
+    if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:asDone", 1000000) != 0) // timeout = 1 sec
       my_private_exit(errno);
 
 
@@ -409,17 +271,26 @@ int p_progPLD(const char *filename, int pldNum, int nodeID)
 
 int main(int argc, char *argv[])
 {
+  WORD devID = 255;
+
   cout << vcid << endl;
   cout.flush();
   
-  if ( argc != 4 ) {
-    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #> <nodeID>\n";
+  if ( argc < 4 ) {
+    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #> <nodeID> [<devID>]\n";
     return 1;
   }
   
   
   int pldNum = atoi(argv[2]);
   int nodeID = strtol(argv[3], (char **)NULL, 0);
+  if (argc == 5) {
+    devID = strtol(argv[4],(char **)NULL, 0);
+    if (devID > 255) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      return -1;
+    }
+  }
 
-  return p_progPLD(argv[1], pldNum, nodeID);
+  return p_progPLD(argv[1], pldNum, nodeID, devID);
 }

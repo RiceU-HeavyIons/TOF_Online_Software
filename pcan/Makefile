@@ -1,4 +1,7 @@
 # $Id$
+
+CXXFLAGS += -Wall
+
 all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold \
 		p_config_run5 p_config_bench analyze_noise clientpc \
 		p_progPLD p_progMCU
@@ -24,13 +27,13 @@ pcanloop2:	pcanloop2.cc
 clientpc:	clientpc.c
 	$(CXX) -Wall $^ -o $@ -lpcan
 
-p_progPLD:	p_progPLD.cc
-	$(CXX) -Wall $^ -o $@ -lpcan
+p_progPLD:	p_progPLD.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
 
-p_progMCU:	p_progMCU.cc
-	$(CXX) -Wall $^ -o $@ -lpcan
+p_progMCU:	p_progMCU.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
 
 clean:
 	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
 		p_config_run5 p_config_bench analyze_noise clientpc \
-		p_progPLD p_progMCU
+		p_progPLD p_progMCU can_utils.o
