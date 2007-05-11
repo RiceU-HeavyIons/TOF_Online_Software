@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getStatus.cc,v 1.1 2007-05-11 20:17:29 jschamba Exp $";
+"$Id: getStatus.cc,v 1.2 2007-05-11 20:19:42 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -34,7 +34,7 @@ using namespace std;
 
 //****************************************************************************
 // DEFINES
-#define LOCAL_DEBUG
+  //#define LOCAL_DEBUG
 
 #define FIFO_FILE       "/tmp/pcanfifo"
 #define FIFO_RESPONSE "/tmp/pcanfifoRsp"
