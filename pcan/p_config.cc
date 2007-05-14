@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.7 2005-02-10 21:18:21 jschamba Exp $";
+"$Id: p_config.cc,v 1.8 2007-05-14 15:05:36 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -24,10 +24,16 @@ using namespace std;
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <libpcan.h>
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+
+// pcan include file
+#include <libpcan.h>
+
+// local utilities
+#include "can_utils.h"
 
 //****************************************************************************
 // DEFINES
@@ -74,97 +80,6 @@ static void signal_handler(int signal)
 
 
 
-//
-//****************************************************************************
-void printCANMsg(const TPCANMsg &msg, const char *msgTxt)
-{
-  printf("%s: %c %c 0x%03x %1d  ",
-	 msgTxt,
-	 (msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 msg.ID, 
-	 msg.LEN); 
-  for (int i = 0; i < msg.LEN; i++)
-    printf("0x%02x ", msg.DATA[i]);
-  printf("\n");
-}
-
-//****************************************************************************
-int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg)
-{
-  TPCANMsg mr;
-  __u32 status;
-#ifdef LOCAL_DEBUG
-  char msgTxt[256];
-#endif
-  
-  // send the message
-  if ( (errno = CAN_Write(h, &ms)) ) {
-    perror("p_config: CAN_Write()");
-    return(errno);
-  }
-  
-  errno = poll(&pfd, 1, 1000); // timeout = 1 seconds
-  
-  if (errno == 1) { // data received
-    if ((errno = CAN_Read(h, &mr))) {
-      perror("p_config: CAN_Read()");
-      return(errno);
-    }
-    else { // data read
-#ifdef LOCAL_DEBUG
-      sprintf(msgTxt, "%s, message received", errorMsg);
-      printCANMsg(mr, msgTxt);
-#endif
-      // check if a CAN status is pending	     
-      if (mr.MSGTYPE & MSGTYPE_STATUS) {
-	status = CAN_Status(h);
-	if ((int)status < 0) {
-	  errno = nGetLastError();
-	  perror("p_config: CAN_Status()");
-	  return(errno);
-	}
-	else
-	  cout << "p_config: pending CAN status " << showbase << hex << status << " read.\n";
-      } 
-      else if (mr.MSGTYPE == MSGTYPE_STANDARD) {
-	// now interprete the received message:
-	// check if it's a proper response: should be either TDC_CONFIG or DEBUG response
-	if ( ( mr.ID != (0x180 | (ms.ID&0x07f)) ) && ( mr.ID != (0x480 | (ms.ID&0x07f)) ) ) {
-	  cout << "p_config request: Got something other than p_config response: ID " 
-	       << showbase << hex << (unsigned int)mr.ID 
-	       << ", expected response to " << (unsigned int)ms.ID << endl;	
-	  return (-2);
-	}
-	if (mr.LEN != ms.LEN) { // check for correct length
-	  cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length" 
-	       << dec << (int)mr.LEN << ", expected " << (int)ms.LEN << endl;
-	  cout << errorMsg << " response: first byte: " 
-	       << showbase << hex << (unsigned int)mr.DATA[0] 
-	       << " expected " << (unsigned int)ms.DATA[0] << endl;
-	  return (-3);
-	}
-	if (mr.DATA[0] != ms.DATA[0]) {
-	  cout << errorMsg << " response: first byte: " 
-	       << showbase << hex << (unsigned int)mr.DATA[0] 
-	       << " expected " << (unsigned int)ms.DATA[0] << endl;
-	  return (-4);
-	}
-	// Message is good, continue
-
-      }
-      
-    } // data read
-  } // data received
-  else {	
-    cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within 1 sec" << endl;
-    return (-5);
-  }
-  return 0;
-}
-
-
-
 //**********************************************
 // here all is done
 //*********************************************
@@ -174,7 +89,6 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   int i,j;
-  char txt[255]; // temporary string storage
   unsigned char sendData;
 
   bool isHexEntry = false;
@@ -184,9 +98,6 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   unsigned char confByte[81];
   unsigned int tempval;
   char buffer[255];
-
-  TPDIAG my_PDiag;
-  char devName[255];
 
   cout << "Configuring TDC " << TDC
        << " at NodeID 0x" << hex << nodeID
@@ -238,57 +149,11 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 
   conf.close();
   
-  // open the CAN port
-  // please use what is appropriate  
-  // HW_DONGLE_SJA 
-  // HW_DONGLE_SJA_EPP 
-  // HW_ISA_SJA 
-  // HW_PCI 
-  // HW_USB  -- this is the one we are using
 
-  //h = CAN_Open(HW_USB, dwPort, wIrq);
-  //h = LINUX_CAN_Open("/dev/pcan32", O_RDWR|O_NONBLOCK);
-
-  // search for correct device ID:
-  for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
-    //h = CAN_Open(HW_USB, dwPort, wIrq);
-    h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
-    if (h == NULL) {
-      //printf("Failed to open device %s\n", devName);
-      //my_private_exit(errno);
-      continue;
-    }
-    // get the hardware ID from the diag structure:
-    LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
-    if (my_PDiag.wIrqLevel == devID) break;
-    CAN_Close(h);
-  }
-
-  if (!h) {
-    printf("Device ID 0x%x not found, exiting\n", devID);
-    errno = nGetLastError();
-    perror("p_config: CAN_Open()");
+  if((errno = openCAN(devID)) != 0) {
     my_private_exit(errno);
   }
 
-  PCAN_DESCRIPTOR *pcd = (PCAN_DESCRIPTOR *)h;
-  
-    
-  // get version info
-  errno = CAN_VersionInfo(h, txt);
-  if (!errno) {
-#ifdef LOCAL_DEBUG
-    cout << "p_config: driver version = "<< txt << endl;
-#endif
-  }
-  else {
-    perror("p_config: CAN_VersionInfo()");
-    my_private_exit(errno);
-  }
-  
   // TDCs 1-4 are encoded in the CAN MsgID as follows:
   // MsgID[5:4] = 00  => TDC1
   // MSgID[5:4] = 01  => TDC2
@@ -296,19 +161,9 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   // MSgID[5:4] = 11  => TDC4
   TDCVal = (TDC-1)<<4;
 
-  // open CAN Port for TDIG, init PCAN-USB
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
-  if (errno) {
-    perror("p_config: CAN_Init()");
-    my_private_exit(errno);
-  } 
-  
   cout << "Starting Configuration Procedure....\n";
 
   TPCANMsg ms;
-    
-  pfd.fd = pcd->nFileNo;
-  pfd.events = POLLIN;
     
 
   // ***************************************************************************
@@ -326,7 +181,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Start command:");
 #endif
 
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Start") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Start", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   
@@ -342,7 +197,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA") != 0)
+    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA", 1000000) != 0) // timeout = 1 sec
       my_private_exit(errno);
 
   } // end "for(i=1, ... " loop
@@ -359,7 +214,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
   
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA 12:") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA 12:", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   // *************************** CONFIGURE_TDC:Config_end *************************
@@ -371,7 +226,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
 
 
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Config_end:") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Config_end:", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -382,7 +237,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Program packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Program:") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Program:", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -400,7 +255,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending DEBUG:TDC_Reset_Assert packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:Assert_TDC_Reset") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:Assert_TDC_Reset", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -411,7 +266,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending DEBUG:TDC_Reset_Deassert packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:Deassert_TDC_Reset") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:Deassert_TDC_Reset", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
 
@@ -427,7 +282,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending DEBUG:PLD_Reset packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:PLD_Reset") != 0)
+  if ( sendCAN_and_Compare(ms, "p_config: DEBUG:PLD_Reset", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
