@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.1 2007-05-11 16:50:50 jschamba Exp $";
+"$Id: can_utils.cc,v 1.2 2007-05-17 21:22:23 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -106,7 +106,7 @@ int openCAN(WORD devID)
 }
 
 //****************************************************************************
-int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout)
+int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout, unsigned int expectedReceiveLen)
 {
   TPCANRdMsg mr;
   __u32 status;
@@ -149,7 +149,8 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout)
 	printCANMsg(mr.Msg, "response:");
 	return (-2);
       }
-      if (mr.Msg.LEN != ms.LEN) { // check for correct length
+      if (expectedReceiveLen == 0xffffffff) expectedReceiveLen = ms.LEN;
+      if (mr.Msg.LEN != expectedReceiveLen) { // check for correct length
 	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
 	     << dec << (int)mr.Msg.LEN << ", expected " << (int)ms.LEN << endl;
 	cout << errorMsg << " response: first byte: " 

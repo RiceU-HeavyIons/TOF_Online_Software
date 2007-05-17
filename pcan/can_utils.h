@@ -4,6 +4,6 @@
 
 extern void printCANMsg(const TPCANMsg &, const char *);
 extern int openCAN(WORD);
-extern int sendCAN_and_Compare(TPCANMsg &, const char *, const int);
+extern int sendCAN_and_Compare(TPCANMsg &, const char *, const int, unsigned int = 0xffffffff);
 
 #endif // __CAN_UTILS_H__
