@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.8 2007-05-14 15:05:36 jschamba Exp $";
+"$Id: p_config.cc,v 1.9 2007-05-17 21:23:26 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -37,7 +37,8 @@ using namespace std;
 
 //****************************************************************************
 // DEFINES
-#define TDIG
+//#define TDIG
+#define TDIG_D
 
 //****************************************************************************
 // GLOBALS
@@ -89,10 +90,8 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   int i,j;
-  unsigned char sendData;
 
   bool isHexEntry = false;
-  int TDCVal; // value used to encode TDC ID in CAN msg ID (equal to 0, if using a Jalapeno board)
 
   ifstream conf;
   unsigned char confByte[81];
@@ -154,17 +153,105 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
     my_private_exit(errno);
   }
 
+
+  cout << "Starting Configuration Procedure....\n";
+
+  TPCANMsg ms;
+  TPCANRdMsg mr;
+
+
+  // swallow any packets that might be present first
+  errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
+  
+#ifdef TDIG_D
+  // ************** CONFIGURE_TDC:Write Block Start ****************************************
+  int nodeIDVal = (nodeID & 0x7) << 4;
+
+  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.ID = 0x102 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
+  ms.LEN = 1;
+
+  // "CONFIGURE_TDC:Start"
+  ms.DATA[0] = 0x10;
+
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Start command:");
+#endif
+
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Start", 1000000) != 0) // timeout = 1 sec
+    my_private_exit(errno);
+
+  
+  // *************** "CONFIGURE_TDC:Data", 11 messages with 7 bytes each ***********
+  ms.LEN = 8;
+
+  for (i=1; i<12; i++) {
+    ms.DATA[0] = 0x20 | i;
+    for (j=0; j<7; j++) ms.DATA[j+1] = confByte[(i-1)*7+j];
+    
+#ifdef LOCAL_DEBUG
+    printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:DATA packet:");
+#endif
+    
+    
+    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA", 1000000) != 0) // timeout = 1 sec
+      my_private_exit(errno);
+
+  } // end "for(i=1, ... " loop
+
+
+  // **************** "CONFIGURE_TDC:Data", ... and 1 last message with 4 bytes ******
+  ms.LEN = 5;
+
+  for (j=0; j<4; j++) ms.DATA[j+1] = confByte[77+j];
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:DATA packet 12:");
+#endif
+  
+  
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA 12:", 1000000) != 0) // timeout = 1 sec
+    my_private_exit(errno);
+
+  // *************************** CONFIGURE_TDC:Write Block End *************************
+  ms.LEN = 1;
+  ms.DATA[0] = 0x30;
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block End packet:");
+#endif
+
+
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block End:", 1000000, 8) != 0) // timeout = 1 sec
+    my_private_exit(errno);
+  
+
+  // ****************************** "CONFIGURE_TDC:Write Block Target" **********************
+  ms.DATA[0] = 0x40 | (TDC&0x3);
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block Target packet:");
+#endif
+  
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target:", 1000000, 2) != 0) // timeout = 1 sec
+    my_private_exit(errno);
+  
+
+
+  // ************************* finished !!!! ****************************************
+  // ********************************************************************************
+
+
+// ********************************************************************************
+// ********************************** old HLP Protocol ****************************
+// ********************************************************************************
+#else // old TDIG
   // TDCs 1-4 are encoded in the CAN MsgID as follows:
   // MsgID[5:4] = 00  => TDC1
   // MSgID[5:4] = 01  => TDC2
   // MsgID[5:4] = 10  => TDC3
   // MSgID[5:4] = 11  => TDC4
-  TDCVal = (TDC-1)<<4;
-
-  cout << "Starting Configuration Procedure....\n";
-
-  TPCANMsg ms;
-    
+  int TDCVal = (TDC-1)<<4;
 
   // ***************************************************************************
 
@@ -231,7 +318,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   
 
   // ****************************** "CONFIGURE_TDC:Program" **********************
-  ms.DATA[0] = sendData = 0xc0;
+  ms.DATA[0] = 0xc0;
   
 #ifdef LOCAL_DEBUG
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Program packet:");
@@ -288,6 +375,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 
   // ************************* finished !!!! ****************************************
   // ********************************************************************************
+#endif
 
   cout << "... Configuration finished successfully.\n";
 
