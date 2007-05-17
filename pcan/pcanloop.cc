@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.15 2007-05-09 21:02:34 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.16 2007-05-17 21:25:59 jschamba Exp $";
 #endif /* lint */
 
 
@@ -64,20 +64,20 @@ void check_err(__u32  err,  char *txtbuff)
 #define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
 
   strcpy(txtbuff, "Error: ") ;
-  if ( err == CAN_ERR_OK  )		strcpy(txtbuff, "OK ") ;		// 0x0000  // no error
-  if ( err & CAN_ERR_XMTFULL )		strcpy(txtbuff, "XMTFULL ") ;        	// 0x0001  // transmit buffer full
-  if ( err & CAN_ERR_OVERRUN  )		strcpy(txtbuff, "OVERRUN ") ;       	// 0x0002  // overrun in receive buffer
-  if ( err & CAN_ERR_BUSLIGHT )		strcpy(txtbuff, " BUSLIGHT ") ;      	// 0x0004  // bus error, errorcounter limit reached
-  if ( err & CAN_ERR_BUSHEAVY )		strcpy(txtbuff, "BUSHEAVY ") ;       	// 0x0008  // bus error, errorcounter limit reached
-  if ( err & CAN_ERR_BUSOFF  )		strcpy(txtbuff, "BUSOFF ") ;        	// 0x0010  // bus error, 'bus off' state entered
-  if ( err & CAN_ERR_QRCVEMPTY )	strcpy(txtbuff, "QRCVEMPTY ") ;      	// 0x0020  // receive queue is empty
-  if ( err & CAN_ERR_QOVERRUN )		strcpy(txtbuff, "QOVERRUN") ;    	// 0x0040  // receive queue overrun
-  if ( err & CAN_ERR_QXMTFULL )		strcpy(txtbuff, "QXMTFULL ") ;       	// 0x0080  // transmit queue full 
-  if ( err & CAN_ERR_REGTEST )		strcpy(txtbuff, "REGTEST ") ;        	// 0x0100  // test of controller registers failed
-  if ( err & CAN_ERR_NOVXD )        	strcpy(txtbuff, "NOVXD  ") ;         	// 0x0200  // Win95/98/ME only
-  if ( err & CAN_ERR_RESOURCE )        	strcpy(txtbuff, "RESOURCE  ") ;      	// 0x2000  // can't create resource
-  if ( err & CAN_ERR_ILLPARAMTYPE )	strcpy(txtbuff, "ILLPARAMTYPE  ") ;  	// 0x4000  // illegal parameter
-  if ( err & CAN_ERR_ILLPARAMVAL )     	strcpy(txtbuff, "ILLPARAMVAL ") ;    	// 0x8000  // value out of range
+  if ( err == CAN_ERR_OK  )		strcat(txtbuff, "OK ") ;		// 0x0000  // no error
+  if ( err & CAN_ERR_XMTFULL )		strcat(txtbuff, "XMTFULL ") ;        	// 0x0001  // transmit buffer full
+  if ( err & CAN_ERR_OVERRUN  )		strcat(txtbuff, "OVERRUN ") ;       	// 0x0002  // overrun in receive buffer
+  if ( err & CAN_ERR_BUSLIGHT )		strcat(txtbuff, " BUSLIGHT ") ;      	// 0x0004  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSHEAVY )		strcat(txtbuff, "BUSHEAVY ") ;       	// 0x0008  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSOFF  )		strcat(txtbuff, "BUSOFF ") ;        	// 0x0010  // bus error, 'bus off' state entered
+  if ( err & CAN_ERR_QRCVEMPTY )	strcat(txtbuff, "QRCVEMPTY ") ;      	// 0x0020  // receive queue is empty
+  if ( err & CAN_ERR_QOVERRUN )		strcat(txtbuff, "QOVERRUN") ;    	// 0x0040  // receive queue overrun
+  if ( err & CAN_ERR_QXMTFULL )		strcat(txtbuff, "QXMTFULL ") ;       	// 0x0080  // transmit queue full 
+  if ( err & CAN_ERR_REGTEST )		strcat(txtbuff, "REGTEST ") ;        	// 0x0100  // test of controller registers failed
+  if ( err & CAN_ERR_NOVXD )        	strcat(txtbuff, "NOVXD  ") ;         	// 0x0200  // Win95/98/ME only
+  if ( err & CAN_ERR_RESOURCE )        	strcat(txtbuff, "RESOURCE  ") ;      	// 0x2000  // can't create resource
+  if ( err & CAN_ERR_ILLPARAMTYPE )	strcat(txtbuff, "ILLPARAMTYPE  ") ;  	// 0x4000  // illegal parameter
+  if ( err & CAN_ERR_ILLPARAMVAL )     	strcat(txtbuff, "ILLPARAMVAL ") ;    	// 0x8000  // value out of range
 
   if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) 	strcat(txtbuff, "HWINUSE ") ;
   if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) 	strcat(txtbuff, "NETINUSE ") ;
@@ -384,21 +384,6 @@ int main(int argc, char *argv[])
 
     if (errno == 0) { // data received
 
-      if (printReceived) {
-	printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
-	       (mr.Msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	       (mr.Msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	       mr.Msg.ID, 
-	       mr.Msg.LEN); 
-	
-	for (i = 0; i < mr.Msg.LEN; i++)
-	  printf("0x%02x ", mr.Msg.DATA[i]);
-	printf("\n");fflush(stdout);
-      }
-      
-      if (writeResponse) {
-	write(respFifoFd, &(mr.Msg), sizeof(m));
-      }
       
       // check if a CAN status is pending	     
       if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
@@ -414,8 +399,33 @@ int main(int argc, char *argv[])
 	  //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
 	}
 	fflush(stdout);
+
+	if ((status & CAN_ERR_ANYBUSERR) != 0) {
+	  // in case of any BUSERR re-initialize to see if it goes away
+	  errno = CAN_Init(h, wBTR0BTR1, nExtended);
+	  if (errno) {
+	    perror("pcanloop: CAN_Init()");
+	    my_private_exit(errno);
+	  }
+	}
+
       } 
       else if ((mr.Msg.MSGTYPE == MSGTYPE_STANDARD) || (mr.Msg.MSGTYPE == MSGTYPE_EXTENDED)) {
+	if (printReceived) {
+	  printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
+		 (mr.Msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+		 (mr.Msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+		 mr.Msg.ID, 
+		 mr.Msg.LEN); 
+	  
+	  for (i = 0; i < mr.Msg.LEN; i++)
+	    printf("0x%02x ", mr.Msg.DATA[i]);
+	  printf("\n");fflush(stdout);
+	}
+	
+	if (writeResponse) {
+	  write(respFifoFd, &(mr.Msg), sizeof(m));
+	}
 	if (((mr.Msg.ID &  0x00000FFF) == 0x101) && saveit) { // a DATA_TO_PC packet
 	  numEvents++;
 	  // save start time
