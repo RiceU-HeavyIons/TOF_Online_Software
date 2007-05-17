@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: setThreshold.cc,v 1.3 2007-05-14 15:04:27 jschamba Exp $";
+"$Id: setThreshold.cc,v 1.4 2007-05-17 21:24:59 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
 #ifdef TDIG_D
   if ((tVal < 0) || (tVal > 3300)) {
-    printf("ERROR: Input voltage %d is out of range.  Voltage must be between 0 mV and 3300 mV.\n",
+    printf("ERROR: Input voltage %f is out of range.  Voltage must be between 0 mV and 3300 mV.\n",
 	   tVal);
     return 1;
   }
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   int decVal = (int)D;
   decVal &= 0xFFF;   // mask to 12 bits, bits PD0, PD1 are always zero (not pwr'd down)
   
-  unsigned short ID = 0x002 | (nodeID << 4);  // Write Message
+  unsigned short ID = 0x102 | (nodeID << 4);  // Write Message
   unsigned short DATA0 = 0x8;
   unsigned short DATA1 = decVal & 0x00FF;
   unsigned short DATA2 = (decVal>>8) & 0x000F;
