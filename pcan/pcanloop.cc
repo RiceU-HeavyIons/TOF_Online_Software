@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.16 2007-05-17 21:25:59 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.17 2007-06-11 19:02:45 jschamba Exp $";
 #endif /* lint */
 
 
@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
   __u16 wBTR0BTR1 = CAN_BAUD_1M;
+  // __u16 wBTR0BTR1 = CAN_BAUD_500K;
   //int   nExtended = CAN_INIT_TYPE_ST;
   int  nExtended = CAN_INIT_TYPE_EX; // open for "extended" message IDs
   int  iteration = 0;
@@ -426,7 +427,7 @@ int main(int argc, char *argv[])
 	if (writeResponse) {
 	  write(respFifoFd, &(mr.Msg), sizeof(m));
 	}
-	if (((mr.Msg.ID &  0x00000FFF) == 0x101) && saveit) { // a DATA_TO_PC packet
+	if (((mr.Msg.ID &  0x0000000F) == 0x1) && saveit) { // a DATA_TO_PC packet
 	  numEvents++;
 	  // save start time
 	  if (numEvents == 1) {
