@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.2 2007-05-17 21:22:23 jschamba Exp $";
+"$Id: can_utils.cc,v 1.3 2007-06-11 18:59:54 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -106,7 +106,9 @@ int openCAN(WORD devID)
 }
 
 //****************************************************************************
-int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout, unsigned int expectedReceiveLen)
+int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, 
+			const int timeout, unsigned int expectedReceiveLen,
+			bool checkStatus)
 {
   TPCANRdMsg mr;
   __u32 status;
@@ -135,8 +137,11 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout, u
 	perror("CAN_Status()");
 	return(errno);
       }
-      else
-	cout << "pending CAN status " << showbase << hex << status << " read.\n";
+      else {
+	cout << "ERROR: " << errorMsg 
+	     << ": pending CAN status " << showbase << hex << status << " read.\n";
+	return (-7);
+      }
     } 
     else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
       // now interprete the received message:
@@ -152,7 +157,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout, u
       if (expectedReceiveLen == 0xffffffff) expectedReceiveLen = ms.LEN;
       if (mr.Msg.LEN != expectedReceiveLen) { // check for correct length
 	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
-	     << dec << (int)mr.Msg.LEN << ", expected " << (int)ms.LEN << endl;
+	     << dec << (int)mr.Msg.LEN << ", expected " << expectedReceiveLen << endl;
 	cout << errorMsg << " response: first byte: " 
 	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
 	     << " expected " << (unsigned int)ms.DATA[0] << endl;
@@ -166,18 +171,43 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg, const int timeout, u
 	printCANMsg(mr.Msg, "response:");
 	return (-4);
       }
-      // Message is good, continue
+      // CAN HLP version 3:
+      // The second payload byte of all "WRITE-reply" messages should be a
+      // status. If that status is non-zero, then there was an error; and the
+      // reason is indicated by the table in the Excel spreadsheet labeled:
+      // "Status codes (payload[1])".  The possible values during the download
+      // will be:
+      // 0 = C_STATUS_OK == operation completed OK.
+      // 2 = C_STATUS_NOSTART == Block-Data without Block-Start
+      // 2 = C_STATUS_NOSTART == Block-End without Block-Start
+      // 2 = C_STATUS_NOSTART == Block-Target without Block-Start AND Block-End
+      // 3 = C_STATUS_OVERRUN == downloaded more than 256 bytes
       
+      // During the Target EEPROM2 sequence values might be:
+      // 0 = C_STATUS_OK == operation completed OK.
+      // 6 = C_STATUS_LTHERR == downloaded block was not length 256 bytes
+      // 8 = C_STATUS_BADEE2 == eeprom2 readback error (mismatched data readback)
+      if (checkStatus) {
+	if (mr.Msg.DATA[1] != 0) {
+	  cout << errorMsg << " response: second (status) byte: " 
+	       << showbase << hex << (unsigned int)mr.Msg.DATA[0] << endl; 
+	  printCANMsg(mr.Msg, "response:");
+	  return (-8);
+	}
+      }
+
+      // Message is good, continue
       
     } // data read
   } // data received
   else if (errno == CAN_ERR_QRCVEMPTY) {	
     cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within "
-	 << timeout/1000000 << " sec" << endl;
+	 << dec << timeout/1000000 << " sec" << endl;
     return (-5);
   }
   else {// other read error
-    cout << "LINUX_CAN_Read_Timeout returned " << errno << endl;
+    cout << "ERROR: " << errorMsg 
+	 << ": LINUX_CAN_Read_Timeout returned " << errno << endl;
     return (-6);
   }
 
