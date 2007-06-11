@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.9 2007-05-17 21:23:26 jschamba Exp $";
+"$Id: p_config.cc,v 1.10 2007-06-11 19:01:56 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -43,16 +43,6 @@ using namespace std;
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
-
-#define LOCAL_STRING_LEN 64       // length of internal used strings
-typedef struct
-{
-  char szVersionString[LOCAL_STRING_LEN];
-  char szDevicePath[LOCAL_STRING_LEN];
-  int  nFileNo;
-} PCAN_DESCRIPTOR;
-
-struct pollfd pfd;
 
 //****************************************************************************
 // LOCALS
@@ -171,46 +161,46 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   ms.ID = 0x102 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
   ms.LEN = 1;
 
-  // "CONFIGURE_TDC:Start"
+  // "CONFIGURE_TDC:Block Start"
   ms.DATA[0] = 0x10;
 
 #ifdef LOCAL_DEBUG
-  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Start command:");
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Block Start command:");
 #endif
 
   if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Start", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   
-  // *************** "CONFIGURE_TDC:Data", 11 messages with 7 bytes each ***********
+  // *************** "CONFIGURE_TDC:Block Data", 11 messages with 7 bytes each ***********
   ms.LEN = 8;
 
-  for (i=1; i<12; i++) {
-    ms.DATA[0] = 0x20 | i;
-    for (j=0; j<7; j++) ms.DATA[j+1] = confByte[(i-1)*7+j];
+  for (i=0; i<11; i++) {
+    ms.DATA[0] = 0x20;
+    for (j=0; j<7; j++) ms.DATA[j+1] = confByte[i*7+j];
     
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:DATA packet:");
+    printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Block DATA packet:");
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA", 1000000) != 0) // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA", 1000000) != 0) // timeout = 1 sec
       my_private_exit(errno);
 
-  } // end "for(i=1, ... " loop
+  } // end "for(i=0, ... " loop
 
 
-  // **************** "CONFIGURE_TDC:Data", ... and 1 last message with 4 bytes ******
+  // **************** "CONFIGURE_TDC:Block Data", ... and 1 last message with 4 bytes ******
   ms.LEN = 5;
 
   for (j=0; j<4; j++) ms.DATA[j+1] = confByte[77+j];
   
 #ifdef LOCAL_DEBUG
-  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:DATA packet 12:");
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Block DATA packet 12:");
 #endif
   
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:DATA 12:", 1000000) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA 12:", 1000000) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   // *************************** CONFIGURE_TDC:Write Block End *************************
@@ -226,14 +216,16 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
     my_private_exit(errno);
   
 
-  // ****************************** "CONFIGURE_TDC:Write Block Target" **********************
+  // ****************************** "CONFIGURE_TDC:Write Block Target TDC" **********************
   ms.DATA[0] = 0x40 | (TDC&0x3);
+  // the HLP document version 3f specifies 0x44 as the base, but the MCU code implemented 0x40 as
+  // the base, so this statement is correct!!!!!!
   
 #ifdef LOCAL_DEBUG
-  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block Target packet:");
+  printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block Target TDC packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target:", 1000000, 2) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target TDC:", 1000000, 2) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -405,12 +397,14 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  nodeID = atoi(argv[2]);
+  nodeID =  strtol(argv[1], (char **)NULL, 0);
+#ifndef TDIG_D
   if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
 	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
     return 1;
   }
+#endif
   
   if (argc == 5) {
     devID = atoi(argv[4]);
