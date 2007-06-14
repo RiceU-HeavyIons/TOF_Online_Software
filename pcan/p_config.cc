@@ -7,10 +7,8 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.10 2007-06-11 19:01:56 jschamba Exp $";
+"$Id: p_config.cc,v 1.11 2007-06-14 17:21:55 jschamba Exp $";
 #endif /* lint */
-
-// #define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
@@ -37,6 +35,8 @@ using namespace std;
 
 //****************************************************************************
 // DEFINES
+
+// #define LOCAL_DEBUG
 //#define TDIG
 #define TDIG_D
 
@@ -154,6 +154,12 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
   
 #ifdef TDIG_D
+  /* 
+   * The data in the configuration file for HLP 3 and higher is ordered with the LSB as the first byte.
+   * The 81st byte is filled with an additional 0 at the highest (8th) bit. Data is sent with the LSB
+   * first.
+   */
+
   // ************** CONFIGURE_TDC:Write Block Start ****************************************
   int nodeIDVal = (nodeID & 0x7) << 4;
 
@@ -168,7 +174,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Block Start command:");
 #endif
 
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Start", 1000000) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Start", 1000000,2, true) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   
@@ -184,7 +190,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA", 1000000) != 0) // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA", 1000000, 2, true) != 0) // timeout = 1 sec
       my_private_exit(errno);
 
   } // end "for(i=0, ... " loop
@@ -200,7 +206,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
   
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA 12:", 1000000) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Block DATA 12:", 1000000, 2, true) != 0) // timeout = 1 sec
     my_private_exit(errno);
 
   // *************************** CONFIGURE_TDC:Write Block End *************************
@@ -212,7 +218,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 #endif
 
 
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block End:", 1000000, 8) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block End:", 1000000, 8, true) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -225,7 +231,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block Target TDC packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target TDC:", 1000000, 2) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target TDC:", 1000000, 2, true) != 0) // timeout = 1 sec
     my_private_exit(errno);
   
 
@@ -238,6 +244,11 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 // ********************************** old HLP Protocol ****************************
 // ********************************************************************************
 #else // old TDIG
+  /*
+   * Data in the configuration file for the old TDIG was ordered with the MSB first. The
+   * lowest bit was filled with a 0 at bit position 0. Data is sent with the MSB first.
+   */
+
   // TDCs 1-4 are encoded in the CAN MsgID as follows:
   // MsgID[5:4] = 00  => TDC1
   // MSgID[5:4] = 01  => TDC2
@@ -397,7 +408,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  nodeID =  strtol(argv[1], (char **)NULL, 0);
+  nodeID =  strtol(argv[2], (char **)NULL, 0);
 #ifndef TDIG_D
   if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
