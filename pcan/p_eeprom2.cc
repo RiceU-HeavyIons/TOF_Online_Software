@@ -7,10 +7,9 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_eeprom2.cc,v 1.1 2007-06-11 19:03:43 jschamba Exp $";
+"$Id: p_eeprom2.cc,v 1.2 2007-06-21 14:31:02 jschamba Exp $";
 #endif /* lint */
 
-// #define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
@@ -39,7 +38,7 @@ using namespace std;
 // DEFINES
 //#define TDIG
 #define TDIG_D
-#define LOCAL_DEBUG
+// #define LOCAL_DEBUG
 
 //****************************************************************************
 // GLOBALS
