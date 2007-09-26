@@ -3,7 +3,7 @@
 CXXFLAGS += -Wall
 
 all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold \
-		p_config_run5 p_config_bench analyze_noise clientpc \
+		p_config_run5 p_config_bench analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU getStatus p_eeprom2 enableChannel
 
 pcanloop:	pcanloop.cc
@@ -39,7 +39,10 @@ p_progPLD:	p_progPLD.o can_utils.o
 p_progMCU:	p_progMCU.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
+MCU2:		MCU2.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
 clean:
 	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
-		p_config_run5 p_config_bench analyze_noise clientpc \
+		p_config_run5 p_config_bench analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU can_utils.o getStatus p_eeprom2 enableChannel
