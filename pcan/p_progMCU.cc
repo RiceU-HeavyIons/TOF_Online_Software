@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.4 2007-05-11 16:50:50 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.5 2007-09-26 15:58:01 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -393,7 +393,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #ifdef OLD_TDIG
 
   ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  ms.ID = 0x2 | nodeID;
+  ms.ID = 0x2 | (nodeID<<4);
   ms.LEN = 2;
 
 
@@ -451,13 +451,6 @@ int main(int argc, char *argv[])
   }
   
   nodeID = strtol(argv[1], (char **)NULL, 0);
-  /*
-  if ((nodeID < 0) || (nodeID > 7)) { 
-    cerr << "nodeID = " << nodeID 
-	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
-    return -1;
-  }
-  */
   
   if (argc == 4) {
     devID = strtol(argv[3],(char **)NULL, 0);
