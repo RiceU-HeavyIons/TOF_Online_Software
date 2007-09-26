@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.11 2007-06-14 17:21:55 jschamba Exp $";
+"$Id: p_config.cc,v 1.12 2007-09-26 15:56:01 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -231,7 +231,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   printCANMsg(ms, "p_config: Sending CONFIGURE_TDC:Write Block Target TDC packet:");
 #endif
   
-  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target TDC:", 1000000, 2, true) != 0) // timeout = 1 sec
+  if ( sendCAN_and_Compare(ms, "p_config: CONFIGURE_TDC:Write Block Target TDC:", 4000000, 2, true) != 0) // timeout = 4 sec
     my_private_exit(errno);
   
 
