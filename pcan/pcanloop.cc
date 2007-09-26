@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.17 2007-06-11 19:02:45 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.18 2007-09-26 16:01:15 jschamba Exp $";
 #endif /* lint */
 
 
@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
   int  iteration = 0;
   char txt[255]; // temporary string storage
   bool saveit = false;
+  bool doWriteId = false;
   bool doTimedSave = false;
   bool filterit = false;
   bool printReceived = true;
@@ -240,6 +241,7 @@ int main(int argc, char *argv[])
     if (doTimedSave && (elapsed_time > total_time)) {
       cout << "Saved " << numEvents <<" events in "<< elapsed_time << " seconds!" << endl;
       saveit = false;
+      doWriteId = false;
       doTimedSave = false;
       total_time = 0;
       fprintf(fp, "Event %d time %d \n", numEvents, elapsed_time);
@@ -269,6 +271,25 @@ int main(int argc, char *argv[])
 	  skip_blanks(&ptr);
 	  printf("filename %s\n", ptr);
 	  saveit = true;
+	  if (fp != (FILE *)NULL)
+	    printf("File already open, ignoring...\n");
+	  else
+	    fp = fopen (ptr, "w");
+	}
+	else
+	  printf("No filename specified. No file opened\n");
+	fflush(stdout);
+      }
+      else if (strncmp(txt, "S", 1) == 0) {
+	char *ptr = txt;
+	void skip_blanks(char **);
+	printf("Save with Id command received. ");
+	if (strlen(txt) != 1) {
+	  ptr++;
+	  skip_blanks(&ptr);
+	  printf("filename %s\n", ptr);
+	  saveit = true;
+	  doWriteId = true;
 	  if (fp != (FILE *)NULL)
 	    printf("File already open, ignoring...\n");
 	  else
@@ -308,6 +329,7 @@ int main(int argc, char *argv[])
       else if (strncmp(txt, "c", 1) == 0) {
 	printf("Close command received\n");fflush(stdout);
 	saveit = false;
+	doWriteId = false;
 	if (fp != (FILE *)NULL) {
 	  fclose(fp);
 	  fp = (FILE *)NULL;
@@ -440,12 +462,14 @@ int main(int argc, char *argv[])
 	    uc_ptr[i] = mr.Msg.DATA[i];
 	  if(filterit) {
 	    if ( (buffer[0]&0xf0000000) != 0xe0000000)
+	      if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
 	      fprintf(fp, "0x%08x\n", buffer[0]);
 	  }
 	  else {
 	    if (addTime)
 	      if ( (buffer[0]&0xff000000) == 0xea000000)
 		buffer[0] |= (curr_time & 0x00ffffff);
+	    if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
 	    fprintf(fp, "0x%08x\n", buffer[0]);
 	  }
 	  if (mr.Msg.LEN == 8) {
@@ -453,12 +477,14 @@ int main(int argc, char *argv[])
 	      uc_ptr[i] = mr.Msg.DATA[i];
 	    if(filterit) {
 	      if ( (buffer[1]&0xf0000000) != 0xe0000000)
+		if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
 		fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
 	    else {
 	      if (addTime)
 		if ( (buffer[1]&0xff000000) == 0xea000000)
 		  buffer[1] |= (curr_time & 0x00ffffff);
+	      if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
 	      fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
 	  }
