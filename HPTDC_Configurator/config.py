@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.3 2005-11-17 20:30:31 jschamba Exp $
+# $Id: config.py,v 1.4 2007-09-28 21:09:38 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.3'
+version = '1.4'
 
 import sys
 from Tkinter import *
@@ -1057,10 +1057,11 @@ class Configurator:
         try:
             File = open(configFileName, "w")
             self.saveChanges()
-            tmp = ['0'] + self.output
+            # append a '0' to the end of the array (highest bit 647)
+            tmp = self.output + ['0']
             for i in range(81):
                 for j in range(8):
-                    File.write("%c"% tmp[647-i*8-j])
+                    File.write("%c"% tmp[(i+1)*8-1-j])
                 #File.write("\r\n") # windows like end-of-line
                 File.write("\n")
             File.close()
@@ -1087,11 +1088,11 @@ class Configurator:
             for i in range(80):
                 tmpList = list(tmp[i])
                 tmpList.reverse()
-                self.output[(639-i*8):(647-i*8)] = tmpList
-            # the last line contains an extra '0' at the lsb, so handle separate
+                self.output[(i*8):(i*8+8)] = tmpList
+            # the last line contains an extra '0' at the msb, so handle separate
             tmpList = list(tmp[80])
             tmpList.reverse()
-            self.output[0:7] = tmpList[1:8]
+            self.output[640:647] = tmpList[0:7]
             self.loadPreset()
         except IOError:
             tkMessageBox.showerror("Read error...",
