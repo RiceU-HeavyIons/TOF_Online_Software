@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_eeprom2.cc,v 1.2 2007-06-21 14:31:02 jschamba Exp $";
+"$Id: p_eeprom2.cc,v 1.3 2007-10-05 14:54:22 jschamba Exp $";
 #endif /* lint */
 
 
@@ -136,7 +136,7 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 
     // ************** CONFIGURE_TDC:Write Block Start ****************************************
     ms.MSGTYPE = CAN_INIT_TYPE_ST;
-    ms.ID = 0x2 | nodeID;
+    ms.ID = 0x2 | (nodeID<<4);
     ms.LEN = 1;
     
     // "Write Block Start"
@@ -146,7 +146,7 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
     printCANMsg(ms, "p_eeprom2: Sending Write Block Start command:");
 #endif
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Start", 1000000, 2, true) != 0) // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Start", 4000000, 2, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     
@@ -166,7 +166,7 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 #endif
       
       
-      if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Data", 1000000, 2, true) != 0) // timeout = 1 sec
+      if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Data", 4000000, 2, true) != 0) // timeout = 4 sec
 	my_private_exit(errno);
       
     } // end "for(i=1, ... " loop
@@ -185,7 +185,7 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Data 37:", 1000000, 2, true) != 0) // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Data 37:", 4000000, 2, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     // *************************** Write Block End *************************
@@ -197,7 +197,7 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block End:", 1000000, 8, true) != 0) // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block End:", 4000000, 8, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     
