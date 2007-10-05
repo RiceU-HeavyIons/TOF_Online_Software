@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.1 2007-09-13 17:26:15 jschamba Exp $";
+"$Id: MCU2.cc,v 1.2 2007-10-05 13:56:12 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -22,6 +22,7 @@ static char  __attribute__ ((unused)) vcid[] =
 // C++ header file
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
 // other headers
@@ -117,7 +118,7 @@ int write_mcu_block(unsigned char *bytes,
     printCANMsg(ms, "MCU2: Sending BlockStart command:");
 #endif
     
-    if ( sendCAN_and_Compare(ms, "MCU2:BlockStart", 1000000, 2, true) != 0) { // timeout = 1 sec
+    if ( sendCAN_and_Compare(ms, "MCU2:BlockStart", 4000000, 2, true) != 0) { // timeout = 4 sec
       my_private_exit(errno);
     }
 
@@ -140,7 +141,7 @@ int write_mcu_block(unsigned char *bytes,
       printCANMsg(ms, "MCU2: Sending BlockData command:");
 #endif
       
-      if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 1000000, 2, true) != 0) { // timeout = 1 sec
+      if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 4000000, 2, true) != 0) { // timeout = 4 sec
 	my_private_exit(errno);
       }
       
@@ -157,7 +158,7 @@ int write_mcu_block(unsigned char *bytes,
 #ifdef LOCAL_DEBUG
       printCANMsg(ms, "MCU2: Sending BlockData command:");
 #endif
-      if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 1000000, 2, true) != 0) { // timeout = 1 sec
+      if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 4000000, 2, true) != 0) { // timeout = 4 sec
 	my_private_exit(errno);
       }
 
@@ -175,7 +176,7 @@ int write_mcu_block(unsigned char *bytes,
       perror("MCU2:BlockEnd: CAN_Write()");
       return(errno);
     }
-    errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
+    errno = LINUX_CAN_Read_Timeout(h, &mr, 4000000); // timeout = 4 second
     if (errno != 0) {
       if (errno == CAN_ERR_QRCVEMPTY)
 	cout << "Timeout during MCU2:BlockEnd\n";
@@ -345,7 +346,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #ifdef LOCAL_DEBUG
     cout << "length = " << setw(2) << dec << len 
 	 <<" type = " << rtype
-	 << " address = " << showbase << hex << setw(6) << addr;
+	 << " address = " << showbase << hex << setw(6) << addr << endl;
 #endif
 
 
