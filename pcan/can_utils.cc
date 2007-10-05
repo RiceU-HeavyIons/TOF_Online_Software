@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.3 2007-06-11 18:59:54 jschamba Exp $";
+"$Id: can_utils.cc,v 1.4 2007-10-05 13:57:41 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -96,7 +96,8 @@ int openCAN(WORD devID)
   }
 
   // open CAN Port, init PCAN-USB
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
+  //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
+  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_EX); // open for Extended messages
   if (errno) {
     perror("CAN_Init()");
     return(errno);
@@ -115,7 +116,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
 #ifdef LOCAL_DEBUG
   char msgTxt[256];
 #endif
-  unsigned int expectedID = ms.ID + 1;
+  unsigned int expectedID;
 
   // send the message
   if ( (errno = CAN_Write(h, &ms)) ) {
@@ -146,6 +147,66 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
     else if (mr.Msg.MSGTYPE == MSGTYPE_STANDARD) {
       // now interprete the received message:
       // check if it's a proper response
+      expectedID = ms.ID + 1;
+      if ( mr.Msg.ID != expectedID ) {
+	cout << "ERROR: " << errorMsg 
+	     << " request: Got something other than writeResponse: ID " 
+	     << showbase << hex << (unsigned int)mr.Msg.ID 
+	     << ", expected response to " << (unsigned int)ms.ID << endl;	
+	printCANMsg(mr.Msg, "response:");
+	return (-2);
+      }
+      if (expectedReceiveLen == 0xffffffff) expectedReceiveLen = ms.LEN;
+      if (mr.Msg.LEN != expectedReceiveLen) { // check for correct length
+	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
+	     << dec << (int)mr.Msg.LEN << ", expected " << expectedReceiveLen << endl;
+	cout << errorMsg << " response: first byte: " 
+	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
+	     << " expected " << (unsigned int)ms.DATA[0] << endl;
+	printCANMsg(mr.Msg, "response");
+	return (-3);
+      }
+      if (mr.Msg.DATA[0] != ms.DATA[0]) {
+	cout << errorMsg << " response: first byte: " 
+	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
+	     << " expected " << (unsigned int)ms.DATA[0] << endl;
+	printCANMsg(mr.Msg, "response:");
+	return (-4);
+      }
+      // CAN HLP version 3:
+      // The second payload byte of all "WRITE-reply" messages should be a
+      // status. If that status is non-zero, then there was an error; and the
+      // reason is indicated by the table in the Excel spreadsheet labeled:
+      // "Status codes (payload[1])".  The possible values during the download
+      // will be:
+      // 0 = C_STATUS_OK == operation completed OK.
+      // 2 = C_STATUS_NOSTART == Block-Data without Block-Start
+      // 2 = C_STATUS_NOSTART == Block-End without Block-Start
+      // 2 = C_STATUS_NOSTART == Block-Target without Block-Start AND Block-End
+      // 3 = C_STATUS_OVERRUN == downloaded more than 256 bytes
+      
+      // During the Target EEPROM2 sequence values might be:
+      // 0 = C_STATUS_OK == operation completed OK.
+      // 6 = C_STATUS_LTHERR == downloaded block was not length 256 bytes
+      // 8 = C_STATUS_BADEE2 == eeprom2 readback error (mismatched data readback)
+      if (checkStatus) {
+	if (mr.Msg.DATA[1] != 0) {
+	  cout << errorMsg << " response: second (status) byte: " 
+	       << showbase << hex << (unsigned int)mr.Msg.DATA[0] << endl; 
+	  printCANMsg(mr.Msg, "response:");
+	  return (-8);
+	}
+      }
+
+      // Message is good, continue
+      
+    } // data read
+    else if (mr.Msg.MSGTYPE == MSGTYPE_EXTENDED) {
+      // now interprete the received message:
+      // check if it's a proper response
+      // the response is in the "standard" part
+      //   of the extended Msg ID, i.e. 18 bits up
+      expectedID = ms.ID + (1<<18); 
       if ( mr.Msg.ID != expectedID ) {
 	cout << "ERROR: " << errorMsg 
 	     << " request: Got something other than writeResponse: ID " 
