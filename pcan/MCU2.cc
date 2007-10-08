@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.2 2007-10-05 13:56:12 jschamba Exp $";
+"$Id: MCU2.cc,v 1.3 2007-10-08 17:17:10 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -409,6 +409,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   }
       
   hexfile.close();
+  cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
   my_private_exit(errno);
