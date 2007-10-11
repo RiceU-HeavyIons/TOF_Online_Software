@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.1 2007-10-05 13:59:16 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.2 2007-10-11 19:00:38 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -93,8 +93,8 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID)
 
 
   // create the CANbus message ID and data
-  int msgid = tdigNodeID & 0x7;
-  msgid = (msgid<<4) | 0x104;
+  int msgid = tdigNodeID & 0x3f;
+  msgid = (msgid<<4) | 0x004;
   // now add extended msg ID from TCPU nodeID
   msgid = (msgid<<18) | tcpuNodeID;
 #ifdef LOCAL_DEBUG
@@ -326,14 +326,14 @@ int main(int argc, char *argv[])
   }
 
   int tdigNodeID = strtol(argv[2], (char **)NULL, 0);
-  if ((tdigNodeID < 0) || (tdigNodeID > 7)) {
-    cerr << "tdigNodeID = " << tdigNodeID << " invalid entry. Use 0..7 instead." << endl;
+  if ((tdigNodeID < 1) || (tdigNodeID > 0x3f)) {
+    cerr << "tdigNodeID = " << tdigNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
   int tcpuNodeID = strtol(argv[3], (char **)NULL, 0);
-  if ((tcpuNodeID < 0) || (tcpuNodeID > 31)) {
-    cerr << "tcpuNodeID = " << tcpuNodeID << " invalid entry. Use 0..31 instead." << endl;
+  if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3f)) {
+    cerr << "tcpuNodeID = " << tcpuNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
