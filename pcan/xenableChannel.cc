@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xenableChannel.cc,v 1.1 2007-10-05 13:59:16 jschamba Exp $";
+"$Id: xenableChannel.cc,v 1.2 2007-10-11 19:01:40 jschamba Exp $";
 #endif /* lint */
 
 
@@ -49,14 +49,14 @@ int main(int argc, char *argv[])
   }
   
   int tdigNodeID = strtol(argv[1], (char **)NULL, 0);
-  if ((tdigNodeID < 0) || (tdigNodeID > 7)) {
-    cerr << "tdigNodeID = " << tdigNodeID << " invalid entry. Use 0..7 instead." << endl;
+  if ((tdigNodeID < 1) || (tdigNodeID > 0x3f)) {
+    cerr << "tdigNodeID = " << tdigNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
   int tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
-  if ((tcpuNodeID < 0) || (tcpuNodeID > 31)) {
-    cerr << "tcpuNodeID = " << tcpuNodeID << " invalid entry. Use 0..31 instead." << endl;
+  if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3f)) {
+    cerr << "tcpuNodeID = " << tcpuNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
   // build the message
 
-  unsigned int ID = (0x102 | (tdigNodeID << 4))<<18 | tcpuNodeID;  // Write Message
+  unsigned int ID = (0x002 | (tdigNodeID << 4))<<18 | tcpuNodeID;  // Write Message
 
   data[0] = 0x4 + tdcNum;
   data[1] = 0x4 + (enableCh[0] ? 0xe0 : 0);

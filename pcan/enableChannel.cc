@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: enableChannel.cc,v 1.1 2007-06-14 20:52:35 jschamba Exp $";
+"$Id: enableChannel.cc,v 1.2 2007-10-11 19:05:51 jschamba Exp $";
 #endif /* lint */
 
 
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
   }
   
   int nodeID = strtol(argv[1], (char **)NULL, 0);
-  if ((nodeID < 0) || (nodeID > 7)) {
-    cerr << "nodeID = " << nodeID << " invalid entry. Use 0..7 instead." << endl;
+  if ((nodeID < 1) || (nodeID > 0x3f)) {
+    cerr << "nodeID = " << nodeID << " invalid entry. Use 1..0x3f (63) instead." << endl;
     return -1;
   }
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
   // build the message
 
-  unsigned short ID = 0x102 | (nodeID << 4);  // Write Message
+  unsigned short ID = 0x002 | (nodeID << 4);  // Write Message
 
   data[0] = 0x4 + tdcNum;
   data[1] = 0x4 + (enableCh[0] ? 0xe0 : 0);

@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xsetThreshold.cc,v 1.1 2007-10-05 13:59:16 jschamba Exp $";
+"$Id: xsetThreshold.cc,v 1.2 2007-10-11 18:58:44 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   int decVal = (int)D;
   decVal &= 0xFFF;   // mask to 12 bits, bits PD0, PD1 are always zero (not pwr'd down)
   
-  unsigned int   ID = (0x102 | (tdigNodeID << 4))<<18 | tcpuNodeID;  // Write Message
+  unsigned int   ID = (0x002 | (tdigNodeID << 4))<<18 | tcpuNodeID;  // Write Message
   unsigned short DATA0 = 0x8;
   unsigned short DATA1 = decVal & 0x00FF;
   unsigned short DATA2 = (decVal>>8) & 0x000F;

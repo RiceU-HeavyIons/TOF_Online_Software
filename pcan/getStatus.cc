@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getStatus.cc,v 1.2 2007-05-11 20:19:42 jschamba Exp $";
+"$Id: getStatus.cc,v 1.3 2007-10-11 19:03:52 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -93,8 +93,8 @@ int getStatus(int tdcNum, int nodeID)
 
 
   // create the CANbus message ID and data
-  int msgid = nodeID & 0x7;
-  msgid = (msgid<<4) | 0x104;
+  int msgid = nodeID & 0x3f;
+  msgid = (msgid<<4) | 0x004;
   unsigned short DATA0 = 0x4 | (tdcNum & 0x3);
 
   // create a FIFO for message exchange with pcanloop
@@ -320,8 +320,8 @@ int main(int argc, char *argv[])
   }
 
   int nodeID = strtol(argv[2], (char **)NULL, 0);
-  if ((nodeID < 0) || (nodeID > 7)) {
-    cerr << "nodeID = " << nodeID << " invalid entry. Use 0..7 instead." << endl;
+  if ((nodeID < 1) || (nodeID > 0x3f)) {
+    cerr << "nodeID = " << nodeID << " invalid entry. Use 1..0x3f (63) instead." << endl;
     return -1;
   }
 

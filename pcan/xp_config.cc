@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_config.cc,v 1.1 2007-10-05 13:59:16 jschamba Exp $";
+"$Id: xp_config.cc,v 1.2 2007-10-11 18:59:55 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -91,7 +91,7 @@ int p_config(const char *filename, unsigned int tdigNodeID, unsigned int tcpuNod
   cout << "Configuring TDC " << TDC
        << " at TDIG NodeID 0x" << hex << tdigNodeID
        << " through TCPU NodeID 0x" << tcpuNodeID
-       << " with filename " << filename 
+       << "\n with filename " << filename 
        << " on CANbus ID 0x" << devID << "...\n";
 
   errno = 0;
@@ -162,11 +162,12 @@ int p_config(const char *filename, unsigned int tdigNodeID, unsigned int tcpuNod
    */
 
   // ************** CONFIGURE_TDC:Write Block Start ****************************************
-  int nodeIDVal = (tdigNodeID & 0x7) << 4;
+  // move the TDIG msg ID up 18 bits, make it a "Write" message,
+  // and add the TCPU nodeID in the extended part
+  int nodeIDVal = (((tdigNodeID << 4) | 0x002) << 18) | tcpuNodeID;
 
   ms.MSGTYPE = MSGTYPE_EXTENDED;
-  // move the TDIG msg ID up 18 bits, and add the TCPU nodeID in the extended part
-  ms.ID = ((0x102 | nodeIDVal)<<18) | tcpuNodeID; // TDIG nodeIDs start currently with 0x10
+  ms.ID = nodeIDVal;
   ms.LEN = 1;
 
   // "CONFIGURE_TDC:Block Start"
@@ -411,16 +412,16 @@ int main(int argc, char *argv[])
   }
 
   tdigNodeID =  strtol(argv[2], (char **)NULL, 0);
-  if ((tdigNodeID < 0) || (tdigNodeID > 7)) { 
+  if ((tdigNodeID < 1) || (tdigNodeID > 0x3f)) { 
     cerr << "tdigNodeID = " << tdigNodeID 
-	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
+	 << " is an invalid entry.  Use a value between 1 and 0x3f (63) instead.\n";
     return 1;
   }
   
   tcpuNodeID =  strtol(argv[3], (char **)NULL, 0);
-  if ((tcpuNodeID < 0) || (tcpuNodeID > 31)) { 
+  if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3f)) { 
     cerr << "tcpuNodeID = " << tcpuNodeID 
-	 << " is an invalid entry.  Use a value between 0 and 31 instead.\n";
+	 << " is an invalid entry.  Use a value between 1 and 0x3f (63) instead.\n";
     return 1;
   }
   
