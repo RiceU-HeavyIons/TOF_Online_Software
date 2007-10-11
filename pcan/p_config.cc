@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.12 2007-09-26 15:56:01 jschamba Exp $";
+"$Id: p_config.cc,v 1.13 2007-10-11 19:05:17 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -161,10 +161,10 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
    */
 
   // ************** CONFIGURE_TDC:Write Block Start ****************************************
-  int nodeIDVal = (nodeID & 0x7) << 4;
+  int nodeIDVal = nodeID << 4;
 
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
-  ms.ID = 0x102 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
+  ms.MSGTYPE = MSGTYPE_STANDARD;
+  ms.ID = 0x002 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
   ms.LEN = 1;
 
   // "CONFIGURE_TDC:Block Start"
@@ -260,7 +260,7 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
 
   // ************** CONFIGURE_TDC:Start ****************************************
 
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x200 | TDCVal | nodeID;
   ms.LEN = 1;
 
@@ -413,6 +413,12 @@ int main(int argc, char *argv[])
   if ((nodeID < 0) || (nodeID > 7)) { 
     cerr << "nodeID = " << nodeID 
 	 << " is an invalid entry.  Use a value between 0 and 7 instead.\n";
+    return 1;
+  }
+#else
+  if ((nodeID < 1) || (nodeID > 0x3f)) { 
+    cerr << "nodeID = " << nodeID 
+	 << " is an invalid entry.  Use a value between 0x1 and 0x3f (63) instead.\n";
     return 1;
   }
 #endif
