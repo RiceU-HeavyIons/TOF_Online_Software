@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.3 2007-10-08 17:17:10 jschamba Exp $";
+"$Id: MCU2.cc,v 1.4 2007-10-11 14:18:45 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -249,6 +249,9 @@ int write_mcu_block(unsigned char *bytes,
     else if ((startAddr & 0x003ff) == 0)
       ms.DATA[5] = ERASE_NORMAL;	// erase needed on boundary
 
+#ifdef LOCAL_DEBUG
+    printCANMsg(ms, "MCU2: Sending BlockTargetMCU2 command:");
+#endif
     if ( sendCAN_and_Compare(ms, "MCU2:BlockTargetMCU2", 4000000, 2, true) != 0) { // timeout = 4 sec
       my_private_exit(errno);
     }
