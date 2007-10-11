@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.4 2007-10-11 14:18:45 jschamba Exp $";
+"$Id: MCU2.cc,v 1.5 2007-10-11 19:06:32 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -110,7 +110,7 @@ int write_mcu_block(unsigned char *bytes,
     unsigned int msgIdVal = 0x002 | (nodeID << 4);
     // ************** MCU2:WriteBlockStart ****************************************
   
-    ms.MSGTYPE = CAN_INIT_TYPE_ST;
+    ms.MSGTYPE = MSGTYPE_STANDARD;
     ms.ID = msgIdVal;
     ms.LEN = 1;
     ms.DATA[0] = 0x10;	// Block Start
@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
   nodeID = strtol(argv[1], (char **)NULL, 0);
   if ((nodeID < 0) || (nodeID > 0x3F)) {
     cerr << "nodeID = " << nodeID 
-	 << " is an invalid entry.  Use a value between 0 and 0x3F (63.) instead."  
+	 << " is an invalid entry.  Use a value between 0 and 0x3F (63) instead."  
 	 << endl;
     return -1;
   }

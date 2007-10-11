@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_eeprom2.cc,v 1.3 2007-10-05 14:54:22 jschamba Exp $";
+"$Id: p_eeprom2.cc,v 1.4 2007-10-11 19:04:39 jschamba Exp $";
 #endif /* lint */
 
 
@@ -135,8 +135,8 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
     conf.read((char *)confByte, 256);
 
     // ************** CONFIGURE_TDC:Write Block Start ****************************************
-    ms.MSGTYPE = CAN_INIT_TYPE_ST;
-    ms.ID = 0x2 | (nodeID<<4);
+    ms.MSGTYPE = MSGTYPE_STANDARD;
+    ms.ID = 0x002 | (nodeID<<4);
     ms.LEN = 1;
     
     // "Write Block Start"

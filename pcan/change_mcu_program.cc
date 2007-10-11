@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: change_mcu_program.cc,v 1.2 2004-11-17 23:39:03 jschamba Exp $";
+"$Id: change_mcu_program.cc,v 1.3 2007-10-11 19:03:18 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -170,7 +170,7 @@ int send_Start(const unsigned int nodeID)
 {
   TPCANMsg ms;
     
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x400 | nodeID;
   ms.LEN = 1;
 
@@ -202,7 +202,7 @@ int send_64bytes(unsigned char *bytes,
     my_private_exit(errno);
   }
 
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x400 | nodeID;
   ms.LEN = 7;
   ms.DATA[0] = 1;
@@ -520,7 +520,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
   // Do a final checksum
   TPCANMsg ms;
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x400 | nodeID;
   ms.LEN = 4;
 

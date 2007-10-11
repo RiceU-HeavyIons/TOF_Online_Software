@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.5 2007-09-26 15:58:01 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.6 2007-10-11 19:02:30 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -77,7 +77,7 @@ int send_64bytes(unsigned char *bytes,
 
   // ************** progMCU:WriteAddress ****************************************
   
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID << 4);
   //ms.ID = 0x402;
 
@@ -392,7 +392,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
 #ifdef OLD_TDIG
 
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x2 | (nodeID<<4);
   ms.LEN = 2;
 
@@ -414,7 +414,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #endif
 
   // And jump to the new program:
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID<<4);
   //ms.ID = 0x402;
   ms.LEN = 2;

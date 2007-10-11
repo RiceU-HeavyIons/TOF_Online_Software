@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.5 2007-05-11 16:50:50 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.6 2007-10-11 19:02:30 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -122,7 +122,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   // ************** progPLD:Start ****************************************
   // this is a write message (msgID = 0x002)
 
-  ms.MSGTYPE = CAN_INIT_TYPE_ST;
+  ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID << 4);
   ms.LEN = 2;
 
