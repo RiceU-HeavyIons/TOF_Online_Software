@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.4 2007-10-05 13:57:41 jschamba Exp $";
+"$Id: can_utils.cc,v 1.5 2007-10-11 14:17:51 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -192,7 +192,7 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       if (checkStatus) {
 	if (mr.Msg.DATA[1] != 0) {
 	  cout << errorMsg << " response: second (status) byte: " 
-	       << showbase << hex << (unsigned int)mr.Msg.DATA[0] << endl; 
+	       << showbase << hex << (unsigned int)mr.Msg.DATA[1] << endl; 
 	  printCANMsg(mr.Msg, "response:");
 	  return (-8);
 	}
