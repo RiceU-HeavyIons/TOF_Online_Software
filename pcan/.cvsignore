@@ -1,2 +1,3 @@
 p_config_run5 analyze_noise clientpc setThreshold enableChannel *.rbf *.rpd p_progMCU p_progPLD *.hex getStatus p_eeprom2 MCU2 cfig* *.dat pcan_find p_config pc pcanloop *.txt change_mcu_program
-xenableChannel xgetStatus xp_config xsetThreshold
+xenableChannel xgetStatus xp_config xsetThreshold xMCU2 xp_eeprom2
+*.out
