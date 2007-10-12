@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.13 2007-10-11 19:05:17 jschamba Exp $";
+"$Id: p_config.cc,v 1.14 2007-10-12 22:38:04 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -39,6 +39,9 @@ using namespace std;
 // #define LOCAL_DEBUG
 //#define TDIG
 #define TDIG_D
+
+// use this define to control if the TDC is powered down before configuring
+#define POWERDOWN_FIRST
 
 //****************************************************************************
 // GLOBALS
@@ -154,6 +157,25 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
   errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
   
 #ifdef TDIG_D
+  int nodeIDVal = nodeID << 4;
+
+  ms.MSGTYPE = MSGTYPE_STANDARD;
+  ms.ID = 0x002 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
+
+#ifdef POWERDOWN_FIRST
+  // send a "power down" control word to the HTPDC first:
+  ms.LEN = 6;
+  ms.DATA[0] = 0x4 | (TDC & 0x3);
+  ms.DATA[1] = 0x00;
+  ms.DATA[2] = 0x00;
+  ms.DATA[3] = 0x00;
+  ms.DATA[4] = 0x00;
+  ms.DATA[5] = 0x00;
+
+  if ( sendCAN_and_Compare(ms, "xp_config: Control-Power Down:", 4000000, 2, true) != 0) // timeout = 4 sec
+    my_private_exit(errno);
+#endif
+
   /* 
    * The data in the configuration file for HLP 3 and higher is ordered with the LSB as the first byte.
    * The 81st byte is filled with an additional 0 at the highest (8th) bit. Data is sent with the LSB
@@ -161,10 +183,6 @@ int p_config(const char *filename, unsigned int nodeID, int TDC, WORD devID)
    */
 
   // ************** CONFIGURE_TDC:Write Block Start ****************************************
-  int nodeIDVal = nodeID << 4;
-
-  ms.MSGTYPE = MSGTYPE_STANDARD;
-  ms.ID = 0x002 | nodeIDVal; // TDIG nodeIDs start currently with 0x10
   ms.LEN = 1;
 
   // "CONFIGURE_TDC:Block Start"
