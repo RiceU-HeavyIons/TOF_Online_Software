@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.1 2007-10-11 19:08:44 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.2 2007-10-16 21:57:04 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -15,7 +15,7 @@ static char  __attribute__ ((unused)) vcid[] =
  * and TCPU according to Bill Burton's instructions
  */
 
-#define LOCAL_DEBUG
+// #define LOCAL_DEBUG
 
 //****************************************************************************
 // INCLUDES
