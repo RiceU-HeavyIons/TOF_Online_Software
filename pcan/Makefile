@@ -2,11 +2,12 @@
 
 CXXFLAGS += -Wall
 
-all:		pcanloop pc p_config change_mcu_program pcan_find setThreshold \
-		p_config_run5 analyze_noise clientpc MCU2 \
-		p_progPLD p_progMCU getStatus p_eeprom2 enableChannel \
-		xgetStatus xp_config xsetThreshold xenableChannel \
-		xMCU2 xp_eeprom2 xp_config_reset
+all:		pcanloop pc p_config pcan_find setThreshold \
+		getStatus enableChannel \
+		change_mcu_program analyze_noise clientpc MCU2 \
+		p_progPLD p_progMCU p_eeprom2 \
+		xMCU2 xp_eeprom2 xp_config_reset \
+		xgetStatus xp_config xsetThreshold xenableChannel
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
