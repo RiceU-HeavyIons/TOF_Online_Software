@@ -6,7 +6,7 @@ all:		pcanloop pc p_config pcan_find setThreshold \
 		getStatus enableChannel \
 		change_mcu_program analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU p_eeprom2 \
-		xMCU2 xp_eeprom2 xp_config_reset \
+		xMCU2 xp_eeprom2 xp_config_reset xp_config_scripted \
 		xgetStatus xp_config xsetThreshold xenableChannel
 
 pcanloop:	pcanloop.cc
@@ -19,6 +19,9 @@ p_config:	p_config.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 xp_config:	xp_config.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+xp_config_scripted:	xp_config_scripted.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 xp_config_reset:	xp_config_reset.o can_utils.o
