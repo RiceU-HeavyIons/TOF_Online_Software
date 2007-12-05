@@ -7,10 +7,10 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xsetThreshold.cc,v 1.2 2007-10-11 18:58:44 jschamba Exp $";
+"$Id: xsetThreshold.cc,v 1.3 2007-12-05 19:52:03 jschamba Exp $";
 #endif /* lint */
 
-#define LOCAL_DEBUG
+// #define LOCAL_DEBUG
 #define TDIG_D
 
 //****************************************************************************
@@ -29,8 +29,8 @@ using namespace std;
 #include <string.h>
 
 // use one of the two following definition for debug printouts:
-const bool debug = true;
-//const bool debug = false;
+// const bool debug = true;
+const bool debug = false;
 
 //****************************************************************************
 int main(int argc, char *argv[])
