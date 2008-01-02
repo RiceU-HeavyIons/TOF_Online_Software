@@ -5,7 +5,8 @@ CXXFLAGS += -Wall
 DIST_FILES = pcanloop.cc pc.c p_config.cc can_utils.cc can_utils.h \
 		Makefile xp_config.cc xp_config_scripted p_eeprom2.cc \
 		xp_eeprom2.cc pcan_find.cc getStatus.cc xgetStatus.cc \
-		p_progPLD.cc p_progMCU.cc MCU2.cc xMCU2.cc \
+		p_progPLD.cc p_progMCU.cc MCU2.cc xMCU2.cc xenableChannel.cc \
+		enableChannel.cc xsetThreshold.cc setThreshold.cc \
 		cfig_test014*.txt x*.sh *script.txt
 
 # Targets:
