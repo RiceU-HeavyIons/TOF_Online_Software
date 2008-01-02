@@ -2,6 +2,14 @@
 
 CXXFLAGS += -Wall
 
+DIST_FILES = pcanloop.cc pc.c p_config.cc can_utils.cc can_utils.h \
+		Makefile xp_config.cc xp_config_scripted p_eeprom2.cc \
+		xp_eeprom2.cc pcan_find.cc getStatus.cc xgetStatus.cc \
+		p_progPLD.cc p_progMCU.cc MCU2.cc xMCU2.cc \
+		cfig_test014*.txt x*.sh *script.txt
+
+# Targets:
+
 all:		pcanloop pc p_config pcan_find setThreshold \
 		getStatus enableChannel \
 		change_mcu_program analyze_noise clientpc MCU2 \
@@ -69,3 +77,8 @@ clean:
 		p_progPLD p_progMCU can_utils.o getStatus p_eeprom2 enableChannel \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xMCU2 xp_eeprom2 xp_config_reset
+
+backup:
+	rm -f pcan.tgz; \
+	tar -zcf pcan.tgz $(DIST_FILES)
+
