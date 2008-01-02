@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.6 2007-10-11 19:02:30 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.7 2008-01-02 21:14:00 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -17,6 +17,7 @@ static char  __attribute__ ((unused)) vcid[] =
 // C++ header file
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
 // other headers
@@ -126,19 +127,18 @@ int send_64bytes(unsigned char *bytes,
     }
     // waste some time, so packets aren't sent too fast
     //nanosleep(&timesp, NULL);
-      for (int j=0; j<4300000; j++) ;
+    for (int j=0; j<4300000; j++) ;
       
-
-      /*
-	errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
-	if (errno != 0) {
-	if (errno == CAN_ERR_QRCVEMPTY)
-	cout << "Timeout during progMCU:WriteDataBytes, page " << page << endl;
-	else
+    /*
+    errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
+    if (errno != 0) {
+      if (errno == CAN_ERR_QRCVEMPTY)
+	cout << "Timeout during progMCU:WriteDataBytes" << endl;
+      else
 	cout << "CAN_Read_Timeout returned " << errno 
-	<< " during progMCU:WriteDataBytes, page " << page << endl;
-	}
-      */
+	     << " during progMCU:WriteDataBytes" << endl;
+    }
+    */
       
   }
   
@@ -413,6 +413,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
 #endif
 
+#ifdef START_NEW_FIRMWARE
   // And jump to the new program:
   ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID<<4);
@@ -431,6 +432,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   sendCAN_and_Compare(ms, "CHANGE_MCU_PROGRAM:Jump_PC", 5000000); // timeout = 5 sec
   
   my_private_exit(errno);
+#endif
   
   return 0;
 }
