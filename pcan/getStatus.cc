@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getStatus.cc,v 1.3 2007-10-11 19:03:52 jschamba Exp $";
+"$Id: getStatus.cc,v 1.4 2008-01-14 17:10:13 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -84,7 +84,6 @@ int bitArrayToDec(int *bitArray, int numBits) {
 int getStatus(int tdcNum, int nodeID)
 {
   FILE *fp;
-  char txt[256];
   int fifofd;
   int numRead; 
   TPCANMsg m;
@@ -108,8 +107,7 @@ int getStatus(int tdcNum, int nodeID)
 #ifdef LOCAL_DEBUG
   printf("open write FIFO\n");
 #endif
-  sprintf(txt, "%s-%d", FIFO_FILE, getuid()); // create FIFO filename
-  if((fp = fopen(txt, "w")) == NULL) {
+  if((fp = fopen(FIFO_FILE, "w")) == NULL) {
     perror("fopen");
     exit(1);
   }
