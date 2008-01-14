@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getStatus.cc,v 1.4 2008-01-14 17:10:13 jschamba Exp $";
+"$Id: getStatus.cc,v 1.5 2008-01-14 18:09:10 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -96,13 +96,6 @@ int getStatus(int tdcNum, int nodeID)
   msgid = (msgid<<4) | 0x004;
   unsigned short DATA0 = 0x4 | (tdcNum & 0x3);
 
-  // create a FIFO for message exchange with pcanloop
-  umask(0);
-#ifdef LOCAL_DEBUG
-  printf("make FIFO\n");
-#endif
-  mkfifo(FIFO_RESPONSE, 0666);
-
 
 #ifdef LOCAL_DEBUG
   printf("open write FIFO\n");
@@ -111,20 +104,30 @@ int getStatus(int tdcNum, int nodeID)
     perror("fopen");
     exit(1);
   }
-  
-
-  // notify pcanloop that we want response messages
-#ifdef LOCAL_DEBUG
-  printf("sending w command\n");
-#endif
-  fputs("w", fp); fflush(fp);
 
   /* this blocks until the other side is open for Write */
 #ifdef LOCAL_DEBUG
   printf("open FIFO\n");
  #endif
  fifofd = open(FIFO_RESPONSE, O_RDONLY);
+ if (fifofd == -1) {
+   perror("open response FIFO");
+   exit(1);
+ }
 
+  // notify pcanloop that we want response messages
+#ifdef LOCAL_DEBUG
+  printf("sending w command\n");
+#endif
+  fputs("w", fp); fflush(fp);
+  // read dummy response
+  int dummy;
+  numRead = read(fifofd, &dummy, 4);
+  if(numRead < 0) {
+    perror("dummy read");
+    printf("didn't get connection response\n");
+    exit(1);
+  }
 
  // send the "GET_STATUS" CANbus HLP message
 #ifdef LOCAL_DEBUG
@@ -155,6 +158,7 @@ int getStatus(int tdcNum, int nodeID)
   printf("reading response, sizeof(m) = %d\n", sizeof(m));
 #endif
   numRead = read(fifofd, &m, sizeof(m));
+  if(numRead < 0) perror("read");
 
 
 #ifdef LOCAL_DEBUG
@@ -194,6 +198,10 @@ int getStatus(int tdcNum, int nodeID)
   printf("trying to read second response\n");
 #endif
   numRead = read(fifofd, &m, sizeof(m));
+  if(numRead < 0) perror("read");
+
+  // finished with read FIFO
+  close(fifofd);
 
 
 #ifdef LOCAL_DEBUG
@@ -234,10 +242,6 @@ int getStatus(int tdcNum, int nodeID)
 #endif
   fputs("r", fp); fflush(fp);
   fclose(fp);
-
-
-  // unlink from the response FIFO
-  unlink(FIFO_RESPONSE);
 
   // now decode the bits received according to the HPTCD status definition:
   if (bitNum > 60) {
