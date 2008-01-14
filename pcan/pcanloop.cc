@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.18 2007-09-26 16:01:15 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.19 2008-01-14 17:02:14 jschamba Exp $";
 #endif /* lint */
 
 
@@ -91,8 +91,6 @@ void check_err(__u32  err,  char *txtbuff)
 // centralized entry point for all exits
 static void my_private_exit(int error)
 {
-  char txt[255];
-
   if (h)
   {
     printf("Closing pcan\n");
@@ -101,8 +99,7 @@ static void my_private_exit(int error)
   printf("pcanloop: finished (%d).\n\n", error);fflush(stdout);
   if (fifofp != (FILE *)NULL)
     fclose(fifofp);
-  sprintf(txt, "%s-%d", FIFO_FILE, getuid());
-  unlink(txt);
+  unlink(FIFO_FILE);
 
   exit(error);
 }
@@ -216,12 +213,9 @@ int main(int argc, char *argv[])
   printf("pcanloop: Device Hardware ID = 0x%x\n", my_PDiag.wIrqLevel); fflush(stdout);
 
   // create or open control FIFO
-  sprintf(txt, "%s-%d", FIFO_FILE, getuid());
   umask(0);
-  // mknod(txt, S_IFIFO|0666, 0);
-  // replace by "mkfifo" call:
-  mkfifo(txt, 0666);
-  fifofd = open(txt, O_RDONLY | O_NONBLOCK);
+  mkfifo(FIFO_FILE, 0666);
+  fifofd = open(FIFO_FILE, O_RDONLY | O_NONBLOCK);
   fifofp = fdopen(fifofd, "r");
   
   
