@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.19 2008-01-14 17:02:14 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.20 2008-01-14 18:08:24 jschamba Exp $";
 #endif /* lint */
 
 
@@ -40,6 +40,7 @@ using namespace std;
 HANDLE h = NULL;
 FILE *fifofp = (FILE *)NULL;
 int respFifoFd = -1;
+int dummyFd;
 
 #define LOCAL_STRING_LEN 64       // length of internal used strings
 typedef struct
@@ -101,6 +102,9 @@ static void my_private_exit(int error)
     fclose(fifofp);
   unlink(FIFO_FILE);
 
+  close(respFifoFd);
+  close(dummyFd);
+  unlink(FIFO_RESPONSE);
   exit(error);
 }
 
@@ -215,10 +219,17 @@ int main(int argc, char *argv[])
   // create or open control FIFO
   umask(0);
   mkfifo(FIFO_FILE, 0666);
+  mkfifo(FIFO_RESPONSE, 0666);
   fifofd = open(FIFO_FILE, O_RDONLY | O_NONBLOCK);
   fifofp = fdopen(fifofd, "r");
   
-  
+
+  dummyFd = open(FIFO_RESPONSE, O_RDONLY | O_NONBLOCK); 
+  respFifoFd = open(FIFO_RESPONSE, O_WRONLY); 
+  if(respFifoFd == -1) {
+    perror("open response FIFO");
+    my_private_exit(errno);
+  }
   
   // read in endless loop until Ctrl-C
   while (1) {	//**************** big while loop here ************************
@@ -348,20 +359,19 @@ int main(int argc, char *argv[])
       else if (strncmp(txt, "w", 1) == 0) {
 	printf("Write Reponse command received\n");fflush(stdout);
 	// the following call blocks until the other side is open as well
-	respFifoFd = open(FIFO_RESPONSE, O_WRONLY); 
 	//respFifoFd = open(FIFO_RESPONSE, O_WRONLY | O_NONBLOCK);
-	if(respFifoFd == -1) 
-	  perror("open response FIFO");
-	else
-	  writeResponse = true;
+	writeResponse = true;
+	// write a dummy message to indicate we are ready
+	int dummy = 1;
+	write(respFifoFd, &dummy, 4);
       }	
       else if (strncmp(txt, "r", 1) == 0) {
 	printf("No Write Reponse command received\n");fflush(stdout);
 	writeResponse = false;
-	if (respFifoFd != -1) {
-	  close(respFifoFd);
-	  respFifoFd = -1;
-	}
+	//if (respFifoFd != -1) {
+	//close(respFifoFd);
+	//respFifoFd = -1;
+	//}
       }	
       else if (strncmp(txt, "a", 1) == 0) {
 	printf("addTime command received\n");fflush(stdout);
