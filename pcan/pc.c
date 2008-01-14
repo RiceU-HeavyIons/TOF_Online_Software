@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   }
   
   sprintf(txt, "%s-%d", FIFO_FILE, getuid()); // create FIFO filename
-  if((fp = fopen(txt, "w")) == NULL) {
+  if((fp = fopen(FIFO_FILE, "w")) == NULL) {
     perror("fopen");
     exit(1);
   }
