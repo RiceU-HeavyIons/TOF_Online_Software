@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.6 2007-10-11 19:02:30 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.7 2008-01-17 16:42:57 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -100,7 +100,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   // timesp.tv_sec = 0;
   // timesp.tv_nsec = 1000;	// 1 ms
 
-  cout << "Filesize = " << fileSize << " bytes, " << fileSize/1024 << " kbytes, "
+  cout << "Filesize = " << dec << fileSize << " bytes, " << fileSize/1024 << " kbytes, "
        << noPages << " pages\n";
 
   conf.seekg(0,ios::beg);    // move file pointer to beginning of file
@@ -203,9 +203,8 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
       }
       // waste some time, so packets aren't sent too fast
       //nanosleep(&timesp, NULL);
-      for (int j=0; j<4300000; j++) ;
+      //for (int j=0; j<4300000; j++) ;
 
-      /*
       errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
       if (errno != 0) {
 	if (errno == CAN_ERR_QRCVEMPTY)
@@ -214,7 +213,6 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 	  cout << "CAN_Read_Timeout returned " << errno 
 	       << " during progPLD:WriteDataBytes, page " << page << endl;
       }
-      */
       
     }
     
