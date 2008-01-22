@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.20 2008-01-14 18:08:24 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.21 2008-01-22 20:47:50 jschamba Exp $";
 #endif /* lint */
 
 
@@ -38,6 +38,7 @@ using namespace std;
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
+HANDLE hI[256] = {NULL};
 FILE *fifofp = (FILE *)NULL;
 int respFifoFd = -1;
 int dummyFd;
@@ -92,10 +93,16 @@ void check_err(__u32  err,  char *txtbuff)
 // centralized entry point for all exits
 static void my_private_exit(int error)
 {
-  if (h)
-  {
-    printf("Closing pcan\n");
-    CAN_Close(h); 
+//   if (h)
+//   {
+//     printf("Closing pcan\n");
+//     CAN_Close(h); 
+//   }
+  for (int i=0; i<256; i++) {
+    if (hI[i] != NULL) {
+      printf("Closing pcan %d\n", i);
+      CAN_Close(hI[i]);
+    }
   }
   printf("pcanloop: finished (%d).\n\n", error);fflush(stdout);
   if (fifofp != (FILE *)NULL)
@@ -150,9 +157,12 @@ int main(int argc, char *argv[])
   time_t *theTime = new time_t;
   int numEvents = 0;
 
+  int openHandles[256] = {0};
+  int currentIndex = 0;
+
   errno = 0;
   devID = 255;
-  
+
   if (argc >1) {
     devID = atoi(argv[1]);
     if (devID > 255) {
@@ -163,9 +173,9 @@ int main(int argc, char *argv[])
 
   // give some information back
   if (wBTR0BTR1)
-    printf("Trying to open PCAN for Device ID 0x%x with BTR0BTR1=0x%04x\n", devID, wBTR0BTR1);
+    printf("Trying to open PCAN devices with BTR0BTR1=0x%04x\n", wBTR0BTR1);
   else
-    printf("Trying to open PCAN for Device ID 0x%x with 500 kbit/sec.\n", devID);
+    printf("Trying to open PCAN devices with 500 kbit/sec.\n");
   fflush(stdout);
   
   // install signal handler for manual break
@@ -182,20 +192,34 @@ int main(int argc, char *argv[])
     LINUX_CAN_Statistics(h,&my_PDiag);
     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
 	   my_PDiag.wIrqLevel); fflush(stdout);
-    if (my_PDiag.wIrqLevel == devID) break;
-    CAN_Close(h);
+
+    hI[my_PDiag.wIrqLevel] = h;
+    openHandles[currentIndex++] = my_PDiag.wIrqLevel;
+
+    // init to a user defined bit rate
+    if (wBTR0BTR1) {
+      errno = CAN_Init(h, wBTR0BTR1, nExtended);
+      if (errno) {
+	perror("pcanloop: CAN_Init()");
+	my_private_exit(errno);
+      }
+    }
+    //if (my_PDiag.wIrqLevel == devID) break;
+    //CAN_Close(h);
   }
 
-  if (!h) {
-    printf("Device ID 0x%x not found, exiting\n", devID);
+  if (currentIndex == 0) {
+    printf("No devices found, exiting\n");
     errno = nGetLastError();
     perror("pcanloop: CAN_Open()");
     fflush(stdout);
     my_private_exit(errno);
   }
 
+  currentIndex = 0;
+
   // get version info
-  errno = CAN_VersionInfo(h, txt);
+  errno = CAN_VersionInfo(hI[openHandles[0]], txt);
   if (!errno)
     printf("pcanloop: driver version = %s\n", txt);
   else {
@@ -203,18 +227,6 @@ int main(int argc, char *argv[])
     my_private_exit(errno);
   }
   
-  // init to a user defined bit rate
-  if (wBTR0BTR1) {
-    errno = CAN_Init(h, wBTR0BTR1, nExtended);
-    if (errno) {
-      perror("pcanloop: CAN_Init()");
-      my_private_exit(errno);
-    }
-  }
-  
-  // get the hardware ID from the diag structure:
-  LINUX_CAN_Statistics(h,&my_PDiag);
-  printf("pcanloop: Device Hardware ID = 0x%x\n", my_PDiag.wIrqLevel); fflush(stdout);
 
   // create or open control FIFO
   umask(0);
@@ -237,7 +249,7 @@ int main(int argc, char *argv[])
     TPCANRdMsg mr;
     __u32 status;
     int i;
-    int parse_input_message(char *, TPCANMsg *);
+    int parse_input_message(char *, TPCANMsg *, WORD *);
     
     iteration++;
     //printf("Iteration %d\r", iteration);
@@ -384,9 +396,10 @@ int main(int argc, char *argv[])
 
       
       else {
-	errno = parse_input_message(txt, &m);
+	errno = parse_input_message(txt, &m, &devID);
 	if (errno == 0) {
-	  printf("pcanloop: message assembled: %c %c 0x%08x %1d  ", 
+	  printf("pcanloop: message assembled: %d %c %c 0x%08x %1d  ", 
+		 devID,
 		 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
 		 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
 		 m.ID, 
@@ -397,24 +410,33 @@ int main(int argc, char *argv[])
 	  
 	  // new: send the message even with extended message IDs
 	  // send the message
-	  if ( (errno = CAN_Write(h, &m)) ) {
-	    perror("pcanloop: CAN_Write()");
-	    my_private_exit(errno);
+	  if (hI[devID] != NULL) {
+	    if ( (errno = CAN_Write(hI[devID], &m)) ) {
+	      perror("pcanloop: CAN_Write()");
+	      my_private_exit(errno);
+	    }
 	  }
+	}
+	else {
+	  printf("Parse error %d\n", errno);
 	}
       }
       
     }
 
 
-    errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
+    currentIndex++;
+    if (openHandles[currentIndex] == 0) currentIndex = 0;
+    errno = LINUX_CAN_Read_Timeout(hI[openHandles[currentIndex]], &mr, 1000); // timeout = 1ms
 
     if (errno == 0) { // data received
 
       
       // check if a CAN status is pending	     
       if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
-	status = CAN_Status(h);
+	// status = CAN_Status(h);
+	status = CAN_Status(hI[openHandles[currentIndex]]);
+	printf("received status %d from device %d\n", status, openHandles[currentIndex]);
 	if ((int)status < 0) {
 	  errno = nGetLastError();
 	  perror("pcanloop: CAN_Status()");
@@ -429,7 +451,7 @@ int main(int argc, char *argv[])
 
 	if ((status & CAN_ERR_ANYBUSERR) != 0) {
 	  // in case of any BUSERR re-initialize to see if it goes away
-	  errno = CAN_Init(h, wBTR0BTR1, nExtended);
+	  errno = CAN_Init(hI[openHandles[currentIndex]], wBTR0BTR1, nExtended);
 	  if (errno) {
 	    perror("pcanloop: CAN_Init()");
 	    my_private_exit(errno);
@@ -439,7 +461,8 @@ int main(int argc, char *argv[])
       } 
       else if ((mr.Msg.MSGTYPE == MSGTYPE_STANDARD) || (mr.Msg.MSGTYPE == MSGTYPE_EXTENDED)) {
 	if (printReceived) {
-	  printf("pcanloop: message received : %c %c 0x%08x %1d  ", 
+	  printf("pcanloop: message received : %d %c %c 0x%08x %1d  ", 
+		 openHandles[currentIndex],
 		 (mr.Msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
 		 (mr.Msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
 		 mr.Msg.ID, 
@@ -497,22 +520,22 @@ int main(int argc, char *argv[])
       
     } // data received
     else {
-      status = CAN_Status(h);
+      status = CAN_Status(hI[openHandles[currentIndex]]);
       if ((int)status < 0) {
 	errno = nGetLastError();
 	perror("pcanloop: CAN_Status()");
 	my_private_exit(errno);
       }
       else {
-	if (status != CAN_ERR_QRCVEMPTY) {
-	  //printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
+	if ((status != 0) && (status != CAN_ERR_QRCVEMPTY)) {
+	  printf("pcanloop: pending CAN status 0x%04x read.\n", (__u16)status);
 	  check_err(status, txt);
 	  printf("%s\n", txt);
 	  fflush(stdout);
 
 	  if ((status & CAN_ERR_ANYBUSERR) != 0) {
 	    // in case of any BUSERR re-initialize to see if it goes away
-	    errno = CAN_Init(h, wBTR0BTR1, nExtended);
+	    errno = CAN_Init(hI[openHandles[currentIndex]], wBTR0BTR1, nExtended);
 	    if (errno) {
 	      perror("pcanloop: CAN_Init()");
 	      my_private_exit(errno);
@@ -577,14 +600,17 @@ char scan_char(char **ptr)
   
 //----------------------------------------------------------------------------
 // parses a message command
-int parse_input_message(char *buffer, TPCANMsg *Message)
+int parse_input_message(char *buffer, TPCANMsg *Message, WORD *devID)
 {
   char *ptr = buffer;
   __u32 dwLen;
   __u32 dwDat;
   int i;
+  unsigned int parseUInt;
   int err = EINVAL;
   
+  *devID = 255;
+ 
   // remove leading blanks
   skip_blanks(&ptr);
   
@@ -649,7 +675,11 @@ int parse_input_message(char *buffer, TPCANMsg *Message)
     	  
 	  i++; 
   }   
-  return 0; 
+  if (*ptr == 0) return 0;
+
+  err = scan_unsigned_number(&ptr, &parseUInt);
+  if (parseUInt > 255) *devID = 255;
+  else *devID = (WORD) parseUInt;
   
   reject:
   return err;
