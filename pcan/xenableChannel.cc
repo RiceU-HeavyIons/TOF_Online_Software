@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xenableChannel.cc,v 1.2 2007-10-11 19:01:40 jschamba Exp $";
+"$Id: xenableChannel.cc,v 1.3 2008-01-22 22:47:59 jschamba Exp $";
 #endif /* lint */
 
 
@@ -43,31 +43,37 @@ int main(int argc, char *argv[])
   if (debug) cout << vcid << endl;
   cout.flush();
 
-  if ( argc < 4 ) {
-    cout << "USAGE: " << argv[0] << " <TDIG node ID> <TCPU node ID> <TDCnum> [<channel1> <channel2> ...]\n";
+  if ( argc < 5 ) {
+    cout << "USAGE: " << argv[0] << " <devID> <TDIG node ID> <TCPU node ID> <TDCnum> [<channel1> <channel2> ...]\n";
     return 1;
   }
   
-  int tdigNodeID = strtol(argv[1], (char **)NULL, 0);
+  int devID = strtol(argv[1], (char **)NULL, 0);
+  if ((devID < 1) || (devID > 255)) {
+    cerr << "devID = " << devID << " invalid entry. Use 1..255 instead." << endl;
+    return -1;
+  }
+
+  int tdigNodeID = strtol(argv[2], (char **)NULL, 0);
   if ((tdigNodeID < 1) || (tdigNodeID > 0x3f)) {
     cerr << "tdigNodeID = " << tdigNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
-  int tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
+  int tcpuNodeID = strtol(argv[3], (char **)NULL, 0);
   if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3f)) {
     cerr << "tcpuNodeID = " << tcpuNodeID << " invalid entry. Use 0x1..0x3f (63) instead." << endl;
     return -1;
   }
 
-  int tdcNum = atoi(argv[3]);
+  int tdcNum = atoi(argv[4]);
   if ((tdcNum < 1) || (tdcNum > 3)) {
     cerr << "TDC # = " << tdcNum << " invalid entry. Use 1..3 instead." << endl;
     return -1;
   }
 
-  if (argc > 4) {
-    for (int i=4; i<argc; i++) {
+  if (argc > 5) {
+    for (int i=5; i<argc; i++) {
       int chNum = strtol(argv[i], (char **)NULL, 0);
       enableCh[chNum] = true;
     }
@@ -97,6 +103,7 @@ int main(int argc, char *argv[])
 
   ss << "./pc \"m e 0x" << hex << ID << " 6 ";
   for (int i=0; i<6; i++) ss << " 0x" << (unsigned int)data[i];
+  ss << " " << dec << devID;
   ss << "\"";
 
   cmdString = ss.str();
