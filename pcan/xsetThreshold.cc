@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xsetThreshold.cc,v 1.3 2007-12-05 19:52:03 jschamba Exp $";
+"$Id: xsetThreshold.cc,v 1.4 2008-01-22 23:39:04 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -35,7 +35,7 @@ const bool debug = false;
 //****************************************************************************
 int main(int argc, char *argv[])
 {
-  unsigned int tdigNodeID, tcpuNodeID;
+  unsigned int tdigNodeID, tcpuNodeID, devID;
   double tVal;
   string cmdString;
   stringstream ss;
@@ -45,12 +45,13 @@ int main(int argc, char *argv[])
   cout.flush();
 
   if ( argc < 4 ) {
-    cout << "USAGE: " << argv[0] << " <TDIG node ID> <TCPU node ID> <value>\n";
+    cout << "USAGE: " << argv[0] << " <devID> <TDIG node ID> <TCPU node ID> <value>\n";
     return 1;
   }
   
-  tdigNodeID = strtol(argv[1], (char **)NULL, 0);
-  tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
+  devID      = strtol(argv[1], (char **)NULL, 0);
+  tdigNodeID = strtol(argv[2], (char **)NULL, 0);
+  tcpuNodeID = strtol(argv[3], (char **)NULL, 0);
 
   tVal = atof(argv[3]);
 
@@ -94,6 +95,7 @@ int main(int argc, char *argv[])
      << " 3 " << DATA0
      << " " << DATA1
      << " " << DATA2
+     << " " << dec << devID
      << "\"";
 
 #else // Run 5 TDIG
