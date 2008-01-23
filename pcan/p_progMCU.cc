@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.7 2008-01-02 21:14:00 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.8 2008-01-23 20:55:32 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -127,9 +127,8 @@ int send_64bytes(unsigned char *bytes,
     }
     // waste some time, so packets aren't sent too fast
     //nanosleep(&timesp, NULL);
-    for (int j=0; j<4300000; j++) ;
+    // for (int j=0; j<4300000; j++) ;
       
-    /*
     errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
     if (errno != 0) {
       if (errno == CAN_ERR_QRCVEMPTY)
@@ -138,7 +137,6 @@ int send_64bytes(unsigned char *bytes,
 	cout << "CAN_Read_Timeout returned " << errno 
 	     << " during progMCU:WriteDataBytes" << endl;
     }
-    */
       
   }
   
