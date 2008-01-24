@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xsetThreshold.cc,v 1.4 2008-01-22 23:39:04 jschamba Exp $";
+"$Id: xsetThreshold.cc,v 1.5 2008-01-24 22:30:33 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   tdigNodeID = strtol(argv[2], (char **)NULL, 0);
   tcpuNodeID = strtol(argv[3], (char **)NULL, 0);
 
-  tVal = atof(argv[3]);
+  tVal = atof(argv[4]);
 
 #ifdef TDIG_D
   if ((tVal < 0) || (tVal > 3300)) {
