@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.4 2007-09-28 21:09:38 jschamba Exp $
+# $Id: config.py,v 1.5 2008-02-07 16:49:07 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
 version = '1.4'
@@ -1137,8 +1137,10 @@ class Configurator:
         tmpSV = StringVar()
         tmpSV.set(str((102400-int(self.trgCtrOffsetNum.get()))))
         parseCtr(self.output, 138, 149, tmpSV, 25)
-        parseCtr(self.output, 60, 71, self.searchWindowSizeNum, 25)
-        parseCtr(self.output, 72, 83, self.matchWindowSizeNum, 25)
+        tmpSV.set(str((int(self.searchWindowSizeNum.get()) - 25)))
+        parseCtr(self.output, 60, 71, tmpSV, 25)
+        tmpSV.set(str((int(self.matchWindowSizeNum.get()) - 25)))
+        parseCtr(self.output, 72, 83, tmpSV, 25)
         tmpSV.set(str((102400-int(self.rejectCtrOffsetNum.get()))))
         parseCtr(self.output, 48, 59, tmpSV, 25)
 
@@ -1220,8 +1222,8 @@ class Configurator:
                 self.tmscheckb.invoke(text)
         self.maxEventSizeNum.set(self.maxEventSizeOptions[convertToInt(self.output, 116, 119)])
         self.trgCtrOffsetNum.set(str(102400 - 25*convertToInt(self.output, 138, 149)))
-        self.searchWindowSizeNum.set(convertToCtrString(self.output, 60, 71, 25))
-        self.matchWindowSizeNum.set(convertToCtrString(self.output, 72, 83, 25))
+        self.searchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 60, 71)))
+        self.matchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 72, 83)))
         self.rejectCtrOffsetNum.set(str(102400 - 25*convertToInt(self.output, 48, 59)))
 
         #### Options page
