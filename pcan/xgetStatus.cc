@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.4 2008-01-14 18:09:10 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.5 2008-02-11 19:19:28 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -81,7 +81,7 @@ int bitArrayToDec(int *bitArray, int numBits) {
 
 //****************************************************************************
 // here is where all is done
-int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID)
+int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
 {
   FILE *fp;
   int fifofd;
@@ -141,7 +141,8 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID)
 #endif
 
   ss << "m e " << showbase << hex << msgid
-     << " 1 " << DATA0;
+     << " 1 " << DATA0
+     << " " << dec << devID;
   cmdString = ss.str();
 
 #ifdef LOCAL_DEBUG
@@ -311,12 +312,13 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID)
 // main entry point
 int main(int argc, char *argv[])
 {
+  int devID;
 
   cout << vcid << endl;
   cout.flush();
   
-  if ( argc != 4 ) {
-    cout << "USAGE: " << argv[0] << " <TDC #> <TDIG nodeID> <TCPU nodeID>\n";
+  if ( argc < 4 ) {
+    cout << "USAGE: " << argv[0] << " <TDC #> <TDIG nodeID> <TCPU nodeID> [<devID>]\n";
     return 1;
   }
   
@@ -339,5 +341,15 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  return getStatus(tdcNum, tdigNodeID, tcpuNodeID);
+  if (argc == 5) {
+    devID = strtol(argv[4], (char **)NULL, 0);
+    if ((devID < 1) || (devID > 255)) {
+      cerr << "devID = " << devID << " invalid entry. Use 1..255 instead." << endl;
+      return -1;
+    }
+  }
+  else
+    devID = 255;
+
+  return getStatus(tdcNum, tdigNodeID, tcpuNodeID, devID);
 }
