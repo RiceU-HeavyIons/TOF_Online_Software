@@ -2,21 +2,22 @@
 
 CXXFLAGS += -Wall
 
-DIST_FILES = pcanloop.cc pc.c p_config.cc can_utils.cc can_utils.h \
-		Makefile xp_config.cc xp_config_scripted p_eeprom2.cc \
-		xp_eeprom2.cc pcan_find.cc getStatus.cc xgetStatus.cc \
-		p_progPLD.cc p_progMCU.cc MCU2.cc xMCU2.cc xenableChannel.cc \
-		enableChannel.cc xsetThreshold.cc setThreshold.cc \
-		cfig_test014*.txt x*.sh *script.txt
+DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
+		Makefile xp_config.cc xp_config_scripted.cc \
+		pcan_find.cc xgetStatus.cc \
+		xenableChannel.cc xsetThreshold.cc \
+		cfig_test014*.txt cfig_test016*.txt x*.sh *script.txt \
+		enableStart*.sh
 
 # Targets:
 
-all:		pcanloop pc p_config pcan_find setThreshold \
-		getStatus enableChannel \
+all:		pcanloop pc p_config pcan_find \
+		xgetStatus xp_config xsetThreshold xenableChannel \
+		xp_config_scripted \
+		xMCU2 xp_eeprom2 xp_config_reset \
+		setThreshold getStatus enableChannel \
 		change_mcu_program analyze_noise clientpc MCU2 \
-		p_progPLD p_progMCU p_eeprom2 \
-		xMCU2 xp_eeprom2 xp_config_reset xp_config_scripted \
-		xgetStatus xp_config xsetThreshold xenableChannel
+		p_progPLD p_progMCU p_eeprom2
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
