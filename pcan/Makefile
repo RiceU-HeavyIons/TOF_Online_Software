@@ -11,10 +11,10 @@ DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
 
 # Targets:
 
-all:		pcanloop pc p_config pcan_find \
+all:		pcanloop pc pcan_find \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xp_config_scripted \
-		xMCU2 xp_eeprom2 xp_config_reset \
+		xMCU2 xp_eeprom2 xp_config_reset p_config \
 		setThreshold getStatus enableChannel \
 		change_mcu_program analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU p_eeprom2
