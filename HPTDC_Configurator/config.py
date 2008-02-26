@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.5 2008-02-07 16:49:07 jschamba Exp $
+# $Id: config.py,v 1.6 2008-02-26 20:52:32 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.4'
+version = '1.6'
 
 import sys
 from Tkinter import *
@@ -40,6 +40,10 @@ class Configurator:
 		#command = PrintOne('Action: go button pressed'),
 		command = self.writeFile,
 		label = 'Write Config File')
+	menuBar.addmenuitem('File', 'command', 'Write to Include File',
+		#command = PrintOne('Action: go button pressed'),
+		command = self.writeInclude,
+		label = 'Write Include File')
 	#menuBar.addmenuitem('File', 'command', 'Test this window',
 	#	command = self.print_testSelect,
 	#	label = 'Test')
@@ -1068,6 +1072,37 @@ class Configurator:
         except IOError:
             tkMessageBox.showerror("Save error...",
                                    "Could not save to '%s'"%configFileName)
+            return
+            
+    ################# WRITE INCLUDE FILE ##########################
+    def writeInclude(self):
+        includeFileName = tkFileDialog.asksaveasfilename(
+            filetypes=[("include files", "*.inc"),
+                       ("all files", "*")])
+        if (includeFileName == None or includeFileName == ""):
+            return
+        try:
+            File = open(includeFileName, "w")
+            self.saveChanges()
+            # append a '0' to the end of the array (highest bit 647)
+            tmp = self.output + ['0']
+            for i in range(40):
+                File.write("0b")
+                for j in range(8):
+                    File.write("%c"% tmp[(i+1)*16-9-j])
+                File.write(", 0b")
+                for j in range(8):
+                    File.write("%c"% tmp[(i+1)*16-1-j])
+                #File.write("\r\n") # windows like end-of-line
+                File.write("\n")
+            File.write("0b")
+            for  j in  range(8):
+                File.write("%c"% tmp[647-j])
+            File.write("\n")
+            File.close()
+        except IOError:
+            tkMessageBox.showerror("Save error...",
+                                   "Could not save to '%s'"%includeFileName)
             return
             
     ################### READ CONFIG FILE #########################
