@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.6 2008-02-26 20:52:32 jschamba Exp $
+# $Id: config.py,v 1.7 2008-02-27 21:44:36 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.6'
+version = '1.7'
 
 import sys
 from Tkinter import *
@@ -1094,7 +1094,7 @@ class Configurator:
                 for j in range(8):
                     File.write("%c"% tmp[(i+1)*16-1-j])
                 #File.write("\r\n") # windows like end-of-line
-                File.write("\n")
+                File.write(",\n")
             File.write("0b")
             for  j in  range(8):
                 File.write("%c"% tmp[647-j])
