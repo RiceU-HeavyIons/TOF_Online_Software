@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.7 2008-02-27 21:44:36 jschamba Exp $
+# $Id: config.py,v 1.8 2008-06-30 18:37:26 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
 version = '1.7'
@@ -32,10 +32,14 @@ class Configurator:
 
 	# Add some buttons to the MenuBar.
 	menuBar.addmenu('File', 'Close this window or exit')
-	menuBar.addmenuitem('File', 'command', 'Load values from file',
-		#command = PrintOne('Action: load preset'),
+	menuBar.addmenuitem('File', 'command', 'Load values from config file',
+		#command = PrintOne('Action: load config'),
 		command = self.readFile,
-		label = 'Load Preset')
+		label = 'Load Config')
+	menuBar.addmenuitem('File', 'command', 'Load values from include file',
+		#command = PrintOne('Action: load inc'),
+		command = self.readIncFile,
+		label = 'Load Inc')
 	menuBar.addmenuitem('File', 'command', 'Write to Configuration File',
 		#command = PrintOne('Action: go button pressed'),
 		command = self.writeFile,
@@ -1132,6 +1136,38 @@ class Configurator:
         except IOError:
             tkMessageBox.showerror("Read error...",
                                    "Could not read from '%s'"%configFileName)
+            return
+
+    ################### READ INCLUDE FILE #########################
+    def readIncFile(self):
+        incFileName = tkFileDialog.askopenfilename(
+            filetypes=[("inc files", "*.inc"),
+                       ("all files", "*")])
+        if (incFileName == None or incFileName == ""):
+            return
+        try:
+            tmp = [x.strip() for x in open(incFileName).readlines()]
+            # File contains 40 lines with 2 * 8 bits and 1 line with 8 bits
+            if(len(tmp) != 41):
+                tkMessageBox.showerror("File format error...",
+                                       "%s' contains %d lines of data"%(configFileName, len(tmp)))
+            self.output = ['0' for x in range(647)]
+            for i in range(40):
+                tmpList = list(tmp[i])
+                # list contains: "0b........, 0b........,"
+                for j in range(8):
+                    self.output[i*16 + 7 - j] = tmpList[j+2]
+                    self.output[i*16 + 8 + j] = tmpList[-(j+2)] # start from back
+                    
+            # the last line contains an extra '0' at the msb, so handle separate
+            tmpList = list(tmp[40])
+            for j in range(7):
+                self.output[646 - j] = tmpList[3+j]
+                
+            self.loadPreset()
+        except IOError:
+            tkMessageBox.showerror("Read error...",
+                                   "Could not read from '%s'"%incFileName)
             return
 
 
