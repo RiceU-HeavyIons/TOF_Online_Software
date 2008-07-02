@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.8 2008-01-23 20:55:32 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.9 2008-07-02 15:03:29 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -416,11 +416,15 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID<<4);
   //ms.ID = 0x402;
-  ms.LEN = 2;
+  ms.LEN = 5;
 
   // "CHANGE_MCU_PROGRAM:Jump_PC"
   ms.DATA[0] = 0x26;
-  ms.DATA[1] = 0x0;
+  ms.DATA[1] = 0xff; // last address in EEPROM (low byte)
+  ms.DATA[2] = 0xff; // last address in EEPROM (hi byte)
+  ms.DATA[3] = 0x0;  // data to write
+  ms.DATA[4] = 0xa5; // yes, reset
+
 
 #ifdef LOCAL_DEBUG
   printCANMsg(ms, "CHANGE_MCU_PROGRAM:Jump_PC, sent msg");
