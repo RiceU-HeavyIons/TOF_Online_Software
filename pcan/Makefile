@@ -15,9 +15,10 @@ all:		pcanloop pc pcan_find \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xp_config_scripted \
 		xMCU2 xp_eeprom2 xp_config_reset p_config \
-		setThreshold getStatus enableChannel \
+		setThreshold getStatus enableChannel x_getChecksum getChecksum\
 		change_mcu_program analyze_noise clientpc MCU2 \
-		p_progPLD p_progMCU p_eeprom2 xp_config_pm
+		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
+		MCUchecksum
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
@@ -74,6 +75,12 @@ MCU2:		MCU2.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 xMCU2:		xMCU2.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+x_getChecksum:	x_getChecksum.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+getChecksum:	getChecksum.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 clean:
