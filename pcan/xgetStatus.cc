@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.5 2008-02-11 19:19:28 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.6 2008-07-02 15:01:18 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -244,9 +244,9 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
 
   // tell pcanloop that we no longer want response messages
 #ifdef LOCAL_DEBUG
-  printf("sending r command\n");
+  printf("sending W command\n");
 #endif
-  fputs("r", fp); fflush(fp);
+  fputs("W", fp); fflush(fp);
   fclose(fp);
 
 

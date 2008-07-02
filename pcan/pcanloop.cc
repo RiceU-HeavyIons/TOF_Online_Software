@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.21 2008-01-22 20:47:50 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.22 2008-07-02 15:01:19 jschamba Exp $";
 #endif /* lint */
 
 
@@ -377,7 +377,7 @@ int main(int argc, char *argv[])
 	int dummy = 1;
 	write(respFifoFd, &dummy, 4);
       }	
-      else if (strncmp(txt, "r", 1) == 0) {
+      else if (strncmp(txt, "W", 1) == 0) {
 	printf("No Write Reponse command received\n");fflush(stdout);
 	writeResponse = false;
 	//if (respFifoFd != -1) {

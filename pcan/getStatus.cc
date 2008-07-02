@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getStatus.cc,v 1.5 2008-01-14 18:09:10 jschamba Exp $";
+"$Id: getStatus.cc,v 1.6 2008-07-02 15:01:18 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -238,9 +238,9 @@ int getStatus(int tdcNum, int nodeID)
 
   // tell pcanloop that we no longer want response messages
 #ifdef LOCAL_DEBUG
-  printf("sending r command\n");
+  printf("sending W command\n");
 #endif
-  fputs("r", fp); fflush(fp);
+  fputs("W", fp); fflush(fp);
   fclose(fp);
 
   // now decode the bits received according to the HPTCD status definition:
