@@ -18,7 +18,7 @@ all:		pcanloop pc pcan_find \
 		setThreshold getStatus enableChannel x_getChecksum getChecksum\
 		change_mcu_program analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
-		MCUchecksum
+		MCUchecksum THUBchecksum
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
