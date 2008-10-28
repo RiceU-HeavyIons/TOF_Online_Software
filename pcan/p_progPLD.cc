@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.7 2008-01-17 16:42:57 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.8 2008-10-28 13:32:29 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
   cout.flush();
   
   if ( argc < 4 ) {
-    cout << "USAGE: " << argv[0] << " <fileName>, <PLD #> <nodeID> [<devID>]\n";
+    cout << "USAGE: " << argv[0] << " <fileName> <PLD #> <nodeID> [<devID>]\n";
     return 1;
   }
   
