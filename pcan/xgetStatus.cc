@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.6 2008-07-02 15:01:18 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.7 2008-10-29 15:51:51 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -30,6 +30,7 @@ using namespace std;
 #include <libpcan.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/poll.h>
 
 
 //****************************************************************************
@@ -89,6 +90,7 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
   TPCANMsg m;
   string cmdString;
   stringstream ss;
+  int errno;
 
 
   // create the CANbus message ID and data
@@ -109,17 +111,20 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
     perror("fopen");
     exit(1);
   }
-
+  
   /* this blocks until the other side is open for Write */
 #ifdef LOCAL_DEBUG
   printf("open FIFO\n");
  #endif
- fifofd = open(FIFO_RESPONSE, O_RDONLY);
- if (fifofd == -1) {
-   perror("open response FIFO");
-   exit(1);
- }
-
+  fifofd = open(FIFO_RESPONSE, O_RDONLY);
+  if (fifofd == -1) {
+    perror("open response FIFO");
+    exit(1);
+  }
+  struct pollfd pfd;
+  pfd.fd = fifofd;
+  pfd.events = POLLIN;
+  
 
   // notify pcanloop that we want response messages
 #ifdef LOCAL_DEBUG
@@ -164,6 +169,17 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
 #ifdef LOCAL_DEBUG
   printf("reading response, sizeof(m) = %d\n", sizeof(m));
 #endif
+  errno = poll(&pfd, 1, 1000); // timeout = 1 second
+  if (errno != 1) {
+    cout << "no response within timeout";
+    if (errno < 0)
+      cout << ", poll returned " << errno;
+    cout << endl;
+    fputs("W", fp); fflush(fp);
+    fclose(fp);
+    close(fifofd);
+    return errno;
+  }
   numRead = read(fifofd, &m, sizeof(m));
   if(numRead < 0) perror("read");
 
