@@ -10,11 +10,17 @@ PCAN_LIBS=-L$(PCAN)/lib -lpcan
 CXXFLAGS = -O2 -g -Wall -fmessage-length=0 \
  $(GTK_CFLAGS) $(PCAN_CFLAGS) $(ROOT_CFLAGS)
 
-OBJS = tofc.o
+OBJS = tofc.o tdc_config.o tdc_status.o
 
 LIBS = $(GTK_LIBS) $(PCAN_LIBS)  $(ROOT_LIBS)
 
+all: $(OBJS)
+
 tofc.o: tofc.cpp
+
+tdc_config.o: tdc_config.cpp
+
+tdc_status.o: tdc_status.cpp
 
 clean:
 	rm -f $(OBJS)

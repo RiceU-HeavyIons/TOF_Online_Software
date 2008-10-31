@@ -15,10 +15,15 @@
 
 #include "libpcan.h"
 
+#include "tofc_types.h"
+#include "tdc_config.h"
+
 #define PCAN_DEVICE_PATTERN      "/dev/pcan*"
 #define TRAY_CH_MAX 192
 #define TRAY_MAX  130
 #define TCPU_SCAN_MAX 20
+
+#define TIMEOUT 4000000
 
 #define URI_BASE "file://tofcontrol.starp.bnl.gov"
 typedef struct {
@@ -31,7 +36,7 @@ typedef struct {
   char      mcu_ver[4];
   char      fgpa_ver[4];
   unsigned int board_id;
-} status;
+} _status;
 
 typedef struct {
   char         data[128];
@@ -101,22 +106,30 @@ public:
   static int get_gas_line(int tsn);
   static int get_dist_box(int tsn);
 
-  unsigned long long tofc::pcan_tcpu_get_chip_sn(HANDLE h, WORD tcpu);
 
   static double pcan_tdig_read_temp(HANDLE h, WORD tcpu, WORD tdig);
-  static void pcan_config(HANDLE h, WORD tcpu, WORD tdig, WORD tdc, config *cfg);
 
   static void pcan_print_msg(TPCANMsg *msg);
   static void pcan_print_rdmsg(TPCANRdMsg *rmsg);
 
   static void pcan_tcpu_reset(HANDLE h, WORD tcpu);
+  static void pcan_tdig_set_threshold(HANDLE h, WORD tcpu, WORD tdig, double threshold);
+
+  unsigned long long tofc::pcan_tcpu_get_chip_sn(HANDLE h, WORD tcpu);
+
+  int tray_status(int tcpu_cid);
+  void config_tdc(WORD tcpu, WORD tdig, WORD tdc,
+      tdc_config *cfg, WORD base_addr = 0x40, bool power_off = true);
+  void config_tray(WORD tcpu, tdc_config *cfg1, tdc_config *cfg2,
+      WORD base_addr = 0x40, bool power_off = true);
+
+
   void pcan_tcpu_scan();
   int  get_tcpu(int i) { return tcpu_list[i]; }
 
-  static void pcan_tdig_set_threshold(HANDLE h, WORD tcpu, WORD tdig, double threshold);
-
   void load_tray_db(const char *fname);
   int get_tray_id(int tcpu);
+
 
 #ifdef ROOT
   gint pcan_noiserun(HANDLE h, int uid, int thr);
@@ -124,6 +137,12 @@ public:
   void pcan_monitor(gpointer data, gint src, GdkInputCondition cond);
   static void pcan_monitor_wrapper(gpointer data, gint src, GdkInputCondition cond);
 #endif
+
+private:
+  uint64 write_read(TPCANMsg *msg, TPCANRdMsg *rmsg, unsigned int return_length = 2, unsigned int time_out = TIMEOUT);
+
+  inline DWORD tdig_write_id(WORD tcpu, WORD tdig) const { return (((tdig << 4) | 0x2) << 18) + tcpu;}
+  inline DWORD tdig_read_id (WORD tcpu, WORD tdig) const { return (((tdig << 4) | 0x4) << 18) + tcpu;}
 
 };
 #endif /*TOFC_H_*/

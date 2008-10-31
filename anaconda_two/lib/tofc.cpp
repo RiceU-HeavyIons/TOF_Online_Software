@@ -28,8 +28,7 @@ using namespace std;
 
 #include "libpcan.h"
 #include "tofc.h"
-
-#define TIMEOUT 4000000
+#include "tdc_status.h"
 
 int tofc::TOFC_DEBUG = 0;
 
@@ -43,6 +42,7 @@ int tofc::TOFC_DEBUG = 0;
         fprintf(stderr, "System error: 0x%x\n", status);           \
     }                                                              \
   } while (0)
+int i;
 
 tofc::tofc()
 {
@@ -128,16 +128,192 @@ tofc::tofc(const char *dname)
 
 tofc::~tofc()
 {
+  if (handle != NULL) {
+    CAN_Close(handle);
+  }
 }
 
 /*********************************************************************/
 /* private functions                                                 */
 
+/*********************************************************************/
+static void set_msg(TPCANMsg *msg, ...)
+{
+  int i;
+  va_list argptr;
+
+  va_start(argptr, msg);
+
+  msg->ID      = va_arg(argptr, int);
+  msg->MSGTYPE = va_arg(argptr, int);
+  msg->LEN     = va_arg(argptr, int);
+  for(i=0; i < msg->LEN && i < 8; i++)
+    msg->DATA[i] = va_arg(argptr, int);
+
+  va_end(argptr);
+}
+
+/*********************************************************************/
 int errfunc(const char *epath, int eerrno) {
   fprintf(stderr, "%s: %d\n", epath, eerrno);
   return eerrno;
 }
 
+/*********************************************************************/
+uint64 tofc::write_read(TPCANMsg *msg, TPCANRdMsg *rmsg,
+    unsigned int return_length, unsigned int time_out)
+{
+
+  uint64 data = 0;
+  unsigned int length = 0;
+  unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
+  int er;
+
+  if(TOFC_DEBUG) {
+    printf(">> ");
+    tofc::pcan_print_msg(msg);
+  }
+
+  er = CAN_Write(handle, msg);
+  if (er != 0) {
+    int status = CAN_Status(handle);
+    if (status > 0)
+      fprintf(stderr, "CANbus error: 0x%x\n", status);
+    else
+      fprintf(stderr, "System error: 0x%x\n", status);
+  }
+
+  for(unsigned int i = 0; i < niter && !er; ++i) {
+    er = LINUX_CAN_Read_Timeout(handle, rmsg, time_out);
+    if (er != 0) {
+      int status = CAN_Status(handle);
+      if (status > 0)
+        fprintf(stderr, "CANbus error: 0x%x\n", status);
+      else
+        fprintf(stderr, "System error: 0x%x\n", status);
+    }
+    if (TOFC_DEBUG) {
+      printf("<< ");
+      tofc::pcan_print_rdmsg(rmsg);
+    }
+    if (rmsg->Msg.DATA[0] != msg->DATA[0]) {
+      fprintf(stderr, "Return payload doesn't match.\n");
+      er = -1;
+    }
+    length += rmsg->Msg.LEN;
+    for(int j = 1; j < rmsg->Msg.LEN; ++j)
+      data |= static_cast<uint64>(rmsg->Msg.DATA[j]) << 8 * (7*i + j-1);
+  }
+
+  if (return_length != length) {
+    fprintf(stderr, "Return length doesn't match.\n");
+  }
+
+  return data;
+}
+
+/*********************************************************************/
+int tofc::tray_status(int tcpu_cid)
+{
+  TPCANMsg msg;
+  TPCANRdMsg rmsg;
+
+  // readout ECSR and Temp
+  set_msg(&msg, (tcpu_cid << 4) | 0x4, MSGTYPE_STANDARD, 1, 0xb0);
+  write_read(&msg, &rmsg, 8);
+
+  // readout firmware version
+  set_msg(&msg, (tcpu_cid << 4) | 0x4, MSGTYPE_STANDARD, 1, 0xb1);
+  write_read(&msg, &rmsg, 4);
+
+
+  // TDIGs
+  for (int tdig = 0x10; tdig < 0x18; tdig++) {
+    int id = tdig_read_id(tcpu_cid, tdig);
+
+    // readout ECSR and Temp
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0xb0);
+    write_read(&msg, &rmsg, 8);
+
+    // readout firmware viersion
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0xb1);
+    write_read(&msg, &rmsg, 4);
+
+
+    if (true) {
+      for(int tdc = 1; tdc < 4; ++tdc) {
+        printf("HPTDC Status (%x, %x)\n", tdig, tdc);
+        set_msg(&msg, id, MSGTYPE_EXTENDED, 1, tdc | 0x4);
+        uint64 s = write_read(&msg, &rmsg, 10);
+        tdc_status *ts = new tdc_status(s);
+        ts->print();
+        delete ts;
+      }
+    }
+  }
+  return 0;
+}
+
+/*********************************************************************/
+void tofc::config_tray(WORD tcpu, tdc_config *cfg1, tdc_config *cfg2,
+    WORD base_addr, bool power_off) {
+
+  for(WORD tdig = 0x10; tdig < 0x17; ++tdig) {
+    if(tdig == 0x10 || tdig == 0x14) {
+      config_tdc(tcpu, tdig, 1, cfg2, base_addr, power_off);
+      config_tdc(tcpu, tdig, 2, cfg1, base_addr, power_off);
+      config_tdc(tcpu, tdig, 3, cfg1, base_addr, power_off);
+    } else {
+      config_tdc(tcpu, tdig, 0, cfg1, base_addr, power_off);
+    }
+  }
+}
+
+/*********************************************************************/
+void tofc::config_tdc(WORD tcpu, WORD tdig, WORD tdc,
+    tdc_config *cfg, WORD base_addr, bool power_off)
+{
+  unsigned int byts, csum;
+  TPCANMsg msg;
+  TPCANRdMsg rmsg;
+
+  DWORD id = tdig_write_id(tcpu, tdig);
+
+  /* power off tdc*/
+  if (power_off) {
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 6, 0x4 | (tdc & 0x3), 0, 0, 0, 0, 0);
+    write_read(&msg, &rmsg);
+  }
+
+  /* block start */
+  set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0x10);
+  write_read(&msg, &rmsg);
+
+  /* send block data */
+  for (unsigned int i = 0; i < cfg->get_block_length(); ++i) {
+    cfg->set_block_msg(&msg, i);
+    write_read(&msg, &rmsg);
+  }
+
+  /* block end */
+  set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0x30);
+  write_read(&msg, &rmsg, 8);
+
+  byts = rmsg.Msg.DATA[2] + (rmsg.Msg.DATA[3] << 8);
+  csum = rmsg.Msg.DATA[4] + (rmsg.Msg.DATA[5] << 8);
+
+  if (byts != cfg->get_length() || csum != cfg->get_check_sum()) {
+    fprintf(stderr, "block data error!\n");
+  } else {
+    /* base_addr = 0x40 for direct,0x444 for program memory */
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, base_addr | (tdc & 0x3));
+    msg.DATA[0] = base_addr | (tdc & 0x3);
+    write_read(&msg, &rmsg, 2, 4000000);
+  }
+}
+
+
+/*********************************************************************/
 HANDLE tofc::pcan_dev_open(const char *dname)
 {
   HANDLE h;
@@ -219,28 +395,11 @@ int tofc::pcan_dev_scan(devlist *dl)
 }
 
 /*********************************************************************/
-static void set_msg(TPCANMsg *msg, ...)
-{
-  int i;
-  va_list argptr;
-
-  va_start(argptr, msg);
-
-  msg->ID      = va_arg(argptr, int);
-  msg->MSGTYPE = va_arg(argptr, int);
-  msg->LEN     = va_arg(argptr, int);
-  for(i=0; i < msg->LEN && i < 8; i++)
-    msg->DATA[i] = va_arg(argptr, int);
-
-  va_end(argptr);
-}
-
-/*********************************************************************/
 void tofc::pcan_print_msg(TPCANMsg *msg)
 {
   int i;
 
-  printf("CANMsg ID: 0x%x DATA[%d]: ", msg->ID, msg->LEN);
+  printf("CANMsg ID: 0x%x TYPE: 0x%02x DATA[%d]: ", msg->ID, msg->MSGTYPE, msg->LEN);
   for(i = 0; i < msg->LEN && i < 8; i++)
     printf("0x%02x ", msg->DATA[i]);
   puts("");
@@ -249,13 +408,7 @@ void tofc::pcan_print_msg(TPCANMsg *msg)
 /*********************************************************************/
 void tofc::pcan_print_rdmsg(TPCANRdMsg *rmsg)
 {
-  int i;
-  TPCANMsg *msg = &rmsg->Msg;
-
-  printf("CANMsg ID: 0x%x DATA[%d]: ", msg->ID, msg->LEN);
-  for(i = 0; i < msg->LEN && i < 8; i++)
-    printf("0x%02x ", msg->DATA[i]);
-  puts("");
+  pcan_print_msg(&(rmsg->Msg));
 }
 
 /*********************************************************************/
@@ -290,26 +443,34 @@ void tofc::pcan_diag(HANDLE h)
   // TDIGs
   for (int tdig = 0x10; tdig < 0x18; tdig++) {
     int id = (((tdig << 4) | 0x4) << 18) + tcpu_cid;
-    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0xb1);
 
-    if(TOFC_DEBUG) {
-      printf(">> ");
-      tofc::pcan_print_msg(&msg);
-    }
+    // readout ECSR and temp
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0xb0);
 
     PCAN_ERR(CAN_Write(h, &msg), h);
     PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
+    if (TOFC_DEBUG) tofc::pcan_print_rdmsg(&rmsg);
 
+    // readout firmware viersion
+    set_msg(&msg, id, MSGTYPE_EXTENDED, 1, 0xb1);
 
-    if(TOFC_DEBUG) {
-      printf("<< ");
-      tofc::pcan_print_rdmsg(&rmsg);
+    PCAN_ERR(CAN_Write(h, &msg), h);
+    PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
+    if (TOFC_DEBUG) tofc::pcan_print_rdmsg(&rmsg);
+//    printf("  TDIG 0x%x: %x%c/%x\n", tdig,
+//        rmsg.Msg.DATA[2], rmsg.Msg.DATA[1], rmsg.Msg.DATA[3]);
+
+    if(false) {
+      for(int tdc = 5; tdc < 8; tdc++) {
+        set_msg(&msg, id, MSGTYPE_EXTENDED, 1, tdc);
+        PCAN_ERR(CAN_Write(h, &msg), h);
+        PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
+        if (TOFC_DEBUG) tofc::pcan_print_rdmsg(&rmsg);
+        PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
+        if (TOFC_DEBUG) tofc::pcan_print_rdmsg(&rmsg);
+      }
     }
-
-    printf("  TDIG 0x%x: %x%c/%x\n", tdig,
-	   rmsg.Msg.DATA[2], rmsg.Msg.DATA[1], rmsg.Msg.DATA[3]);
   }
-
 }
 
 /***
@@ -418,7 +579,7 @@ tofc::pcan_tdig_read_temp(
   temph = rmsg.Msg.DATA[2];
   templ = rmsg.Msg.DATA[1];
 
-  temp = (double)(temph) + (double)(rmsg.Msg.DATA[1])/100.0;
+  temp = (double)(temph) + (double)(templ)/100.0;
 
   if(TOFC_DEBUG) {
     printf("<< ");
@@ -491,127 +652,6 @@ void tofc::pcan_tcpu_reset(HANDLE h, WORD tcpu) {
     }
   }
 }
-
-/*********************************************************************/
-void tofc::pcan_config(
-    HANDLE h, WORD tcpu, WORD tdig, WORD tdc, config *cfg)
-{
-  unsigned int i, j;
-  char *ptr;
-  unsigned int byts, csum;
-  TPCANMsg msg;
-  TPCANRdMsg rmsg;
-
-  msg.ID      = (((tdig << 4) | 0x2) << 18) + tcpu;
-  msg.MSGTYPE = MSGTYPE_EXTENDED;
-
-  /* power off tdc*/
-  if (0) {
-    msg.LEN = 6;
-    msg.DATA[0] = 0x4 | (tdc & 0x3);
-    for (i = 1; i < 6; i++)
-      msg.DATA[i] = 0x00;
-    if(TOFC_DEBUG) {
-      printf(">> ");
-      tofc::pcan_print_msg(&msg);
-    }
-    PCAN_ERR(CAN_Write(h, &msg), h);
-    PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
-    if (TOFC_DEBUG) {
-      printf("<< ");
-      tofc::pcan_print_rdmsg(&rmsg);
-    }
-  }
-
-  /* block start */
-  msg.LEN     = 1;
-  msg.DATA[0] = 0x10;
-  if(TOFC_DEBUG) {
-    printf(">> ");
-    tofc::pcan_print_msg(&msg);
-  }
-  PCAN_ERR(CAN_Write(h, &msg), h);
-  PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
-  if(TOFC_DEBUG) {
-    printf("<< ");
-    tofc::pcan_print_rdmsg(&rmsg);
-  }
-
-  /* send block data */
-  for (i = 0; i < cfg->len / 7; i++) {
-    msg.LEN = 8;
-    msg.DATA[0] = 0x20;
-    ptr = &cfg->data[7*i];
-    for (j = 0; j < 7; j++)
-      msg.DATA[j+1] = ptr[j];
-    if(TOFC_DEBUG) {
-      printf(">> ");
-      tofc::pcan_print_msg(&msg);
-    }
-    PCAN_ERR(CAN_Write(h, &msg), h);
-    PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
-    if(TOFC_DEBUG) {
-      printf("<< ");
-      tofc::pcan_print_rdmsg(&rmsg);
-    }
-  }
-
-  /* send remainder */
-  if (msg.LEN = cfg->len % 7) {
-    msg.DATA[0] = 0x20;
-    ptr = &cfg->data[7*(cfg->len / 7)];
-    for (j = 0; j < msg.LEN; j++)
-      msg.DATA[j+1] = ptr[j];
-    msg.LEN++;
-    if(TOFC_DEBUG) {
-      printf(">> ");
-      tofc::pcan_print_msg(&msg);
-    }
-    PCAN_ERR(CAN_Write(h, &msg), h);
-    PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
-    if(TOFC_DEBUG) {
-      printf("<< ");
-      tofc::pcan_print_rdmsg(&rmsg);
-    }
-  }
-
-  /* block end */
-  msg.LEN     = 1;
-  msg.DATA[0] = 0x30;
-  if(TOFC_DEBUG) {
-    printf(">> ");
-    tofc::pcan_print_msg(&msg);
-  }
-  PCAN_ERR(CAN_Write(h, &msg), h);
-  PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, TIMEOUT), h);
-  if(TOFC_DEBUG) {
-    printf("<< ");
-    tofc::pcan_print_rdmsg(&rmsg);
-  }
-
-  byts = rmsg.Msg.DATA[2] + (rmsg.Msg.DATA[3] << 8);
-  csum = rmsg.Msg.DATA[4] + (rmsg.Msg.DATA[5] << 8);
-
-  if (byts != cfg->len || csum != cfg->check_sum) {
-    fprintf(stderr, "block data error!\n");
-  } else {
-    /* destination */
-    msg.LEN     = 1;
-/*    msg.DATA[0] = 0x40 | (tdc & 0x3); */
-    msg.DATA[0] = 0x44 | (tdc & 0x3); /* program memory */
-    if (TOFC_DEBUG) {
-      printf(">> ");
-      tofc::pcan_print_msg(&msg);
-    }
-    PCAN_ERR(CAN_Write(h, &msg), h);
-    PCAN_ERR(LINUX_CAN_Read_Timeout(h, &rmsg, 1000000), h);
-    if(TOFC_DEBUG) {
-      printf("<< ");
-      tofc::pcan_print_rdmsg(&rmsg);
-    }
-  }
-}
-
 /*********************************************************************/
 /*
  * This portion of code is taken from TsPacket.h
@@ -958,7 +998,7 @@ tofc::pcan_nstop(HANDLE h, gint tag)
   fprintf(yaml, ":flow_rate3: %d\n", 0);
   fprintf(yaml, ":note: 'final test for tray %03d'\n", tray_sn);
   fprintf(yaml, ":run_config_type_id: %d\n", 4); /* single tray test */
-  fprintf(yaml, ":hv_channel_plus: %d\n",  2*dist_box + 99);
+  config fprintf(yaml, ":hv_channel_plus: %d\n",  2*dist_box + 99);
   fprintf(yaml, ":hv_channel_minus: %d\n", 2*dist_box + 98);
   fprintf(yaml, ":gas_channel_1: %d\n", gas_line + 99);
   fprintf(yaml, ":gas_channel_2: %d\n", 0);
