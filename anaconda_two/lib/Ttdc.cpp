@@ -1,14 +1,38 @@
 /*
- * tdc_status.cpp
+ * Ttdc.cpp
  *
- *  Created on: Oct 30, 2008
+ *  Created on: Oct 31, 2008
  *      Author: koheik
  */
 
 #include <cstdio>
-#include "tdc_status.h"
+#include "Tcpu.h"
+#include "Tdig.h"
+#include "Ttdc.h"
 
-tdc_status::tdc_status(uint64 stat) {
+Ttdc::Ttdc() {
+  // TODO Auto-generated constructor stub
+
+}
+
+Ttdc::~Ttdc() {
+  // TODO Auto-generated destructor stub
+}
+
+void Ttdc::update_status(int level)
+{
+  if (enable && level >= 0) {
+    Tcan *tcan  = tdig->get_tcan();
+    uint8 ctcpu = tdig->get_tcpu()->get_addr();
+    uint8 ctdig = tdig->get_addr();
+    uint8 ctdc  = get_addr();
+
+    printf("write_read: tcan %x tcpu %x tdig %x tdc %x\n", tcan->get_addr(), ctcpu, ctdig, ctdc);
+
+    tcan->write_read();
+  }
+}
+void Ttdc::parse_status(uint64 stat) {
 
   parity                 = static_cast<bool>   (0x001 & (stat >> 61));
   dll_lock               = static_cast<bool>   (0x001 & (stat >> 60));
@@ -26,11 +50,7 @@ tdc_status::tdc_status(uint64 stat) {
   status                 = static_cast<uint16> (0x7FF & stat);
 }
 
-tdc_status::~tdc_status() {
-  // TODO Auto-generated destructor stub
-}
-
-void tdc_status::print() {
+void Ttdc::print_status() {
   printf("Parity                     [61] = [%d]\n", parity);
   printf("DLL lock                   [60] = [%d]\n", dll_lock);
   printf("Trigger_fifo_empty         [59] = [%d]\n", trigger_fifo_empty);
@@ -67,4 +87,3 @@ void tdc_status::print() {
       printf("    [%d] %s\n", i, error_bits[i]);
   }
 }
-

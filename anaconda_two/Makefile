@@ -31,4 +31,6 @@ $(TARGET): $(OBJS)
 
 
 clean:
+	cd lib; $(MAKE) clean
+	cd test; $(MAKE) test
 	rm -f $(OBJS) $(TARGET)
