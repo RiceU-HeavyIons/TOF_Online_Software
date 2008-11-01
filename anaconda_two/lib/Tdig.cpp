@@ -75,7 +75,7 @@ int Tdig::set_threshold(double threshold) {
   TPCANMsg    msg;
   TPCANRdMsg  rmsg;
 
-  uint16 val = (unsigned int)(threshold * 4095.0 / 3300.0 + 0.5);
+  uint16 val = (uint16)(threshold * 4095.0 / 3300.0 + 0.5);
 
   Tcan::set_msg(msg, cid, MSGTYPE_EXTENDED, 3, 0x8, (val & 0xff), ((val >> 8) & 0xf));
   tcan->write_read(msg, rmsg, 2);
