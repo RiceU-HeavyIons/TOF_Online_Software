@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.22 2008-07-02 15:01:19 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.23 2008-11-04 21:01:44 jschamba Exp $";
 #endif /* lint */
 
 
@@ -398,16 +398,17 @@ int main(int argc, char *argv[])
       else {
 	errno = parse_input_message(txt, &m, &devID);
 	if (errno == 0) {
-	  printf("pcanloop: message assembled: %d %c %c 0x%08x %1d  ", 
-		 devID,
-		 (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-		 (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-		 m.ID, 
-		 m.LEN); 
-	  for (i = 0; i < m.LEN; i++)
-	    printf("0x%02x ", m.DATA[i]);
-	  printf("\n");fflush(stdout);
-	  
+	  if (printReceived) {
+	    printf("pcanloop: message assembled: %d %c %c 0x%08x %1d  ", 
+		   devID,
+		   (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
+		   (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
+		   m.ID, 
+		   m.LEN); 
+	    for (i = 0; i < m.LEN; i++)
+	      printf("0x%02x ", m.DATA[i]);
+	    printf("\n");fflush(stdout);
+	  }
 	  // new: send the message even with extended message IDs
 	  // send the message
 	  if (hI[devID] != NULL) {
