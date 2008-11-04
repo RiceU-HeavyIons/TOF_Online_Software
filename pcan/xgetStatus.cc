@@ -7,39 +7,28 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.7 2008-10-29 15:51:51 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.8 2008-11-04 21:00:42 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
 // INCLUDES
 // C++ header file
 #include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <string>
 using namespace std;
 
 // other headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <string.h>
-#include <fcntl.h>
 #include <libpcan.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/poll.h>
+#include "can_utils.h"
 
 
 //****************************************************************************
 // DEFINES
 // #define LOCAL_DEBUG
 
-#define FIFO_FILE       "/tmp/pcanfifo"
-#define FIFO_RESPONSE "/tmp/pcanfifoRsp"
 
+//****************************************************************************
+// GLOBALS
+HANDLE h = NULL;
 
 //****************************************************************************
 // CODE 
@@ -84,78 +73,34 @@ int bitArrayToDec(int *bitArray, int numBits) {
 // here is where all is done
 int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
 {
-  FILE *fp;
-  int fifofd;
-  int numRead; 
-  TPCANMsg m;
-  string cmdString;
-  stringstream ss;
   int errno;
 
+  TPCANMsg ms;
+  TPCANRdMsg mr;
+
+  openCAN_l(devID);
 
   // create the CANbus message ID and data
-  int msgid = tdigNodeID & 0x3f;
-  msgid = (msgid<<4) | 0x004;
+  ms.ID = tdigNodeID & 0x3f;
+  ms.ID = (ms.ID<<4) | 0x004;
   // now add extended msg ID from TCPU nodeID
-  msgid = (msgid<<18) | tcpuNodeID;
+  ms.ID = (ms.ID<<18) | tcpuNodeID;
 #ifdef LOCAL_DEBUG
-  cout << "Message ID = 0x" << hex << msgid << endl;
+  cout << "Message ID = 0x" << hex << ms.ID << endl;
 #endif
 
-  unsigned short DATA0 = 0x4 | (tdcNum & 0x3);
+  ms.DATA[0] = 0x4 | (tdcNum & 0x3);
 
-#ifdef LOCAL_DEBUG
-  printf("open write FIFO\n");
-#endif
-  if((fp = fopen(FIFO_FILE, "w")) == NULL) {
-    perror("fopen");
-    exit(1);
-  }
-  
-  /* this blocks until the other side is open for Write */
-#ifdef LOCAL_DEBUG
-  printf("open FIFO\n");
- #endif
-  fifofd = open(FIFO_RESPONSE, O_RDONLY);
-  if (fifofd == -1) {
-    perror("open response FIFO");
-    exit(1);
-  }
-  struct pollfd pfd;
-  pfd.fd = fifofd;
-  pfd.events = POLLIN;
-  
+  ms.MSGTYPE = MSGTYPE_EXTENDED;
+  ms.LEN = 1;
 
-  // notify pcanloop that we want response messages
-#ifdef LOCAL_DEBUG
-  printf("sending w command\n");
-#endif
-  fputs("w", fp); fflush(fp);
-  // read dummy response
-  int dummy;
-  numRead = read(fifofd, &dummy, 4);
-  if(numRead < 0) {
-    perror("dummy read");
-    printf("didn't get connection response\n");
-    exit(1);
-  }
 
  // send the "GET_STATUS" CANbus HLP message
 #ifdef LOCAL_DEBUG
-  printf("sending command\n");
+  cout << "sending command\n";
 #endif
 
-  ss << "m e " << showbase << hex << msgid
-     << " 1 " << DATA0
-     << " " << dec << devID;
-  cmdString = ss.str();
-
-#ifdef LOCAL_DEBUG
-  cout << "cmdString = " << cmdString << endl;
-#endif
-
-  fputs(cmdString.c_str(), fp); fflush(fp);
-  
+  CAN_Write_l(h, &ms, devID);
 
   // now we should receive two messages back;
   // one should be 8 bytes long,
@@ -166,110 +111,61 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
   for(int i=0; i<64; i++) status[i] = 0;
 
   // first message:
+  if ( (errno = LINUX_CAN_Read_Timeout_l(h, &mr, 1000000)) != 0) { // timeout = 1 sec
 #ifdef LOCAL_DEBUG
-  printf("reading response, sizeof(m) = %d\n", sizeof(m));
+    cout << "LINUX_CAN_Read_Timeout_l returned " << errno << endl;
 #endif
-  errno = poll(&pfd, 1, 1000); // timeout = 1 second
-  if (errno != 1) {
-    cout << "no response within timeout";
-    if (errno < 0)
-      cout << ", poll returned " << errno;
-    cout << endl;
-    fputs("W", fp); fflush(fp);
-    fclose(fp);
-    close(fifofd);
-    return errno;
+    CAN_Close_l(h);
+    return -1;
   }
-  numRead = read(fifofd, &m, sizeof(m));
-  if(numRead < 0) perror("read");
-
-
-#ifdef LOCAL_DEBUG
-  printf("number of bytes read in first read %d\n", numRead);
-#endif
-
-  if (numRead > 0) {
-#ifdef LOCAL_DEBUG
-    printf("testit: message received : %c %c 0x%08x %1d  ", 
-	   (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	   (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	   m.ID, 
-	   m.LEN); 
     
-    for (int i=0; i<m.LEN; i++)
-      printf("0x%02x ", m.DATA[i]);
-    printf("\n");
-#endif
 
     // convert to binary and put in array for processing
-    int dat; // temp variable to hold DATA byte
-    for (int i=1; i<m.LEN; i++) {
-      /* For TDIG-D and beyond we are sending LSByte first */
-      dat = (int)m.DATA[i];
-      for (int k=0; k<8; k++) {
-	if ((dat & 0x1)==1) status[bitNum] = 1;
-	dat = dat >> 1;
-	bitNum++;
-      } // end loop over bits in byte
-    } // end loop over bytes in message payload
+  int dat; // temp variable to hold DATA byte
+  for (int i=1; i<mr.Msg.LEN; i++) {
+    /* For TDIG-D and beyond we are sending LSByte first */
+    dat = (int)mr.Msg.DATA[i];
+    for (int k=0; k<8; k++) {
+      if ((dat & 0x1)==1) status[bitNum] = 1;
+      dat = dat >> 1;
+      bitNum++;
+    } // end loop over bits in byte
+  } // end loop over bytes in message payload
     
-  }
 
 
   // second message:
 #ifdef LOCAL_DEBUG
-  printf("trying to read second response\n");
+  cout << "trying to read second response\n";
 #endif
-  numRead = read(fifofd, &m, sizeof(m));
-  if(numRead < 0) perror("read");
-
-  // finished with read FIFO
-  close(fifofd);
-
+  if ( (errno = LINUX_CAN_Read_l(h, &mr)) != 0) {
 #ifdef LOCAL_DEBUG
-  printf("number of bytes read in second read %d\n", numRead);
+    cout << "LINUX_CAN_Read_l returned " << errno << endl;
 #endif
-
-  if (numRead > 0) {
-#ifdef LOCAL_DEBUG
-    printf("testit: message received : %c %c 0x%08x %1d  ", 
-	   (m.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	   (m.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	   m.ID, 
-	   m.LEN); 
-    
-    for (int i=0; i<m.LEN; i++)
-      printf("0x%02x ", m.DATA[i]);
-    printf("\n");
-#endif
-
-    // convert to binary and put in array for processing
-    int dat; // temp variable to hold DATA byte
-    for (int i=1; i<m.LEN; i++) {
-      /* For TDIG-D and beyond we are sending LSByte first */
-      dat = (int)m.DATA[i];
-      for (int k=0; k<8; k++) {
-	if ((dat & 0x1)==1) status[bitNum] = 1;
-	dat = dat >> 1;
-	bitNum++;
-      } // end loop over bits in byte
-    } // end loop over bytes in message payload
-
-
+    CAN_Close_l(h);
+    return -1;
   }
 
+  // convert to binary and put in array for processing
+  for (int i=1; i<mr.Msg.LEN; i++) {
+    /* For TDIG-D and beyond we are sending LSByte first */
+    dat = (int)mr.Msg.DATA[i];
+    for (int k=0; k<8; k++) {
+      if ((dat & 0x1)==1) status[bitNum] = 1;
+      dat = dat >> 1;
+      bitNum++;
+    } // end loop over bits in byte
+  } // end loop over bytes in message payload
+  
+  
+  
   // tell pcanloop that we no longer want response messages
-#ifdef LOCAL_DEBUG
-  printf("sending W command\n");
-#endif
-  fputs("W", fp); fflush(fp);
-  fclose(fp);
-
+  CAN_Close_l(h);
 
   // now decode the bits received according to the HPTCD status definition:
   if (bitNum > 60) {
     // format the output
-    fprintf(stdout,  "Status reply for TDIG Board (node) %d, TDC # %d\n", tdigNodeID, tdcNum);
+    fprintf(stdout,  "Status reply for TDIG Board (node) 0x%x, TDC # %d\n", tdigNodeID, tdcNum);
     fprintf(stdout,  "Parity   [61] = %d\n", status[61]);
     fprintf(stdout,  "DLL lock [60] = %d\n", status[60]);
     fprintf(stdout,  "Trigger_fifo_empty [59]= %d\n", status[59]);
