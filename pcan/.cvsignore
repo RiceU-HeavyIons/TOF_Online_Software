@@ -2,3 +2,5 @@ p_config_run5 analyze_noise clientpc setThreshold enableChannel *.rbf *.rpd p_pr
 xenableChannel xgetStatus xp_config xsetThreshold xMCU2 xp_eeprom2
 *.out *.save *.sh
 xp_config_pm xp_config_scripted xp_config_reset *getChecksum MCUchecksum
+*_l
+getFWIDs getTHUBFWIDs
