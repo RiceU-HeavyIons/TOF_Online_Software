@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include "libpcan.h"
+#include "pcan.h"
 
 class tdc_config {
 

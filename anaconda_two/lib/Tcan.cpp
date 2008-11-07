@@ -13,7 +13,6 @@ int Tcan::TCAN_DEBUG = 1;
 
 Tcan::Tcan() : handle(NULL) {
   // TODO Auto-generated constructor stub
-
 }
 
 Tcan::~Tcan() {
@@ -76,7 +75,7 @@ int Tcan::open(uint8 dev_id) {
     if (TCAN_DEBUG) {
       CAN_Init(h, wBTR0BTR1, nExtended);
       CAN_VersionInfo(h, txt_buff);
-      printf("handle:   %x\n", (int)h);
+      printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
       printf("dev_id:   %x\n", dev_id);
       printf("dev_name: %s\n", dev_path);
       printf("version_info: %s\n", txt_buff);
@@ -155,7 +154,7 @@ uint64 Tcan::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     }
     length += rmsg.Msg.LEN;
     for(int j = 1; j < rmsg.Msg.LEN; ++j)
-      data |= static_cast<uint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+      data |= reinterpret_cast<uint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
   }
 
   if (return_length != length) {

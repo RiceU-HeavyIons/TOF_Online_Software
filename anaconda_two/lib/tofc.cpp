@@ -92,7 +92,7 @@ tofc::tofc(WORD dev_id) {
     if (TOFC_DEBUG) {
       PCAN_ERR(CAN_Init(h, wBTR0BTR1, nExtended), h);
       PCAN_ERR(CAN_VersionInfo(h, txt_buff), h);
-      printf("handle:   %x\n", (int)h);
+      printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
       printf("dev_id:   %x\n", dev_id);
       printf("dev_name: %s\n", dev_path);
       printf("version_info: %s\n", txt_buff);
@@ -117,7 +117,7 @@ tofc::tofc(const char *dname)
 
       LINUX_CAN_Statistics(h, &tpdiag);
       PCAN_ERR(CAN_VersionInfo(h, verstr), h);
-      printf("handle    : %x\n", (int)h);
+      printf("handle    : %llx\n", reinterpret_cast<unsigned long long>(h));
       printf("irq level : %x\n", tpdiag.wIrqLevel);
       printf("device    : %s\n", dname);
       printf("version   : %s\n", verstr);
@@ -327,7 +327,7 @@ HANDLE tofc::pcan_dev_open(const char *dname)
 
       LINUX_CAN_Statistics(h, &tpdiag);
       PCAN_ERR(CAN_VersionInfo(h, verstr), h);
-      printf("handle    : %x\n", (int)h);
+      printf("handle    : %llx\n", reinterpret_cast<unsigned long long>(h));
       printf("irq level : %x\n", tpdiag.wIrqLevel);
       printf("device    : %s\n", dname);
       printf("version   : %s\n", verstr);
@@ -380,7 +380,7 @@ int tofc::pcan_dev_scan(devlist *dl)
     if (TOFC_DEBUG) {
       PCAN_ERR(CAN_Init(h, wBTR0BTR1, nExtended), h);
       PCAN_ERR(CAN_VersionInfo(h, txt_buff), h);
-      printf("handle:   %x\n", (int)h);
+      printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
       printf("dev_id:   %x\n", dev_id);
       printf("dev_name: %s\n", dev_path);
       printf("version_info: %s\n", txt_buff);
