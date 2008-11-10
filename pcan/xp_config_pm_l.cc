@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_config_pm_l.cc,v 1.1 2008-11-10 16:01:14 jschamba Exp $";
+"$Id: xp_config_pm_l.cc,v 1.2 2008-11-10 23:40:48 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -265,8 +265,8 @@ int main(int argc, char *argv[])
   }
   
   int TDC = atoi(argv[1]);
-  if ((TDC < 1) || (TDC > 4)) { 
-    cerr << "TDC = " << TDC << " invalid entry. Use 1-4 instead." << endl;
+  if ((TDC < 0) || (TDC > 3)) { 
+    cerr << "TDC = " << TDC << " invalid entry. Use 0-3 instead." << endl;
     return 1;
   }
 
