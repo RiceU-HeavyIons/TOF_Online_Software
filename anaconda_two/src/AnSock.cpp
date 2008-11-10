@@ -1,26 +1,28 @@
 /*
- * Tcan.cpp
+ * AnSock.cpp
  *
- *  Created on: Oct 31, 2008
+ *  Created on: Nov 10, 2008
  *      Author: koheik
  */
 
 #include <fcntl.h>
 #include <glob.h>
-#include "Tcan.h"
+#include <QtCore/QDebug>
+#include "AnSock.h"
 
-int Tcan::TCAN_DEBUG = 1;
+int AnSock::TCAN_DEBUG = 1;
+const char * AnSock::PCAN_DEVICE_PATTERN = "/dev/pcan*";
 
-Tcan::Tcan() : handle(NULL) {
+AnSock::AnSock() : handle(NULL) {
   // TODO Auto-generated constructor stub
+
 }
 
-Tcan::~Tcan() {
-  if (handle != NULL)
-    CAN_Close(handle);
+AnSock::~AnSock() {
+  if (handle != NULL) CAN_Close(handle);
 }
 
-void Tcan::set_msg(TPCANMsg &msg, ...)
+void AnSock::set_msg(TPCANMsg &msg, ...)
 {
   va_list argptr;
   va_start(argptr, msg);
@@ -34,7 +36,7 @@ void Tcan::set_msg(TPCANMsg &msg, ...)
   va_end(argptr);
 }
 
-int Tcan::open(uint8 dev_id) {
+int AnSock::open(quint8 dev_id) {
   char *dev_path;
 
   TPDIAG tpdiag;
@@ -52,8 +54,13 @@ int Tcan::open(uint8 dev_id) {
 //  dl->dl_irq = (WORD*)malloc(globb.gl_pathc*sizeof(WORD));
 //  dl->dl_path = (char**)malloc(globb.gl_pathc*sizeof(char *));
 
-  HANDLE h = NULL;
 
+  if (globb.gl_pathc == 0)
+  {
+    qDebug() << "device files were not found";
+  }
+
+  HANDLE h = NULL;
   for(i = 0; i < globb.gl_pathc; i++) {
     if (TCAN_DEBUG) {
       printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
@@ -96,27 +103,28 @@ int Tcan::open(uint8 dev_id) {
 }
 
 /*********************************************************************/
-void Tcan::print(const TPCANMsg &msg)
+void AnSock::print(const TPCANMsg &msg)
 {
   int i;
 
-  printf("CANMsg ID: 0x%x TYPE: 0x%02x DATA[%d]: ", msg.ID, msg.MSGTYPE, msg.LEN);
+  printf("CANMsg ID: 0x%x TYPE: 0x%02x DATA[%d]: ",
+                                       msg.ID, msg.MSGTYPE, msg.LEN);
   for(i = 0; i < msg.LEN && i < 8; i++)
     printf("0x%02x ", msg.DATA[i]);
   puts("");
 }
 
 /*********************************************************************/
-void  Tcan::print(const TPCANRdMsg &rmsg)
+void AnSock::print(const TPCANRdMsg &rmsg)
 {
   print(rmsg.Msg);
 }
 
-uint64 Tcan::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
+quint64 AnSock::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     unsigned int return_length, unsigned int time_out)
 {
 
-  uint64 data = 0;
+  quint64 data = 0;
   unsigned int length = 0;
   unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
   int er;
@@ -154,7 +162,7 @@ uint64 Tcan::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     }
     length += rmsg.Msg.LEN;
     for(int j = 1; j < rmsg.Msg.LEN; ++j)
-      data |= reinterpret_cast<uint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+      data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
   }
 
   if (return_length != length) {

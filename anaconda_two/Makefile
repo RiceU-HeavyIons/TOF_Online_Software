@@ -34,3 +34,7 @@ clean:
 	cd lib; $(MAKE) clean
 	cd test; $(MAKE) test
 	rm -f $(OBJS) $(TARGET)
+	
+rsync:
+	rsync -a koheik@lone:/homes/koheik/workspace/anaconda_two/ .
+
