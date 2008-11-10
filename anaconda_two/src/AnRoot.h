@@ -20,6 +20,7 @@ public:
   inline QList<AnTcpu*> tcpus() const { return m_tcpus; }
   inline AnCanObject* at(int i) const { return m_tcpus.at(i); }
   inline int count() const { return m_tcpus.count(); }
+  inline AnSock* sock(int i) const { return m_socks.at(i); }
 
 private:
   QList<AnTcpu*> m_tcpus;

@@ -12,6 +12,7 @@
 #include <QtCore/QObject>
 #include "libpcan.h"
 #include "pcan.h"
+using namespace PCAN;
 
 class AnSock : public QObject {
 public:
@@ -27,7 +28,7 @@ public:
 
   int open(quint8 dev_id);
   quint64 write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
-      unsigned int return_length, unsigned int time_out);
+      unsigned int return_length, unsigned int time_out = 4000000);
 
 private:
   HANDLE handle;

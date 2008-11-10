@@ -22,10 +22,16 @@ public:
   AnLAddress lAddress() const;
 
   virtual QString name() const;
+  virtual void sync(int level = 0) { ++level; };
+  virtual void dump() const { };
+
+protected:
+  bool  enable;
 
 private:
   const AnLAddress m_laddr;
   const AnHAddress m_haddr;
+
 };
 
 #endif /* ANCANOBJECT_H_ */

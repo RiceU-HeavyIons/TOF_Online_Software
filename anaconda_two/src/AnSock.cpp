@@ -124,6 +124,11 @@ quint64 AnSock::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     unsigned int return_length, unsigned int time_out)
 {
 
+  if(handle == NULL) {
+    qDebug() << "device is not open";
+    return -1;
+  }
+
   quint64 data = 0;
   unsigned int length = 0;
   unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);

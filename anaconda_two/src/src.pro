@@ -6,9 +6,7 @@ TEMPLATE = lib
 TARGET = anaconda
 VERSION = 1.0.0
 DEPENDPATH += .
-INCLUDEPATH += .
-INCLUDEPATH += /homes/koheik/wrk/x86_64/peak-linux-driver-6.4/driver
-INCLUDEPATH += /homes/koheik/wrk/x86_64/peak-linux-driver-6.4/lib
+INCLUDEPATH += . ../inc
 
 DESTDIR = ../lib
 

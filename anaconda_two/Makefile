@@ -21,7 +21,7 @@ TARGET=tofcon
 all: $(DIRS) $(TARGET)
 
 lib_dir: 
-	cd lib; $(MAKE)
+	cd odlib; $(MAKE)
 
 test_dir: 
 	cd test; $(MAKE)

@@ -1,6 +1,4 @@
-#include "lib/tofc.h"
-
-
+#include "oldlib/tofc.h"
 
 int main(int argc, char *argv[])
 {

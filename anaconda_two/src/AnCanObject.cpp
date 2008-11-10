@@ -9,14 +9,15 @@
 
 AnCanObject::AnCanObject(AnCanObject *parent) : QObject(parent),
  m_laddr(AnLAddress(0, 0, 0)),
- m_haddr(AnHAddress(0, 0, 0, 0))
+ m_haddr(AnHAddress(0, 0, 0, 0)),
+ enable(false)
 {
   setObjectName(QString("CanObject ") + m_laddr.toString());
 }
 
 AnCanObject::AnCanObject(
-    const AnLAddress &laddr, const AnHAddress &haddr,
-    AnCanObject *parent) : QObject(parent), m_laddr(laddr), m_haddr(haddr)
+    const AnLAddress &laddr, const AnHAddress &haddr, AnCanObject *parent)
+  : QObject(parent), m_laddr(laddr), m_haddr(haddr), enable(true)
 {
 }
 

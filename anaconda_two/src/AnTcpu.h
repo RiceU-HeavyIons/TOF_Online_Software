@@ -18,6 +18,8 @@ public:
 
   AnTdig *tdig(int i) const { return m_tdig[i-1]; }
 
+  virtual void sync(int level = 0);
+  virtual void dump() const;
 private:
   AnTdig *m_tdig[8];
 };

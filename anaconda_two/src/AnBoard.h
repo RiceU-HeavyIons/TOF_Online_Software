@@ -22,7 +22,7 @@ public:
 protected:
   quint8 setEcsr(quint8 ecsr) { return (m_ecsr = ecsr); }
   double setTemp(double temp) { return (m_temp = temp); }
-  double setFirmware(quint32 firmware) { return (m_firmware = firmware); }
+  double setFirmwareId(quint32 firmware) { return (m_firmware = firmware); }
   double setChipId(quint64 chipid) { return (m_chipid = chipid); }
 
 private:

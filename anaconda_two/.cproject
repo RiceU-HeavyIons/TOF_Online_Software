@@ -26,7 +26,7 @@
 <option id="gnu.cpp.compiler.exe.debug.option.debugging.level.525380475" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.include.paths.1929574414" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="/homes/koheik/local/x86_64/qt/include"/>
-<listOptionValue builtIn="false" value="/homes/koheik/lwrk/x86_64/peak-linux-driver-6.4/lib/"/>
+<listOptionValue builtIn="false" value="/homes/koheik/wrk/x86_64/peak-linux-driver-6.4/lib"/>
 <listOptionValue builtIn="false" value="/homes/koheik/wrk/x86_64/peak-linux-driver-6.4/driver"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.125960171" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -35,8 +35,8 @@
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.762878153" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.1840175174" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 <option id="gnu.c.compiler.option.include.paths.2046611696" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-<listOptionValue builtIn="false" value="/homes/koheik/local/x86_64/peak-linux-driver-6.4/lib"/>
-<listOptionValue builtIn="false" value="/homes/koheik/local/x86_64/peak-linux-driver-6.4/driver"/>
+<listOptionValue builtIn="false" value="/homes/koheik/wrk/x86_64/peak-linux-driver-6.4/lib"/>
+<listOptionValue builtIn="false" value="/homes/koheik/wrk/x86_64/peak-linux-driver-6.4/driver"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1983312425" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
@@ -48,7 +48,7 @@
 <listOptionValue builtIn="false" value="QtGui"/>
 </option>
 <option id="gnu.cpp.link.option.paths.606471942" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-<listOptionValue builtIn="false" value="/homes/koheik/local/x86_64/peak-linux-driver-6.4/lib"/>
+<listOptionValue builtIn="false" value="/homes/koheik/wrk/x86_64/peak-linux-driver-6.4/lib"/>
 <listOptionValue builtIn="false" value="/homes/koheik/local/x86_64/qt/lib"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1014881265" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
