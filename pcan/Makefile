@@ -20,7 +20,8 @@ all:		pcanloop pc pcan_find \
 		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
 		MCUchecksum THUBchecksum getFWIDs getTHUBFWIDs \
 		p_eeprom2_l p_progPLD_l p_progMCU_l MCU2_l \
-		xp_eeprom2_l xMCU2_l xp_config_pm_l xp_config_scripted_l
+		xp_eeprom2_l xMCU2_l xp_config_pm_l xp_config_scripted_l \
+		x_getChecksum_l getChecksum_l
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
@@ -106,7 +107,13 @@ xMCU2_l:	xMCU2_l.o can_utils.o
 x_getChecksum:	x_getChecksum.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
+x_getChecksum_l:	x_getChecksum_l.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
 getChecksum:	getChecksum.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+getChecksum_l:	getChecksum_l.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 getTHUBFWIDs:		getTHUBFWIDs.o can_utils.o
