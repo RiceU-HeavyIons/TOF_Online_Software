@@ -17,7 +17,9 @@ public:
   quint8 ecsr() const { return m_ecsr; }
   double temp() const { return m_temp; }
   quint32 firmwareId() const { return m_firmware; }
+  QString firmwareString() const;
   quint64 chipId() const { return m_chipid; }
+  virtual QString ecsrString() const { return QString(); }
 
 protected:
   quint8 setEcsr(quint8 ecsr) { return (m_ecsr = ecsr); }

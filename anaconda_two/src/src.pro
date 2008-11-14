@@ -12,10 +12,13 @@ DESTDIR = ../lib
 
 # Input
 HEADERS += AnLAddress.h AnHAddress.h\
-	AnCanObject.h AnBoard.h AnTcpu.h AnTdig.h \
-	AnTdc.h \
+	AnCanObject.h AnBoard.h \
+	AnTcpu.h AnTdig.h AnTdc.h \
+	AnThub.h \
 	AnRoot.h AnSock.h
+
 SOURCES += AnLAddress.cpp AnHAddress.cpp\
-	AnCanObject.cpp AnBoard.cpp AnTcpu.cpp AnTdig.cpp \
-	AnTdc.cpp \
+	AnCanObject.cpp AnBoard.cpp \
+	AnTcpu.cpp AnTdig.cpp AnTdc.cpp \
+	AnThub.cpp \
 	AnRoot.cpp AnSock.cpp

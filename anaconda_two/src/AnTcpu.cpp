@@ -74,3 +74,27 @@ void AnTcpu::dump() const {
   printf("  Temperature        : %fC\n",    temp());
   printf("  ESCR               : 0x%02x\n", ecsr());
 }
+
+QString AnTcpu::ecsrString() const
+{
+  static const char* msg_list[] = {
+      "PLD_CONFIG_DONE",
+      "PLD_INIT_DONE",
+      "PLD_CRC_ERROR",
+      "PLD_nSTATUS",
+      "Pushbutton",
+      "JU2 Jumper 5-6",
+      "JU2 Jumper 3-4",
+      "JU2 Jumper 1-2", NULL };
+
+  quint8 bts = ecsr();
+  QString ret = "<h4>ECSR BITS for TCPU</h4>\n";
+
+  ret += "<table>\n";
+  for (int i = 0; i < 8; ++i)
+   ret += QString("<tr><td>[%1]</td><td>%2</td><td>= %3</td></tr>\n").
+         arg(i).arg(msg_list[i]).arg((bts >> i) & 0x1);
+  ret += "</table>\n";
+
+  return ret;
+}

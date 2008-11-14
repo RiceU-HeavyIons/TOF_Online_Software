@@ -20,6 +20,7 @@ public:
 
   virtual void sync(int level = 0);
   virtual void dump() const;
+  virtual QString ecsrString() const;
 private:
   AnTdig *m_tdig[8];
 };

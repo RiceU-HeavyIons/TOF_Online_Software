@@ -17,6 +17,8 @@ public:
   virtual ~AnTdig();
 
   AnTdc *tdc(int i) const { return m_tdc[i-1]; }
+  virtual void sync(int level = 0);
+  virtual QString ecsrString() const;
 
 private:
   AnTdc *m_tdc[3];

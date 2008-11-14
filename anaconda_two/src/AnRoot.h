@@ -9,6 +9,7 @@
 #define ANROOT_H_
 #include <QtCore/QList>
 #include "AnCanObject.h"
+#include "AnThub.h"
 #include "AnTcpu.h"
 #include "AnSock.h"
 
@@ -17,13 +18,13 @@ public:
   AnRoot(AnCanObject *parent = 0);
   virtual ~AnRoot();
 
-  inline QList<AnTcpu*> tcpus() const { return m_tcpus; }
-  inline AnCanObject* at(int i) const { return m_tcpus.at(i); }
-  inline int count() const { return m_tcpus.count(); }
+  inline QList<AnCanObject*> list() const { return m_list; }
+  inline AnCanObject* at(int i) const { return m_list.at(i); }
+  inline int count() const { return m_list.count(); }
   inline AnSock* sock(int i) const { return m_socks.at(i); }
 
 private:
-  QList<AnTcpu*> m_tcpus;
+  QList<AnCanObject*> m_list;
   QList<AnSock*> m_socks;
 
 };
