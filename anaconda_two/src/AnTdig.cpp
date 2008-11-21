@@ -35,7 +35,7 @@ void AnTdig::sync(int level)
     quint8  ctcpu = hAddress().at(1);
     quint8  ctdig = hAddress().at(2);
     quint32 cid = ((ctdig << 4 | 0x4) << 18 ) | ctcpu;
-    AnSock *sock = static_cast<AnRoot*>(parent()->parent())->sock(0);
+    AnSock *sock = static_cast<AnRoot*>(parent()->parent())->sock(hAddress().at(0));
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;

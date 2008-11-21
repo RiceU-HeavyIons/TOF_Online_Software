@@ -11,7 +11,7 @@
 #include "AnSock.h"
 
 int AnSock::TCAN_DEBUG = 1;
-const char * AnSock::PCAN_DEVICE_PATTERN = "/dev/pcan*";
+const char * AnSock::PCAN_DEVICE_PATTERN = "./dev/pcan*";
 
 AnSock::AnSock() : handle(NULL) {
   // TODO Auto-generated constructor stub
@@ -34,6 +34,73 @@ void AnSock::set_msg(TPCANMsg &msg, ...)
     msg.DATA[i] = va_arg(argptr, int);
 
   va_end(argptr);
+}
+
+
+QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list) {
+
+	QMap<int, AnSock*> sock_map;
+	foreach(int dev_id, dev_id_list) sock_map[dev_id] = NULL;
+
+	char *dev_path;
+
+	TPDIAG tpdiag;
+	char txt_buff[VERSIONSTRING_LEN];
+	unsigned int i;
+
+	WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+	int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
+
+	glob_t globb;
+
+	globb.gl_offs = 0;
+	glob(PCAN_DEVICE_PATTERN, GLOB_DOOFFS, NULL, &globb);
+
+	if (globb.gl_pathc == 0)
+	{
+		qDebug() << "device files were not found";
+	}
+
+	HANDLE h = NULL;
+	for(i = 0; i < globb.gl_pathc; i++) {
+		if (TCAN_DEBUG) {
+			printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
+		}
+		dev_path = globb.gl_pathv[i];
+		h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
+		if (h == NULL) {
+			if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
+			continue;
+		}
+		LINUX_CAN_Statistics(h, &tpdiag);
+		int dev_id = tpdiag.wIrqLevel;
+	
+		if (sock_map.contains(dev_id)) {
+			CAN_Init(h, wBTR0BTR1, nExtended);
+			AnSock *sock = new AnSock();
+			sock->handle = h;
+			sock->addr = dev_id;
+			sock->dev_path = dev_path;
+			sock_map[dev_id] = sock;
+
+			if (TCAN_DEBUG) {
+				CAN_VersionInfo(h, txt_buff);
+				printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
+				printf("dev_id:   %x\n", dev_id);
+				printf("dev_name: %s\n", dev_path);
+				printf("version_info: %s\n", txt_buff);
+			}
+		} else { // this dev_id is not requested
+			CAN_Close(h);
+		}
+	}
+	globfree(&globb);
+	
+	foreach(int dev_id, sock_map.keys()) {
+		if (sock_map[dev_id] == NULL)
+			qFatal("Device %d is not found.", dev_id);
+	}
+	return sock_map;
 }
 
 int AnSock::open(quint8 dev_id) {

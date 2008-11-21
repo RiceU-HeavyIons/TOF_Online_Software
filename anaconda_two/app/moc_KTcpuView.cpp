@@ -1,0 +1,72 @@
+/****************************************************************************
+** Meta object code from reading C++ file 'KTcpuView.h'
+**
+** Created: Fri Nov 21 03:22:49 2008
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#include "KTcpuView.h"
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'KTcpuView.h' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.4.3. It"
+#error "cannot be used with the include files from this version of Qt."
+#error "(The moc has changed too much.)"
+#endif
+
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_KTcpuView[] = {
+
+ // content:
+       1,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       1,   10, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+
+ // slots: signature, parameters, type, tag, flags
+      26,   11,   10,   10, 0x0a,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_KTcpuView[] = {
+    "KTcpuView\0\0current,parent\0"
+    "currentRowChanged(QModelIndex,QModelIndex)\0"
+};
+
+const QMetaObject KTcpuView::staticMetaObject = {
+    { &QGroupBox::staticMetaObject, qt_meta_stringdata_KTcpuView,
+      qt_meta_data_KTcpuView, 0 }
+};
+
+const QMetaObject *KTcpuView::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+void *KTcpuView::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_KTcpuView))
+        return static_cast<void*>(const_cast< KTcpuView*>(this));
+    return QGroupBox::qt_metacast(_clname);
+}
+
+int KTcpuView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QGroupBox::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: currentRowChanged((*reinterpret_cast< const QModelIndex(*)>(_a[1])),(*reinterpret_cast< const QModelIndex(*)>(_a[2]))); break;
+        }
+        _id -= 1;
+    }
+    return _id;
+}
+QT_END_MOC_NAMESPACE

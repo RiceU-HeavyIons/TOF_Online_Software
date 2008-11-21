@@ -40,7 +40,7 @@ void AnTcpu::sync(int level)
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;
     quint64 rdata;
-    AnSock *sock = static_cast<AnRoot*>(parent())->sock(0);
+    AnSock *sock = static_cast<AnRoot*>(parent())->sock(hAddress().at(0));
 
     AnSock::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 1, 0xb0);
     rdata = sock->write_read(msg, rmsg, 8);
