@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'TdigTableModel.h'
 **
-** Created: Fri Nov 21 03:22:53 2008
+** Created: Fri Nov 21 17:16:44 2008
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
