@@ -4,8 +4,8 @@ all: libpcan.a libpcan.so
 
 libpcan.o : libpcan.c
 
-libpcan.so : libpcan.o
-	$(CC) $(CFLAGS) -shared -o $@ $<
+libpcan.so : libpcan.c
+	$(CC) $(CFLAGS) -shared -c -o $@ $<
 
 libpcan.a : libpcan.o
 	$(AR) -ru $@ $^
