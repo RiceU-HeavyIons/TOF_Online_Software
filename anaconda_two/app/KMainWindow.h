@@ -1,3 +1,9 @@
+/*
+ * KMainWindows.cpp
+ *
+ *  Created on: Nov 20, 2008
+ *      Author: koheik
+ */
 #ifndef KMAINWINDOW_H_
 #define KMAINWINDOW_H_ 1
 #include <QtCore/QDebug>
@@ -75,7 +81,7 @@ private:
 	QProgressBar *bar0;
 	QDialog      *progress_diag;
 
-//  models and views
+	//  models and views
 	QTableView     *m_l1view;
 	KLevel1Model   *m_l1model;
 	QListWidget    *m_selector;

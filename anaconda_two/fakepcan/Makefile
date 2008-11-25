@@ -13,3 +13,6 @@ libpcan.a : libpcan.o
 
 clean:
 	$(RM) libpcan.a libpcan.so *.o
+
+distclean:
+	$(RM) libpcan.a libpcan.so *.o

@@ -1,3 +1,9 @@
+/*
+ * KMainWindows.cpp
+ *
+ *  Created on: Nov 20, 2008
+ *      Author: koheik
+ */
 #include <QtCore/QDebug>
 #include <QtCore/QThread>
 #include <QtCore/QModelIndexList>
