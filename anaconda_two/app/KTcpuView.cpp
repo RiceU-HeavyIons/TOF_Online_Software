@@ -7,7 +7,7 @@
 
 #include "KTcpuView.h"
 
-KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("Txxx", parent) {
+KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
 
   QGridLayout *grid = new QGridLayout(this);
 
@@ -27,9 +27,12 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("Txxx", parent) {
   grid->addWidget(new QLabel("ECSR:"), ++row, 0);
   grid->addWidget(m_ecsr = new QLabel(""), row, 1);
 
-// TDIG / SERDES Selector
+  grid->addWidget(new QLabel("PLD Reg[02]:"), ++row, 0);
+  grid->addWidget(m_pld = new QLabel("----"),  row, 1);
+
+// TDIG
   QTableView *view = new QTableView();
-  m_model = new TdigTableModel;
+  m_model = new KTdigModel;
   view->setModel(m_model);
   view->setSelectionBehavior(QAbstractItemView::SelectRows);
   for(int i = 0; i < 8; ++i) {
@@ -64,7 +67,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if(tcpu) {
-    tcpu->sync(1);
+    tcpu->sync(2);
 
     setTitle(tcpu->name());
     m_laddr->setText(tcpu->lAddress().toString());
@@ -72,8 +75,10 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_firm->setText(tcpu->firmwareString());
     m_temp->setText(QString::number(tcpu->temp()));
 
-    m_ecsr->setText(QString::number(tcpu->ecsr()));
+    m_ecsr->setText("0x" + QString::number(tcpu->ecsr(), 16));
     m_ecsr->setToolTip(tcpu->ecsrString());
+
+    m_pld->setText(tcpu->pldRegString());
 
     m_model->setTcpu(tcpu);
   }

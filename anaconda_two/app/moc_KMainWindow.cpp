@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'KMainWindow.h'
 **
-** Created: Fri Nov 21 17:16:39 2008
+** Created: Tue Nov 25 08:54:26 2008
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_KMainWindow[] = {
        1,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   10, // methods
+       7,   10, // methods
        0,    0, // properties
        0,    0, // enums/sets
 
@@ -31,17 +31,19 @@ static const uint qt_meta_data_KMainWindow[] = {
       13,   12,   12,   12, 0x0a,
       23,   12,   12,   12, 0x0a,
       32,   12,   12,   12, 0x0a,
-      52,   50,   12,   12, 0x0a,
-      65,   50,   12,   12, 0x0a,
-      83,   50,   12,   12, 0x0a,
+      46,   12,   12,   12, 0x0a,
+      66,   64,   12,   12, 0x0a,
+      79,   64,   12,   12, 0x0a,
+      97,   64,   12,   12, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_KMainWindow[] = {
     "KMainWindow\0\0doReset()\0doSync()\0"
-    "doToggleToolbar()\0i\0setMode(int)\0"
-    "setProgress1(int)\0setProgress2(int)\0"
+    "doConfigure()\0doToggleToolbar()\0i\0"
+    "setMode(int)\0setProgress1(int)\0"
+    "setProgress2(int)\0"
 };
 
 const QMetaObject KMainWindow::staticMetaObject = {
@@ -71,12 +73,13 @@ int KMainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         switch (_id) {
         case 0: doReset(); break;
         case 1: doSync(); break;
-        case 2: doToggleToolbar(); break;
-        case 3: setMode((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 4: setProgress1((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: setProgress2((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 2: doConfigure(); break;
+        case 3: doToggleToolbar(); break;
+        case 4: setMode((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 5: setProgress1((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: setProgress2((*reinterpret_cast< int(*)>(_a[1]))); break;
         }
-        _id -= 6;
+        _id -= 7;
     }
     return _id;
 }

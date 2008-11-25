@@ -30,8 +30,9 @@
 #include <QtGui/QProgressBar>
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QDockWidget>
 
-#include "TableViewModel.h"
+#include "KLevel1Model.h"
 #include "AnRoot.h"
 
 class KMainWindow : public QMainWindow
@@ -40,10 +41,11 @@ class KMainWindow : public QMainWindow
 
 public:
 	KMainWindow(QWidget *parent = 0);
-	
+	~KMainWindow();
 public slots:
 	void doReset();
 	void doSync();
+	void doConfigure();
 	void doToggleToolbar();
 
 	void setMode(int i);
@@ -54,10 +56,14 @@ private:
 	void createActions();
 	void createMenus();
 	void createToolBars();
+	void createSelector();
+
 	void updateBars();
 
+	// Actions
 	QAction *m_ResetAction;
 	QAction *m_SyncAction;
+	QAction *m_ConfigAction;
 	QAction *m_ToggleToolbarAction;
 	
 	QToolBar *m_CommandToolbar;
@@ -67,12 +73,13 @@ private:
 	QProgressBar *bar1;
 	QProgressBar *bar2;
 	QProgressBar *bar0;
-	QDialog *progress_diag;
+	QDialog      *progress_diag;
 
 //  models and views
 	QTableView     *m_l1view;
-	TableViewModel *m_l1model;
-
-
+	KLevel1Model   *m_l1model;
+	QListWidget    *m_selector;
+	
+	QDockWidget    *m_l2view;
 };
 #endif

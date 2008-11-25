@@ -29,12 +29,14 @@ public slots:
   void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
 
 private:
-  QGroupBox *m_box;
-  QLabel *m_laddr;
-  QLabel *m_haddr;
-  QLabel *m_firm;
-  QLabel *m_temp;
-  QLabel *m_ecsr;
+	QGroupBox *m_box;
+	QLabel    *m_laddr, *l_laddr;
+	QLabel    *m_haddr, *l_haddr;
+	QLabel    *m_firm,  *l_firm;
+	QLabel    *m_temp,  *l_temp;
+	QLabel    *m_ecsr,  *l_ecsr;
+	QLabel    *m_thrs,  *l_thrs;	
+	QLabel    *m_status[3], *l_status[3];
 };
 
 #endif /* KTCPUVIEW_H_ */

@@ -6,5 +6,9 @@
  <file>images/print.png</file>
  <file>images/undo.png</file>
  <file>images/sync.png</file>
+ <file>icons/red.png</file>
+ <file>icons/green.png</file>
+ <file>icons/blue.png</file>
+ <file>icons/black.png</file>
 </qresource>
 </RCC>

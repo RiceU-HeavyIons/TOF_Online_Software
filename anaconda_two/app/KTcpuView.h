@@ -19,7 +19,7 @@
 
 #include "AnTcpu.h"
 #include "KTdigView.h"
-#include "TdigTableModel.h"
+#include "KTdigModel.h"
 
 class KTcpuView : public QGroupBox {
   Q_OBJECT
@@ -31,15 +31,18 @@ public slots:
   void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
 
 private:
-  QGroupBox *m_box;
-  QLabel *m_laddr;
-  QLabel *m_haddr;
-  QLabel *m_firm;
-  QLabel *m_temp;
-  QLabel *m_ecsr;
 
-  TdigTableModel *m_model;
-  KTdigView *m_tdigView;
+	QGroupBox   *m_box;
+	QLabel      *m_laddr;
+	QLabel      *m_haddr;
+	QLabel      *m_firm;
+	QLabel      *m_temp;
+	QLabel      *m_ecsr;
+	QLabel      *m_pld;
+	
+
+	KTdigModel  *m_model;
+	KTdigView   *m_tdigView;
 };
 
 #endif /* KTCPUVIEW_H_ */
