@@ -9,6 +9,7 @@ INCLUDEPATH += . ../inc ../src
 
 
 LIBS += -L../lib -lanaconda
+LIBS += -L../fakepcan -lpcan
 
 DESTDIR = ../
 

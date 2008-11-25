@@ -11,9 +11,9 @@ QT += sql
 
 DESTDIR = ../lib
 
-macx {
- LIBS += -L../fakepcan -lpcan
-}
+# mac {
+  LIBS += -L../fakepcan -lpcan
+# }
 # Input
 HEADERS += AnLAddress.h AnHAddress.h AnAddress.h \
            AnCanObject.h AnCanNet.h AnBoard.h \

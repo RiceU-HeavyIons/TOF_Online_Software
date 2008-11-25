@@ -4,3 +4,8 @@ if [ `hostname` = 'natsu.local' ]; then
   ANA2DIR=`pwd`
   alias  ana="pushd ${ANA2DIR}; ./AnacondaII.app/Contents/MacOS/AnacondaII; popd"
 fi
+
+if [ `uname` = 'Linux' ]; then
+  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:`pwd`/lib:`pwd`/fakepcan
+fi
+
