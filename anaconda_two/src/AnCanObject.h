@@ -8,29 +8,40 @@
 #ifndef ANCANOBJECT_H_
 #define ANCANOBJECT_H_
 #include <QtCore/QObject>
-#include "AnLAddress.h"
-#include "AnHAddress.h"
+#include <QtCore/QDebug>
+
+#include "AnAddress.h"
 
 class AnCanObject;
 
 class AnCanObject : public QObject {
 public:
-  AnCanObject(AnCanObject *parent = 0);
-  AnCanObject(const AnLAddress &laddr, const AnHAddress &haddr, AnCanObject *parent = 0);
+	AnCanObject(AnCanObject *parent = 0);
+	AnCanObject(const AnCanObject &rhs);
+	AnCanObject(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
-  AnHAddress hAddress() const;
-  AnLAddress lAddress() const;
+	AnAddress lAddress() const { return m_laddr; }
+	AnAddress hAddress() const { return m_haddr; }
 
-  virtual QString name() const;
-  virtual void sync(int level = 0) { ++level; };
-  virtual void dump() const { };
+	bool active() const { return m_active; }
+	
+	virtual QString name() const;
+	virtual void sync(int level = 0) { ++level; };
+	virtual void dump() const { }
+	virtual void reset() { }
+
+	virtual AnCanObject *at(int i) = 0;
+
+	AnCanObject *root();
 
 protected:
-  bool  enable;
+	AnAddress laddr()    const { return m_laddr; }
+	AnAddress haddr()    const { return m_haddr; }
 
 private:
-  const AnLAddress m_laddr;
-  const AnHAddress m_haddr;
+	bool  m_active;
+	const AnAddress m_laddr;
+	const AnAddress m_haddr;
 
 };
 

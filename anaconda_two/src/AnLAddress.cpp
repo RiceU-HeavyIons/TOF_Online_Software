@@ -20,18 +20,18 @@ AnLAddress::AnLAddress(const quint8 x, const quint8 y, const quint8 z, QObject *
   m_z = z;
 }
 
-AnLAddress::AnLAddress(const AnLAddress &lh, QObject *parent) : QObject(parent)
+AnLAddress::AnLAddress(const AnLAddress &rhs, QObject *parent) : QObject(parent)
 {
-  m_x = lh.m_x;
-  m_y = lh.m_y;
-  m_z = lh.m_z;
+  m_x = rhs.m_x;
+  m_y = rhs.m_y;
+  m_z = rhs.m_z;
 }
 
-AnLAddress& AnLAddress::operator =(const AnLAddress &lh)
+AnLAddress& AnLAddress::operator =(const AnLAddress &rhs)
 {
-  m_x = lh.m_x;
-  m_y = lh.m_y;
-  m_z = lh.m_z;
+  m_x = rhs.m_x;
+  m_y = rhs.m_y;
+  m_z = rhs.m_z;
 
   return *this;
 }

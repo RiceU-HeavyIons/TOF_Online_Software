@@ -7,6 +7,7 @@
 #include <libpcan.h>
 #define VERSION_STRING "Fake_PCAN_Driver_20081119"
 
+// device information
 typedef struct {
 	int           irq;
 	HANDLE        handle;
@@ -18,6 +19,7 @@ typedef struct {
 	char          dname[64];
 } dinfo;
 
+// initialized device information
 static dinfo dlist[] = {
 	{255, (HANDLE)0xcc01, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan32"},
 	{254, (HANDLE)0xcc02, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan31"},
@@ -129,8 +131,7 @@ DWORD CAN_Write(HANDLE hHandle, TPCANMsg* pMsgBuff)
 DWORD LINUX_CAN_Write_Timeout(HANDLE hHandle, TPCANMsg* pMsgBuff, int nMicroSeconds){
 	
 }
-
-DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
+DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 	int i;
 	dinfo *ptr;
 	double temp;
@@ -143,10 +144,80 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 	if (ptr->irq == 0) return -1;
 
 	memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+	switch(pMsgBuff->DATA[0]) {
+
+	case 0x01: // MCU Firmware ID
+		pMsgBuff->LEN = 3;
+		pMsgBuff->DATA[1] = 0x54;
+		pMsgBuff->DATA[2] = 0x10;
+		usleep(2000);
+		break;
+	case 0x02: // FPGA Firmware ID
+		pMsgBuff->LEN = 3;
+		if (pMsgBuff->DATA[1] == 0) {
+			pMsgBuff->DATA[2] = 0x84;
+		} else {
+			pMsgBuff->DATA[2] = 0x74;
+		}
+		usleep(2000);
+		break;
+
+	case 0x03: // Get Temperature
+	    temp = 30.0 + 10.0*rand()/RAND_MAX;
+		pMsgBuff->LEN = 3;
+		pMsgBuff->DATA[1] = 0xFF & (int)(temp*100.0); // temperature xx.16
+		pMsgBuff->DATA[2] = 0xFF & (int)(temp); // temperature 32.xx
+		pMsgBuff->DATA[3] = 0xbb; // ESCR
+		pMsgBuff->DATA[4] = 0; // AD 1L
+		pMsgBuff->DATA[5] = 0; // AD 1H
+		pMsgBuff->DATA[6] = 0; // AD 2L
+		pMsgBuff->DATA[7] = 0; // AD 2H
+		usleep(2000);
+		break;
+
+	case 0x05: // CRC Error bits
+		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[1] = 0xab;
+		usleep(2000);
+		break;
+	default:
+		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[1] = 0;
+	}
+	if (pMsgBuff->DATA[0] >= 0x91 && pMsgBuff->DATA[0] <= 0x98) {
+		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[1] = 0x1f;
+		usleep(2000);
+	}
+
+	return CAN_ERR_OK;
+}
+
+DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
+	int i;
+	dinfo *ptr;
+	double temp;
+
+	for(ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle)
+			{ break; }
+	}
+
+	if (ptr->irq == 0) return -1;
+
+	memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+
+	if (pMsgBuff->MSGTYPE == MSGTYPE_STANDARD && 0x400 == (pMsgBuff->ID & 0xF00))
+		return THUB_readHandler(hHandle, pMsgBuff);
 
 	switch(pMsgBuff->MSGTYPE) {
-	case MSGTYPE_STANDARD: // TCPU and THUB
+		case MSGTYPE_STANDARD: /* TCPU */
 		switch(pMsgBuff->DATA[0]) {
+		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
+			pMsgBuff->LEN = 3;
+			pMsgBuff->DATA[2] = 0xff;
+			break;
+
 		case 0xb0:
 			pMsgBuff->LEN = 8;
 			pMsgBuff->DATA[1] = 16; // temperature xx.16
@@ -175,23 +246,53 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		case 0x05: // Cet Status TDC 1
 			if(ptr->msg.LEN == 1) { // first round
 				pMsgBuff->LEN = 8;
+				pMsgBuff->DATA[1] = 0;
+				pMsgBuff->DATA[2] = 0;
+				pMsgBuff->DATA[3] = 0;
+				pMsgBuff->DATA[4] = 0;
+				pMsgBuff->DATA[5] = 0;
+				pMsgBuff->DATA[6] = 0;
+				pMsgBuff->DATA[7] = 0;																								
 				ptr->msg.LEN = 8;
-			} else // second round
+			} else { /* second round */
 				pMsgBuff->LEN = 2;
+				pMsgBuff->DATA[7] = 0;																								
+			}
+			usleep(2000);
 			break;
-		case 0x06: // Cet Status TDC 2
-			if(ptr->msg.LEN == 1)  {// first round
+		case 0x06: /* Cet Status TDC 2 */
+			if(ptr->msg.LEN == 1)  { /* first round */
 				pMsgBuff->LEN = 8;
+				pMsgBuff->DATA[1] = 0x01;
+				pMsgBuff->DATA[2] = 0x02;
+				pMsgBuff->DATA[3] = 0x03;
+				pMsgBuff->DATA[4] = 0x04;
+				pMsgBuff->DATA[5] = 0x05;
+				pMsgBuff->DATA[6] = 0x06;
+				pMsgBuff->DATA[7] = 0x07;																								
 				ptr->msg.LEN = 8;
-			} else // second round
+			} else { /* second round */
 				pMsgBuff->LEN = 2;
+				pMsgBuff->DATA[1] = 0x08;																						
+			}
+			usleep(2000);
 			break;
-		case 0x07: // Cet Status TDC 3
-			if(ptr->msg.LEN == 1) {// first round
+		case 0x07: /* Cet Status TDC 3 */
+			if(ptr->msg.LEN == 1) { /* first round */
 				pMsgBuff->LEN = 8;
-				ptr->msg.LEN == 8;
-			} else // second round
+				pMsgBuff->DATA[1] = 0;
+				pMsgBuff->DATA[2] = 0;
+				pMsgBuff->DATA[3] = 0;
+				pMsgBuff->DATA[4] = 0;
+				pMsgBuff->DATA[5] = 0;
+				pMsgBuff->DATA[6] = 0;
+				pMsgBuff->DATA[7] = 0;																								
+				ptr->msg.LEN = 8;
+			} else { // second round
 				pMsgBuff->LEN = 2;
+				pMsgBuff->DATA[1] = 0;
+			}
+			usleep(2000);
 			break;
 		case 0x08: // Threshold Set
 			pMsgBuff->LEN = 2;

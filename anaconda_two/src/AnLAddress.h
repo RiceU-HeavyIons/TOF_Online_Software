@@ -15,9 +15,9 @@ class AnLAddress : public QObject {
 public:
   AnLAddress(QObject *parent = 0);
   AnLAddress(const quint8 x, const quint8 y, const quint8 z, QObject *parent = 0);
-  AnLAddress(const AnLAddress &lh, QObject *parent = 0);
+  AnLAddress(const AnLAddress &rhs, QObject *parent = 0);
 
-  AnLAddress& operator =(const AnLAddress &lh);
+  AnLAddress& operator =(const AnLAddress &rhs);
 
   quint8 at(const int i) const;
   quint8 set(const int i, const quint8 val);

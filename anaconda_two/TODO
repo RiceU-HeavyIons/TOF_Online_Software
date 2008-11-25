@@ -1,0 +1,38 @@
+# TODO for Anaconda 2
+---
+Author: Kohei Kajimoto
+Created: 2008-11-24
+Updated: 2008-11-25
+Description: TODO file for Anaconda 2 development. I think this is in YAML format.
+Entry:
+  2008-11-25:
+  - TDIG threshold writing after reset
+  - TDC mask readout from database
+  - TDC mask display
+  - Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
+  - Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
+
+  2008-11-24:
+  - (X) TDIG threshold display
+  - (X) TDIG threshold readout from database
+  - TDIG chip id display
+  - (X) TCPU mode display
+  - TCPU chip id display
+  - (X) TCPU mode readout from database 
+  - SERDES port status display
+  - (X) TCPU status -- to specify icon
+  - THUB status -- to specify icon
+  - (X) TDIG status -- to specify icon
+  - SERDES status -- to specify icon
+  - (X) Input default configuration set
+  - Parallel configuration implementation
+  - Parallel reset implementation
+  - Parallel synchronization implementation
+  - Progress message for Sync, Reset, Configuration
+  - Reduce sync process by introducing last updated time-stamp and minimal interval
+  - Automatic sync process
+  - Robust PCAN error handling
+  - Simplify message send / receive handling
+  - TDC data handling with QSocketNotifier
+  - Greeting message handling with QSocketNotifier
+  - Icons for Rest and Configuration

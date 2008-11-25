@@ -13,15 +13,33 @@
 
 class AnTdig: public AnBoard {
 public:
-  AnTdig(const AnLAddress& ladrr, const AnHAddress& laddr, AnCanObject *parent = 0);
-  virtual ~AnTdig();
+	AnTdig(const AnAddress& ladrr, const AnAddress& laddr, AnCanObject *parent = 0);
+	virtual ~AnTdig();
 
-  AnTdc *tdc(int i) const { return m_tdc[i-1]; }
-  virtual void sync(int level = 0);
-  virtual QString ecsrString() const;
+	AnTdc *tdc(int i) const { return (i == 255)? m_tdc[0] : m_tdc[i]; }
+
+
+// Inherited from AnCanObject
+	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdc[i] : dynamic_cast<AnCanObject*>(this); }
+	
+	virtual void sync(int level = 0);
+	virtual void reset();
+
+// Inherited from AnBoard
+	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
+	virtual bool isWest() const { return dynamic_cast<AnBoard*>(parent())->isWest(); }
+	virtual QString ecsrString() const;
+	virtual int status() const;
+
+// Own Functions
+	int threshold() const { return m_threshold; }
+	int setThreshold(int t) { return (m_threshold = t); }
+	QString thresholdString() const { return QString::number(m_threshold) + QString(" mV"); }
+	QString tempString() const { return QString::number(temp()) + QString(" C");}
 
 private:
-  AnTdc *m_tdc[3];
+	AnTdc *m_tdc[4];
+	int    m_threshold;
 };
 
 #endif /* ANTDIG_H_ */

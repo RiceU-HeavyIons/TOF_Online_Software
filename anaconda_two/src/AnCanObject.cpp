@@ -8,31 +8,36 @@
 #include "AnCanObject.h"
 
 AnCanObject::AnCanObject(AnCanObject *parent) : QObject(parent),
- m_laddr(AnLAddress(0, 0, 0)),
- m_haddr(AnHAddress(0, 0, 0, 0)),
- enable(false)
+ m_laddr(AnAddress(0, 0, 0, 0)),
+ m_haddr(AnAddress(0, 0, 0, 0)),
+ m_active(false)
 {
   setObjectName(QString("CanObject ") + m_laddr.toString());
 }
 
+AnCanObject::AnCanObject(const AnCanObject& rhs) : QObject(dynamic_cast<AnCanObject*>(rhs.parent())),
+ m_laddr(rhs.m_laddr), m_haddr(rhs.m_haddr), m_active(rhs.m_active)
+{
+
+}
+
 AnCanObject::AnCanObject(
-    const AnLAddress &laddr, const AnHAddress &haddr, AnCanObject *parent)
-  : QObject(parent), m_laddr(laddr), m_haddr(haddr), enable(true)
+    const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent)
+  : QObject(parent), m_laddr(laddr), m_haddr(haddr), m_active(true)
 {
-}
-
-AnHAddress AnCanObject::hAddress() const
-{
-  return AnHAddress(m_haddr);
-}
-
-
-AnLAddress AnCanObject::lAddress() const
-{
-  return AnLAddress(m_laddr);
 }
 
 QString AnCanObject::name() const
 {
   return objectName();
+}
+
+AnCanObject *AnCanObject::root()
+{
+	AnCanObject *ptr = this;
+	for (ptr = this;
+		dynamic_cast<AnCanObject*>(ptr->parent());
+		ptr = dynamic_cast<AnCanObject*>(ptr->parent()) ) {}
+
+	return ptr;
 }

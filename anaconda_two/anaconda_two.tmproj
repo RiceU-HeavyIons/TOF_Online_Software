@@ -2,8 +2,352 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>db/configurations.sql</string>
 	<key>documents</key>
 	<array>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>filename</key>
+					<string>app/app.pro</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T07:24:18Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/main.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:10:36Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/Makefile</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T00:16:35Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/toolbar.qrc</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:10:17Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/Config.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T09:28:35Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/Config.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T00:16:31Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KMainWindow.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T06:57:55Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KMainWindow.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T23:36:59Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel1Model.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:09:40Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel1Model.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:22:46Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel2View.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T03:54:26Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel2View.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T04:34:59Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel3View.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T05:39:57Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KLevel3View.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T22:08:48Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTcpuView.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:08:22Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTcpuView.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:09:39Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTdigView.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:09:39Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTdigView.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:09:39Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTdigModel.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:11:16Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KTdigModel.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:12:56Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KThubView.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T10:46:50Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KThubView.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T10:46:51Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSerdesView.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T05:42:59Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSerdesView.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T09:55:51Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSerdesModel.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T09:57:41Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSerdesModel.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T10:35:48Z</date>
+				</dict>
+			</array>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>app</string>
+		</dict>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>filename</key>
+					<string>src/src.pro</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T00:59:59Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/makefile</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T22:21:58Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnBoard.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:14:12Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnBoard.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:13:58Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnCanObject.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T06:16:05Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnCanObject.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T06:16:04Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnCanNet.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:45:57Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnCanNet.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:46:35Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnAddress.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:33:41Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnAddress.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:18:22Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnHAddress.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T21:10:34Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnHAddress.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T18:20:30Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnLAddress.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T19:07:00Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnLAddress.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T18:33:22Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnRoot.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T02:45:09Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnRoot.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T02:45:15Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnSock.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:49:11Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnSock.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T03:14:29Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTcpu.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:18:10Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTcpu.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:19:16Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTdig.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:18:11Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTdig.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T07:18:02Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTdc.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T09:08:45Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnTdc.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T09:09:20Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnThub.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:45:55Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnThub.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-24T00:00:12Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnSerdes.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T03:14:22Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnSerdes.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T03:14:23Z</date>
+				</dict>
+			</array>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>src</string>
+		</dict>
 		<dict>
 			<key>children</key>
 			<array>
@@ -17,7 +361,7 @@
 					<key>filename</key>
 					<string>fakepcan/libpcan.c</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T20:34:27Z</date>
+					<date>2008-11-25T07:09:41Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -32,13 +376,13 @@
 					<key>filename</key>
 					<string>inc/libpcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T01:15:15Z</date>
+					<date>2008-11-25T03:14:28Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>inc/pcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T01:15:15Z</date>
+					<date>2008-11-25T00:28:36Z</date>
 				</dict>
 			</array>
 			<key>name</key>
@@ -72,8 +416,6 @@
 					<date>2008-11-20T22:01:50Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>test</string>
 		</dict>
@@ -118,19 +460,25 @@
 					<key>filename</key>
 					<string>oldlib/tdc_config.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T01:15:16Z</date>
+					<date>2008-11-23T09:28:35Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/tdc_config.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T00:20:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/tdc_status.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T03:14:33Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/tdc_status.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T03:14:29Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -166,13 +514,13 @@
 					<key>filename</key>
 					<string>oldlib/tofc.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-19T21:38:43Z</date>
+					<date>2008-11-25T00:26:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/tofc.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-19T21:09:04Z</date>
+					<date>2008-11-25T00:20:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -181,41 +529,78 @@
 				<dict>
 					<key>filename</key>
 					<string>oldlib/Ttdc.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T00:20:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/Ttdc.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T09:28:34Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/Ttray.cpp</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T09:28:34Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>oldlib/Ttray.h</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T09:28:34Z</date>
 				</dict>
 			</array>
 			<key>name</key>
 			<string>oldlib</string>
 		</dict>
 		<dict>
-			<key>filename</key>
-			<string>Makefile</string>
-			<key>lastUsed</key>
-			<date>2008-11-20T23:17:03Z</date>
-		</dict>
-		<dict>
 			<key>children</key>
 			<array>
 				<dict>
 					<key>children</key>
-					<array/>
+					<array>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/iconfactory.pro</string>
+							<key>lastUsed</key>
+							<date>2008-11-24T06:38:03Z</date>
+						</dict>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/main.cpp</string>
+							<key>lastUsed</key>
+							<date>2008-11-25T07:09:40Z</date>
+						</dict>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/Canvas.h</string>
+							<key>lastUsed</key>
+							<date>2008-11-25T07:08:20Z</date>
+						</dict>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/Canvas.cpp</string>
+							<key>lastUsed</key>
+							<date>2008-11-25T07:09:38Z</date>
+						</dict>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/MWin.cpp</string>
+							<key>lastUsed</key>
+							<date>2008-11-25T07:09:37Z</date>
+						</dict>
+						<dict>
+							<key>filename</key>
+							<string>qttest/iconfactory/MWin.h</string>
+							<key>lastUsed</key>
+							<date>2008-11-24T07:11:03Z</date>
+						</dict>
+					</array>
 					<key>expanded</key>
 					<true/>
 					<key>name</key>
 					<string>iconfactory</string>
-					<key>selected</key>
-					<true/>
 				</dict>
 				<dict>
 					<key>children</key>
@@ -262,7 +647,7 @@
 							<key>filename</key>
 							<string>qttest/custom_model_2/KLevel2View.cpp</string>
 							<key>lastUsed</key>
-							<date>2008-11-20T23:17:04Z</date>
+							<date>2008-11-24T03:28:10Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
@@ -324,19 +709,25 @@
 							<key>filename</key>
 							<string>qttest/custom_model_2/TableViewModel.cpp</string>
 							<key>lastUsed</key>
-							<date>2008-11-20T23:17:03Z</date>
+							<date>2008-11-24T03:34:26Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/custom_model_2/TableViewModel.h</string>
+							<key>lastUsed</key>
+							<date>2008-11-24T03:24:32Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/custom_model_2/TdigTableModel.cpp</string>
+							<key>lastUsed</key>
+							<date>2008-11-24T03:34:23Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/custom_model_2/TdigTableModel.h</string>
+							<key>lastUsed</key>
+							<date>2008-11-24T03:35:14Z</date>
 						</dict>
 					</array>
 					<key>name</key>
@@ -349,23 +740,36 @@
 							<key>filename</key>
 							<string>qttest/toolbar/KMainWindow.h</string>
 							<key>lastUsed</key>
-							<date>2008-11-20T23:17:03Z</date>
+							<date>2008-11-21T02:02:02Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/toolbar/KMainWindow.cpp</string>
 							<key>lastUsed</key>
-							<date>2008-11-20T23:17:02Z</date>
+							<date>2008-11-21T02:20:55Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/toolbar/main.cpp</string>
 							<key>lastUsed</key>
-							<date>2008-11-20T23:17:03Z</date>
+							<date>2008-11-21T02:44:32Z</date>
 						</dict>
 					</array>
 					<key>name</key>
 					<string>toolbar</string>
+				</dict>
+				<dict>
+					<key>children</key>
+					<array>
+						<dict>
+							<key>filename</key>
+							<string>qttest/sql/sql.cpp</string>
+							<key>lastUsed</key>
+							<date>2008-11-21T07:46:31Z</date>
+						</dict>
+					</array>
+					<key>name</key>
+					<string>sql</string>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -378,141 +782,181 @@
 			<array>
 				<dict>
 					<key>filename</key>
-					<string>src/AnBoard.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnBoard.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnCanObject.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnCanObject.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnHAddress.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnHAddress.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnLAddress.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnLAddress.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnRoot.cpp</string>
+					<string>db/initialize.rb</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T01:19:14Z</date>
+					<date>2008-11-23T22:08:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
-					<string>src/AnRoot.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnSock.cpp</string>
+					<string>db/configurations.sql</string>
 					<key>lastUsed</key>
-					<date>2008-11-20T01:22:14Z</date>
+					<date>2008-11-25T09:11:28Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
-					<string>src/AnSock.h</string>
+					<string>db/tdc_configurations.sql</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T21:57:43Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
-					<string>src/AnTcpu.cpp</string>
+					<string>db/Makefile</string>
+					<key>lastUsed</key>
+					<date>2008-11-25T09:11:28Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
-					<string>src/AnTcpu.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnTdc.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnTdc.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnTdig.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnTdig.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnThub.cpp</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/AnThub.h</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/makefile</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/makefile.qmake</string>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>src/src.pro</string>
+					<string>db/devices.sql</string>
+					<key>lastUsed</key>
+					<date>2008-11-23T21:58:05Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
-			<string>src</string>
+			<string>db</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>TODO</string>
+			<key>lastUsed</key>
+			<date>2008-11-25T09:09:28Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
-		<key>src/AnRoot.cpp</key>
+		<key>TODO</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>30</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>19</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>src/AnSock.cpp</key>
+		<key>app/KLevel1Model.cpp</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>45</integer>
+				<integer>43</integer>
 				<key>line</key>
-				<integer>13</integer>
+				<integer>194</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>166</integer>
+		</dict>
+		<key>app/KTdigModel.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>71</integer>
+				<key>line</key>
+				<integer>30</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>6</integer>
+		</dict>
+		<key>app/main.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>17</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+		</dict>
+		<key>db/configurations.sql</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>10</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>38</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>25</integer>
+			</dict>
+		</dict>
+		<key>src/AnTcpu.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>147</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>131</integer>
+		</dict>
+		<key>src/AnTdig.h</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>30</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>3</integer>
 		</dict>
 	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>app/main.cpp</string>
+		<string>app/KLevel1Model.cpp</string>
+		<string>TODO</string>
+		<string>db/configurations.sql</string>
+		<string>app/KTdigModel.cpp</string>
+		<string>src/AnTdig.h</string>
+		<string>src/AnTcpu.cpp</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{272, 76}, {686, 702}}</string>
+	<string>{{256, 80}, {847, 698}}</string>
 </dict>
 </plist>

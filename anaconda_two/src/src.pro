@@ -5,23 +5,24 @@
 TEMPLATE = lib
 TARGET = anaconda
 VERSION = 1.0.0
-DEPENDPATH += . 
+DEPENDPATH += . ../fakepcan
 INCLUDEPATH += . ../inc
 QT += sql
 
 DESTDIR = ../lib
-mac {
+
+macx {
  LIBS += -L../fakepcan -lpcan
 }
 # Input
-HEADERS += AnLAddress.h AnHAddress.h\
-	AnCanObject.h AnBoard.h \
-	AnTcpu.h AnTdig.h AnTdc.h \
-	AnThub.h \
-	AnRoot.h AnSock.h
+HEADERS += AnLAddress.h AnHAddress.h AnAddress.h \
+           AnCanObject.h AnCanNet.h AnBoard.h \
+           AnTcpu.h AnTdig.h AnTdc.h \
+           AnThub.h AnSerdes.h \
+           AnRoot.h AnSock.h
 
-SOURCES += AnLAddress.cpp AnHAddress.cpp\
-	AnCanObject.cpp AnBoard.cpp \
-	AnTcpu.cpp AnTdig.cpp AnTdc.cpp \
-	AnThub.cpp \
-	AnRoot.cpp AnSock.cpp
+SOURCES += AnLAddress.cpp AnHAddress.cpp AnAddress.cpp \
+           AnCanObject.cpp AnCanNet.cpp AnBoard.cpp \
+           AnTcpu.cpp AnTdig.cpp AnTdc.cpp \
+           AnThub.cpp AnSerdes.cpp \
+           AnRoot.cpp AnSock.cpp
