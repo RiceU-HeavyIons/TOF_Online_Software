@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'KTdigView.h'
 **
-** Created: Tue Nov 25 08:54:29 2008
+** Created: Tue Nov 25 08:56:44 2008
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.4.3)
 **
 ** WARNING! All changes made in this file will be lost!
