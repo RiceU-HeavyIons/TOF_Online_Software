@@ -184,7 +184,8 @@ void KMainWindow::createSelector()
 	policy.setHorizontalStretch(1);
 	policy.setVerticalPolicy(QSizePolicy::Fixed);
 	m_selector->setSizePolicy(policy);
-	m_selector->setMaximumHeight(slist.count()*QFontMetrics(QApplication::font()).height());
+	m_selector->setMaximumHeight(
+		1.2*slist.count()*QFontMetrics(QApplication::font()).height());
 
 }
 

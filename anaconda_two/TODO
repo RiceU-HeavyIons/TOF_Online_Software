@@ -2,7 +2,7 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-11-27
+Updated: 2008-11-28
 Description: TODO file for Anaconda 2 development. I think this is in YAML format.
 Entry:
 
@@ -12,6 +12,7 @@ Entry:
   - total progress in status bar
   - device / network name propergation
   - thub reset order (master -> slave)?
+  - tray_id or tray_sn display
 
   2008-11-27:
   - selected actions, and un-select mechanism
@@ -21,7 +22,7 @@ Entry:
   2008-11-26:
   - Tray SN (tray_id) lookup
   - Real sort functionality
-  - Input Lijuan's map
+  - (X) Input Lijuan's map
 
   2008-11-25:
   - TDIG threshold writing after reset
