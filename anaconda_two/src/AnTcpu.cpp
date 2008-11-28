@@ -180,6 +180,8 @@ int AnTcpu::status() const
 	else
 		stat = (m_pld02 & 0x1) ? STATUS_ON : STATUS_STANBY;
 
+	if (!active()) stat = 0;
+
 	return stat;
 }
 

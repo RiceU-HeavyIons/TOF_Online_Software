@@ -40,9 +40,11 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		int device_id = qry.value(1).toInt();
 		int canbus_id = qry.value(2).toInt();
 		bool active   = qry.value(3).toBool();
-		if(!active) continue;
-		m_list[0] << new AnThub(AnAddress(1, id, 0, 0),
+		AnThub *th = new AnThub(AnAddress(1, id, 0, 0),
 										AnAddress(device_id, canbus_id, 0, 0), this);
+//		if(!active) continue;
+		th->setActive(active);
+		m_list[0] << th;
 	}
 	
 	// create TCPU objects
@@ -52,9 +54,11 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		int device_id = qry.value(1).toInt();
 		int canbus_id = qry.value(2).toInt();
 		bool active   = qry.value(3).toBool();
-		if(!active) continue;
-		m_list[1] << new AnTcpu(AnAddress(2, id, 0, 0),
+//		if(!active) continue;
+		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 									AnAddress(device_id, canbus_id, 0, 0), this);
+		tc->setActive(active);
+		m_list[1] << tc;
 	}
 
 	readModeList();

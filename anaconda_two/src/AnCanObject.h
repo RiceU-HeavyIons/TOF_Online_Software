@@ -24,7 +24,8 @@ public:
 	AnAddress hAddress() const { return m_haddr; }
 
 	bool active() const { return m_active; }
-	
+	bool setActive(bool act) { return (m_active = act); }
+
 	virtual QString name() const;
 	virtual void dump() const { }
 

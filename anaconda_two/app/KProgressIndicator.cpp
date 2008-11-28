@@ -23,7 +23,7 @@ KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
 	connect(box, SIGNAL(rejected()), this, SLOT(cancel()));
 	connect(box, SIGNAL(accepted()), this, SLOT(close()));
 
-	m_bar[0].setRange(0, 100);
+	m_bar[0].setRange(0, m_size*100);
 	gl->addWidget(new QLabel("Total"), 0, 0, 1, 1);
 	gl->addWidget(&m_bar[0],              0 ,1, 1, 1);
 	
@@ -55,7 +55,7 @@ void KProgressIndicator::start()
 	m_cancel->setEnabled(true);
 	for(int x = 0; x <= m_size; ++x) {
 		m_val[x] = 0;
-		m_bar[0].setValue(0);
+		m_bar[x].setValue(0);
 	}
 	exec();
 }
@@ -66,8 +66,8 @@ void KProgressIndicator::setProgress(int i, int j)
 
 	m_bar[i].setValue(m_val[i] = j);
 	m_val[0] = 0;
-	for(int x = 1; x <= m_size; ++x) m_val[0] += m_val[i];
-	m_bar[0].setValue(m_val[0]/m_size);
+	for(int x = 1; x <= m_size; ++x) m_val[0] += m_val[x];
+	m_bar[0].setValue(m_val[0]);
 	update();
 	
 	if (m_val[0] == 100*m_size) {

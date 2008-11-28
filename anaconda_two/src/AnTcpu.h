@@ -33,8 +33,8 @@ public:
 	virtual double maxTemp() const;
 	virtual QString ecsrString() const;
 
-	virtual bool isEast() const { return (lAddress().at(1) <= 60); }
-	virtual bool isWest() const { return (lAddress().at(1)  > 60); }
+	virtual bool isEast() const { return (lAddress().at(1) >  60); }
+	virtual bool isWest() const { return (lAddress().at(1) <= 60); }
 	
 	virtual int status() const;
 

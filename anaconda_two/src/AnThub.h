@@ -28,8 +28,8 @@ public:
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }
 	virtual int status() const;
 
-	bool isEast() const { return (lAddress().at(1) <= 2); }
-	bool isWest() const { return (lAddress().at(1)  > 2); }
+	bool isEast() const { return (lAddress().at(1) >  2); }
+	bool isWest() const { return (lAddress().at(1) <= 2); }
 
 	AnSerdes *serdes(int i) const { return m_serdes[i-1]; }
 

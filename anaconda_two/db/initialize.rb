@@ -16,12 +16,12 @@ class TdcConfiguration < ActiveRecord::Base; end;
 
 devs = [251, 253, 254, 255]
 
-(0...120).each do |i|
-  r = Tcpu.new(:device_id => devs[i/30], :canbus_id => 0x20 + (i % 30),
-               :ut_id => 0, :active => 1)
-  r.id = 1 + i
-  r.save
-end
+# (0...120).each do |i|
+#   r = Tcpu.new(:device_id => devs[i/30], :canbus_id => 0x20 + (i % 30),
+#                :ut_id => 0, :active => 1)
+#   r.id = 1 + i
+#   r.save
+# end
 
 Dir.glob("../config/cfig*.txt").each do |f|
   fname = File.basename(f)
