@@ -13,6 +13,7 @@ Entry:
   - device / network name propergation
   - thub reset order (master -> slave)?
   - tray_id or tray_sn display
+  - serdes port <-> tray mapping awareness
 
   2008-11-27:
   - selected actions, and un-select mechanism
