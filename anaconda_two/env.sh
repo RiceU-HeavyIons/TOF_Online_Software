@@ -6,6 +6,6 @@ if [ `hostname` = 'natsu.local' ]; then
 fi
 
 if [ `uname` = 'Linux' ]; then
-  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:`pwd`/lib:`pwd`/fakepcan
+  export LD_LIBRARY_PATH=`pwd`/lib:`pwd`/fakepcan:/homes/koheik/local/x86_64/qt/lib
 fi
 
