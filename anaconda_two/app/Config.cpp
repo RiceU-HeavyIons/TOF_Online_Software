@@ -7,13 +7,14 @@
 
 #include "Config.h"
 
-Config::Config(int ms) : QThread() {
-  m_sleep = ms;
+Config::Config(int i, int ms) : QThread() {
+	m_id = i;
+	m_sleep = ms;
 }
 
 void Config::run() {
   for(int i = 0; i <= 100; ++i) {
-    emit step(i);
+    emit step(m_id, i);
     msleep(m_sleep);
   }
 }

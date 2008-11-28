@@ -12,6 +12,8 @@
 #include <QtCore/QModelIndex>
 #include <QtCore/QAbstractTableModel>
 
+#include <QtGui/QIcon>
+
 #include "AnThub.h"
 
 class KSerdesModel : public QAbstractTableModel {
@@ -29,7 +31,8 @@ public:
   void setThub(AnThub *thub);
 
 private:
-  AnThub  *m_thub;
+	AnThub  *m_thub;            // pointer to parent Thub
+	QIcon    m_statusIcon[4];
 };
 
 #endif /* KSerdesModel_H_ */

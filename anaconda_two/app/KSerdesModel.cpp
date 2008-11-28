@@ -12,11 +12,16 @@
 KSerdesModel::KSerdesModel(QObject *parent)
  : QAbstractTableModel(parent), m_thub(0)
 {
-
+	m_statusIcon[0] = QIcon(":icons/black.png");
+	m_statusIcon[1] = QIcon(":icons/blue.png");
+	m_statusIcon[2] = QIcon(":icons/green.png");
+	m_statusIcon[3] = QIcon(":icons/red.png");
 }
 
 QVariant KSerdesModel::data(const QModelIndex &index, int role) const
 {
+	if (m_thub == NULL) return QVariant();
+
 	if (role == Qt::DisplayRole) {
 		int r = index.row();
 		switch (index.column()) {
@@ -26,7 +31,7 @@ QVariant KSerdesModel::data(const QModelIndex &index, int role) const
 		}
 	} else if (role == Qt::DecorationRole) {
 		switch (index.column()) {
-			case 0: return QIcon(":icons/green.png");
+			case 0: return m_statusIcon[m_thub->serdes(index.row() + 1)->status()];
 		}
 	} else if (role == Qt::SizeHintRole) {
 		return QSize(20, 20);

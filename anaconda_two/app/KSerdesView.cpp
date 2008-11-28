@@ -7,6 +7,11 @@
 
 #include "KSerdesView.h"
 
+#include <QtCore/QDebug>
+#include <QtGui/QGridLayout>
+
+
+
 KSerdesView::KSerdesView(QWidget *parent) : QGroupBox("SERDES", parent) {
 
   QGridLayout *grid = new QGridLayout(this);

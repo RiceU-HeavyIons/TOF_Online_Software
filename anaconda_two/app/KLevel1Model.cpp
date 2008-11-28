@@ -64,6 +64,7 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 	}
 
 	c = index.column();
+
 	AnBoard *cobj = dynamic_cast<AnBoard*>(m_list.at(r));
 	if (cobj == NULL) return QVariant();
 
@@ -161,7 +162,9 @@ QModelIndex KLevel1Model::index(int row, int column,
 //-----------------------------------------------------------------------------
 void KLevel1Model::sync(int level)
 {
-	foreach(AnBoard *brd, m_list) brd->sync(level);
+//	foreach(AnBoard *brd, m_list) brd->sync(level);
+	m_root->sync();
+	qDebug() << "end sync";
 	reset();
 }
 

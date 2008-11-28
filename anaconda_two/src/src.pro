@@ -8,21 +8,31 @@ VERSION = 1.0.0
 DEPENDPATH += . ../fakepcan
 INCLUDEPATH += . ../inc
 QT += sql
+CONFIG -= release
+CONFIG += debug
+STATIC = no
+contains(STATIC, yes) {
+  CONFIG += static
+}
+!contains(STATIC, yes) {
+  CONFIG += shared
+}
+message(CONFIG: $$CONFIG)
+debug {
+  LIBS += -L../fakepcan -lpcan
+}
 
 DESTDIR = ../lib
 
-# mac {
-  LIBS += -L../fakepcan -lpcan
-# }
 # Input
 HEADERS += AnLAddress.h AnHAddress.h AnAddress.h \
            AnCanObject.h AnCanNet.h AnBoard.h \
-           AnTcpu.h AnTdig.h AnTdc.h \
+           AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \
-           AnRoot.h AnSock.h
+           AnRoot.h AnAgent.h
 
 SOURCES += AnLAddress.cpp AnHAddress.cpp AnAddress.cpp \
            AnCanObject.cpp AnCanNet.cpp AnBoard.cpp \
-           AnTcpu.cpp AnTdig.cpp AnTdc.cpp \
+           AnTcpu.cpp AnTdig.cpp AnTdc.cpp AnTdcConfig.cpp \
            AnThub.cpp AnSerdes.cpp \
-           AnRoot.cpp AnSock.cpp
+           AnRoot.cpp AnAgent.cpp

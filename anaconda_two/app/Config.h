@@ -12,14 +12,15 @@
 class Config : public QThread {
   Q_OBJECT
 public:
-    Config(int ms = 100);
+    Config(int i, int ms = 100);
     void run();
 private:
 
+  int m_id;
   int m_sleep;
 
 signals:
-   void step(int);
+   void step(int, int);
 };
 
 #endif /* CONFIG_H_ */

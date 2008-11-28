@@ -32,12 +32,12 @@ public slots:
 
 private:
   QGroupBox *m_box;
-  QLabel *m_laddr;
-  QLabel *m_haddr;
-  QLabel *m_firm;
-  QLabel *m_temp1;
-  QLabel *m_temp2;
-  QLabel *m_ecsr;
+  QLabel    *m_laddr;
+  QLabel    *m_haddr;
+  QLabel    *m_firm;
+  QLabel    *m_temp1;
+  QLabel    *m_temp2;
+  QLabel    *m_ecsr;
 
   KSerdesModel  *m_model;
   KSerdesView   *m_view;

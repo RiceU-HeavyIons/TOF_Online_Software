@@ -25,8 +25,8 @@ end
 
 Dir.glob("../config/cfig*.txt").each do |f|
   fname = File.basename(f)
-  bit_string = File.open(f).read.gsub(/\w\n/, "\r\n")
-  ary = bit_string.split("\r\n").map{|e| [e].pack("B8") }
+  bit_string = File.open(f).read.gsub(/\r/, "")
+  ary = bit_string.split("\n").map{|e| [e].pack("B8") }
   hex_ary = ary.map {|e| e.unpack("H2").first }
   num_ary = ary.map {|e| e.unpack("C").first }
 

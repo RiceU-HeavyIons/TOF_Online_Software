@@ -38,8 +38,10 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QDockWidget>
 
+#include "KProgressIndicator.h"
 #include "KLevel1Model.h"
 #include "AnRoot.h"
+
 
 class KMainWindow : public QMainWindow
 {
@@ -55,8 +57,9 @@ public slots:
 	void doToggleToolbar();
 
 	void setMode(int i);
-	void setProgress1(int i);
-	void setProgress2(int i);
+
+protected slots:
+	void agentFinished();
 
 private:
 	void createActions();
@@ -66,7 +69,9 @@ private:
 
 	void updateBars();
 
+	void setBusy(bool sw = true);
 	// Actions
+	bool     m_busy;
 	QAction *m_ResetAction;
 	QAction *m_SyncAction;
 	QAction *m_ConfigAction;
@@ -74,12 +79,12 @@ private:
 	
 	QToolBar *m_CommandToolbar;
 
+	QComboBox *m_combo;
+
 	AnRoot *m_root;
-	
-	QProgressBar *bar1;
-	QProgressBar *bar2;
-	QProgressBar *bar0;
-	QDialog      *progress_diag;
+
+	QDialog             *progress_diag;
+	KProgressIndicator  *m_progress;
 
 	//  models and views
 	QTableView     *m_l1view;

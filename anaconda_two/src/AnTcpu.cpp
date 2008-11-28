@@ -1,12 +1,10 @@
 /*
- * AnTdc.cpp
- *
+ * $Id$
  *  Created on: Nov 9, 2008
  *      Author: koheik
  */
 #include "AnRoot.h"
 #include "AnTcpu.h"
-#include "AnSock.h"
 
 //-----------------------------------------------------------------------------
 AnTcpu::AnTcpu(
@@ -37,32 +35,37 @@ AnTcpu::~AnTcpu()
 void AnTcpu::sync(int level)
 {
   if (active() && level >= 0) {
-    quint8 ctcpu = hAddress().at(1);
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;
-    quint64 rdata;
-    AnSock *sock = dynamic_cast<AnRoot*>(root())->sock(hAddress().at(0));
+    quint64     rdata;
 
 	// get temperature and ecsr
 	// HLP 3f says "ESCSR Temp Temp AD1L AD1H AD2L AD2H"...
-    AnSock::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 1, 0xb0);
-    sock->write_read(msg, rmsg, 8);
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
+    agent()->write_read(msg, rmsg, 8);
     setEcsr(rmsg.Msg.DATA[3]);
     setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 
-	// get firmware versions
-    AnSock::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 1, 0xb1);
-    rdata = sock->write_read(msg, rmsg, 4);
-    setFirmwareId(0xFFFFFF & rdata);
+	if (level >= 1) {
+		// get firmware versions
+	    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
+	    rdata = agent()->write_read(msg, rmsg, 4);
+	    setFirmwareId(0xFFFFFF & rdata);
+
+		// get chip id
+	    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
+	    rdata = agent()->write_read(msg, rmsg, 8);
+	    setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+	}
 
 	// get PLD 0x02 and 0x0e
-	//     AnSock::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
+	//     AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
 	//     sock->write_read(msg, rmsg, 5);
 	// m_pld02 = rmsg.Msg.DATA[2];
 	// m_pld0e = rmsg.Msg.DATA[3];
-    AnSock::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 2, 0xe, 0x2);
-    sock->write_read(msg, rmsg, 3);
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x2);
+    agent()->write_read(msg, rmsg, 3);
 	m_pld02 = rmsg.Msg.DATA[2];
 
     if (--level >= 0)
@@ -70,10 +73,56 @@ void AnTcpu::sync(int level)
   }
 }
 
+
+//-----------------------------------------------------------------------------
+void AnTcpu::reset()
+{
+
+	if (active()) {
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+		// this may not implemented yet
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD,
+											5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+	    agent()->write_read(msg, rmsg, 2);
+
+		for (int i = 0; i < 8; ++i) m_tdig[i]->reset();
+	}
+}
+
+//-----------------------------------------------------------------------------
+void AnTcpu::config()
+{
+	if (active()) {
+		for (int i = 0; i < 8; ++i) {
+			m_tdig[i]->config();
+		}
+		// catch final messages
+//		for (int i = 0; i < 8; ++i)
+//			agent()->read(rmsg);
+	}
+}
+
+quint32 AnTcpu::canidr() const
+{
+	return haddr().at(1) << 4 | 0x4;
+}
+
+quint32 AnTcpu::canidw() const
+{
+	return haddr().at(1) << 4 | 0x2;
+}
+
+AnAgent *AnTcpu::agent() const
+{
+	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
+}
 //-----------------------------------------------------------------------------
 void AnTcpu::dump() const
 {
-  printf("Tcpu:#0x%llx\n", reinterpret_cast<quint64>(this));
+  printf("Tcpu:#0x%p\n", this);
 //  printf("  ID                 : %d\n",     fid);
 //  printf("  UT ID              : %d\n",     futid);
   printf("  Hardware Address   : %s\n", hAddress().toString().toStdString().c_str());
@@ -82,28 +131,6 @@ void AnTcpu::dump() const
   printf("  Firmware ID        : %x\n",     firmwareId());
   printf("  Temperature        : %fC\n",    temp());
   printf("  ESCR               : 0x%02x\n", ecsr());
-}
-
-//-----------------------------------------------------------------------------
-void AnTcpu::reset()
-{
-
-	if (active()) {
-		qDebug() << hAddress().at(1);
-		quint8  devid = hAddress().at(0);
-		quint16 canid = (hAddress().at(1) << 4) | 0x2;
-
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-	    AnSock *sock = static_cast<AnRoot*>(parent())->sock(devid);
-
-		// this may not implemented yet
-	    AnSock::set_msg(msg, canid, MSGTYPE_STANDARD,
-											5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-	    sock->write_read(msg, rmsg, 2);
-
-		for (int i = 0; i < 8; ++i) m_tdig[i]->reset();
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -161,7 +188,7 @@ int AnTcpu::status() const
 QString AnTcpu::pldRegString() const
 {
 	// QString ret = "0x" + QString::number(m_pld02, 16) + ", "
-	// 			+ "0x" + QString::number(m_pld0e, 16);
+	//             + "0x" + QString::number(m_pld0e, 16);
 	QString ret = "0x" + QString::number(m_pld02, 16);
 	return ret;
 }

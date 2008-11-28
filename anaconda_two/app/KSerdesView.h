@@ -7,15 +7,9 @@
 
 #ifndef KSerdesView_H_
 #define KSerdesView_H_
-#include <QtCore/QDebug>
 #include <QtCore/QModelIndex>
-#include <QtGui/QFrame>
-#include <QtGui/QLabel>
 #include <QtGui/QGroupBox>
-#include <QtGui/QVBoxLayout>
-
-#include <QtGui/QTableView>
-#include <QtGui/QStandardItemModel>
+#include <QtGui/QLabel>
 
 #include "AnSerdes.h"
 

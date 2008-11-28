@@ -9,7 +9,9 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 
-AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent) {
+//-----------------------------------------------------------------------------
+AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
+{
 
 	this->setObjectName("ROOT");
 
@@ -25,12 +27,12 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent) {
 	QSqlQuery qry;
 	qry.exec("SELECT id, active FROM devices");
 	while(qry.next()) {
-		int id     = qry.value(0).toInt();
+		int id      = qry.value(0).toInt();
 		bool active = qry.value(1).toBool();
 		if (active) { m_devid_list << id; }
 	}
-	m_socks = AnSock::open(m_devid_list);
-	
+	m_agents = AnAgent::open(m_devid_list);
+
 	// create THUB objects
 	qry.exec("SELECT id, device_id, canbus_id, active FROM thubs");
 	while (qry.next()) {
@@ -56,25 +58,105 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent) {
 	}
 
 	readModeList();
+	readTdcConfig();
+
 	setMode(0);
 }
 
-AnRoot::~AnRoot() {
+//-----------------------------------------------------------------------------
+AnRoot::~AnRoot()
+{
+	terminate();
 	m_db.close();
-	delete m_cannet[1];
-	delete m_cannet[0];
+	delete   m_cannet[1];
+	delete   m_cannet[0];
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::sync(int level)
 {
-	foreach(AnBoard *brd, list()) brd->sync(level);
+	int n = m_devid_list.count();
+	QList<AnBoard*> blist[n];
+	foreach(AnBoard *brd, list()) {
+		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
+	}
+	for(int i = 0; i < n; ++i) {
+		AnAgent *ag = agent(m_devid_list[i]);
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_SYNC, blist[i]);
+		ag->start();
+	}
+//	for(int i = 0; i < n; ++i) m_agent[i].wait();
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::reset()
 {
-	foreach(AnBoard *brd, list()) brd->reset();
+	int n = m_devid_list.count();
+	QList<AnBoard*> blist[n];
+
+	foreach(AnBoard *brd, list()) {
+		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
+	}
+	for(int i = 0; i < n; ++i) {
+		AnAgent *ag = agent(m_devid_list[i]);
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_RESET, blist[i]);
+		ag->start();
+	}
+//	for(int i = 0; i < n; ++i) m_agent[i].wait();
 }
 
+//-----------------------------------------------------------------------------
+void AnRoot::config()
+{
+	int n = nAgents();
+	QList<AnBoard*> blist[n];
+
+	foreach(AnBoard *brd, list()) {
+		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
+	}
+
+	qDebug() << m_devid_list[1];
+	qDebug() << m_agents.keys();
+	qDebug() << m_agents[253];
+	qDebug() << agent(1);
+
+	foreach(AnAgent *ag, m_agents) {
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_CONFIG, blist[m_devid_list.indexOf(ag->devid())]);
+		ag->start();
+	}
+//	for(int i = 0; i < n; ++i) m_agent[i].wait();
+}
+
+//-----------------------------------------------------------------------------
+// Agents support
+bool AnRoot::isRunning() const
+{
+	bool ret = false;
+	foreach(AnAgent *ag, m_agents) ret |= ag->isRunning();
+
+	return ret;
+}
+
+void AnRoot::stop() const {
+	foreach(AnAgent *ag, m_agents)
+		if (ag->isRunning()) ag->stop();
+	foreach(AnAgent *ag, m_agents) ag->wait();
+}
+
+void AnRoot::terminate() const {
+	foreach(AnAgent *ag, m_agents) ag->stop();
+	foreach(AnAgent *ag, m_agents) ag->terminate();
+	foreach(AnAgent *ag, m_agents) ag->wait();
+}
+
+void AnRoot::wait() const {
+	foreach(AnAgent *ag, m_agents) ag->wait();	
+}
+
+//-----------------------------------------------------------------------------
 QStringList AnRoot::modeList() const
 {
 	QStringList list;
@@ -82,6 +164,7 @@ QStringList AnRoot::modeList() const
 	return list;
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
 	m_mode = m_mode_list[i].id;
@@ -90,7 +173,8 @@ void AnRoot::setMode(int i)
 	
 	QSqlQuery qry;
 	qry.prepare("SELECT id, addr1, addr2, addr3, addr4, val FROM configurations"
-	            " WHERE config_set_id=:cs_id AND config_type_id=:ct_id ORDER BY rule_order");
+	            " WHERE config_set_id=:cs_id AND config_type_id=:ct_id "
+	            " ORDER BY rule_order");
 	qry.bindValue(":cs_id", m_mode);
 
 	// TCPU_PLD02
@@ -145,17 +229,20 @@ void AnRoot::setMode(int i)
 		qDebug() << id << addr.toString() << val;
 		foreach(AnAddress ad, expand(addr)) {
 			AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
-			if (tdc) tdc->setConfig(val);
+			if (tdc) tdc->setConfigId(val);
 			else qDebug() << "invalid address: " << ad.toString();
 		}
 	}
 }
 
+//-----------------------------------------------------------------------------
 AnCanObject *AnRoot::find(AnAddress &lad)
 {
-	return dynamic_cast<AnCanObject*>( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
+	return dynamic_cast<AnCanObject*>
+				( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
 }
 
+//-----------------------------------------------------------------------------
 QList<AnAddress> AnRoot::expand(AnAddress &lad)
 {
 	int a1 = lad.at(0);
@@ -202,7 +289,7 @@ QList<AnAddress> AnRoot::expand(AnAddress &lad)
 	}
 
 	return lst2;
-}	
+}
 
 // private functions
 void AnRoot::readModeList()
@@ -218,4 +305,33 @@ void AnRoot::readModeList()
 		md.description = qry.value(2).toString();
 		m_mode_list << md;
 	}
+}
+
+void AnRoot::readTdcConfig()
+{
+	m_tcnfs.clear();
+
+	QSqlQuery qry;
+	qry.exec("SELECT id, name, length, checksum, bit_string FROM tdc_configurations");
+	while(qry.next()) {
+		quint32 id       = qry.value(0).toUInt();
+		QString name     = qry.value(1).toString();
+		quint32 length   = qry.value(2).toUInt();
+		quint32 checksum = qry.value(3).toUInt();
+		QString bstr     = qry.value(4).toString();
+		AnTdcConfig *cnf = new AnTdcConfig(this);
+		cnf->setId(id);
+		cnf->loadFromString(bstr);
+
+		if (cnf->length() != length || cnf->checksum() != checksum) {
+			qWarning("failed to load tdc_config[%d]", id);
+		} else {
+			qDebug() << "id" << id;
+			m_tcnfs[id] = cnf;
+		}
+		
+	}
+
+	// copy to agents
+	foreach (AnAgent *ag, m_agents) ag->setTdcConfigs(m_tcnfs);
 }

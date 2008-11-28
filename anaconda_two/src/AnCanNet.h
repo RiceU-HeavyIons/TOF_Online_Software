@@ -20,7 +20,12 @@ public:
 	AnCanNet(AnCanObject *parent = 0);
 	AnCanNet(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
+//  Inherited from AnCanObject
 	AnCanObject *at(int i) { return (i > 0) ? m_list->at(i-1) : static_cast<AnCanObject*>(this); }
+
+	virtual void sync(int level = 0) { /* do nothing */ }
+	virtual void reset() { /* do nothing */ }
+	virtual void config() { /* do nothing */ }
 
 	void setList(QList<AnBoard*> *lst) { m_list = lst; }
 private:

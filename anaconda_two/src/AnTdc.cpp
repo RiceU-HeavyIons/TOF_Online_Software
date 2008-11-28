@@ -18,41 +18,89 @@ AnTdc::AnTdc(const AnAddress &laddr, const AnAddress &haddr,
 void AnTdc::sync(int level)
 {
 	if (active() and level >= 0) {
-		quint8  devid = hAddress().at(0);
-		quint8  ctcpu = hAddress().at(1);
-		quint32 canid = ((hAddress().at(2) << 4) | 0x2) << 18 | ctcpu;
 		quint8  data0 = 0x04 | hAddress().at(3);
 
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
-	    AnSock *sock = dynamic_cast<AnRoot*>(root())->sock(devid);
-        AnSock::set_msg(msg, canid, MSGTYPE_EXTENDED, 1, data0);
-        m_status = sock->write_read(msg, rmsg, 10);
+        AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
+        m_status = agent()->write_read(msg, rmsg, 10);
 	}
 }
 
 void AnTdc::reset() {
 
 	if (active()) {
-		quint8  devid = hAddress().at(0);
-		quint8  ctcpu = hAddress().at(1);
-		quint32 canid = (((hAddress().at(2) << 4) | 0x2) << 18) | ctcpu;
 		quint8  data0 = 0x04 | hAddress().at(3);
 
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
-	    AnSock *sock = dynamic_cast<AnRoot*>(root())->sock(devid);
 
-	    AnSock::set_msg(msg, canid, MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0xff);
-	    sock->write_read(msg, rmsg, 2);
-	    AnSock::set_msg(msg, canid, MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x3f);
-	    sock->write_read(msg, rmsg, 2);
-	    AnSock::set_msg(msg, canid, MSGTYPE_EXTENDED, 6, data0, 0xf4, 0xff, 0xff, 0xff, 0x1f);
-	    sock->write_read(msg, rmsg, 2);
-	    AnSock::set_msg(msg, canid, MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
-	    sock->write_read(msg, rmsg, 2);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0xff);
+	    agent()->write_read(msg, rmsg, 2);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x3f);
+	    agent()->write_read(msg, rmsg, 2);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xf4, 0xff, 0xff, 0xff, 0x1f);
+	    agent()->write_read(msg, rmsg, 2);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
+	    agent()->write_read(msg, rmsg, 2);
 	}
 }
+
+
+void AnTdc::config()
+{
+
+	if (active()) {
+		quint64 rdata;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+		AnTdcConfig *tc = agent()->tdcConfig(configId());
+		qDebug() << tc;
+
+		// block start //
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x10);
+		agent()->write_read(msg, rmsg, 2);
+
+		// blocks //
+		for (int l = 0; l < tc->blockLength(); ++l) {
+			tc->setBlockMsg(&msg, l);
+			agent()->write_read(msg, rmsg, 2);
+		}
+
+		// block end //
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x30);
+		rdata = agent()->write_read(msg, rmsg, 8);
+		quint8  sts = (0x0000FF & rdata);
+		quint32 len = (0x00FFFF & rdata >> 8);
+		quint32 csm = (0xFFFFFF & rdata >> 24);
+		if (sts != 0 || tc->length() != len || tc->checksum() != csm) {
+			qDebug() << objectName();
+			qFatal("Block Sending Error: "
+			       "config_id=%d, status=%d, length=%d, checksum=%d",
+		           tc->id(), sts, len, csm);
+		}
+		// finalize
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x40 | haddr().at(3));
+		rdata = agent()->write_read(msg, rmsg, 2);
+	}
+}
+//-----------------------------------------------------------------------------
+quint32 AnTdc::canidr() const
+{
+	return (haddr().at(2) << 4 | 0x4) << 18 | haddr().at(1);
+}
+
+quint32 AnTdc::canidw() const
+{
+	return (haddr().at(2) << 4 | 0x2) << 18 | haddr().at(1);
+}
+
+AnAgent *AnTdc::agent() const
+{
+	return dynamic_cast<AnRoot*>
+				(parent()->parent()->parent())->agent(hAddress().at(0));
+}
+
 
 quint64 AnTdc::setStatus(quint64 sw)
 {

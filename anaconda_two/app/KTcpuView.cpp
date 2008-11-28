@@ -6,6 +6,7 @@
  */
 
 #include "KTcpuView.h"
+#include <QtGui/QToolBox>
 
 KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
 
@@ -21,6 +22,9 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
   grid->addWidget(new QLabel("Firmware:"), ++row, 0);
   grid->addWidget(m_firm = new QLabel(""), row, 1);
 
+  grid->addWidget(new QLabel("Chip Id:"), ++row, 0);
+  grid->addWidget(m_chip = new QLabel(""), row, 1);
+
   grid->addWidget(new QLabel("Temperature:"), ++row, 0);
   grid->addWidget(m_temp = new QLabel(""), row, 1);
 
@@ -29,6 +33,17 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
 
   grid->addWidget(new QLabel("PLD Reg[02]:"), ++row, 0);
   grid->addWidget(m_pld = new QLabel("----"),  row, 1);
+
+// QToolBox *tab = new QToolBox();
+// tab->addItem(new QLabel("they"), QIcon(":icons/blue.png"),  "TDIG 1");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 2");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 3");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 4");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 5");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 6");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 7");
+// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 8");
+// grid->addWidget(tab, ++row, 0, 1, 2);
 
 // TDIG
   QTableView *view = new QTableView();
@@ -73,6 +88,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_laddr->setText(tcpu->lAddress().toString());
     m_haddr->setText(tcpu->hAddress().toString());
     m_firm->setText(tcpu->firmwareString());
+	m_chip->setText(tcpu->chipIdString());
     m_temp->setText(QString::number(tcpu->temp()));
 
     m_ecsr->setText("0x" + QString::number(tcpu->ecsr(), 16));

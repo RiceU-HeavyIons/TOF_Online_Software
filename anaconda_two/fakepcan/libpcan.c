@@ -222,7 +222,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->LEN = 8;
 			pMsgBuff->DATA[1] = 16; // temperature xx.16
 			pMsgBuff->DATA[2] = 32; // temperature 32.xx
-			pMsgBuff->DATA[3] = 0xb0; // ESCR
+			pMsgBuff->DATA[3] = 0x8b; // ESCR
 			pMsgBuff->DATA[4] = 0; // AD 1L
 			pMsgBuff->DATA[5] = 0; // AD 1H
 			pMsgBuff->DATA[6] = 0; // AD 2L
@@ -233,6 +233,17 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->DATA[1] = 0x45; // ID.L
 			pMsgBuff->DATA[2] = 0x02; // ID.H
 			pMsgBuff->DATA[3] = 0x85; // FPGA
+			break;
+		case 0xb2:
+			pMsgBuff->LEN = 8;
+			pMsgBuff->DATA[1] = 0x70;
+			pMsgBuff->DATA[2] = 0x60;
+			pMsgBuff->DATA[3] = 0x50;
+			pMsgBuff->DATA[4] = 0x40;
+			pMsgBuff->DATA[5] = 0x30;
+			pMsgBuff->DATA[6] = 0x20;
+			pMsgBuff->DATA[7] = 0x10;
+			usleep(2000);
 			break;
 		}
 		break;
@@ -252,11 +263,11 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->DATA[4] = 0;
 				pMsgBuff->DATA[5] = 0;
 				pMsgBuff->DATA[6] = 0;
-				pMsgBuff->DATA[7] = 0;																								
+				pMsgBuff->DATA[7] = 0;
 				ptr->msg.LEN = 8;
 			} else { /* second round */
 				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[7] = 0;																								
+				pMsgBuff->DATA[7] = 0;
 			}
 			usleep(2000);
 			break;
@@ -269,11 +280,10 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->DATA[4] = 0x04;
 				pMsgBuff->DATA[5] = 0x05;
 				pMsgBuff->DATA[6] = 0x06;
-				pMsgBuff->DATA[7] = 0x07;																								
-				ptr->msg.LEN = 8;
+				pMsgBuff->DATA[7] = 0x07;
 			} else { /* second round */
 				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[1] = 0x08;																						
+				pMsgBuff->DATA[1] = 0x08;
 			}
 			usleep(2000);
 			break;
@@ -286,7 +296,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->DATA[4] = 0;
 				pMsgBuff->DATA[5] = 0;
 				pMsgBuff->DATA[6] = 0;
-				pMsgBuff->DATA[7] = 0;																								
+				pMsgBuff->DATA[7] = 0;
 				ptr->msg.LEN = 8;
 			} else { // second round
 				pMsgBuff->LEN = 2;
@@ -312,7 +322,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->LEN = 2;
 			pMsgBuff->DATA[1] = 0;
 			usleep(2000);
-		break;
+			break;
 		case 0x30: // Block Data
 			pMsgBuff->LEN = 8;
 			pMsgBuff->DATA[1] = 0;
@@ -361,6 +371,17 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->DATA[1] = 0x53; // ID.L
 			pMsgBuff->DATA[2] = 0x11; // ID.H
 			pMsgBuff->DATA[3] = 0x74; // FPGA
+			usleep(2000);
+			break;
+		case 0xb2:
+			pMsgBuff->LEN = 8;
+			pMsgBuff->DATA[1] = 0x77;
+			pMsgBuff->DATA[2] = 0x66;
+			pMsgBuff->DATA[3] = 0x55;
+			pMsgBuff->DATA[4] = 0x44;
+			pMsgBuff->DATA[5] = 0x33;
+			pMsgBuff->DATA[6] = 0x22;
+			pMsgBuff->DATA[7] = 0x11;
 			usleep(2000);
 			break;
 		default:

@@ -26,9 +26,11 @@ public:
 	bool active() const { return m_active; }
 	
 	virtual QString name() const;
-	virtual void sync(int level = 0) { ++level; };
 	virtual void dump() const { }
-	virtual void reset() { }
+
+	virtual void sync(int level = 0) = 0;
+	virtual void reset()  = 0;
+	virtual void config() = 0;
 
 	virtual AnCanObject *at(int i) = 0;
 

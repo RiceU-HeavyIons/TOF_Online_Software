@@ -28,21 +28,18 @@ QString AnSerdes::firmwareString() const
 void AnSerdes::sync(int level)
 {
   if (active() && level >= 0) {
-    quint8  devid = hAddress().at(0);
-	quint32 canid = (hAddress().at(1) << 4) | 0x4;
 	quint8  srdid = hAddress().at(2); 
-    AnSock *sock = static_cast<AnRoot*>(parent()->parent())->sock(devid);
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;
     quint64     rdata;
 
-    AnSock::set_msg(msg, canid, MSGTYPE_STANDARD, 2, 0x02, srdid);
-    rdata = sock->write_read(msg, rmsg, 3);
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, srdid);
+    rdata = agent()->write_read(msg, rmsg, 3);
     setFpgaFirmwareId(rmsg.Msg.DATA[2]);
 
-    AnSock::set_msg(msg, canid, MSGTYPE_STANDARD, 1, 0x90 + srdid);
-    rdata = sock->write_read(msg, rmsg, 2);
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid);
+    rdata = agent()->write_read(msg, rmsg, 2);
     setEcsr(rmsg.Msg.DATA[1]);
   }
 }
@@ -69,4 +66,34 @@ QString AnSerdes::ecsrString() const
   ret += "</table>";
 
   return ret;
+}
+
+
+//-----------------------------------------------------------------------------
+quint32 AnSerdes::canidr() const
+{
+	return haddr().at(1) << 4 | 0x4;
+}
+
+quint32 AnSerdes::canidw() const
+{
+	return haddr().at(1) << 4 | 0x2;
+}
+
+AnAgent *AnSerdes::agent() const
+{
+	return dynamic_cast<AnRoot*>(parent()->parent())->agent(hAddress().at(0));
+}
+
+int AnSerdes::status() const
+{
+// TO-DO implement real logic
+	int err = 0;
+	if (ecsr() != 0x1f) err++;
+
+	if (active()) {
+		if (err) return STATUS_ERROR;
+		return STATUS_ON;
+	} else
+		return STATUS_UNKNOWN;
 }

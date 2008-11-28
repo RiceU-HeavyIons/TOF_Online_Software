@@ -4,21 +4,27 @@
 
 TEMPLATE = app
 TARGET = AnacondaII
-DEPENDPATH += .
+DEPENDPATH += . ../lib
 INCLUDEPATH += . ../inc ../src
-
+QT += sql
+CONFIG += debug
+CONFIG -= release
 
 LIBS += -L../lib -lanaconda
-LIBS += -L../fakepcan -lpcan
+debug {
+  LIBS += -L../fakepcan -lpcan
+}
+message($$CONFIG)
+
 
 DESTDIR = ../
 
 # Input
-HEADERS += Config.h \
+HEADERS += \
            KLevel1Model.h \
            KLevel2View.h \
            KLevel3View.h \
-           KMainWindow.h \
+           KMainWindow.h KProgressIndicator.h\
            KTcpuView.h \
            KTdigModel.h \
            KTdigView.h \
@@ -27,11 +33,10 @@ HEADERS += Config.h \
            KSerdesView.h
 
 SOURCES += main.cpp \
-           Config.cpp \
            KLevel1Model.cpp \
            KLevel2View.cpp \
            KLevel3View.cpp \
-           KMainWindow.cpp \
+           KMainWindow.cpp KProgressIndicator.cpp \
            KTcpuView.cpp \
            KTdigModel.cpp \
            KTdigView.cpp \

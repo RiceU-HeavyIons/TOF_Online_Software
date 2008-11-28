@@ -2,33 +2,53 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-11-25
+Updated: 2008-11-27
 Description: TODO file for Anaconda 2 development. I think this is in YAML format.
 Entry:
+
+  2008-11-28:
+  - asynchronous (non-blocking) configuration
+  - modal/modeless progress dialog
+  - total progress in status bar
+  - device / network name propergation
+  - thub reset order (master -> slave)?
+
+  2008-11-27:
+  - selected actions, and un-select mechanism
+  - making test framework (read, read+write, etc.)
+  - asynchronous (non-blocking) synchronization -- need to disable command actions and block synchronization when you push item on main table. also need to update the main model and view after finishing synchronization. maybe not full reset() but partially updating for each item.
+
+  2008-11-26:
+  - Tray SN (tray_id) lookup
+  - Real sort functionality
+  - Input Lijuan's map
+
   2008-11-25:
   - TDIG threshold writing after reset
   - TDC mask readout from database
   - TDC mask display
   - Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
   - Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
+  - TCPU PLD register 02, set value and read value.
+  - TDIG, TCPU chip id verification. Again, set value and read value consistency
 
   2008-11-24:
   - (X) TDIG threshold display
   - (X) TDIG threshold readout from database
-  - TDIG chip id display
+  - (X) TDIG chip id display
   - (X) TCPU mode display
-  - TCPU chip id display
+  - (X) TCPU chip id display
   - (X) TCPU mode readout from database 
-  - SERDES port status display
-  - (X) TCPU status -- to specify icon
-  - THUB status -- to specify icon
-  - (X) TDIG status -- to specify icon
-  - SERDES status -- to specify icon
+  - (X) SERDES port status display
+  - (X) TCPU status to specify icon
+  - (X) THUB status to specify icon
+  - (X) TDIG status to specify icon
+  - (X) SERDES status to specify icon
   - (X) Input default configuration set
-  - Parallel configuration implementation
-  - Parallel reset implementation
-  - Parallel synchronization implementation
-  - Progress message for Sync, Reset, Configuration
+  - (X) Parallel configuration implementation
+  - (X) Parallel reset implementation
+  - (X) Parallel synchronization implementation
+  - (X) Progress message for Sync, Reset, Configuration
   - Reduce sync process by introducing last updated time-stamp and minimal interval
   - Automatic sync process
   - Robust PCAN error handling

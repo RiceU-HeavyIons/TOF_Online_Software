@@ -1,5 +1,5 @@
 /*
- * AnTdig.cpp
+ * $Id$
  *
  *  Created on: Nov 9, 2008
  *      Author: koheik
@@ -37,24 +37,27 @@ AnTdig::~AnTdig()
 void AnTdig::sync(int level)
 {
   if (active() && level >= 0) {
-    quint8  ctcpu = hAddress().at(1);
-    quint8  ctdig = hAddress().at(2);
-    quint32 cid = ((ctdig << 4 | 0x4) << 18 ) | ctcpu;
-    AnSock *sock = dynamic_cast<AnRoot*>(root())->sock(hAddress().at(0));
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;
     quint64     rdata;
 
-
-    AnSock::set_msg(msg, cid, MSGTYPE_EXTENDED, 1, 0xb0);
-    rdata = sock->write_read(msg, rmsg, 8, 800000);
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
+    rdata = agent()->write_read(msg, rmsg, 8);
     setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
     setEcsr(rmsg.Msg.DATA[3]);
 
-    AnSock::set_msg(msg, cid, MSGTYPE_EXTENDED, 1, 0xb1);
-    rdata = sock->write_read(msg, rmsg, 4, 800000);
-    setFirmwareId(0xFFFFFF & rdata);
+    if (level >= 1) {
+		// get firmware version
+		AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
+	    rdata = agent()->write_read(msg, rmsg, 4);
+	    setFirmwareId(0xFFFFFF & rdata);
+
+		// get chip id
+	    AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
+	    rdata = agent()->write_read(msg, rmsg, 8);
+	    setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+	}
 
     if (--level >= 0)
       for(quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
@@ -65,22 +68,45 @@ void AnTdig::reset()
 {
 	
 	if (active()) {
-		quint8  devid = hAddress().at(0);
-		quint8  ctcpu = hAddress().at(1);
-	    quint8  ctdig = hAddress().at(2);
-	    quint32 cid = ((ctdig << 4 | 0x2) << 18 ) | ctcpu;
-
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
-	    AnSock *sock = dynamic_cast<AnRoot*>(root())->sock(devid);
 
 		// this may not implemented yet
-	    AnSock::set_msg(msg, cid, MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-	    sock->write_read(msg, rmsg, 2);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+	    agent()->write_read(msg, rmsg, 2);
 
 		m_tdc[0]->reset();
 //		for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 	}
+}
+void AnTdig::config()
+{
+	if (active()) {
+		if( tdc(1)->configId() == tdc(2)->configId() &&
+		    tdc(2)->configId() == tdc(3)->configId() )
+		{
+			tdc(0)->setConfigId(tdc(1)->configId());
+			tdc(0)->config();
+		} else {
+			for(int i = 1; i < 4; i++) m_tdc[i]->config();
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+quint32 AnTdig::canidr() const
+{
+	return (haddr().at(2) << 4 | 0x4) << 18 | haddr().at(1);
+}
+
+quint32 AnTdig::canidw() const
+{
+	return (haddr().at(2) << 4 | 0x2) << 18 | haddr().at(1);
+}
+
+AnAgent *AnTdig::agent() const
+{
+	return dynamic_cast<AnRoot*>(parent()->parent())->agent(hAddress().at(0));
 }
 
 QString AnTdig::ecsrString() const

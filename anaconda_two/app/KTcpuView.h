@@ -36,6 +36,7 @@ private:
 	QLabel      *m_laddr;
 	QLabel      *m_haddr;
 	QLabel      *m_firm;
+	QLabel      *m_chip;
 	QLabel      *m_temp;
 	QLabel      *m_ecsr;
 	QLabel      *m_pld;
