@@ -1,5 +1,5 @@
 /*
- * AnThub.h
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik
@@ -22,7 +22,7 @@ public:
 	virtual void config() { /* place holder */ }
 
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_serdes[i-1] : static_cast<AnCanObject*>(this); }
-	
+
 
 // from AnBoard
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }

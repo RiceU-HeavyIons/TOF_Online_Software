@@ -1,5 +1,5 @@
 /*
- * AnTdc.cpp
+ * $Id$
  *
  *  Created on: Nov 9, 2008
  *      Author: koheik
@@ -135,7 +135,7 @@ AnTdc::field_t AnTdc::field[26] = {
 	{"Trigger FIFO Parity Error",    6,  1},
 	{"Trigger Matching State Error", 5,  1},
 	{"Readout FIFO Parity Error",    4,  1},
-	{"Readout State Error",          3,  1},						
+	{"Readout State Error",          3,  1},
 	{"Setup Parity Error",           2,  1},
 	{"Control Parity Error",         1,  1},
 	{"JTAG Instruction Error",       0,  1},
@@ -165,7 +165,7 @@ QString AnTdc::statusTipString() const
 				.arg(f.start + f.length - 1)
 				.arg(f.name)
 				.arg(fvalue(i));
-		}	
+		}
 	}
 	ret += "</table>";
 

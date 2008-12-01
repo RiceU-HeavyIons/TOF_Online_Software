@@ -1,5 +1,5 @@
 /*
- * AnTdcConfig.h
+ * $Id$
  *
  *  Created on: Nov 27 2008
  *

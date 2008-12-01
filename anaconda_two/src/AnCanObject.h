@@ -1,5 +1,5 @@
 /*
- * AnCanObject.h
+ * $Id$
  *
  *  Created on: Nov 9, 2008
  *      Author: koheik
@@ -24,7 +24,7 @@ public:
 	AnAddress hAddress() const { return m_haddr; }
 
 	bool active() const { return m_active; }
-	bool setActive(bool act) { return (m_active = act); }
+	virtual bool setActive(bool act) { return (m_active = act); }
 
 	virtual QString name() const;
 	virtual QString dump() const { return QString(""); }
@@ -34,7 +34,7 @@ public:
 	virtual void config() = 0;
 
 	virtual AnCanObject *at(int i) = 0;
-	
+
 	AnCanObject *root();
 
 protected:

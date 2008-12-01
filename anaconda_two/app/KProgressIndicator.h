@@ -1,3 +1,9 @@
+/*
+ * $Id$
+ *
+ *  Created on: Nov 28, 2008
+ *      Author: koheik
+ */
 #ifndef KProgressIndicator_H_
 #define KProgressIndicator_H_
 #include <QtCore/QDebug>
@@ -33,7 +39,7 @@ private:
 	QProgressBar   *m_bar;
 	QPushButton    *m_cancel;
 	QPushButton    *m_ok;
-	
+
 	QMutex          m_mutex;
 
 };

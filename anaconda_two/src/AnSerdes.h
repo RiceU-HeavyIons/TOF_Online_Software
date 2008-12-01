@@ -1,5 +1,5 @@
 /*
- * AnSerdes.h
+ * $Id$
  *
  *  Created on: Nov 22, 2008
  *      Author: koheik
@@ -23,7 +23,7 @@ public:
 	virtual void sync(int level = 0);
 	virtual void reset() { /* place holder */}
 	virtual void config()  { /* place holder */}
-	
+
 	virtual QString firmwareString() const;
 
 // from AnBoard
@@ -31,7 +31,7 @@ public:
 	virtual int status() const;
 	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
 	virtual bool isWest() const { return dynamic_cast<AnBoard*>(parent())->isWest(); }
-	
+
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;

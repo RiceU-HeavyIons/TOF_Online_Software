@@ -1,5 +1,5 @@
 /*
- * KMainWindows.cpp
+ * $Id$
  *
  *  Created on: Nov 20, 2008
  *      Author: koheik
@@ -94,7 +94,7 @@ private:
 	QTableView     *m_l1view;
 	KLevel1Model   *m_l1model;
 	QListWidget    *m_selector;
-	
+
 	QDockWidget    *m_l2view;
 };
 #endif

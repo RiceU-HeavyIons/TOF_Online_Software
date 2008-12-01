@@ -1,3 +1,9 @@
+/*
+ * $Id$
+ *
+ *  Created on: Nov 28, 2008
+ *      Author: koheik
+ */
 #include <QtCore/QMutexLocker>
 #include "KProgressIndicator.h"
 
@@ -26,7 +32,7 @@ KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
 	m_bar[0].setRange(0, m_size*100);
 	gl->addWidget(new QLabel("Total"), 0, 0, 1, 1);
 	gl->addWidget(&m_bar[0],              0 ,1, 1, 1);
-	
+
 	for(int i = 1; i <= m_size; ++i) {
     	m_bar[i].setRange(0, 100);
     	gl->addWidget(new QLabel(QString("CanBus %1").arg(i)), i, 0, 1, 1);
@@ -69,7 +75,7 @@ void KProgressIndicator::setProgress(int i, int j)
 	for(int x = 1; x <= m_size; ++x) m_val[0] += m_val[x];
 	m_bar[0].setValue(m_val[0]);
 	update();
-	
+
 	if (m_val[0] == 100*m_size) {
 		m_ok->setEnabled(true);
 		m_cancel->setEnabled(false);
@@ -83,5 +89,3 @@ void KProgressIndicator::cancel()
 	m_ok->setEnabled(true);
 	m_cancel->setEnabled(false);
 }
-
-

@@ -1,5 +1,5 @@
 /*
- * AnSerdes.cpp
+ * $Id$
  *
  *  Created on: Nov 22, 2008
  *      Author: koheik
@@ -28,7 +28,7 @@ QString AnSerdes::firmwareString() const
 void AnSerdes::sync(int level)
 {
   if (active() && level >= 0) {
-	quint8  srdid = hAddress().at(2); 
+	quint8  srdid = hAddress().at(2);
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;

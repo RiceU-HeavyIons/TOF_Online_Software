@@ -1,5 +1,5 @@
 /*
- * KTcpuView.cpp
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik
@@ -12,12 +12,19 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
 
   QGridLayout *grid = new QGridLayout(this);
 
-  int row = 0;
-  grid->addWidget(new QLabel("Logical Address:"), row, 0);
+  int row = -1;
+
+  grid->addWidget(new QLabel("Tray SN:"), ++row, 0);
+  grid->addWidget(m_tray = new QLabel(""),  row, 1);
+  m_tray->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+  m_tray->setOpenExternalLinks(true);
+
+  grid->addWidget(new QLabel("Logical Address:"), ++row, 0);
   grid->addWidget(m_laddr = new QLabel(""), row, 1);
 
   grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
   grid->addWidget(m_haddr = new QLabel(""), row, 1);
+
 
   grid->addWidget(new QLabel("Firmware:"), ++row, 0);
   grid->addWidget(m_firm = new QLabel(""), row, 1);
@@ -83,8 +90,18 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if(tcpu) {
 //    tcpu->sync(2);
-
+    m_tcpu = tcpu;
     setTitle(tcpu->name());
+    if (tcpu->traySn() != "") {
+      QString ustr = QString("http://www.rhip.utexas.edu/~tofp/tray/view.php?sn=%1")
+                            .arg(tcpu->traySn());
+      m_tray->setText(QString("<a href=\"%1\">%2</a>").arg(ustr).arg(tcpu->traySn()));
+      m_tray->setStatusTip(ustr);
+    } else {
+      m_tray->setText("");
+      m_tray->setStatusTip("");
+    }
+//    m_tray->setEnabled(tcpu->traySn() != "");
     m_laddr->setText(tcpu->lAddress().toString());
     m_haddr->setText(tcpu->hAddress().toString());
     m_firm->setText(tcpu->firmwareString());

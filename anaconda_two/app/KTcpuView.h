@@ -1,5 +1,5 @@
 /*
- * KTcpuView.h
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik
@@ -17,9 +17,10 @@
 #include <QtGui/QTableView>
 #include <QtGui/QStandardItemModel>
 
-#include "AnTcpu.h"
 #include "KTdigView.h"
 #include "KTdigModel.h"
+
+#include "AnTcpu.h"
 
 class KTcpuView : public QGroupBox {
   Q_OBJECT
@@ -32,7 +33,10 @@ public slots:
 
 private:
 
+	AnTcpu      *m_tcpu;
+
 	QGroupBox   *m_box;
+	QLabel      *m_tray;
 	QLabel      *m_laddr;
 	QLabel      *m_haddr;
 	QLabel      *m_firm;
@@ -40,7 +44,7 @@ private:
 	QLabel      *m_temp;
 	QLabel      *m_ecsr;
 	QLabel      *m_pld;
-	
+
 
 	KTdigModel  *m_model;
 	KTdigView   *m_tdigView;

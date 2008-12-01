@@ -1,5 +1,5 @@
 /*
- * AnSock.cpp
+ * $Id$
  *
  *  Created on: Nov 10, 2008
  *      Author: koheik
@@ -74,7 +74,7 @@ QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list) {
 		}
 		LINUX_CAN_Statistics(h, &tpdiag);
 		int dev_id = tpdiag.wIrqLevel;
-	
+
 		if (sock_map.contains(dev_id)) {
 			CAN_Init(h, wBTR0BTR1, nExtended);
 			AnSock *sock = new AnSock();
@@ -95,7 +95,7 @@ QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list) {
 		}
 	}
 	globfree(&globb);
-	
+
 	foreach(int dev_id, sock_map.keys()) {
 		if (sock_map[dev_id] == NULL)
 			qFatal("Device %d is not found.", dev_id);

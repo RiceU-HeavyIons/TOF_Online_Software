@@ -1,5 +1,5 @@
 /*
- * KLevel1Model.cpp
+ * $Id$
  *
  *  Created on: Nov 20, 2008
  *      Author: koheik
@@ -29,7 +29,7 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon[0] = QIcon(":icons/black.png");
 	m_statusIcon[1] = QIcon(":icons/blue.png");
 	m_statusIcon[2] = QIcon(":icons/green.png");
-	m_statusIcon[3] = QIcon(":icons/red.png");	
+	m_statusIcon[3] = QIcon(":icons/red.png");
 }
 
 //-----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 	static Qt::SortOrder prev_order = m_sort_order;
 	static int prev_column = m_sort_column;
 
-	if (prev_order != m_sort_order || 
+	if (prev_order != m_sort_order ||
 			prev_column != m_sort_column) { // rebuild mapping
 		prev_order = m_sort_order;
 		prev_column = m_sort_column;
@@ -153,7 +153,7 @@ void KLevel1Model::sort(int column, Qt::SortOrder order)
 }
 
 //-----------------------------------------------------------------------------
-QModelIndex KLevel1Model::index(int row, int column, 
+QModelIndex KLevel1Model::index(int row, int column,
 											const QModelIndex &parent) const
 {
   return createIndex(row, column, m_list.at(row));

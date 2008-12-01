@@ -66,7 +66,7 @@ void AnTdig::sync(int level)
 
 void AnTdig::reset()
 {
-	
+
 	if (active()) {
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
@@ -114,6 +114,16 @@ AnAgent *AnTdig::agent() const
 	return dynamic_cast<AnRoot*>(parent()->parent())->agent(hAddress().at(0));
 }
 
+//-----------------------------------------------------------------------------
+bool AnTdig::setActive(bool act) {
+
+	AnCanObject::setActive(act);
+
+	if(!active()) {
+		for (int i = 0; i < 4; ++i)
+			m_tdc[i]->setActive(false);
+	}
+}
 
 //-----------------------------------------------------------------------------
 QString AnTdig::dump() const
@@ -170,8 +180,12 @@ int AnTdig::status() const
 
 	if (err)
 		stat = STATUS_ERROR;
+	else if (!active())
+		stat = STATUS_UNKNOWN;
+	else if (ecsr() & 0x10)
+		stat = STATUS_ON;
 	else
-		stat = (ecsr() & 0x10) ? STATUS_ON : STATUS_STANBY;
+		stat = STATUS_STANBY;
 
-	return stat;	
+	return stat;
 }

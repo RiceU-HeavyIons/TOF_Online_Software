@@ -1,5 +1,5 @@
 /*
- * AnThub.cpp
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik
@@ -80,7 +80,7 @@ int AnThub::status() const
 // TO-DO implement real logic
 	int err = 0;
 	if (maxTemp() > 40.0) err++;
-	
+
 	if (active()) {
 		if (err) return STATUS_ERROR;
 		return STATUS_ON;

@@ -1,5 +1,10 @@
-// $Id$
-// Kohei Kajimoto, November 28, 2008
+/*
+ * $Id$
+ *
+ *  Created on: Nov 28, 2008
+ *      Author: koheik
+ */
+
 #ifndef KConsole_H_
 #define KConsole_H_
 
@@ -33,9 +38,9 @@ private:
 	QLineEdit   *m_ledit;
 	QTextEdit   *m_tedit;
 	QString      m_text;
-	
+
 	AnRoot      *m_root;
-	
+
 	QTime        m_start;
 	QTime        m_stop;
 

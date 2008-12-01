@@ -1,5 +1,5 @@
 /*
- * KTdigModel.cpp
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik

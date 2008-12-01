@@ -1,8 +1,8 @@
 /*
 * AnBoard.h
-	*
-	*  Created on: Nov 9, 2008
-	*      Author: koheik
+*
+*  Created on: Nov 9, 2008
+*      Author: koheik
 */
 
 #ifndef ANBOARD_H_
@@ -50,7 +50,7 @@ public:
 		STATUS_UNKNOWN = 0,
 		STATUS_STANBY  = 1,
 		STATUS_ON      = 2,
-		STATUS_ERROR   = 3		
+		STATUS_ERROR   = 3
 	};
 
 protected:

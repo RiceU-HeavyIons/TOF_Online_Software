@@ -1,5 +1,5 @@
 /*
- * AnRoot.cpp
+ * $Id$
  *
  *  Created on: Nov 10, 2008
  *      Author: koheik
@@ -46,18 +46,23 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		th->setActive(active);
 		m_list[0] << th;
 	}
-	
+
 	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, active FROM tcpus");
+	qry.exec("SELECT id, device_id, canbus_id, active, tray_id, tray_sn FROM tcpus");
 	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int device_id = qry.value(1).toInt();
-		int canbus_id = qry.value(2).toInt();
-		bool active   = qry.value(3).toBool();
+		int id          = qry.value(0).toInt();
+		int device_id   = qry.value(1).toInt();
+		int canbus_id   = qry.value(2).toInt();
+		bool active     = qry.value(3).toBool();
+		int tray_id     = qry.value(4).toInt();
+		QString tray_sn = qry.value(5).toString();
+
 //		if(!active) continue;
 		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 									AnAddress(device_id, canbus_id, 0, 0), this);
 		tc->setActive(active);
+		tc->setTrayId(tray_id);
+		tc->setTraySn(tray_sn);
 		m_list[1] << tc;
 	}
 
@@ -157,7 +162,7 @@ void AnRoot::terminate() const {
 }
 
 void AnRoot::wait() const {
-	foreach(AnAgent *ag, m_agents) ag->wait();	
+	foreach(AnAgent *ag, m_agents) ag->wait();
 }
 
 //-----------------------------------------------------------------------------
@@ -174,7 +179,7 @@ void AnRoot::setMode(int i)
 	m_mode = m_mode_list[i].id;
 
 	qDebug() << "new mode: " << m_mode;
-	
+
 	QSqlQuery qry;
 	qry.prepare("SELECT id, addr1, addr2, addr3, addr4, val FROM configs"
 	            " WHERE config_set_id=:cs_id AND config_type_id=:ct_id "
@@ -280,7 +285,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 		else
 			lst1 << AnAddress(a1, a2, a3, a4);
 	}
-	
+
 	lst2.clear();
 	foreach(AnAddress ad, lst1) {
 		a1 = ad.at(0);
@@ -333,7 +338,7 @@ void AnRoot::readTdcConfig()
 			qDebug() << "id" << id;
 			m_tcnfs[id] = cnf;
 		}
-		
+
 	}
 
 	// copy to agents

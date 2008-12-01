@@ -1,5 +1,6 @@
 /*
  * $Id$
+ *
  *  Created on: Nov 9, 2008
  *      Author: koheik
  */
@@ -10,7 +11,8 @@
 AnTcpu::AnTcpu(
 	const AnAddress &laddr,
 	const AnAddress &haddr,
-    AnCanObject *parent) : AnBoard(laddr, haddr, parent)
+	AnCanObject *parent) : AnBoard(laddr, haddr, parent),
+	m_tray_id(0), m_tray_sn()
 {
   setObjectName(QString("TCPU ") + lAddress().toString());
 
@@ -121,6 +123,16 @@ AnAgent *AnTcpu::agent() const
 }
 
 //-----------------------------------------------------------------------------
+bool AnTcpu::setActive(bool act) {
+
+	AnCanObject::setActive(act);
+
+	if(!active()) {
+		for (int i = 0; i < 8; ++i)
+			m_tdig[i]->setActive(false);
+	}
+}
+
 QString AnTcpu::dump() const
 {
 	QStringList sl;
@@ -130,7 +142,8 @@ QString AnTcpu::dump() const
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Firmware ID      : ") + firmwareString();
+	sl << QString("  Tray ID          : ") + trayIdString();
+	sl << QString("  Tray SN          : ") + traySn();
 	sl << QString("  Chip ID          : ") + chipIdString();
 	sl << QString("  Temperature      : ") + tempString();
 	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
@@ -182,7 +195,7 @@ int AnTcpu::status() const
 
 	if (maxTemp() > 40.0) ++err;
 	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
-	
+
 	if (err)
 		stat = STATUS_ERROR;
 	else

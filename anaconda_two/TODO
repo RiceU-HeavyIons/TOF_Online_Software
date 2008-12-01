@@ -10,12 +10,14 @@ Entry:
   - disable tdig, tdc and serdes if parent is disabled
   - turn on / off in-time sync
   - temperature threshold for every thub, tcpu and tdig
+  - eclipse like intialize indicator
+  - toggle debug by console command
 
   2008-11-30:
   - unit tests
-  - some tcpus are inactive with non-zero tray_id.
+  - (X) some tcpus are inactive with non-zero tray_id.
   - console command line history
-  - QDesktopServices::openUrl to ut tray page
+  - (X) QDesktopServices::openUrl to ut tray page
   - environmental resources like url template in db or dot.rc?
 
   2008-11-29:
@@ -42,7 +44,7 @@ Entry:
   - total progress in status bar
   - device / network name propergation
   - thub reset order (master -> slave)?
-  - tray_id or tray_sn display
+  - (X) tray_id or tray_sn display
   - serdes port <-> tray mapping awareness
   - font/stylesheet, session manager
 
@@ -52,7 +54,7 @@ Entry:
   - asynchronous (non-blocking) synchronization -- need to disable command actions and block synchronization when you push item on main table. also need to update the main model and view after finishing synchronization. maybe not full reset() but partially updating for each item.
 
   2008-11-26:
-  - Tray SN (tray_id) lookup
+  - (X) Tray SN (tray_id) lookup
   - Real sort functionality
   - (X) Input Lijuan's map
 

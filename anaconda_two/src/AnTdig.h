@@ -22,7 +22,8 @@ public:
 
 // Inherited from AnCanObject
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdc[i] : dynamic_cast<AnCanObject*>(this); }
-	
+
+	virtual bool setActive(bool act);
 	virtual QString dump() const;
 
 	virtual void sync(int level = 0);
@@ -43,7 +44,7 @@ public:
 	quint64 chipId() const { return m_chipid; }
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
 	QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
-	
+
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;

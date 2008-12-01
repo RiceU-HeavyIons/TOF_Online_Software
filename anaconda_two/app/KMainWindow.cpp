@@ -1,5 +1,5 @@
 /*
- * KMainWindows.cpp
+ * $Id$
  *
  *  Created on: Nov 20, 2008
  *      Author: koheik
@@ -28,7 +28,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 {
 
 	QStatusBar *statusbar = statusBar();
-	
+
 	m_root = new AnRoot(0);
 
 	QWidget *center = new QWidget();
@@ -60,7 +60,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	// hboxl->addWidget(label);
 	// hboxl->addWidget(m_combo);
 	// hboxl->addStretch(0);
-	// 
+	//
 	// gl->addLayout(hboxl, 0, 1, 1, 1);
 
 	// gl->addWidget(label,      0, 1, 1, 1);
@@ -88,7 +88,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 		SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
 		m_l2view,
 		SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
-		
+
 	QObject::connect(m_selector, SIGNAL(currentRowChanged(int)),
 						m_l1model, SLOT(setSelection(int)));
 
@@ -141,7 +141,7 @@ void KMainWindow::createActions()
 	// m_ToggleToolbarAction->setChecked(true);
 	// QObject::connect(m_ToggleToolbarAction, SIGNAL(triggered()),
 	// 					this, SLOT(doToggleToolbar()));
-	
+
 	m_ToggleConsoleAction = new QAction(tr("Consle"), this);
 	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
 	// m_ToggleConsoleAction->setCheckable(true);
@@ -151,7 +151,7 @@ void KMainWindow::createActions()
 
 	setBusy(false);
 }
- 
+
 //-----------------------------------------------------------------------------
 void KMainWindow::createMenus()
 {
@@ -192,7 +192,7 @@ void KMainWindow::createSelector()
 	m_selector = new QListWidget(this);
 	m_selector->addItems(slist);
 	m_selector->setCurrentRow(0);
-	
+
 	QSizePolicy policy = m_selector->sizePolicy();
 	policy.setHorizontalStretch(1);
 	policy.setVerticalPolicy(QSizePolicy::Fixed);
@@ -238,7 +238,7 @@ void KMainWindow::doToggleConsole()
 {
 	m_console->setVisible(m_console->isHidden());
 //	if (m_ToggleConsoleAction->isChecked()) m_console->exec();
-	
+
 }
 
 //-----------------------------------------------------------------------------

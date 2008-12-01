@@ -1,5 +1,5 @@
 /*
- * KTdigView.cpp
+ * $Id$
  *
  *  Created on: Nov 11, 2008
  *      Author: koheik
@@ -37,15 +37,15 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
 		grid->addWidget(l_status[i] = new QLabel(QString("TDC %1 Status:").arg(i+1)), ++row, 0);
 		grid->addWidget(m_status[i] = new QLabel("--"),                                 row, 1);
 	}
-	
+
 	QFont ft("Lucida Grande", 10, QFont::Normal);
 	l_laddr->setFont(ft); m_laddr->setFont(ft);
-	l_haddr->setFont(ft); m_haddr->setFont(ft);	
+	l_haddr->setFont(ft); m_haddr->setFont(ft);
 	l_firm->setFont(ft);  m_firm->setFont(ft);
 	l_chip->setFont(ft);  m_chip->setFont(ft);
 	l_temp->setFont(ft);  m_temp->setFont(ft);
-	l_ecsr->setFont(ft);  m_ecsr->setFont(ft);	
-	l_thrs->setFont(ft);  m_thrs->setFont(ft);	
+	l_ecsr->setFont(ft);  m_ecsr->setFont(ft);
+	l_thrs->setFont(ft);  m_thrs->setFont(ft);
 	for (int i = 0; i < 3; ++i) {
 		l_status[i]->setFont(ft);
 		m_status[i]->setFont(ft);
@@ -70,7 +70,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 		m_thrs->setText(tdig->thresholdString());
 		m_ecsr->setText("0x" + QString::number(tdig->ecsr(), 16));
 		m_ecsr->setToolTip(tdig->ecsrString());
-		
+
 		for(int i = 0; i < 3; i++) {
 			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));
 			m_status[i]->setToolTip(tdig->tdc(i+1)->statusTipString());

@@ -1,5 +1,9 @@
-// $Id$
-// Kohei Kajimoto, November 28, 2008
+/*
+ * $Id$
+ *
+ *  Created on: Nov 28, 2008
+ *      Author: koheik
+ */
 
 #include <QtGui/QApplication>
 #include <QtGui/QVBoxLayout>
@@ -49,7 +53,7 @@ KConsole::KConsole(AnRoot *root, QWidget *parent) : QDialog(parent),
 
 	vbox->addLayout(hbox);
 	vbox->addWidget(m_tedit);
-	
+
 	connect(m_ledit,  SIGNAL(textChanged(const QString &)),
 	        this,     SLOT  (textChanged(const QString &)));
 
@@ -226,7 +230,7 @@ void KConsole::cmd_show(const QStringList& cmdl)
 void KConsole::cmd_read(const QStringList& cmdl)
 {
 //	tm_start();
-	
+
 	int er = 0;
 
 	if (cmdl.count() < 3) {
@@ -269,7 +273,7 @@ void KConsole::cmd_read(const QStringList& cmdl)
 void KConsole::cmd_write(const QStringList& cmdl)
 {
 //	tm_start();
-	
+
 	int er = 0;
 
 	if (cmdl.count() < 3) {
@@ -339,7 +343,7 @@ void KConsole::cmd_sql(const QStringList& cmdl)
 				fmx[i] = qry.value(i).toString().length();
 	}
 	for(int i = 0; i < rec.count(); ++i) if (fmx[i] > mxx) fmx[i] = mxx;
-	
+
 	// print out headers
 	for (int i = 0; i < rec.count(); ++i) {
 		if (fty[i] == QVariant::String)
@@ -348,7 +352,7 @@ void KConsole::cmd_sql(const QStringList& cmdl)
 			strlst << rec.fieldName(i).rightJustified(fmx[i], ' ', true);
 	}
 	m_tedit->append(strlst.join(sep));
-	
+
 	// print separators
 	strlst.clear();
 	for (int i = 0; i < rec.count(); ++i) {
