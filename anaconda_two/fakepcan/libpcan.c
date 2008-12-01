@@ -198,7 +198,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 	dinfo *ptr;
 	double temp;
 
-	for(ptr = dlist; ptr->irq; ptr++) {
+	for (ptr = dlist; ptr->irq; ptr++) {
 		if (ptr->handle == hHandle)
 			{ break; }
 	}
@@ -210,7 +210,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 	if (pMsgBuff->MSGTYPE == MSGTYPE_STANDARD && 0x400 == (pMsgBuff->ID & 0xF00))
 		return THUB_readHandler(hHandle, pMsgBuff);
 
-	switch(pMsgBuff->MSGTYPE) {
+	switch (pMsgBuff->MSGTYPE) {
 		case MSGTYPE_STANDARD: /* TCPU */
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
@@ -255,7 +255,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			usleep(2000);
 			break;
 		case 0x05: // Cet Status TDC 1
-			if(ptr->msg.LEN == 1) { // first round
+			if (ptr->msg.LEN == 1) { // first round
 				pMsgBuff->LEN = 8;
 				pMsgBuff->DATA[1] = 0;
 				pMsgBuff->DATA[2] = 0;
@@ -272,7 +272,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			usleep(2000);
 			break;
 		case 0x06: /* Cet Status TDC 2 */
-			if(ptr->msg.LEN == 1)  { /* first round */
+			if (ptr->msg.LEN == 1)  { /* first round */
 				pMsgBuff->LEN = 8;
 				pMsgBuff->DATA[1] = 0x01;
 				pMsgBuff->DATA[2] = 0x02;
@@ -281,6 +281,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->DATA[5] = 0x05;
 				pMsgBuff->DATA[6] = 0x06;
 				pMsgBuff->DATA[7] = 0x07;
+				ptr->msg.LEN = 8;
 			} else { /* second round */
 				pMsgBuff->LEN = 2;
 				pMsgBuff->DATA[1] = 0x08;
@@ -288,7 +289,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			usleep(2000);
 			break;
 		case 0x07: /* Cet Status TDC 3 */
-			if(ptr->msg.LEN == 1) { /* first round */
+			if (ptr->msg.LEN == 1) { /* first round */
 				pMsgBuff->LEN = 8;
 				pMsgBuff->DATA[1] = 0;
 				pMsgBuff->DATA[2] = 0;

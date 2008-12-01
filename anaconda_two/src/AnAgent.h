@@ -10,8 +10,9 @@
 
 #include "libpcan.h"
 
-#include "AnBoard.h"
 #include "AnTdcConfig.h"
+
+class AnBoard;
 
 class AnAgent : public QThread {
 	Q_OBJECT

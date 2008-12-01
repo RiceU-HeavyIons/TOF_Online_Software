@@ -80,6 +80,11 @@ quint32 AnSerdes::canidw() const
 	return haddr().at(1) << 4 | 0x2;
 }
 
+quint32 AnSerdes::cantyp() const
+{
+	return MSGTYPE_STANDARD;
+}
+
 AnAgent *AnSerdes::agent() const
 {
 	return dynamic_cast<AnRoot*>(parent()->parent())->agent(hAddress().at(0));

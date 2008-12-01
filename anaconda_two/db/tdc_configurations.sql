@@ -1,10 +1,10 @@
-drop   table tdc_configurations;
-create table tdc_configurations (
-	id			INTEGER         PRIMARY KEY AUTOINCREMENT,
-	name		varchar(256)	not null,
-	length		smallint		not null,
-	checksum	smallint		not null,
-	hex_string  varchar(256)	not null,
-	bit_string  varchar(1024)	not null
+DROP TABLE IF EXISTS tdc_configs;
+CREATE TABLE tdc_configs (
+    id          INTEGER         PRIMARY KEY AUTOINCREMENT,
+    name        VACHAR(256)     NOT NULL,
+    length      INTEGER         NOT NULL,
+    checksum    INTEGER         NOT NULL,
+    hex_string  VARCHAR(256)    NOT NULL,
+    bit_string  VARCHAR(1024)   NOT NULL
 );
-select * from tdc_configurations;
+SELECT * FROM tdc_configs;

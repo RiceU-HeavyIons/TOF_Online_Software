@@ -23,6 +23,8 @@ public:
 // Inherited from AnCanObject
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdc[i] : dynamic_cast<AnCanObject*>(this); }
 	
+	virtual QString dump() const;
+
 	virtual void sync(int level = 0);
 	virtual void reset();
 	virtual void config();
@@ -44,6 +46,7 @@ public:
 	
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;
+	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
 
 private:

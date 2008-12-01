@@ -22,7 +22,7 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
   grid->addWidget(new QLabel("Firmware:"), ++row, 0);
   grid->addWidget(m_firm = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Chip Id:"), ++row, 0);
+  grid->addWidget(new QLabel("Chip ID:"), ++row, 0);
   grid->addWidget(m_chip = new QLabel(""), row, 1);
 
   grid->addWidget(new QLabel("Temperature:"), ++row, 0);
@@ -89,7 +89,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_haddr->setText(tcpu->hAddress().toString());
     m_firm->setText(tcpu->firmwareString());
 	m_chip->setText(tcpu->chipIdString());
-    m_temp->setText(QString::number(tcpu->temp()));
+    m_temp->setText(tcpu->tempString());
 
     m_ecsr->setText("0x" + QString::number(tcpu->ecsr(), 16));
     m_ecsr->setToolTip(tcpu->ecsrString());

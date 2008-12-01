@@ -22,8 +22,8 @@ public:
 
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdig[i-1] : static_cast<AnCanObject*>(this); }
 
+	virtual QString dump() const;
 	virtual void sync(int level = 0);
-	virtual void dump() const;
 	virtual void reset();
 	virtual void config();
 	

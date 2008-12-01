@@ -49,8 +49,9 @@ public:
 	void setMode(int i);
 	QStringList modeList() const;
 
-	AnCanObject      *find(AnAddress &lad);
-	QList<AnAddress>  expand(AnAddress &lad);
+	AnCanObject      *find(const AnAddress &lad);
+	QList<AnAddress>  expand(const AnAddress &lad);
+//	QList<AnAddress>  expand(AnAddress lad) { AnAddress &ad = lad; return expand(ad); }
 
 	int nAgents()  const { return m_devid_list.count(); }
 	int nDevices() const { return m_devid_list.count(); }

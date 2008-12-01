@@ -100,6 +100,8 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	// 		this, SLOT(agentFinished()));
 	// }
 
+	m_console = new KConsole(m_root, this);
+
 	setCentralWidget(center);
 }
 
@@ -113,18 +115,21 @@ KMainWindow::~KMainWindow()
 void KMainWindow::createActions()
 {
 	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Reset"), this);
+	m_ResetAction->setShortcut(tr("Ctrl+R"));
 	m_ResetAction->setStatusTip(tr("Reset System"));
 	m_ResetAction->setToolTip(tr("Reset"));
 	QObject::connect(m_ResetAction, SIGNAL(triggered()),
 						this, SLOT(doReset()));
 
 	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Sync"), this);
+	m_SyncAction->setShortcut(tr("Ctrl+S"));
 	m_SyncAction->setStatusTip(tr("Synchronize System Information"));
 	m_SyncAction->setToolTip(tr("Sync"));
 	QObject::connect(m_SyncAction, SIGNAL(triggered()),
 						this, SLOT(doSync()));
 
 	m_ConfigAction = new QAction( QIcon(":images/new.png"), tr("Upload"), this);
+	m_ConfigAction->setShortcut(tr("Ctrl+U"));
 	m_ConfigAction->setEnabled(true);
 	m_ConfigAction->setStatusTip(tr("Upload Configurations to System"));
 	m_ConfigAction->setToolTip(tr("Upload Configurations"));
@@ -137,6 +142,13 @@ void KMainWindow::createActions()
 	// QObject::connect(m_ToggleToolbarAction, SIGNAL(triggered()),
 	// 					this, SLOT(doToggleToolbar()));
 	
+	m_ToggleConsoleAction = new QAction(tr("Consle"), this);
+	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
+	// m_ToggleConsoleAction->setCheckable(true);
+	// m_ToggleConsoleAction->setChecked(false);
+	QObject::connect(m_ToggleConsoleAction, SIGNAL(triggered()),
+						this, SLOT(doToggleConsole()));
+
 	setBusy(false);
 }
  
@@ -154,6 +166,7 @@ void KMainWindow::createMenus()
 	menu = menuBar()->addMenu(tr("View"));
 	menu->addAction(m_CommandToolbar->toggleViewAction());
 	menu->addAction(m_l2view->toggleViewAction());
+	menu->addAction(m_ToggleConsoleAction);
 }
 
 //-----------------------------------------------------------------------------
@@ -218,6 +231,14 @@ void KMainWindow::doConfigure()
 void KMainWindow::doToggleToolbar()
 {
 	m_CommandToolbar->setVisible(m_ToggleToolbarAction->isChecked());
+}
+
+//-----------------------------------------------------------------------------
+void KMainWindow::doToggleConsole()
+{
+	m_console->setVisible(m_console->isHidden());
+//	if (m_ToggleConsoleAction->isChecked()) m_console->exec();
+	
 }
 
 //-----------------------------------------------------------------------------

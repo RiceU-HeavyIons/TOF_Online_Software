@@ -176,7 +176,7 @@ void AnRoot::setMode(int i)
 	qDebug() << "new mode: " << m_mode;
 	
 	QSqlQuery qry;
-	qry.prepare("SELECT id, addr1, addr2, addr3, addr4, val FROM configurations"
+	qry.prepare("SELECT id, addr1, addr2, addr3, addr4, val FROM configs"
 	            " WHERE config_set_id=:cs_id AND config_type_id=:ct_id "
 	            " ORDER BY rule_order");
 	qry.bindValue(":cs_id", m_mode);
@@ -240,14 +240,14 @@ void AnRoot::setMode(int i)
 }
 
 //-----------------------------------------------------------------------------
-AnCanObject *AnRoot::find(AnAddress &lad)
+AnCanObject *AnRoot::find(const AnAddress &lad)
 {
 	return dynamic_cast<AnCanObject*>
 				( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
 }
 
 //-----------------------------------------------------------------------------
-QList<AnAddress> AnRoot::expand(AnAddress &lad)
+QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 {
 	int a1 = lad.at(0);
 	int a2 = lad.at(1);
@@ -316,7 +316,7 @@ void AnRoot::readTdcConfig()
 	m_tcnfs.clear();
 
 	QSqlQuery qry;
-	qry.exec("SELECT id, name, length, checksum, bit_string FROM tdc_configurations");
+	qry.exec("SELECT id, name, length, checksum, bit_string FROM tdc_configs");
 	while(qry.next()) {
 		quint32 id       = qry.value(0).toUInt();
 		QString name     = qry.value(1).toString();

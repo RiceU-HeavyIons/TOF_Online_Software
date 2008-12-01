@@ -29,8 +29,8 @@ HEADERS += \
            KTdigModel.h \
            KTdigView.h \
            KThubView.h \
-           KSerdesModel.h \
-           KSerdesView.h
+           KSerdesModel.h KSerdesView.h \
+           KConsole.h
 
 SOURCES += main.cpp \
            KLevel1Model.cpp \
@@ -41,7 +41,7 @@ SOURCES += main.cpp \
            KTdigModel.cpp \
            KTdigView.cpp \
            KThubView.cpp \
-           KSerdesModel.cpp \
-           KSerdesView.cpp
+           KSerdesModel.cpp KSerdesView.cpp \
+           KConsole.cpp
 
 RESOURCES += toolbar.qrc

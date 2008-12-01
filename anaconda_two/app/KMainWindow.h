@@ -39,6 +39,7 @@
 #include <QtGui/QDockWidget>
 
 #include "KProgressIndicator.h"
+#include "KConsole.h"
 #include "KLevel1Model.h"
 #include "AnRoot.h"
 
@@ -55,6 +56,7 @@ public slots:
 	void doSync();
 	void doConfigure();
 	void doToggleToolbar();
+	void doToggleConsole();
 
 	void setMode(int i);
 
@@ -76,7 +78,8 @@ private:
 	QAction *m_SyncAction;
 	QAction *m_ConfigAction;
 	QAction *m_ToggleToolbarAction;
-	
+	QAction *m_ToggleConsoleAction;
+
 	QToolBar *m_CommandToolbar;
 
 	QComboBox *m_combo;
@@ -85,6 +88,7 @@ private:
 
 	QDialog             *progress_diag;
 	KProgressIndicator  *m_progress;
+	KConsole            *m_console;
 
 	//  models and views
 	QTableView     *m_l1view;

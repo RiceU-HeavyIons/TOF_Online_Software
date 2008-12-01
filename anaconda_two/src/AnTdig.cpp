@@ -9,7 +9,7 @@
 #include "AnTdig.h"
 
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
-  : AnBoard(laddr, haddr, parent), m_threshold(0)
+  : AnBoard(laddr, haddr, parent), m_threshold(0), m_chipid(0)
 {
 	setObjectName(QString("TDIG ") + lAddress().toString());
 
@@ -104,9 +104,36 @@ quint32 AnTdig::canidw() const
 	return (haddr().at(2) << 4 | 0x2) << 18 | haddr().at(1);
 }
 
+quint32 AnTdig::cantyp() const
+{
+	return MSGTYPE_EXTENDED;
+}
+
 AnAgent *AnTdig::agent() const
 {
 	return dynamic_cast<AnRoot*>(parent()->parent())->agent(hAddress().at(0));
+}
+
+
+//-----------------------------------------------------------------------------
+QString AnTdig::dump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnTdig(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Firmware ID      : ") + firmwareString();
+	sl << QString("  Chip ID          : ") + chipIdString();
+	sl << QString("  Temperature      : ") + tempString();
+	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  Threshold        : ") + thresholdString();
+	sl << QString("  Status           : ") + QString::number(status());
+	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
+	return sl.join("\n");
 }
 
 QString AnTdig::ecsrString() const

@@ -27,14 +27,14 @@ public:
 	bool setActive(bool act) { return (m_active = act); }
 
 	virtual QString name() const;
-	virtual void dump() const { }
+	virtual QString dump() const { return QString(""); }
 
 	virtual void sync(int level = 0) = 0;
 	virtual void reset()  = 0;
 	virtual void config() = 0;
 
 	virtual AnCanObject *at(int i) = 0;
-
+	
 	AnCanObject *root();
 
 protected:

@@ -2,9 +2,37 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-11-28
+Updated: 2008-11-30
 Description: TODO file for Anaconda 2 development. I think this is in YAML format.
 Entry:
+
+  2008-12-01:
+  - disable tdig, tdc and serdes if parent is disabled
+
+  2008-11-30:
+  - unit tests
+  - some tcpus are inactive with non-zero tray_id.
+  - console command line history
+  - QDesktopServices::openUrl to ut tray page
+  - environmental resources like url template in db or dot.rc?
+
+  2008-11-29:
+  - log facility db? console dialog
+  - pc compatible console
+  - (X) console extension: SHOW 2.2.8.255, RESET 2.2.10.0 etc.
+  - console extension: hardware address version
+  - console extension: password lock
+  - address validator espeially AnRoot::find
+  - add List<X> AnRoot::find(AnAddress) returns empty list if address is not valid
+  - (X) think about THUB <=> TCPU relation. Parent <-> children relation is better? And assign logical address like THUB(1.0.0.0), TCPU(1.x.0.0). This hierarchy reminds me reset-order. Now question is numbering of x for TCPU: x=1-120 or x=1-30? => with this scheme, tcpu and serdes come to same level.
+  - fix AnRoot::expand bug for Serdes address. last 255 has to be zero.
+  - (X) console: read / write
+  - implement THUB dump
+  - implement Serdes dump
+  - implement TDC dump
+  - console extension: loading config set
+  - window menu
+  - file menu
 
   2008-11-28:
   - asynchronous (non-blocking) configuration
@@ -14,6 +42,7 @@ Entry:
   - thub reset order (master -> slave)?
   - tray_id or tray_sn display
   - serdes port <-> tray mapping awareness
+  - font/stylesheet, session manager
 
   2008-11-27:
   - selected actions, and un-select mechanism

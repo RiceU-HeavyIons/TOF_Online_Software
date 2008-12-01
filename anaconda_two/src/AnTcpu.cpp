@@ -119,18 +119,26 @@ AnAgent *AnTcpu::agent() const
 {
 	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
 }
+
 //-----------------------------------------------------------------------------
-void AnTcpu::dump() const
+QString AnTcpu::dump() const
 {
-  printf("Tcpu:#0x%p\n", this);
-//  printf("  ID                 : %d\n",     fid);
-//  printf("  UT ID              : %d\n",     futid);
-  printf("  Hardware Address   : %s\n", hAddress().toString().toStdString().c_str());
-  printf("  Logical Address    : %s\n", lAddress().toString().toStdString().c_str());
-  printf("  Active             : %d\n",     active());
-  printf("  Firmware ID        : %x\n",     firmwareId());
-  printf("  Temperature        : %fC\n",    temp());
-  printf("  ESCR               : 0x%02x\n", ecsr());
+	QStringList sl;
+
+	sl << QString().sprintf("AnTcpu(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Firmware ID      : ") + firmwareString();
+	sl << QString("  Chip ID          : ") + chipIdString();
+	sl << QString("  Temperature      : ") + tempString();
+	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD Reg[02]      : 0x") + QString::number(m_pld02, 16);
+	sl << QString("  Status           : ") + QString::number(status());
+	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
+	return sl.join("\n");
 }
 
 //-----------------------------------------------------------------------------

@@ -1,10 +1,12 @@
 /*
- * AnBoard.cpp
+ * $Id$
  *
  *  Created on: Nov 9, 2008
  *      Author: koheik
  */
 #include <cstdio>
+#include <libpcan.h>
+using namespace PCAN;
 #include "AnBoard.h"
 
 AnBoard::AnBoard(const AnAddress &laddr, const AnAddress &haddr,
@@ -23,6 +25,11 @@ AnBoard::AnBoard(const AnBoard &rhs) : AnCanObject(rhs),
 {
 }
 
+QString AnBoard::tempString(int i) const
+{
+	return QString::number(m_temp[i], 'f', 2) + " C";
+}
+
 QString AnBoard::firmwareString() const
 {
   char buf[32];
@@ -38,3 +45,31 @@ quint32 AnBoard::setFirmwareId(quint32 firmware)
 	m_firmware_fpga = 0xff & (firmware >> 16);
 	return firmware;
 } 
+
+void AnBoard::msgr(const QList<quint8>& dary)
+{
+	if (active()) {
+		TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+	
+		msg.ID      = canidr();
+		msg.MSGTYPE = cantyp();
+		msg.LEN     = dary.count();
+		for(int i = 0; i < msg.LEN; ++i) msg.DATA[i] = dary[i];
+	    agent()->write_read(msg, rmsg, 2);
+	}
+}
+
+void AnBoard::msgw(const QList<quint8>& dary)
+{
+	if (active()) {
+		TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+	
+		msg.ID      = canidw();
+		msg.MSGTYPE = cantyp();
+		msg.LEN     = dary.count();
+		for(int i = 0; i < msg.LEN; ++i) msg.DATA[i] = dary[i];
+	    agent()->write_read(msg, rmsg, 2);
+	}
+}

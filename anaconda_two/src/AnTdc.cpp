@@ -95,6 +95,11 @@ quint32 AnTdc::canidw() const
 	return (haddr().at(2) << 4 | 0x2) << 18 | haddr().at(1);
 }
 
+quint32 AnTdc::cantyp() const
+{
+	return MSGTYPE_EXTENDED;
+}
+
 AnAgent *AnTdc::agent() const
 {
 	return dynamic_cast<AnRoot*>

@@ -9,12 +9,13 @@ ActiveRecord::Base.establish_connection(
   :database => db_name
 )
 
-class Configuration    < ActiveRecord::Base; end;
-class Thub             < ActiveRecord::Base; end;
-class Tcpu             < ActiveRecord::Base; end;
-class TdcConfiguration < ActiveRecord::Base; end;
+#class Config    < ActiveRecord::Base; end;
+class Thub      < ActiveRecord::Base; end;
+class Tcpu      < ActiveRecord::Base; end;
+class TdcConfig < ActiveRecord::Base; end;
 
-devs = [251, 253, 254, 255]
+
+# devs = [251, 253, 254, 255]
 
 # (0...120).each do |i|
 #   r = Tcpu.new(:device_id => devs[i/30], :canbus_id => 0x20 + (i % 30),
@@ -30,7 +31,7 @@ Dir.glob("../config/cfig*.txt").each do |f|
   hex_ary = ary.map {|e| e.unpack("H2").first }
   num_ary = ary.map {|e| e.unpack("C").first }
 
-  tdc_config = TdcConfiguration.create(
+  tdc_config = TdcConfig.create(
     :name       => fname,
     :length     => hex_ary.length,
     :checksum   => num_ary.inject(0) {|sum, e| sum += e},
@@ -39,7 +40,7 @@ Dir.glob("../config/cfig*.txt").each do |f|
   )
 end
 
-TdcConfiguration.find(:all).each do |tc|
+TdcConfig.find(:all).each do |tc|
   print "id=#{tc.id}, name=#{tc.name}, length=#{tc.length}\n"
 end
 

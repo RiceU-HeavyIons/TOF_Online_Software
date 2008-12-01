@@ -9,9 +9,9 @@
 #define ANBOARD_H_
 
 #include "AnCanObject.h"
-
+#include "AnAgent.h"
 class AnBoard;
-	
+
 class AnBoard: public AnCanObject {
 public:
 
@@ -19,6 +19,7 @@ public:
 	AnBoard(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
 	double temp(int i = 0) const { return m_temp[i]; }
+	virtual QString tempString(int i = 0) const;
 	virtual double maxTemp() const { return m_temp[0]; };
 
 	quint8 ecsr() const { return m_ecsr; }
@@ -36,6 +37,14 @@ public:
 	virtual bool isEast() const = 0;
 	virtual bool isWest() const = 0;
 	virtual bool hasError() const { return false; }
+
+	virtual void msgr(const QList<quint8>& dary);
+	virtual void msgw(const QList<quint8>& dary);
+
+	virtual quint32 canidr() const = 0;
+	virtual quint32 canidw() const = 0;
+	virtual quint32 cantyp() const { return MSGTYPE_STANDARD; }
+	virtual AnAgent* agent() const = 0;
 
 	enum {
 		STATUS_UNKNOWN = 0,
