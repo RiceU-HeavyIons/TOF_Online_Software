@@ -2,12 +2,14 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-11-30
+Updated: 2008-12-01
 Description: TODO file for Anaconda 2 development. I think this is in YAML format.
 Entry:
 
   2008-12-01:
   - disable tdig, tdc and serdes if parent is disabled
+  - turn on / off in-time sync
+  - temperature threshold for every thub, tcpu and tdig
 
   2008-11-30:
   - unit tests
@@ -32,7 +34,7 @@ Entry:
   - implement TDC dump
   - console extension: loading config set
   - window menu
-  - file menu
+  - file menu for Linux
 
   2008-11-28:
   - asynchronous (non-blocking) configuration

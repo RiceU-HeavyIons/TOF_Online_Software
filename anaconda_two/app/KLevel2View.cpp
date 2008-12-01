@@ -11,7 +11,7 @@ KLevel2View::KLevel2View(const QString &title, QWidget *parent) : QDockWidget(ti
 
 	m_tcpuView = new KTcpuView(this);
 	m_thubView = new KThubView(this);
-	
+
 	QWidget *widget = new QWidget(this);
 	QHBoxLayout *hbox = new QHBoxLayout(widget);
 	hbox->addWidget(m_tcpuView);
@@ -32,16 +32,16 @@ void KLevel2View::currentRowChanged(const QModelIndex &current, const QModelInde
 	AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
 
 	if (AnTcpu *tcpu  = dynamic_cast<AnTcpu*>(cobj)) {
-		tcpu->sync(1);
+//		tcpu->sync(1);
 		m_tcpuView->currentRowChanged(current, parent);
 		m_thubView->setVisible(false);
 		m_tcpuView->setVisible(true);
 
 	} else if (AnThub *thub  = dynamic_cast<AnThub*>(cobj)) {
-		thub->sync(1);
+//		thub->sync(1);
 		m_thubView->currentRowChanged(current, parent);
 		m_tcpuView->setVisible(false);
 		m_thubView->setVisible(true);
 	}
-	
+
 }

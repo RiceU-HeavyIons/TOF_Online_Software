@@ -82,7 +82,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if(tcpu) {
-    tcpu->sync(2);
+//    tcpu->sync(2);
 
     setTitle(tcpu->name());
     m_laddr->setText(tcpu->lAddress().toString());
