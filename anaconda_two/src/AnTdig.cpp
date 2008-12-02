@@ -47,7 +47,7 @@ void AnTdig::sync(int level)
     setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
     setEcsr(rmsg.Msg.DATA[3]);
 
-    if (level >= 1) {
+    if (level >= 2) {
 		// get firmware version
 		AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
 	    rdata = agent()->write_read(msg, rmsg, 4);

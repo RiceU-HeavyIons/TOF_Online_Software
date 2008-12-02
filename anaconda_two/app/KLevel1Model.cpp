@@ -30,6 +30,8 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon[1] = QIcon(":icons/blue.png");
 	m_statusIcon[2] = QIcon(":icons/green.png");
 	m_statusIcon[3] = QIcon(":icons/red.png");
+
+	connect(m_root, SIGNAL(updated(AnBoard*)), this, SLOT(updated(AnBoard*)));
 }
 
 //-----------------------------------------------------------------------------
@@ -201,4 +203,14 @@ void KLevel1Model::setSelection(int slt) {
 	m_rows = m_list.count();
 
 	reset();
+}
+
+void KLevel1Model::updated(AnBoard *brd)
+{
+	int row;
+	if ( (row = m_list.indexOf(brd)) >= 0) {
+		QModelIndex m1 = createIndex(row, 0, brd);
+		QModelIndex m2 = createIndex(row, m_columns, brd);
+		emit dataChanged(m1, m2);
+	}
 }

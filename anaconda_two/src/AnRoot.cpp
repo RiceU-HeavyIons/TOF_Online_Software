@@ -70,6 +70,13 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	readTdcConfig();
 
 	setMode(0);
+
+	m_timer = new QTimer(this);
+	m_cur1  = 0;
+	m_cur2  = 0;
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
+	m_timer->setInterval(2000);
+	m_timer->start();
 }
 
 //-----------------------------------------------------------------------------
@@ -126,16 +133,12 @@ void AnRoot::config()
 		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
 	}
 
-	qDebug() << m_devid_list[1];
-	qDebug() << m_agents.keys();
-	qDebug() << m_agents[253];
-	qDebug() << agent(1);
-
 	foreach(AnAgent *ag, m_agents) {
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_CONFIG, blist[m_devid_list.indexOf(ag->devid())]);
 		ag->start();
 	}
+
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
 }
 
@@ -343,4 +346,20 @@ void AnRoot::readTdcConfig()
 
 	// copy to agents
 	foreach (AnAgent *ag, m_agents) ag->setTdcConfigs(m_tcnfs);
+}
+
+void AnRoot::autosync()
+{
+	if (!isRunning()) {
+		qDebug() << "autosync" << m_cur1 << m_cur2;
+		AnBoard *brd = m_list[m_cur1][m_cur2];
+		brd->sync(2);
+		emit updated(brd);
+		++m_cur2;
+		if ( m_cur2 >= m_list[m_cur1].count() ) {
+			m_cur2 = 0;
+			++m_cur1;
+		}
+		if (m_cur1 >= 2) m_cur1 = 0;
+	}
 }

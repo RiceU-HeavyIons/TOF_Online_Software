@@ -10,6 +10,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
+#include <QtCore/QTimer>
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
@@ -24,6 +25,8 @@
 #include "AnTdcConfig.h"
 
 class AnRoot : public AnCanObject {
+	Q_OBJECT
+
 public:
 	AnRoot(AnCanObject *parent = 0);
  	virtual ~AnRoot();
@@ -68,6 +71,11 @@ public:
 		CT_TDC_MASK       = 32
 	};
 
+signals:
+	void updated(AnBoard*);
+
+public slots:
+	void autosync();
 
 private:
 	struct mode {
@@ -84,6 +92,10 @@ private:
 	QSqlDatabase             m_db;
 	int                      m_mode;
 	QList<mode>              m_mode_list;
+
+	QTimer                  *m_timer;
+	int                      m_cur1;
+	int                      m_cur2;
 
 	void readTdcConfig();
 	void readModeList();

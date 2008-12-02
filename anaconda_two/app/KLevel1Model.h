@@ -14,6 +14,7 @@
 #include <QtCore/QList>
 #include <QtGui/QIcon>
 
+#include "AnBoard.h"
 #include "AnRoot.h"
 
 class KLevel1Model : public QAbstractTableModel {
@@ -38,6 +39,7 @@ public:
 public slots:
 	void toggleMode(int i);
 	void setSelection(int slt);
+	void updated(AnBoard *brd);
 
 private:
 	int m_rows;

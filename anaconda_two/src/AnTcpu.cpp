@@ -49,7 +49,7 @@ void AnTcpu::sync(int level)
     setEcsr(rmsg.Msg.DATA[3]);
     setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 
-	if (level >= 1) {
+	if (level >= 3) {
 		// get firmware versions
 	    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
 	    rdata = agent()->write_read(msg, rmsg, 4);
