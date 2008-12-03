@@ -14,11 +14,14 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 {
 
 	this->setObjectName("ROOT");
+	this->setActive(true);
 
-	m_cannet[0] = new AnCanNet(AnAddress(1, 0, 0, 0), AnAddress(0, 0, 0, 0));
-	m_cannet[1] = new AnCanNet(AnAddress(2, 0, 0, 0), AnAddress(0, 0, 0, 0));
-	m_cannet[0]->setList(&m_list[0]);
-	m_cannet[1]->setList(&m_list[1]);
+	// setup AnCanNet objects for THUB/TCPU tree root
+	for (int i = 0; i < 2; ++i) {
+		m_cannet[i] = new AnCanNet(AnAddress(i+1, 0, 0, 0), AnAddress(0, 0, 0, 0));
+		m_cannet[i]->setList(&m_list[i]);
+		m_cannet[i]->setActive(true);
+	}
 
 	m_db = QSqlDatabase::addDatabase("QSQLITE");
 	m_db.setDatabaseName("db/configurations.db");
@@ -72,6 +75,16 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	setMode(0);
 
 	initAutoSync();
+
+	// setup various maps and watches for incoming messages
+	foreach(AnAgent *ag, m_agents) {
+		m_devid_agent_map[ag->devid()] = ag;
+		int sock = ag->socket();
+		m_socket_agent_map[sock] = ag;
+		m_watch[sock] = new QSocketNotifier(sock, QSocketNotifier::Read, this);
+		connect(m_watch[sock], SIGNAL(activated(int)), this, SLOT(watcher(int)));
+		m_watch[sock]->setEnabled(true);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -84,6 +97,26 @@ AnRoot::~AnRoot()
 }
 
 //-----------------------------------------------------------------------------
+/**
+ * Dump object
+ */
+QString AnRoot::dump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnCanNet(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized     : ") + synced().toString();
+//	sl << QString("  Status           : ") + QString::number(status());
+//	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
+	return sl.join("\n");
+}
+
+
 void AnRoot::sync(int level)
 {
 	int n = m_devid_list.count();
@@ -91,6 +124,8 @@ void AnRoot::sync(int level)
 	foreach(AnBoard *brd, list()) {
 		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
 	}
+
+	disableWatch();
 	for(int i = 0; i < n; ++i) {
 		AnAgent *ag = agent(m_devid_list[i]);
 		if (ag->isRunning()) continue; // forget if agent is busy
@@ -98,6 +133,8 @@ void AnRoot::sync(int level)
 		ag->start();
 	}
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
+// TODO it's too early to set this flag
+	setSynced();
 }
 
 //-----------------------------------------------------------------------------
@@ -109,6 +146,8 @@ void AnRoot::reset()
 	foreach(AnBoard *brd, list()) {
 		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
 	}
+
+	disableWatch();
 	for(int i = 0; i < n; ++i) {
 		AnAgent *ag = agent(m_devid_list[i]);
 		if (ag->isRunning()) continue; // forget if agent is busy
@@ -128,6 +167,7 @@ void AnRoot::config()
 		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
 	}
 
+	disableWatch();
 	foreach(AnAgent *ag, m_agents) {
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_CONFIG, blist[m_devid_list.indexOf(ag->devid())]);
@@ -396,7 +436,9 @@ void AnRoot::autosync()
 	if (!isRunning()) {
 		qDebug() << "autosync" << m_cur1 << m_cur2;
 		AnBoard *brd = m_list[m_cur1][m_cur2];
+		disableWatch();
 		brd->sync(2);
+		enableWatch();
 		emit updated(brd);
 		++m_cur2;
 		if ( m_cur2 >= m_list[m_cur1].count() ) {
@@ -404,5 +446,47 @@ void AnRoot::autosync()
 			++m_cur1;
 		}
 		if (m_cur1 >= 2) m_cur1 = 0;
+	}
+}
+
+/**
+ * Enable all socket watches
+ */
+void AnRoot::enableWatch()
+{
+	foreach (QSocketNotifier *sn, m_watch) {
+		sn->setEnabled(true);
+	}
+}
+
+/**
+ * Disable all socket watches
+ */
+void AnRoot::disableWatch()
+{
+	foreach (QSocketNotifier *sn, m_watch) {
+		sn->setEnabled(false);
+	}
+}
+/**
+ * QSocketNotifier's activated signal triggers this function.
+ */
+void AnRoot::watcher(int sock)
+{
+	qDebug() << "watcher in";
+	if (m_watch.contains(sock)) {
+		// disable watch again
+		m_watch[sock]->setEnabled(false);
+
+		AnAgent *ag = m_socket_agent_map[sock];
+// TODO read message and deliver to the source device
+//  ag->readMsg();
+//  parse
+//  set powerup flag and etc on the device, i.e. THUB, TCPU or TDIG
+		char buf[1024];
+		qDebug() << "got input" << read(sock, buf, 1024);
+
+		// enable watch again
+		m_watch[sock]->setEnabled(true);
 	}
 }

@@ -18,8 +18,9 @@ public:
 	virtual ~AnSerdes();
 
 // from AnCanObject
-	virtual AnCanObject *at(int i) { return (AnCanObject*)NULL; }
+	virtual AnCanObject *at(int i) { return (AnCanObject*)this; } // no child objs
 
+	virtual QString dump() const;
 	virtual void sync(int level = 0);
 	virtual void reset() { /* place holder */}
 	virtual void config()  { /* place holder */}

@@ -23,6 +23,8 @@ public:
 //  Inherited from AnCanObject
 	AnCanObject *at(int i) { return (i > 0) ? m_list->at(i-1) : static_cast<AnCanObject*>(this); }
 
+	virtual QString dump() const;
+
 	virtual void sync(int level = 0) { /* do nothing */ }
 	virtual void reset() { /* do nothing */ }
 	virtual void config() { /* do nothing */ }

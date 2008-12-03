@@ -23,8 +23,29 @@ AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *pare
 	}
 }
 
-AnThub::~AnThub() {
-  // TODO Auto-generated destructor stub
+AnThub::~AnThub()
+{
+	// do nothing
+}
+
+QString AnThub::dump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnThub(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized     : ") + synced().toString();
+	sl << QString("  Firmware ID      : ") + firmwareString();
+	sl << QString("  Temperature 1    : ") + tempString(0);
+	sl << QString("  Temperature 2    : ") + tempString(1);
+	sl << QString("  CRC              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  Status           : ") + QString::number(status());
+	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
+	return sl.join("\n");
 }
 
 void AnThub::sync(int level)
@@ -57,7 +78,10 @@ void AnThub::sync(int level)
 		// readout serdes infomation
 		if (--level >= 0)
 			for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
+
+		setSynced();
 	}
+
 }
 
 quint32 AnThub::canidr() const

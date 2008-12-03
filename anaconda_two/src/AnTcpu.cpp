@@ -72,6 +72,8 @@ void AnTcpu::sync(int level)
 
     if (--level >= 0)
       for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
+
+    setSynced();
   }
 }
 
@@ -142,8 +144,10 @@ QString AnTcpu::dump() const
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized     : ") + synced().toString();
 	sl << QString("  Tray ID          : ") + trayIdString();
 	sl << QString("  Tray SN          : ") + traySn();
+	sl << QString("  Firmware ID      : ") + firmwareString();
 	sl << QString("  Chip ID          : ") + chipIdString();
 	sl << QString("  Temperature      : ") + tempString();
 	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
