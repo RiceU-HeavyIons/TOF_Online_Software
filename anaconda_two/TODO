@@ -8,7 +8,7 @@ Entry:
 
   2008-12-03:
   - (X) toggle autosync
-  - check out QSetting - db location etc
+  - check out QSetting for database location etc
   - adjust size of widgets
   - reset size, toolbar, dock
   - revise signal/slot for progress
@@ -45,10 +45,10 @@ Entry:
   - address validator espeially AnRoot::find
   - add List<X> AnRoot::find(AnAddress) returns empty list if address is not valid
   - (X) think about THUB <=> TCPU relation. Parent <-> children relation is better? And assign logical address like THUB(1.0.0.0), TCPU(1.x.0.0). This hierarchy reminds me reset-order. Now question is numbering of x for TCPU: x=1-120 or x=1-30? => with this scheme, tcpu and serdes come to same level.
-  - fix AnRoot::expand bug for Serdes address. last 255 has to be zero.
+  - (X) fix AnRoot::expand bug for Serdes address. last 255 has to be zero.
   - (X) console: read / write
-  - implement THUB dump
-  - implement Serdes dump
+  - (X) implement THUB dump
+  - (X) implement Serdes dump
   - implement TDC dump
   - console extension: loading config set
   - window menu

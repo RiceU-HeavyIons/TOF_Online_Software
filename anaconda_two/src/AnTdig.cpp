@@ -61,6 +61,8 @@ void AnTdig::sync(int level)
 
     if (--level >= 0)
       for(quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
+
+    setSynced();
   }
 }
 
@@ -123,6 +125,7 @@ bool AnTdig::setActive(bool act) {
 		for (int i = 0; i < 4; ++i)
 			m_tdc[i]->setActive(false);
 	}
+	return active();
 }
 
 //-----------------------------------------------------------------------------
@@ -135,6 +138,7 @@ QString AnTdig::dump() const
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized     : ") + synced().toString();
 	sl << QString("  Firmware ID      : ") + firmwareString();
 	sl << QString("  Chip ID          : ") + chipIdString();
 	sl << QString("  Temperature      : ") + tempString();
@@ -142,6 +146,7 @@ QString AnTdig::dump() const
 	sl << QString("  Threshold        : ") + thresholdString();
 	sl << QString("  Status           : ") + QString::number(status());
 	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
 
 	return sl.join("\n");
 }

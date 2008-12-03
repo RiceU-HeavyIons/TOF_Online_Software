@@ -15,6 +15,27 @@ AnTdc::AnTdc(const AnAddress &laddr, const AnAddress &haddr,
   setObjectName(QString("TDC ") + lAddress().toString());
 }
 
+
+QString AnTdc::dump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnTdc(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Status Word      : 0x").arg(QString::number(m_status, 16));
+	sl << QString("  Status           : ") + QString::number(status());
+//	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	sl << QString("  Synchronized     : ") + synced().toString();
+
+	return sl.join("\n");
+}
+
+/**
+ * Sync TDC information
+ */
 void AnTdc::sync(int level)
 {
 	if (active() and level >= 0) {
@@ -24,6 +45,7 @@ void AnTdc::sync(int level)
 	    TPCANRdMsg  rmsg;
         AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
         m_status = agent()->write_read(msg, rmsg, 10);
+        setSynced();
 	}
 }
 

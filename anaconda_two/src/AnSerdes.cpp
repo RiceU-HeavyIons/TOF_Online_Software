@@ -25,6 +25,24 @@ QString AnSerdes::firmwareString() const
   return QString(buf);
 }
 
+QString AnSerdes::dump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnSerdes(%p):", this);
+	sl << QString("  Name             : ") + name();
+	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Active           : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized     : ") + synced().toString();
+	sl << QString("  Firmware ID      : ") + firmwareString();
+	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  Status           : ") + QString::number(status());
+	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+
+	return sl.join("\n");
+}
+
 void AnSerdes::sync(int level)
 {
   if (active() && level >= 0) {
@@ -41,6 +59,8 @@ void AnSerdes::sync(int level)
     AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid);
     rdata = agent()->write_read(msg, rmsg, 2);
     setEcsr(rmsg.Msg.DATA[1]);
+
+    setSynced();
   }
 }
 

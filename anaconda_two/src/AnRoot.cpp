@@ -13,7 +13,7 @@
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 {
 
-	this->setObjectName("ROOT");
+	this->setObjectName("Root");
 	this->setActive(true);
 
 	// setup AnCanNet objects for THUB/TCPU tree root

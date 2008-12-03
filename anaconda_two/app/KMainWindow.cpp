@@ -265,7 +265,13 @@ void KMainWindow::setMode(int i) {
 	doConfigure();
 }
 
-//-----------------------------------------------------------------------------
+/**
+ * When time consuming process is about to start, actions which trigger another
+ * taks have to be disabled. This utility function takes can be used for the
+ * purpose.
+ *
+ * @param sw    true for setting busy and false for unsetting busy
+ */
 void KMainWindow::setBusy(bool sw)
 {
 	m_busy = sw;
@@ -276,6 +282,7 @@ void KMainWindow::setBusy(bool sw)
 }
 
 //-----------------------------------------------------------------------------
+// TODO It may be good idea get this kind of signal from AnRoot instead of agents
 void KMainWindow::agentFinished()
 {
 	if (!m_root->isRunning()) setBusy(false);

@@ -8,6 +8,7 @@
 #ifndef ANCANOBJECT_H_
 #define ANCANOBJECT_H_
 #include <QtCore/QObject>
+#include <QtCore/QTime>
 #include <QtCore/QDebug>
 
 #include "AnAddress.h"
@@ -27,7 +28,7 @@ public:
 	virtual bool setActive(bool act) { return (m_active = act); }
 
 	virtual QString name() const;
-	virtual QString dump() const { return QString(""); }
+	virtual QString dump() const = 0;
 
 	virtual void sync(int level = 0) = 0;
 	virtual void reset()  = 0;
@@ -37,12 +38,16 @@ public:
 
 	AnCanObject *root();
 
+	QTime synced() const { return m_synced; }
+	QTime setSynced(QTime t = QTime::currentTime()) { return (m_synced = t); }
+
 protected:
-	AnAddress laddr()    const { return m_laddr; }
-	AnAddress haddr()    const { return m_haddr; }
+	AnAddress laddr() const { return m_laddr; }
+	AnAddress haddr() const { return m_haddr; }
 
 private:
-	bool  m_active;
+	bool            m_active;
+	QTime           m_synced;
 	const AnAddress m_laddr;
 	const AnAddress m_haddr;
 

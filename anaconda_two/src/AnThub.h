@@ -16,7 +16,8 @@ public:
 	AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 	virtual ~AnThub();
 
-//  from AnCanbusObject
+//  inherited from AnCanbusObject
+	virtual QString dump() const;
 	virtual void sync(int level = 0);
 	virtual void reset()  { /* place holder */}
 	virtual void config() { /* place holder */ }
