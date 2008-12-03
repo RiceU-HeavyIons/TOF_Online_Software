@@ -134,20 +134,26 @@ void KMainWindow::createActions()
 	m_ConfigAction->setStatusTip(tr("Upload Configurations to System"));
 	m_ConfigAction->setToolTip(tr("Upload Configurations"));
 	QObject::connect(m_ConfigAction, SIGNAL(triggered()),
-						this, SLOT(doConfigure()));
+	                 this, SLOT(doConfigure()));
 
 	// m_ToggleToolbarAction = new QAction(tr("Toolbars"), this);
 	// m_ToggleToolbarAction->setCheckable(true);
 	// m_ToggleToolbarAction->setChecked(true);
 	// QObject::connect(m_ToggleToolbarAction, SIGNAL(triggered()),
-	// 					this, SLOT(doToggleToolbar()));
+	// 					this, SLOT(toggleToolbar()));
 
 	m_ToggleConsoleAction = new QAction(tr("Consle"), this);
 	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
 	// m_ToggleConsoleAction->setCheckable(true);
 	// m_ToggleConsoleAction->setChecked(false);
 	QObject::connect(m_ToggleConsoleAction, SIGNAL(triggered()),
-						this, SLOT(doToggleConsole()));
+	                 this, SLOT(toggleConsole()));
+
+	m_ToggleAutoSyncAction = new QAction(tr("Auto Sync"), this);
+	m_ToggleAutoSyncAction->setCheckable(true);
+	m_ToggleAutoSyncAction->setChecked(false);
+	QObject::connect(m_ToggleAutoSyncAction, SIGNAL(triggered()),
+	                 this, SLOT(toggleAutoSync()));
 
 	setBusy(false);
 }
@@ -162,6 +168,8 @@ void KMainWindow::createMenus()
 	menu->addAction(m_ResetAction);
 	menu->addAction(m_SyncAction);
 //	menu->addAction(m_comboAction);
+	menu->addSeparator();
+	menu->addAction(m_ToggleAutoSyncAction);
 
 	menu = menuBar()->addMenu(tr("View"));
 	menu->addAction(m_CommandToolbar->toggleViewAction());
@@ -228,17 +236,26 @@ void KMainWindow::doConfigure()
 }
 
 //-----------------------------------------------------------------------------
-void KMainWindow::doToggleToolbar()
+void KMainWindow::toggleToolbar()
 {
 	m_CommandToolbar->setVisible(m_ToggleToolbarAction->isChecked());
 }
 
 //-----------------------------------------------------------------------------
-void KMainWindow::doToggleConsole()
+void KMainWindow::toggleConsole()
 {
 	m_console->setVisible(m_console->isHidden());
 //	if (m_ToggleConsoleAction->isChecked()) m_console->exec();
 
+}
+
+//-----------------------------------------------------------------------------
+void KMainWindow::toggleAutoSync()
+{
+	if (m_ToggleAutoSyncAction->isChecked())
+		m_root->startAutoSync();
+	else
+		m_root->stopAutoSync();
 }
 
 //-----------------------------------------------------------------------------

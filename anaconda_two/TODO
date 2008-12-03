@@ -2,9 +2,17 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-02
+Updated: 2008-12-03
 Description: TODO file for Anaconda 2 development. I think this is in YAML format.
 Entry:
+
+  2008-12-03:
+  - (X) toggle autosync
+  - check out QSetting - db location etc
+  - adjust size of widgets
+  - reset size, toolbar, dock
+  - revise signal/slot for progress
+  - javadoc / ROOT / Qt inline documentation
 
   2008-12-02:
   - canbus name in main table instead of hardware address
@@ -15,7 +23,7 @@ Entry:
   - set mask
 
   2008-12-01:
-  - disable tdig, tdc and serdes if parent is disabled
+  - (X) disable tdig, tdc and serdes if parent is disabled
   - turn on / off in-time sync
   - temperature threshold for every thub, tcpu and tdig
   - eclipse like intialize indicator
@@ -93,7 +101,7 @@ Entry:
   - (X) Parallel synchronization implementation
   - (X) Progress message for Sync, Reset, Configuration
   - Reduce sync process by introducing last updated time-stamp and minimal interval
-  - Automatic sync process
+  - (X) Automatic sync process
   - Robust PCAN error handling
   - Simplify message send / receive handling
   - TDC data handling with QSocketNotifier

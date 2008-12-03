@@ -32,13 +32,15 @@ KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent) {
 
 // TDIG / SERDES Selector
   QTableView *view = new QTableView();
+  int fonth = QFontMetrics(view->font()).height();
   m_model = new KSerdesModel;
   view->setModel(m_model);
   view->setSelectionBehavior(QAbstractItemView::SelectRows);
   for(int i = 0; i < 8; ++i) {
     view->setRowHeight(i, 20);
   }
-  view->setMinimumHeight(22*8);
+  view->setMinimumHeight(9*fonth);
+  view->setMaximumHeight(9*1.2*fonth);
   view->setColumnWidth(0, 30);
   view->setColumnWidth(1, 80);
   view->setColumnWidth(2, 80);
@@ -47,8 +49,6 @@ KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent) {
 
   m_view = new KSerdesView(this);
   grid->addWidget(m_view, ++row, 0, 1, 2);
-
-  grid->spacing();
 
   QObject::connect(
         view->selectionModel(),

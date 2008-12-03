@@ -71,12 +71,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 
 	setMode(0);
 
-	m_timer = new QTimer(this);
-	m_cur1  = 0;
-	m_cur2  = 0;
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
-	m_timer->setInterval(2000);
-	m_timer->start();
+	initAutoSync();
 }
 
 //-----------------------------------------------------------------------------
@@ -248,13 +243,24 @@ void AnRoot::setMode(int i)
 }
 
 //-----------------------------------------------------------------------------
+/**
+ * Find object from logical address. Validation is not implemented and causes
+ * segmentation fault very very easily.
+ */
+// TODO Include validation process
 AnCanObject *AnRoot::find(const AnAddress &lad)
 {
 	return dynamic_cast<AnCanObject*>
 				( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
 }
 
-//-----------------------------------------------------------------------------
+// TODO Implement array version of find
+
+/**
+ * Expand wild card address. This function is really simple and desen't check
+ * availability of addresses.
+ */
+// TODO Validate input and expanded address
 QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 {
 	int a1 = lad.at(0);
@@ -269,6 +275,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 	else
 		lst1 << AnAddress(a1, a2, a3, a4);
 
+	// first round
 	foreach(AnAddress ad, lst1) {
 		a1 = ad.at(0);
 		if (a1 == 1 && a2 == 255)
@@ -279,6 +286,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 			lst2 << AnAddress(a1, a2, a3, a4);
 	}
 
+	// second round
 	lst1.clear();
 	foreach(AnAddress ad, lst2) {
 		a1 = ad.at(0);
@@ -289,12 +297,15 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 			lst1 << AnAddress(a1, a2, a3, a4);
 	}
 
+	// third round
 	lst2.clear();
 	foreach(AnAddress ad, lst1) {
 		a1 = ad.at(0);
 		a2 = ad.at(1);
 		a3 = ad.at(2);
-		if (a1 == 2 && a4 == 255)
+		if (a1 == 1 && a4 == 255)
+			lst2 << AnAddress(a1, a2, a3, 0);
+		else if (a1 == 2 && a4 == 255)
 			for(int i = 1; i <= 3; ++i) lst2 << AnAddress(a1, a2, a3, i);
 		else
 			lst2 << AnAddress(a1, a2, a3, a4);
@@ -348,8 +359,40 @@ void AnRoot::readTdcConfig()
 	foreach (AnAgent *ag, m_agents) ag->setTdcConfigs(m_tcnfs);
 }
 
+/**
+ * Initialize AutoSync
+ */
+void AnRoot::initAutoSync() {
+	m_timer = new QTimer(this);
+	m_cur1  = 0;
+	m_cur2  = 0;
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
+	m_timer->setInterval(2000);
+//	m_timer->start();
+}
+
+/**
+ * Start AutoSync
+ */
+void AnRoot::startAutoSync()
+{
+	if (!m_timer->isActive()) m_timer->start();
+}
+
+/**
+ * Stop AutoSync
+ */
+void AnRoot::stopAutoSync()
+{
+	if (m_timer->isActive()) m_timer->stop();
+}
+
+/**
+ * AutoSync main function
+ */
 void AnRoot::autosync()
 {
+
 	if (!isRunning()) {
 		qDebug() << "autosync" << m_cur1 << m_cur2;
 		AnBoard *brd = m_list[m_cur1][m_cur2];

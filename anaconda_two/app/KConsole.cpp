@@ -39,7 +39,7 @@ KConsole::KConsole(AnRoot *root, QWidget *parent) : QDialog(parent),
 
 	m_clearb = new QPushButton("Clear");
 
-	m_font  = QFont("Courier", 14);
+	m_font  = QFont("Courier", 10);
 	m_ledit = new QLineEdit();
 	m_ledit->setFont(m_font);
 	m_tedit = new QTextEdit();

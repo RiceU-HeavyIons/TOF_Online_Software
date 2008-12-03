@@ -51,12 +51,14 @@ class KMainWindow : public QMainWindow
 public:
 	KMainWindow(QWidget *parent = 0);
 	~KMainWindow();
+
 public slots:
 	void doReset();
 	void doSync();
 	void doConfigure();
-	void doToggleToolbar();
-	void doToggleConsole();
+	void toggleToolbar();
+	void toggleConsole();
+	void toggleAutoSync();
 
 	void setMode(int i);
 
@@ -79,6 +81,7 @@ private:
 	QAction *m_ConfigAction;
 	QAction *m_ToggleToolbarAction;
 	QAction *m_ToggleConsoleAction;
+	QAction *m_ToggleAutoSyncAction;
 
 	QToolBar *m_CommandToolbar;
 

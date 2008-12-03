@@ -71,7 +71,10 @@ public:
 		CT_TDC_MASK       = 32
 	};
 
-signals:
+	void startAutoSync();
+	void stopAutoSync();
+
+	signals:
 	void updated(AnBoard*);
 
 public slots:
@@ -93,11 +96,14 @@ private:
 	int                      m_mode;
 	QList<mode>              m_mode_list;
 
+	// AutoSync timer and coursor
 	QTimer                  *m_timer;
 	int                      m_cur1;
 	int                      m_cur2;
 
 	void readTdcConfig();
 	void readModeList();
+
+	void initAutoSync();
 };
 #endif /* ANROOT_H_ */
