@@ -13,14 +13,14 @@
 			<true/>
 			<key>name</key>
 			<string>untitled group</string>
-			<key>selected</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2008-12-02T12:21:11Z</date>
+			<date>2008-12-04T15:02:19Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -236,11 +236,9 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2008-11-25T09:58:33Z</date>
+					<date>2008-12-04T15:02:19Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -434,8 +432,6 @@
 					<date>2008-11-28T09:03:16Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -870,7 +866,7 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>14</integer>
+				<integer>13</integer>
 				<key>line</key>
 				<integer>16</integer>
 			</dict>
