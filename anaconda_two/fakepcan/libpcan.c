@@ -543,7 +543,8 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 	for (i = 0; dlist[i].irq; i++) {
 		char *bn = strdup(szDeviceName);
 		if (strcmp(basename(bn), dlist[i].dname) == 0) {
-			fd = open(szDeviceName, O_RDONLY | O_NONBLOCK);
+//			fd = open(szDeviceName, O_RDONLY | O_NONBLOCK);
+			fd = open(szDeviceName, O_RDONLY);
 			if (fd >=0) {
 				h = dlist[i].handle;
 				dlist[i].fd = fd;

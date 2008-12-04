@@ -83,21 +83,21 @@ private:
 	QAction *m_ToggleConsoleAction;
 	QAction *m_ToggleAutoSyncAction;
 
-	QToolBar *m_CommandToolbar;
+	QToolBar           *m_CommandToolbar;
 
-	QComboBox *m_combo;
+	QComboBox          *m_combo;
 
-	AnRoot *m_root;
+	AnRoot             *m_root;
 
-	QDialog             *progress_diag;
-	KProgressIndicator  *m_progress;
-	KConsole            *m_console;
+	QDialog            *progress_diag;
+	KProgressIndicator *m_progress;
+	KConsole           *m_console;
 
 	//  models and views
-	QTableView     *m_l1view;
-	KLevel1Model   *m_l1model;
-	QListWidget    *m_selector;
+	QTableView         *m_l1view;
+	KLevel1Model       *m_l1model;
+	QListWidget        *m_selector;
 
-	QDockWidget    *m_l2view;
+	QDockWidget        *m_l2view;
 };
 #endif

@@ -487,6 +487,6 @@ void AnRoot::watcher(int sock)
 		qDebug() << "got input" << read(sock, buf, 1024);
 
 		// enable watch again
-		m_watch[sock]->setEnabled(true);
+//		m_watch[sock]->setEnabled(true);
 	}
 }
