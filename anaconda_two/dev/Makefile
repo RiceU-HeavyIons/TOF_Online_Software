@@ -1,22 +1,26 @@
+cmd = touch
 
 all: pcan32 pcan31 pcan30 pcan29 pcan28 pcan27
 pcan32:
-	mkfifo $@
+	@${cmd} $@
 
 pcan31:
-	mkfifo $@
+	@${cmd} $@
 
 pcan30:
-	mkfifo $@
+	@${cmd} $@
 
 pcan29:
-	mkfifo $@
+	@${cmd} $@
 
 pcan28:
-	mkfifo $@
+	@${cmd} $@
 
 pcan27:
-	mkfifo $@
+	@${cmd} $@
 
 distclean:
 	$(RM) pcan*
+
+clean:
+	$(RM) pcan*.sock

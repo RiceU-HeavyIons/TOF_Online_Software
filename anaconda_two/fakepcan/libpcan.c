@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <errno.h>
+
+#include <pthread.h>
 
 #include <string.h>
 #include <stdarg.h>
@@ -22,7 +27,7 @@ typedef struct {
 	unsigned int  csum;
 	unsigned int  cunt;
 	char          dname[64];
-	int           fd;
+	int           sock;
 } dinfo;
 
 // initialized device information
@@ -36,6 +41,7 @@ static dinfo dlist[] = {
  {0,             NULL,             0,                0, {0, 0, 0, {0}}, 0, 0,       "", -1}
 };
 
+static pthread_t *thrd = NULL;
 //****************************************************************************
 //  CAN_Open()
 //  creates a path to a CAN port
@@ -98,14 +104,27 @@ DWORD CAN_Init(HANDLE hHandle, WORD wBTR0BTR1, int nCANMsgType)
 DWORD CAN_Close(HANDLE hHandle)
 {
 	dinfo *ptr;
+	int   nopen = 0;
+
+	fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
 
 	for (ptr = dlist; ptr->irq; ptr++) {
 		if (ptr->handle == hHandle) {
-			close(ptr->fd);
-			ptr->fd = -1;
+			char sname[256];
+			close(ptr->sock);
+			ptr->sock = -1;
+			sprintf(sname, "dev/%s.sock", ptr->dname);
+			puts(sname);
+			unlink(sname);
 		}
+		if (ptr->sock >=0 ) nopen++;
 	}
-	fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
+
+	if (nopen == 0 && thrd != NULL) {
+		pthread_cancel(*thrd);
+		thrd = NULL;
+	}
+
 	return CAN_ERR_OK;
 }
 
@@ -116,6 +135,12 @@ DWORD CAN_Close(HANDLE hHandle)
 //  If the status is negative a system error is returned (e.g. -EBADF).
 DWORD CAN_Status(HANDLE hHandle)
 {
+	dinfo *ptr;
+
+	for(ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle)
+			{ break;}
+	}
 	return CAN_ERR_OK;
 }
 
@@ -435,9 +460,18 @@ DWORD CAN_Read(HANDLE hHandle, TPCANMsg* pMsgBuff)
 //  or a error occures.
 DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 {
+	dinfo *ptr;
 #ifdef FAKE_DEBUG
 	fprintf(stderr, "FAKE::LINUX_CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 #endif
+	for (ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle) {
+			int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
+			if ( cnt == sizeof(TPCANRdMsg)) {
+				return CAN_ERR_OK;
+			}
+		}
+	}
 	return readHandler(hHandle, &(pMsgBuff->Msg));
 }
 
@@ -451,12 +485,23 @@ DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 //  nMicroSeconds  < 0 -> blocking, same as LINUX_CAN_Read()
 DWORD LINUX_CAN_Read_Timeout(HANDLE hHandle, TPCANRdMsg* pMsgBuff, int nMicroSeconds)
 {
+	dinfo *ptr;
 
 #ifdef FAKE_DEBUG
 	fprintf(stderr,
 		"FAKE::LINUX_CAN_Read_Timeout(hHandle=%p, pMsgBuff=%p, nMicroSeconds=%d)\n",
 		hHandle, pMsgBuff, nMicroSeconds);
 #endif
+
+	for (ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle) {
+			int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
+			if ( cnt == sizeof(TPCANRdMsg)) {
+				return CAN_ERR_OK;
+			}
+		}
+	}
+
 	return readHandler(hHandle, &(pMsgBuff->Msg));
 }
 
@@ -488,7 +533,7 @@ int LINUX_CAN_FileHandle(HANDLE hHandle)
 	dinfo *ptr;
 
 	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle) return ptr->fd;
+		if (ptr->handle == hHandle) return ptr->sock;
 	}
 	return -1;
 }
@@ -526,6 +571,48 @@ int nGetLastError(void)
 	return CAN_ERR_OK;
 }
 
+void* runner(void *arg)
+{
+	dinfo *ptr;
+	srand(100);
+
+	for (ptr = dlist; ; ptr++) {
+		if (ptr->irq == 0) ptr = dlist;
+
+		if (ptr->sock > 0) { /* the device is open */
+			TPCANRdMsg rmsg;
+			int i, fd;
+			struct sockaddr_un addr;
+			unsigned short tcpu, tdig;
+
+			fd = socket(PF_UNIX, SOCK_DGRAM, 0);
+
+			addr.sun_family = AF_UNIX;
+			sprintf(addr.sun_path, "dev/%s.sock", ptr->dname);
+			connect(fd, &addr, sizeof(addr));
+
+			tcpu = (0x21 + (int)(30.0*rand()/RAND_MAX));
+			tdig = (0x10 + (int)(8.0*rand()/RAND_MAX));
+			switch((int)(2.0*rand()/ RAND_MAX)) {
+			case 0:
+				rmsg.Msg.MSGTYPE = MSGTYPE_STANDARD;
+				rmsg.Msg.ID   = (tcpu << 4) + 0x7;
+				break;
+			case 1:
+				rmsg.Msg.MSGTYPE = MSGTYPE_EXTENDED;
+				rmsg.Msg.ID   = (tdig << 4 | 0x7) << 18 | tcpu;
+			}
+			rmsg.Msg.LEN  = 4;
+			rmsg.Msg.DATA[0] = 0xff;
+			for(i = 1; i < 4; ++i) rmsg.Msg.DATA[i] = 0;
+			send(fd, &rmsg, sizeof(rmsg), 0);
+
+			close(fd);
+
+			sleep(10);
+		}
+	}
+}
 //****************************************************************************
 //  LINUX_CAN_Open() - another open, LINUX like
 //  creates a path to a CAN port
@@ -535,26 +622,43 @@ int nGetLastError(void)
 //
 HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 {
-	int i, fd;
+	int i;
 	HANDLE h = 0;
+
 #ifdef DEBUG
 	fprintf(stderr, "FAKE::LINUX_CAN_Open(%s, %x)\n", szDeviceName, nFlag);
 #endif
 	for (i = 0; dlist[i].irq; i++) {
 		char *bn = strdup(szDeviceName);
 		if (strcmp(basename(bn), dlist[i].dname) == 0) {
-			fd = open(szDeviceName, O_RDONLY | O_NONBLOCK);
-//			fd = open(szDeviceName, O_RDONLY);
-			if (fd >=0) {
+			int sock, er;
+			char sname[256];
+			struct sockaddr_un addr;
+
+			sprintf(sname, "%s.sock", szDeviceName);
+			addr.sun_family = AF_UNIX;
+			strcpy(addr.sun_path, sname);
+			sock = socket(PF_UNIX, SOCK_DGRAM, 0);
+
+			er = bind(sock, &addr, sizeof(addr.sun_family) + strlen(sname));
+			if (er >=0) {
 				h = dlist[i].handle;
-				dlist[i].fd = fd;
+				dlist[i].sock = sock;
 			} else {
 				h = NULL;
+				perror("bind");
 			}
 			break;
 		}
 		free(bn);
 	}
+
+	if(h != NULL && thrd == NULL) {
+		thrd = malloc(sizeof(pthread_t));
+		if(pthread_create(thrd, NULL, runner, NULL))
+			perror("pthread_create");
+	}
+
 	return h;
 }
 

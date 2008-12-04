@@ -94,6 +94,7 @@ AnRoot::~AnRoot()
 	m_db.close();
 	delete   m_cannet[1];
 	delete   m_cannet[0];
+	foreach(AnAgent *ag, m_agents) delete ag;
 }
 
 //-----------------------------------------------------------------------------
@@ -473,18 +474,17 @@ void AnRoot::disableWatch()
  */
 void AnRoot::watcher(int sock)
 {
-	qDebug() << QString("watcher for : %1").arg(QString::number(sock));
+
 	if (m_watch.contains(sock)) {
 		// disable watch again
 		m_watch[sock]->setEnabled(false);
 
 		AnAgent *ag = m_socket_agent_map[sock];
 // TODO read message and deliver to the source device
-//  ag->readMsg();
 //  parse
 //  set powerup flag and etc on the device, i.e. THUB, TCPU or TDIG
-		char buf[1024];
-		qDebug() << "got input" << read(sock, buf, 1024);
+		TPCANRdMsg rmsg;
+		ag->read(rmsg, 4);
 
 		// enable watch again
 		m_watch[sock]->setEnabled(true);

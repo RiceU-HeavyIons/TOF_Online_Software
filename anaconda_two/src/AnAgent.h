@@ -37,6 +37,8 @@ public:
 	static QMap<int, AnAgent*> open(QList<int> &dev_id_list);
 
 	int open(quint8 dev_id);
+	quint64 read(TPCANRdMsg &rmsg,
+	      unsigned int return_length, unsigned int time_out = 4000000);
 	quint64 write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	      unsigned int return_length, unsigned int time_out = 4000000);
 

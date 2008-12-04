@@ -55,6 +55,47 @@ void AnAgent::print(const TPCANRdMsg &rmsg)
 }
 
 //-----------------------------------------------------------------------------
+quint64 AnAgent::read(TPCANRdMsg &rmsg,
+    unsigned int return_length, unsigned int time_out)
+{
+
+  if(m_handle == NULL) {
+    qDebug() << "device is not open";
+    return -1;
+  }
+
+  quint64 data = 0;
+  unsigned int length = 0;
+  unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
+  int er = 0;
+
+
+  for (unsigned int i = 0; i < niter && !er; ++i) {
+    er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
+    if (er != 0) {
+      int status = CAN_Status(m_handle);
+      if (status > 0)
+        fprintf(stderr, "CANbus error: 0x%x\n", status);
+      else
+        fprintf(stderr, "System error: 0x%x\n", status);
+    }
+    if (TCAN_DEBUG) {
+      printf("<< ");
+      print(rmsg);
+    }
+    length += rmsg.Msg.LEN;
+    for(int j = 1; j < rmsg.Msg.LEN; ++j)
+      data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+  }
+
+  if (return_length != length) {
+    fprintf(stderr, "Return length doesn't match.\n");
+  }
+
+  return data;
+}
+
+//-----------------------------------------------------------------------------
 quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     unsigned int return_length, unsigned int time_out)
 {
