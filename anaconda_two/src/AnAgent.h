@@ -45,9 +45,7 @@ public:
 	void setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs);
 
 	quint8 devid() const { return addr; }
-//	TODO returns dummy value, i.e. stdin
-//	int socket() const { return LINUX_CAN_FileHandle(m_handle); }
-	int socket() const { return 0; }
+	int socket() const { return LINUX_CAN_FileHandle(m_handle); }
 
 	AnTdcConfig *tdcConfig(int i) const { return m_tcnfs[i]; }
 

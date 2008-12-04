@@ -3,4 +3,9 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS += fakepcan src app
+SUBDIRS += src app
+CONFIG += debug
+
+debug {
+  SUBDIRS += fakepcan dev
+}

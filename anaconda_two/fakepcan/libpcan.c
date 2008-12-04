@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <libgen.h>
+
 #include <string.h>
 #include <stdarg.h>
-#include <libgen.h>
 
 #include <libpcan.h>
 #define VERSION_STRING "Fake_PCAN_Driver_20081119"
@@ -17,17 +22,18 @@ typedef struct {
 	unsigned int  csum;
 	unsigned int  cunt;
 	char          dname[64];
+	int           fd;
 } dinfo;
 
 // initialized device information
 static dinfo dlist[] = {
-	{255, (HANDLE)0xcc01, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan32"},
-	{254, (HANDLE)0xcc02, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan31"},
-	{253, (HANDLE)0xcc03, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan30"},
-	{252, (HANDLE)0xcc04, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan29"},
-	{251, (HANDLE)0xcc05, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan28"},
-	{250, (HANDLE)0xcc06, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, 0}, 0, 0, "pcan27"},
-	{0,             NULL,             0,                0, {0, 0, 0, 0}, 0, 0,        0},
+ {255, (HANDLE)0xcc01, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan32", -1},
+ {254, (HANDLE)0xcc02, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan31", -1},
+ {253, (HANDLE)0xcc03, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan30", -1},
+ {252, (HANDLE)0xcc04, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan29", -1},
+ {251, (HANDLE)0xcc05, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan28", -1},
+ {250, (HANDLE)0xcc06, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan27", -1},
+ {0,             NULL,             0,                0, {0, 0, 0, {0}}, 0, 0,       "", -1}
 };
 
 //****************************************************************************
@@ -59,6 +65,7 @@ HANDLE CAN_Open(WORD wHardwareType, ...)
 	}
 
 	va_end(vlist);
+	return NULL;
 }
 
 //****************************************************************************
@@ -89,7 +96,15 @@ DWORD CAN_Init(HANDLE hHandle, WORD wBTR0BTR1, int nCANMsgType)
 //  closes the path to the CAN hardware.
 //  The last close on the hardware put the chip into passive state.
 DWORD CAN_Close(HANDLE hHandle)
-{ 
+{
+	dinfo *ptr;
+
+	for (ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle) {
+			close(ptr->fd);
+			ptr->fd = -1;
+		}
+	}
 	fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
 	return CAN_ERR_OK;
 }
@@ -99,7 +114,10 @@ DWORD CAN_Close(HANDLE hHandle)
 //  request the current (stored) status of the CAN hardware. After the read the
 //  stored status is reset.
 //  If the status is negative a system error is returned (e.g. -EBADF).
-DWORD CAN_Status(HANDLE hHandle){ }
+DWORD CAN_Status(HANDLE hHandle)
+{
+	return CAN_ERR_OK;
+}
 
 //****************************************************************************
 //  CAN_Write()
@@ -128,11 +146,13 @@ DWORD CAN_Write(HANDLE hHandle, TPCANMsg* pMsgBuff)
 //  nMicroSeconds  > 0 -> Timeout in microseconds
 //  nMicroSeconds == 0 -> polling
 //  nMicroSeconds  < 0 -> blocking, same as CAN_Write()
-DWORD LINUX_CAN_Write_Timeout(HANDLE hHandle, TPCANMsg* pMsgBuff, int nMicroSeconds){
-	
+DWORD LINUX_CAN_Write_Timeout(HANDLE hHandle, TPCANMsg* pMsgBuff, int nMicroSeconds)
+{
+	return CAN_ERR_OK;
 }
-DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
-	int i;
+
+DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
+{
 	dinfo *ptr;
 	double temp;
 
@@ -392,7 +412,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		}
 		break;
 	}
-	
+
 	return CAN_ERR_OK;
 
 }
@@ -402,7 +422,6 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 //  request blocks until either a new message arrives or a error occures.
 DWORD CAN_Read(HANDLE hHandle, TPCANMsg* pMsgBuff)
 {
-	int i;
 
 	fprintf(stderr, "FAKE::CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 
@@ -416,7 +435,6 @@ DWORD CAN_Read(HANDLE hHandle, TPCANMsg* pMsgBuff)
 //  or a error occures.
 DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 {
-	int i;
 #ifdef FAKE_DEBUG
 	fprintf(stderr, "FAKE::LINUX_CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 #endif
@@ -433,7 +451,6 @@ DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 //  nMicroSeconds  < 0 -> blocking, same as LINUX_CAN_Read()
 DWORD LINUX_CAN_Read_Timeout(HANDLE hHandle, TPCANRdMsg* pMsgBuff, int nMicroSeconds)
 {
-	int i;
 
 #ifdef FAKE_DEBUG
 	fprintf(stderr,
@@ -448,7 +465,9 @@ DWORD LINUX_CAN_Read_Timeout(HANDLE hHandle, TPCANRdMsg* pMsgBuff, int nMicroSec
 // Caution! Currently this operation influences all read paths
 //
 DWORD CAN_ResetFilter(HANDLE hHandle)
-{ }
+{
+	return CAN_ERR_OK;
+}
 
 //***************************************************************************
 // CAN_MsgFilter() - reduce received data in to FromID <= ID <= ToID
@@ -456,13 +475,23 @@ DWORD CAN_ResetFilter(HANDLE hHandle)
 // This function can be called multiple to add more ranges.
 // Caution! Currently this operation influences all read paths
 //
-DWORD CAN_MsgFilter(HANDLE hHandle, DWORD FromID, DWORD ToID, int nCANMsgType) { }
+DWORD CAN_MsgFilter(HANDLE hHandle, DWORD FromID, DWORD ToID, int nCANMsgType)
+{
+	return CAN_ERR_OK;
+}
 
 //***************************************************************************
 // LINUX_CAN_FileHandle() - return PCAN driver file handle for select(2)
 //
 int LINUX_CAN_FileHandle(HANDLE hHandle)
-{ }
+{
+	dinfo *ptr;
+
+	for (ptr = dlist; ptr->irq; ptr++) {
+		if (ptr->handle == hHandle) return ptr->fd;
+	}
+	return -1;
+}
 
 //****************************************************************************
 //  LINUX_CAN_Extended_Status()
@@ -472,13 +501,16 @@ int LINUX_CAN_FileHandle(HANDLE hHandle)
 //  of time between the messages is put into the CAN sender and the telegram is
 //  successfuly sent or an error is thrown.
 DWORD LINUX_CAN_Extended_Status(HANDLE hHandle, int *nPendingReads, int *nPendingWrites)
-{ }
+{
+	return CAN_ERR_OK;
+}
 
 //****************************************************************************
 //  CAN_VersionInfo()
 //  returns a text string with driver version info.
 //
-DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff){
+DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff)
+{
 	fprintf(stderr, "LINUX_CAN_VersionInfo(%p, %p)\n", hHandle, lpszTextBuff);
 	strcpy(lpszTextBuff, VERSION_STRING);
 	return CAN_ERR_OK;
@@ -489,7 +521,10 @@ DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff){
 //  returns the last stored error (errno of the shared library). The returend
 //  error is independend of any path.
 //
-int nGetLastError(void){ }
+int nGetLastError(void)
+{
+	return CAN_ERR_OK;
+}
 
 //****************************************************************************
 //  LINUX_CAN_Open() - another open, LINUX like
@@ -500,14 +535,25 @@ int nGetLastError(void){ }
 //
 HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 {
-	int i;
+	int i, fd;
 	HANDLE h = 0;
 #ifdef DEBUG
 	fprintf(stderr, "FAKE::LINUX_CAN_Open(%s, %x)\n", szDeviceName, nFlag);
 #endif
-	for (i = 0; dlist[i].irq; i++)
-		if (strcmp(basename(szDeviceName), dlist[i].dname) == 0)
-			h = dlist[i].handle;
+	for (i = 0; dlist[i].irq; i++) {
+		char *bn = strdup(szDeviceName);
+		if (strcmp(basename(bn), dlist[i].dname) == 0) {
+			fd = open(szDeviceName, O_RDONLY | O_NONBLOCK);
+			if (fd >=0) {
+				h = dlist[i].handle;
+				dlist[i].fd = fd;
+			} else {
+				h = NULL;
+			}
+			break;
+		}
+		free(bn);
+	}
 	return h;
 }
 
@@ -557,5 +603,6 @@ DWORD LINUX_CAN_Statistics(HANDLE hHandle, TPDIAG *diag)
 //
 WORD LINUX_CAN_BTR0BTR1(HANDLE hHandle, DWORD dwBitRate)
 {
+	return CAN_ERR_OK;
 }
 
