@@ -30,28 +30,32 @@ create table config_types (
 );
 
 -- parameters
-insert into config_types values (  1, "THUB_ENABLE");
-insert into config_types values (  2, "THUB_TEMP_ALARM");
-insert into config_types values ( 11, "TCPU_ENABLE");
-insert into config_types values ( 12, "TCPU_PLDREG02");
-insert into config_types values ( 13, "TCPU_TEMP_ALARM")
-insert into config_types values ( 21, "TDIG_ENABLE");
-insert into config_types values ( 21, "TDIG_THRESHOLD");
-insert into config_types values ( 22, "TDIG_TEMP_ALARM");
-insert into config_types values ( 31, "TDC_ENABLE");
-insert into config_types values ( 31, "TDC_CONFIG");
-insert into config_types values ( 32, "TDC_MASK");
-insert into config_types values ( 41, "SRDS_ENABLE")
-insert into config_types values ( 42, "SRDS_PLDREG9XBASE")
--- action items
-insert into config_types values (101, "THUB_WRITE");
-insert into config_types values (102, "THUB_RESET");
-insert into config_types values (111, "TCPU_WRITE");
-insert into config_types values (112, "TCPU_RESET");
+insert into config_types values (  1, "THUB_ENABLE"      );
+insert into config_types values (  2, "THUB_TEMP_ALARM"  );
+insert into config_types values ( 11, "SRDS_ENABLE"      );
+insert into config_types values ( 12, "SRDS_PLDREG9XBASE");
+insert into config_types values ( 21, "TCPU_ENABLE"      );
+insert into config_types values ( 22, "TCPU_TEMP_ALARM"  );
+insert into config_types values ( 23, "TCPU_PLDREG02"    );
+insert into config_types values ( 31, "TDIG_ENABLE"      );
+insert into config_types values ( 32, "TDIG_TEMP_ALARM"  );
+insert into config_types values ( 33, "TDIG_THRESHOLD"   );
+insert into config_types values ( 41, "TDC_ENABLE"       );
+insert into config_types values ( 42, "TDC_CONFIG"       );
+insert into config_types values ( 43, "TDC_MASK"         );
 
-insert into config_types values (121, "TDIG_WRITE");
-insert into config_types values (122, "TDIG_RESET");
-insert into config_types values (141, "SRDS_WRITE");
+-- action items
+insert into config_types values (101, "THUB_RESET");
+insert into config_types values (102, "THUB_WRITE");
+insert into config_types values (111, "SRDS_RESET");
+insert into config_types values (112, "SRDS_WRITE");
+insert into config_types values (121, "TCPU_RESET");
+insert into config_types values (122, "TCPU_WRITE");
+insert into config_types values (131, "TDIG_RESET");
+insert into config_types values (132, "TDIG_WRITE");
+insert into config_types values (141, "TDC_RESET");
+insert into config_types values (142, "TDC_WRITE");
+insert into config_types values (143, "TDC_CONFIG");
 
 select * from config_types;
 
@@ -59,30 +63,33 @@ drop table if exists configs;
 create table configs (
     id                  integer primary key autoincrement,
     config_set_id       integer,
+    config_set_order    integer,
     config_type_id      integer,
-    rule_order          integer,
     addr1               integer,
     addr2               integer,
     addr3               integer,
     addr4               integer,
     val                 integer
 );
----------- ----------------   id  set  typ ord   ad1  ad2  ad3  ad4  value
-insert into configs values (null,   1,  11,  1,   2, 255,   0,   0,      0);
-insert into configs values (null,   1,  21,  2,   2, 255, 255,   0,   1500);
-insert into configs values (null,   1,  31,  3,   2, 255, 255, 255,     13);
-insert into configs values (null,   1,  31,  4,   2, 255,   1,   1,     14);
-insert into configs values (null,   1,  31,  5,   2, 255,   5,   1,     14);
-insert into configs values (null,   1,  42,  6,   1, 255, 255,   0,      0);
 
----------------------------   id  set  typ ord   ad1  ad2  ad3  ad4  value
-insert into configs values (null,   2,  11,  1,   2, 255,   0,   0,    255);
-insert into configs values (null,   2,  21,  2,   2, 255, 255,   0,   1500);
-insert into configs values (null,   2,  31,  3,   2, 255, 255, 255,     13);
-insert into configs values (null,   2,  31,  4,   2, 255,   1,   1,     14);
-insert into configs values (null,   2,  31,  5,   2, 255,   5,   1,     14);
-insert into configs values (null,   2,  42,  6,   1, 255, 255,   0,     16);
-	
+---------- ----------------   id  set ord  typ  ad1  ad2  ad3  ad4  value
+insert into configs values (null,   1,  1,  12,   1, 255, 255,   0,      0);
+insert into configs values (null,   1,  2,  23,   2, 255,   0,   0,      0);
+insert into configs values (null,   1,  3,  33,   2, 255, 255,   0,   1500);
+insert into configs values (null,   1,  4,  42,   2, 255, 255, 255,     13);
+insert into configs values (null,   1,  5,  42,   2, 255,   1,   1,     14);
+insert into configs values (null,   1,  6,  42,   2, 255,   5,   1,     14);
+
+---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+insert into configs values (null,   2,  1,   1,   1, 255,   0,   0,      0);
+insert into configs values (null,   2,  2,  12,   1, 255, 255,   0,     16);
+insert into configs values (null,   2,  3,  23,   2, 255,   0,   0,     15);
+insert into configs values (null,   2,  4,  33,   2, 255, 255,   0,   1500);
+insert into configs values (null,   2,  5,  42,   2, 255, 255, 255,     13);
+insert into configs values (null,   2,  6,  42,   2, 255,   1,   1,     14);
+insert into configs values (null,   2,  7,  41,   2, 255,   5,   1,     14);
+insert into configs values (null,   2,  8, 131,   2, 255, 255,   0,      0);
+
 -- THUBs
 drop   table thubs;
 create table thubs (

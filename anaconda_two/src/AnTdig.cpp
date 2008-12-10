@@ -66,21 +66,43 @@ void AnTdig::sync(int level)
   }
 }
 
-void AnTdig::reset()
+/**
+ * Initialized TDIG
+ */
+void AnTdig::init()
 {
-
 	if (active()) {
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
 
-		// this may not implemented yet
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-	    agent()->write_read(msg, rmsg, 2);
+		// this might not be implemented yet
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+		agent()->write_read(msg, rmsg, 2);
+
+		m_tdc[0]->init();
+		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+	}
+	
+}
+/**
+ * Rest TDIG
+ */
+void AnTdig::reset()
+{
+
+	if (active()) {
+		// do nothing here
+		// TPCANMsg    msg;
+		// TPCANRdMsg  rmsg;
+		// 
+		// AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x90);
+		// agent()->write_read(msg, rmsg, 2);
 
 		m_tdc[0]->reset();
-//		for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 	}
 }
+
 void AnTdig::config()
 {
 	if (active()) {

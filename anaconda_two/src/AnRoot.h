@@ -59,7 +59,6 @@ public:
 
 	AnCanObject      *find(const AnAddress &lad);
 	QList<AnAddress>  expand(const AnAddress &lad);
-//	QList<AnAddress>  expand(AnAddress lad) { AnAddress &ad = lad; return expand(ad); }
 
 	int nAgents()  const { return m_devid_list.count(); }
 	int nDevices() const { return m_devid_list.count(); }
@@ -67,14 +66,6 @@ public:
 	void stop() const;
 	void terminate() const;
 	void wait() const;
-
-// configuration types
-	enum {
-		CT_TCPU_PLDREG02  = 11,
-		CT_TDIG_THRESHOLD = 21,
-		CT_TDC_CONFIG     = 31,
-		CT_TDC_MASK       = 32
-	};
 
 	void startAutoSync();
 	void stopAutoSync();
@@ -97,24 +88,24 @@ private:
 		QString   description;
 	};
 
-	AnCanNet                *m_cannet[2];
-	QList<AnBoard*>          m_list[2];
+	AnCanNet               *m_cannet[2];
+	QList<AnBoard*>         m_list[2];
 	QMap<int, AnThub*>      m_devid_thub_map;
 
-	QList<int>               m_devid_list;
-	QMap<int, AnAgent*>      m_agents;
-	QMap<int, AnAgent*>      m_socket_agent_map;
-	QMap<int, AnAgent*>      m_devid_agent_map;
+	QList<int>              m_devid_list;
+	QMap<int, AnAgent*>     m_agents;
+	QMap<int, AnAgent*>     m_socket_agent_map;
+	QMap<int, AnAgent*>     m_devid_agent_map;
 
-	QMap<int, AnTdcConfig*>  m_tcnfs;
-	QSqlDatabase             m_db;
-	int                      m_mode;
-	QList<mode>              m_mode_list;
+	QMap<int, AnTdcConfig*> m_tcnfs;
+	QSqlDatabase            m_db;
+	int                     m_mode;
+	QList<mode>             m_mode_list;
 
 	// AutoSync timer and coursor
-	QTimer                  *m_timer;
-	int                      m_cur1;
-	int                      m_cur2;
+	QTimer                 *m_timer;
+	int                     m_cur1;
+	int                     m_cur2;
 
 	QMap<int, QSocketNotifier*>  m_watch;
 

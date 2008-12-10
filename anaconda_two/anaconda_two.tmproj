@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>TODO</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -18,9 +16,7 @@
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2008-12-04T15:02:19Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2008-12-10T03:50:38Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -35,7 +31,7 @@
 					<key>filename</key>
 					<string>app/main.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-01T07:06:32Z</date>
+					<date>2008-12-09T17:55:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -59,7 +55,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-29T17:57:15Z</date>
+					<date>2008-12-09T16:39:13Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -101,43 +97,43 @@
 					<key>filename</key>
 					<string>app/KLevel3View.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-28T04:23:50Z</date>
+					<date>2008-12-06T13:25:58Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTcpuView.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-29T19:04:17Z</date>
+					<date>2008-12-06T13:26:06Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTcpuView.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T08:22:30Z</date>
+					<date>2008-12-09T22:36:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTdigView.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-02T12:21:11Z</date>
+					<date>2008-12-09T22:36:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTdigView.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-26T00:25:18Z</date>
+					<date>2008-12-10T03:50:38Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTdigModel.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-26T09:47:10Z</date>
+					<date>2008-12-09T21:47:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTdigModel.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-28T04:20:03Z</date>
+					<date>2008-12-09T21:46:58Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -155,13 +151,13 @@
 					<key>filename</key>
 					<string>app/KSerdesView.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-28T04:04:59Z</date>
+					<date>2008-12-06T16:06:17Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KSerdesView.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-28T04:04:58Z</date>
+					<date>2008-12-09T19:42:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -179,13 +175,13 @@
 					<key>filename</key>
 					<string>app/KProgressIndicator.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-29T18:46:07Z</date>
+					<date>2008-12-09T17:51:47Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KProgressIndicator.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-29T18:46:02Z</date>
+					<date>2008-12-09T17:51:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -218,13 +214,15 @@
 					<key>filename</key>
 					<string>db/configurations.sql</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T09:46:52Z</date>
+					<date>2008-12-10T03:50:39Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/tdc_configurations.sql</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T09:36:10Z</date>
+					<date>2008-12-09T21:26:31Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -239,6 +237,8 @@
 					<date>2008-12-04T15:02:19Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -255,13 +255,13 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-28T18:47:46Z</date>
+					<date>2008-12-09T17:51:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:34:16Z</date>
+					<date>2008-12-09T17:51:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -273,7 +273,7 @@
 					<key>filename</key>
 					<string>src/AnBoard.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:37Z</date>
+					<date>2008-12-09T17:55:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -291,7 +291,7 @@
 					<key>filename</key>
 					<string>src/AnCanNet.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-24T00:45:57Z</date>
+					<date>2008-12-09T17:33:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -339,13 +339,13 @@
 					<key>filename</key>
 					<string>src/AnRoot.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T13:17:13Z</date>
+					<date>2008-12-09T17:51:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-01T07:06:32Z</date>
+					<date>2008-12-10T03:23:15Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -363,13 +363,13 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:32Z</date>
+					<date>2008-12-10T03:23:17Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:42:58Z</date>
+					<date>2008-12-10T03:23:17Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -381,7 +381,7 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:05Z</date>
+					<date>2008-12-09T16:57:46Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -393,31 +393,31 @@
 					<key>filename</key>
 					<string>src/AnTdc.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:07Z</date>
+					<date>2008-12-06T16:10:38Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:42:51Z</date>
+					<date>2008-12-06T14:39:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:42:54Z</date>
+					<date>2008-12-09T16:40:57Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnSerdes.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:22Z</date>
+					<date>2008-12-10T03:23:20Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnSerdes.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:43:24Z</date>
+					<date>2008-12-10T03:23:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -432,6 +432,8 @@
 					<date>2008-11-28T09:03:16Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -442,7 +444,7 @@
 					<key>filename</key>
 					<string>fakepcan/libpcan.c</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T09:41:41Z</date>
+					<date>2008-12-09T17:55:20Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -457,13 +459,13 @@
 					<key>filename</key>
 					<string>inc/libpcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:34:16Z</date>
+					<date>2008-12-10T02:51:51Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>inc/pcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-30T11:22:33Z</date>
+					<date>2008-12-10T02:51:54Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -860,29 +862,10 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>268</integer>
 	<key>metaData</key>
-	<dict>
-		<key>TODO</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>16</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>53</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>TODO</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{331, 23}, {730, 755}}</string>
+	<string>{{331, 22}, {738, 756}}</string>
 </dict>
 </plist>

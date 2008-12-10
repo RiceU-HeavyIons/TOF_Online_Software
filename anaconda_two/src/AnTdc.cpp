@@ -49,7 +49,7 @@ void AnTdc::sync(int level)
 	}
 }
 
-void AnTdc::reset() {
+void AnTdc::init() {
 
 	if (active()) {
 		quint8  data0 = 0x04 | hAddress().at(3);
@@ -64,6 +64,19 @@ void AnTdc::reset() {
 	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xf4, 0xff, 0xff, 0xff, 0x1f);
 	    agent()->write_read(msg, rmsg, 2);
 	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
+	    agent()->write_read(msg, rmsg, 2);
+	}
+}
+
+void AnTdc::reset() {
+
+	if (active()) {
+		quint8  data0 = 0x90 | hAddress().at(3);
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, data0);
 	    agent()->write_read(msg, rmsg, 2);
 	}
 }

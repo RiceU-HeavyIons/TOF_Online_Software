@@ -49,6 +49,8 @@ public:
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
+	
+	virtual void init();
 
 private:
 	AnTdc    *m_tdc[4];

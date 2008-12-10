@@ -10,5 +10,6 @@
  <file>icons/green.png</file>
  <file>icons/blue.png</file>
  <file>icons/black.png</file>
+ <file>icons/white.png</file>
 </qresource>
 </RCC>

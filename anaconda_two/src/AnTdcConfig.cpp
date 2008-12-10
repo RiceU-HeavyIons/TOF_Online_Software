@@ -28,7 +28,6 @@ AnTdcConfig::~AnTdcConfig()
 AnTdcConfig& AnTdcConfig::operator=(const AnTdcConfig &rhs) {
 
 //	setParent(rhs.parent());
-	qDebug() << "a";
 	m_id = rhs.m_id;
 	m_length = rhs.m_length;
 	m_check_sum = rhs.m_check_sum;

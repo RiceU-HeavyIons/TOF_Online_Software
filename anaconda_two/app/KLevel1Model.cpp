@@ -30,6 +30,7 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon[1] = QIcon(":icons/blue.png");
 	m_statusIcon[2] = QIcon(":icons/green.png");
 	m_statusIcon[3] = QIcon(":icons/red.png");
+	m_statusIcon[4] = QIcon(":icons/white.png");	
 
 	connect(m_root, SIGNAL(updated(AnBoard*)), this, SLOT(updated(AnBoard*)));
 }

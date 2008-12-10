@@ -52,7 +52,7 @@ private:
 	QStringList m_selectionList;
 	QList<AnBoard*> m_list;
 
-	QIcon m_statusIcon[4];
+	QIcon m_statusIcon[5];
 };
 
 #endif /* KLevel1Model_H_ */

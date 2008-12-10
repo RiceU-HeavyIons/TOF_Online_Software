@@ -233,85 +233,123 @@ void AnRoot::setMode(int i)
 	qDebug() << "new mode: " << m_mode;
 
 	QSqlQuery qry;
-	qry.prepare("SELECT id, addr1, addr2, addr3, addr4, val FROM configs"
-	            " WHERE config_set_id=:cs_id AND config_type_id=:ct_id "
-	            " ORDER BY rule_order");
+	qry.prepare("SELECT c.id, ct.name, c.addr1, c.addr2, c.addr3, c.addr4, c.val"
+	            " FROM configs c INNER JOIN config_types ct on c.config_type_id = ct.id"
+	            " WHERE c.config_set_id=:cs_id "
+	            " ORDER BY c.config_set_order");
 	qry.bindValue(":cs_id", m_mode);
+	qry.exec();
+	while (qry.next()) {
+		int id        = qry.value(0).toInt();
+		QString ct    = qry.value(1).toString();
+		int addr1     = qry.value(2).toInt();
+		int addr2     = qry.value(3).toInt();
+		int addr3     = qry.value(4).toInt();
+		int addr4     = qry.value(5).toInt();
+		int val       = qry.value(6).toInt();
+		AnAddress addr(addr1, addr2, addr3, addr4);
 
-	// TCPU_PLD02
-	qry.bindValue(":ct_id", CT_TCPU_PLDREG02);
-	qry.exec();
-	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int addr1     = qry.value(1).toInt();
-		int addr2     = qry.value(2).toInt();
-		int addr3     = qry.value(3).toInt();
-		int addr4     = qry.value(4).toInt();
-		int val       = qry.value(5).toInt();
-		AnAddress addr(addr1, addr2, addr3, addr4);
-		qDebug() << id << addr.toString() << val;
-		foreach(AnAddress ad, expand(addr)) {
-			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
-			if (tcpu) tcpu->setPldReg02(val);
-			else qDebug() << "invalid address: " << ad.toString();
+		// THUB
+		if (ct == "THUB_ENABLE") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnThub *thub = dynamic_cast<AnThub*>( find(ad) );
+				if (thub) thub->setActive(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
 		}
-	}
 
-	// TDIG_THRESHOLD
-	qry.bindValue(":ct_id", CT_TDIG_THRESHOLD);
-	qry.exec();
-	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int addr1     = qry.value(1).toInt();
-		int addr2     = qry.value(2).toInt();
-		int addr3     = qry.value(3).toInt();
-		int addr4     = qry.value(4).toInt();
-		int val       = qry.value(5).toInt();
-		AnAddress addr(addr1, addr2, addr3, addr4);
-		qDebug() << id << addr.toString() << val;
-		foreach(AnAddress ad, expand(addr)) {
-			AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
-			if (tdig) tdig->setThreshold(val);
-			else qDebug() << "invalid address: " << ad.toString();
+		if (ct == "THUB_RESET") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnThub *thub = dynamic_cast<AnThub*>( find(ad) );
+				if (thub) thub->reset();
+				else qDebug() << "invalid address: " << ad.toString();
+			}
 		}
-	}
 
-	// TDC_CONFIG
-	qry.bindValue(":ct_id", CT_TDC_CONFIG);
-	qry.exec();
-	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int addr1     = qry.value(1).toInt();
-		int addr2     = qry.value(2).toInt();
-		int addr3     = qry.value(3).toInt();
-		int addr4     = qry.value(4).toInt();
-		int val       = qry.value(5).toInt();
-		AnAddress addr(addr1, addr2, addr3, addr4);
-		qDebug() << id << addr.toString() << val;
-		foreach(AnAddress ad, expand(addr)) {
-			AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
-			if (tdc) tdc->setConfigId(val);
-			else qDebug() << "invalid address: " << ad.toString();
+		// Serdes
+		if (ct == "SRDS_ENABLE") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
+				if (srds) srds->setActive(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
 		}
-	}
-	
-	// SRDS_REG9XBASE
-	qry.bindValue(":ct_id", 42);
-	qry.exec();
-	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int addr1     = qry.value(1).toInt();
-		int addr2     = qry.value(2).toInt();
-		int addr3     = qry.value(3).toInt();
-		int addr4     = qry.value(4).toInt();
-		int val       = qry.value(5).toInt();
-		AnAddress addr(addr1, addr2, addr3, addr4);
-		qDebug() << id << addr.toString() << val;
-		foreach(AnAddress ad, expand(addr)) {
-			AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
-			if (srds) srds->setPld9xBase(val);
-			else qDebug() << "invalid address: " << ad.toString();
+		if (ct == "SRDS_PLDREG9XBASE") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
+				if (srds) srds->setPld9xBase(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
 		}
+		if (ct == "SRDS_RESET") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
+				if (srds) srds->reset();
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+
+		// TCPU
+		if (ct == "TCPU_ENABLE") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
+				if (tcpu) tcpu->setActive(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+		if (ct == "TCPU_PLDREG02") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
+				if (tcpu) tcpu->setPldReg02(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+		if (ct == "TCPU_RESET") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
+				if (tcpu) tcpu->reset();
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+
+		// TDIG
+		if (ct == "TDIG_ENABLE") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
+				if (tdig) tdig->setActive(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+		if (ct == "TDIG_THRESHOLD") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
+				if (tdig) tdig->setThreshold(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+		if (ct == "TDIG_RESET") {
+			foreach(AnAddress ad, expand(addr)) {
+				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
+				if (tdig) tdig->reset();
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+
+		// TDC
+		if (ct == "TDC_ENABLE"){
+			foreach(AnAddress ad, expand(addr)) {
+				AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
+				if (tdc) tdc->setActive(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}	
+		if (ct == "TDC_CONFIG"){
+			foreach(AnAddress ad, expand(addr)) {
+				AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
+				if (tdc) tdc->setConfigId(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}	
 	}
 }
 
