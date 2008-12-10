@@ -61,8 +61,8 @@ Qt::ItemFlags KTdigModel::flags(const QModelIndex &index) const
 
 void KTdigModel::setTcpu(AnTcpu *tcpu)
 {
-  m_tcpu = tcpu;
-  reset();
+	m_tcpu = tcpu;
+	reset();
 }
 
 QModelIndex KTdigModel::index(int row, int column, const QModelIndex &parent) const

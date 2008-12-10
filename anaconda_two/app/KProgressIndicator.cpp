@@ -70,7 +70,7 @@ void KProgressIndicator::setProgress(int i, int j)
 {
 	QMutexLocker locker(&m_mutex);
 
-	m_bar[i].setValue(m_val[i] = j);
+	m_bar[i+1].setValue(m_val[i+1] = j);
 	m_val[0] = 0;
 	for(int x = 1; x <= m_size; ++x) m_val[0] += m_val[x];
 	m_bar[0].setValue(m_val[0]);

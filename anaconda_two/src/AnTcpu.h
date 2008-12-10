@@ -60,7 +60,7 @@ public:
 
 private:
 	AnTdig   *m_tdig[8];
-	quint8   m_pld02, m_pld0e;
+	quint8   m_pld02, m_pld03, m_pld0e;
 	quint64  m_chipid;
 
 	quint8   m_tray_id;

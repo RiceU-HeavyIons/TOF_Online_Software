@@ -54,6 +54,8 @@ public:
 //  Own functions
 	void setMode(int i);
 	QStringList modeList() const;
+	
+	AnThub *thubByDevId(int i) const { return m_devid_thub_map[i]; }
 
 	AnCanObject      *find(const AnAddress &lad);
 	QList<AnAddress>  expand(const AnAddress &lad);
@@ -86,6 +88,7 @@ signals:
 public slots:
 	void autosync();
 	void watcher(int sock);
+	void agentFinished(int id);
 
 private:
 	struct mode {
@@ -96,6 +99,7 @@ private:
 
 	AnCanNet                *m_cannet[2];
 	QList<AnBoard*>          m_list[2];
+	QMap<int, AnThub*>      m_devid_thub_map;
 
 	QList<int>               m_devid_list;
 	QMap<int, AnAgent*>      m_agents;

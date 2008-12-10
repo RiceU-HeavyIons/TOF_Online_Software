@@ -216,7 +216,7 @@ QMap<int, AnAgent*> AnAgent::open(QList<int> &dev_id_list) {
 	foreach(int dev_id, sock_map.keys()) {
 		if (sock_map[dev_id] == NULL)
 			qFatal("Device %d is not found.", dev_id);
-		sock_map[dev_id]->setId(dev_id_list.indexOf(dev_id) + 1);
+		sock_map[dev_id]->setId(dev_id_list.indexOf(dev_id));
 	}
 	return sock_map;
 }
@@ -324,6 +324,7 @@ void AnAgent::run()
 	}
 	// make sure send out finish
 	emit progress(m_id, 100);
+	emit finished(m_id);
 }
 
 //-----------------------------------------------------------------------------

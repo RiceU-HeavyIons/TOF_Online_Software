@@ -11,7 +11,8 @@
 AnSerdes::AnSerdes(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
  : AnBoard(laddr, haddr, parent)
 {
-  setObjectName(QString("SERDES ") + lAddress().toString());
+	setObjectName(QString("SERDES ") + lAddress().toString());
+	for(int i = 1; i <= NPORT; ++i) setTcpu(i, NULL);
 }
 
 AnSerdes::~AnSerdes()
@@ -37,8 +38,11 @@ QString AnSerdes::dump() const
 	sl << QString("  Synchronized     : ") + synced().toString();
 	sl << QString("  Firmware ID      : ") + firmwareString();
 	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  Status           : ") + QString::number(status());
+	sl << QString("  PLD REG9x Set    : 0x") + QString::number(pld9xSet(), 16);
+		sl << QString("  Status           : ") + QString::number(status());
 	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	for(int i = 1; i <= NPORT; ++i)
+		sl << QString().sprintf("  Port[%i]          : Tcpu(%p)", i, tcpu(i));
 
 	return sl.join("\n");
 }
@@ -114,11 +118,19 @@ int AnSerdes::status() const
 {
 // TO-DO implement real logic
 	int err = 0;
-	if (ecsr() != 0x1f) err++;
+	if (ecsr() != pld9xSet()) err++;
 
 	if (active()) {
 		if (err) return STATUS_ERROR;
 		return STATUS_ON;
 	} else
 		return STATUS_UNKNOWN;
+}
+
+quint8 AnSerdes::pld9xSet() const {
+	quint8 bts = m_pld9xBase;
+	for(int i = 0; i < 4; ++i)
+		if(m_tcpu[i] && m_tcpu[i]->active()) bts |= (1 << i);
+
+	return bts;
 }

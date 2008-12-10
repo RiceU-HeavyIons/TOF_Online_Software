@@ -2,9 +2,32 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-03
-Description: TODO file for Anaconda 2 development. I think this is in YAML format.
+Updated: 2008-12-09
+Description: TODO file for Anaconda 2 development.
 Entry:
+  2008-12-09:
+  - greeting and error capture in write/read
+  - output in console window
+  - single action / double action for setMode
+  - TCPU PLD Reg 03
+  - Msg/RdMsg wrapper
+  - Msg queue
+  - Msg queue handler
+
+  2008-12-05:
+  - reduce TDC status get
+  - clear hw hierarchy -> NE/SE, NW/SW
+  - pc syntax
+  - greeting message -> status
+  - color legend
+  - communication error
+  - non expert mode
+  - connected vs non existence
+  - error highlight
+  - connected / non-conncected
+  - power unit address?
+  - simple normal mode
+  - communication error
 
   2008-12-03:
   - (X) toggle autosync
@@ -49,7 +72,7 @@ Entry:
   - (X) console: read / write
   - (X) implement THUB dump
   - (X) implement Serdes dump
-  - implement TDC dump
+  - (X) implement TDC dump
   - console extension: loading config set
   - window menu
   - file menu for Linux
@@ -105,5 +128,5 @@ Entry:
   - Robust PCAN error handling
   - Simplify message send / receive handling
   - TDC data handling with QSocketNotifier
-  - Greeting message handling with QSocketNotifier
+  - (X) Greeting message handling with QSocketNotifier
   - Icons for Rest and Configuration

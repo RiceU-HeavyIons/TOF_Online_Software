@@ -70,5 +70,6 @@ private:
 
 signals:
 	void progress(int id, int percent);
+	void finished(int id);
 };
 #endif

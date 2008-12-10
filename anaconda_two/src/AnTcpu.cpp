@@ -70,6 +70,10 @@ void AnTcpu::sync(int level)
     agent()->write_read(msg, rmsg, 3);
 	m_pld02 = rmsg.Msg.DATA[2];
 
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
+    agent()->write_read(msg, rmsg, 3);
+	m_pld03 = rmsg.Msg.DATA[2];
+
     if (--level >= 0)
       for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
 

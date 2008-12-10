@@ -19,8 +19,8 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
   m_tray->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
   m_tray->setOpenExternalLinks(true);
 
-  grid->addWidget(new QLabel("Logical Address:"), ++row, 0);
-  grid->addWidget(m_laddr = new QLabel(""), row, 1);
+  // grid->addWidget(new QLabel("Logical Address:"), ++row, 0);
+  // grid->addWidget(m_laddr = new QLabel(""), row, 1);
 
   grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
   grid->addWidget(m_haddr = new QLabel(""), row, 1);
@@ -89,7 +89,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if(tcpu) {
-//    tcpu->sync(2);
+    tcpu->sync(1);
     m_tcpu = tcpu;
     setTitle(tcpu->name());
     if (tcpu->traySn() != "") {
@@ -102,7 +102,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
       m_tray->setStatusTip("");
     }
 //    m_tray->setEnabled(tcpu->traySn() != "");
-    m_laddr->setText(tcpu->lAddress().toString());
+    // m_laddr->setText(tcpu->lAddress().toString());
     m_haddr->setText(tcpu->hAddress().toString());
     m_firm->setText(tcpu->firmwareString());
 	m_chip->setText(tcpu->chipIdString());

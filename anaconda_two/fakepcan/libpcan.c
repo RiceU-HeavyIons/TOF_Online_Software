@@ -105,17 +105,19 @@ DWORD CAN_Close(HANDLE hHandle)
 {
 	dinfo *ptr;
 	int   nopen = 0;
-
+#ifdef DEBUG
 	fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
-
+#endif
 	for (ptr = dlist; ptr->irq; ptr++) {
 		if (ptr->handle == hHandle) {
 			char sname[256];
 			close(ptr->sock);
 			ptr->sock = -1;
 			sprintf(sname, "dev/%s.sock", ptr->dname);
-			puts(sname);
 			unlink(sname);
+#ifdef DEBUG
+			puts(sname);
+#endif
 		}
 		if (ptr->sock >=0 ) nopen++;
 	}
@@ -260,7 +262,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
 			pMsgBuff->LEN = 3;
-			pMsgBuff->DATA[2] = 0xff;
+			pMsgBuff->DATA[2] = 0x0f;
 			break;
 
 		case 0xb0:
@@ -640,7 +642,7 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 			strcpy(addr.sun_path, sname);
 			sock = socket(PF_UNIX, SOCK_DGRAM, 0);
 
-			er = bind(sock, &addr, sizeof(addr.sun_family) + strlen(sname));
+			er = bind(sock, &addr, sizeof(addr.sun_family) + strlen(sname) + 1);
 			if (er >=0) {
 				h = dlist[i].handle;
 				dlist[i].sock = sock;

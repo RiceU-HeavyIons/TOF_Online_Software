@@ -10,7 +10,7 @@
 
 #include "AnAgent.h"
 #include "AnBoard.h"
-#include "AnTdc.h"
+#include "AnTcpu.h"
 
 class AnSerdes: public AnBoard {
 public:
@@ -37,6 +37,23 @@ public:
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
+	
+	
+//  own functions
+	AnTcpu *tcpu(int i) const { return m_tcpu[i-1]; }
+	AnTcpu *setTcpu(int i, AnTcpu *tcpu) { return (m_tcpu[i-1] = tcpu); }
+	
+	quint8 pld9xSet() const;
+
+	quint8 pld9xBase() const { return m_pld9xBase; }
+	quint8 setPld9xBase(quint8 s) { return (m_pld9xBase = s); }
+
+
+private:
+	enum { NPORT = 4 };
+	AnTcpu *m_tcpu[NPORT];
+	quint8  m_pld9xBase;
+
 };
 
 #endif /* AnSerdes_H_ */

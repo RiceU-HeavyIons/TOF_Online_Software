@@ -52,8 +52,6 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	QLabel *label = new QLabel(tr("Mode:"));
 	//  label->setAlignment(Qt::AlignLeft);
 	m_combo = new QComboBox(this);
-	QStringList str_list;
-	str_list << "Stanby" << "minBias" << "ppFullEnergy" << "Test";
 	m_combo->addItems(m_root->modeList());
 	QObject::connect(m_combo, SIGNAL(activated(int)), this, SLOT(setMode(int)));
 
@@ -205,8 +203,8 @@ void KMainWindow::createSelector()
 	policy.setHorizontalStretch(1);
 	policy.setVerticalPolicy(QSizePolicy::Fixed);
 	m_selector->setSizePolicy(policy);
-	m_selector->setMaximumHeight(
-		1.2*slist.count()*QFontMetrics(QApplication::font()).height());
+	// m_selector->setMaximumHeight(
+	// 	1.2*slist.count()*QFontMetrics(QApplication::font()).height());
 
 }
 
@@ -262,7 +260,6 @@ void KMainWindow::toggleAutoSync()
 void KMainWindow::setMode(int i) {
 
 	m_root->setMode(i);
-	doConfigure();
 }
 
 /**

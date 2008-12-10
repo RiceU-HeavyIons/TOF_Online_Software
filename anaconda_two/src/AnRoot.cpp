@@ -34,6 +34,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		bool active = qry.value(1).toBool();
 		if (active) { m_devid_list << id; }
 	}
+	// open devices and create gents 
 	m_agents = AnAgent::open(m_devid_list);
 
 	// create THUB objects
@@ -48,27 +49,37 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 //		if(!active) continue;
 		th->setActive(active);
 		m_list[0] << th;
+		m_devid_thub_map[device_id] = th;
 	}
 
 	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, active, tray_id, tray_sn FROM tcpus");
+	qry.exec("SELECT id, device_id, canbus_id, active, tray_sn, serdes FROM tcpus");
 	while (qry.next()) {
 		int id          = qry.value(0).toInt();
 		int device_id   = qry.value(1).toInt();
 		int canbus_id   = qry.value(2).toInt();
 		bool active     = qry.value(3).toBool();
-		int tray_id     = qry.value(4).toInt();
-		QString tray_sn = qry.value(5).toString();
+//		int tray_id     = qry.value(4).toInt();
+		QString tray_sn = qry.value(4).toString();
+		QString serdes  = qry.value(5).toString();
 
 //		if(!active) continue;
 		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 									AnAddress(device_id, canbus_id, 0, 0), this);
 		tc->setActive(active);
-		tc->setTrayId(tray_id);
+//		tc->setTrayId(tray_id);
 		tc->setTraySn(tray_sn);
 		m_list[1] << tc;
+		
+		if (active) {
+			int nsrds = serdes[0].toAscii() - 'A' + 1;
+			int port  = serdes[1].toAscii() - '0' + 1;
+			if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
+				qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
+			}
+			thubByDevId(device_id)->serdes(nsrds)->setTcpu(port, tc);
+		}
 	}
-
 	readModeList();
 	readTdcConfig();
 
@@ -84,6 +95,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		m_watch[sock] = new QSocketNotifier(sock, QSocketNotifier::Read, this);
 		connect(m_watch[sock], SIGNAL(activated(int)), this, SLOT(watcher(int)));
 		m_watch[sock]->setEnabled(true);
+
+		connect(ag, SIGNAL(finished(int)), this, SLOT(agentFinished(int)));
 	}
 }
 
@@ -278,6 +291,25 @@ void AnRoot::setMode(int i)
 		foreach(AnAddress ad, expand(addr)) {
 			AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
 			if (tdc) tdc->setConfigId(val);
+			else qDebug() << "invalid address: " << ad.toString();
+		}
+	}
+	
+	// SRDS_REG9XBASE
+	qry.bindValue(":ct_id", 42);
+	qry.exec();
+	while (qry.next()) {
+		int id        = qry.value(0).toInt();
+		int addr1     = qry.value(1).toInt();
+		int addr2     = qry.value(2).toInt();
+		int addr3     = qry.value(3).toInt();
+		int addr4     = qry.value(4).toInt();
+		int val       = qry.value(5).toInt();
+		AnAddress addr(addr1, addr2, addr3, addr4);
+		qDebug() << id << addr.toString() << val;
+		foreach(AnAddress ad, expand(addr)) {
+			AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
+			if (srds) srds->setPld9xBase(val);
 			else qDebug() << "invalid address: " << ad.toString();
 		}
 	}
@@ -489,4 +521,9 @@ void AnRoot::watcher(int sock)
 		// enable watch again
 		m_watch[sock]->setEnabled(true);
 	}
+}
+
+void AnRoot::agentFinished(int id)
+{
+	m_watch[agentById(id)->socket()]->setEnabled(true);
 }
