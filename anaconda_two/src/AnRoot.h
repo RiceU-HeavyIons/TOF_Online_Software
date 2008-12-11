@@ -37,17 +37,21 @@ public:
 	virtual void sync(int level = 0);
 	virtual void reset();
 	virtual void config();
+	virtual void write();
+
  	virtual QString dump() const;
+	virtual AnCanObject* at(int i) { return (i > 0) ? &m_lnet[i] : (AnCanObject*)this; }
+	virtual AnCanObject* hat(int i) { return &m_hnet[i]; }
 
 	enum {
-		TASK_SYNC   = 1,
-		TASK_RESET  = 2,
-		TASK_CONFIG = 3
+		TASK_SYNC   = 0x01,
+		TASK_RESET  = 0x02,
+		TASK_CONFIG = 0x04,
+		TASK_WRITE  = 0x08
 	};
 
-	inline QList<AnBoard*> list() const { return m_list[0] + m_list[1]; }
-	inline int count() const { return m_list[0].count() + m_list[1].count(); }
-	virtual AnCanObject* at(int i) { return (i > 0) ? m_cannet[i-1] : (AnCanObject*)this; }
+	QList<AnBoard*> list() { return (m_lnet[1].list() + m_lnet[2].list()); }
+	int count() { return (m_lnet[1].count() + m_lnet[2].count()); }
 
 	AnAgent* agent(int i) const { return m_agents[i]; }
 	AnAgent* agentById(int i) const { return m_agents[ m_devid_list[i] ]; }
@@ -60,6 +64,7 @@ public:
 
 	AnCanObject      *find(const AnAddress &lad);
 	QList<AnAddress>  expand(const AnAddress &lad);
+	AnCanObject      *hfind(const AnAddress &had);
 
 	int nAgents()  const { return m_devid_list.count(); }
 	int nDevices() const { return m_devid_list.count(); }
@@ -91,9 +96,10 @@ private:
 		QString   description;
 	};
 
-	AnCanNet               *m_cannet[2];
-	QList<AnBoard*>         m_list[2];
 	QMap<int, AnThub*>      m_devid_thub_map;
+
+	QMap<int, AnCanNet>     m_hnet;
+	QMap<int, AnCanNet>     m_lnet;
 
 	QList<int>              m_devid_list;
 	QMap<int, AnAgent*>     m_agents;

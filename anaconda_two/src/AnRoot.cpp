@@ -17,10 +17,9 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	this->setActive(true);
 
 	// setup AnCanNet objects for THUB/TCPU tree root
-	for (int i = 0; i < 2; ++i) {
-		m_cannet[i] = new AnCanNet(AnAddress(i+1, 0, 0, 0), AnAddress(0, 0, 0, 0));
-		m_cannet[i]->setList(&m_list[i]);
-		m_cannet[i]->setActive(true);
+	for (int i = 1; i <= 2; ++i) {
+		m_lnet[i] = AnCanNet(AnAddress(i, 0, 0, 0), AnAddress());
+		m_lnet[i].setActive(true);
 	}
 
 	m_db = QSqlDatabase::addDatabase("QSQLITE");
@@ -33,6 +32,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		int id      = qry.value(0).toInt();
 		bool active = qry.value(1).toBool();
 		if (active) { m_devid_list << id; }
+		m_hnet[id] = AnCanNet(AnAddress(), AnAddress(id, 0, 0, 0));
+		m_hnet[id].setActive(active);
 	}
 	// open devices and create gents 
 	m_agents = AnAgent::open(m_devid_list);
@@ -48,7 +49,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 										AnAddress(device_id, canbus_id, 0, 0), this);
 //		if(!active) continue;
 		th->setActive(active);
-		m_list[0] << th;
+		m_lnet[1][id] = th;
+		m_hnet[device_id][canbus_id] = th;
 		m_devid_thub_map[device_id] = th;
 	}
 
@@ -69,8 +71,9 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		tc->setActive(active);
 //		tc->setTrayId(tray_id);
 		tc->setTraySn(tray_sn);
-		m_list[1] << tc;
-		
+		m_lnet[2][id] = tc;
+		m_hnet[device_id][canbus_id] = tc;
+
 		if (active) {
 			int nsrds = serdes[0].toAscii() - 'A' + 1;
 			int port  = serdes[1].toAscii() - '0' + 1;
@@ -82,6 +85,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	}
 	readModeList();
 	readTdcConfig();
+
+	qDebug() << count() << m_lnet[1].count() << m_lnet[2].count();
 
 	setMode(0);
 
@@ -106,8 +111,6 @@ AnRoot::~AnRoot()
 {
 	terminate();
 	m_db.close();
-	delete   m_cannet[1];
-	delete   m_cannet[0];
 	foreach(AnAgent *ag, m_agents) delete ag;
 }
 
@@ -184,6 +187,26 @@ void AnRoot::config()
 	foreach(AnAgent *ag, m_agents) {
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_CONFIG, blist[m_devid_list.indexOf(ag->devid())]);
+		ag->start();
+	}
+
+//	for(int i = 0; i < n; ++i) m_agent[i].wait();
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::write()
+{
+	int n = nAgents();
+	QList<AnBoard*> blist[n];
+
+	foreach(AnBoard *brd, list()) {
+		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
+	}
+
+	disableWatch();
+	foreach(AnAgent *ag, m_agents) {
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_WRITE, blist[m_devid_list.indexOf(ag->devid())]);
 		ag->start();
 	}
 
@@ -426,7 +449,16 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 	return lst2;
 }
 
+AnCanObject *AnRoot::hfind(const AnAddress &had)
+{
+	return dynamic_cast<AnCanObject*>
+				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
+}
+
+
+//==============================================================================
 // private functions
+
 void AnRoot::readModeList()
 {
 	m_mode_list.clear();
@@ -476,8 +508,8 @@ void AnRoot::readTdcConfig()
  */
 void AnRoot::initAutoSync() {
 	m_timer = new QTimer(this);
-	m_cur1  = 0;
-	m_cur2  = 0;
+	m_cur1  = 1;
+	m_cur2  = 1;
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
 	m_timer->setInterval(2000);
 //	m_timer->start();
@@ -510,17 +542,17 @@ void AnRoot::autosync()
 
 	if (!isRunning()) {
 		qDebug() << "autosync" << m_cur1 << m_cur2;
-		AnBoard *brd = m_list[m_cur1][m_cur2];
+		AnBoard *brd = m_lnet[m_cur1][m_cur2];
 		disableWatch();
 		brd->sync(2);
 		enableWatch();
 		emit updated(brd);
 		++m_cur2;
-		if ( m_cur2 >= m_list[m_cur1].count() ) {
-			m_cur2 = 0;
+		if ( m_cur2 >= m_lnet[m_cur1].count() ) {
+			m_cur2 = 1;
 			++m_cur1;
 		}
-		if (m_cur1 >= 2) m_cur1 = 0;
+		if (m_cur1 >= 2) m_cur1 = 1;
 	}
 }
 
@@ -569,6 +601,16 @@ void AnRoot::agentFinished(int id)
 
 void AnRoot::received(AnRdMsg rmsg)
 {
-	qDebug() << "Running" << isRunning();
-	qDebug() << rmsg;
+	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
+	if (brd != NULL) {
+		if (rmsg.payload() == 0x7) {
+			if (rmsg.data() == 0xff000000) {
+				brd->write();
+			} else {
+				qDebug() << "Received error message: " << rmsg;
+			}
+		}
+	} else {
+		qFatal("Received message from unknown source");
+	}
 }

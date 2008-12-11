@@ -33,23 +33,26 @@ public:
 	virtual void sync(int level = 0) = 0;
 	virtual void reset()  = 0;
 	virtual void config() = 0;
+	virtual void write() = 0;
 
 	virtual AnCanObject *at(int i) = 0;
+	virtual AnCanObject *hat(int i) = 0;
 
 	AnCanObject *root();
 
 	QTime synced() const { return m_synced; }
 	QTime setSynced(QTime t = QTime::currentTime()) { return (m_synced = t); }
 
-protected:
 	AnAddress laddr() const { return m_laddr; }
+	AnAddress& laddr() { return m_laddr; }
 	AnAddress haddr() const { return m_haddr; }
+	AnAddress& haddr() { return m_haddr; }
 
 private:
 	bool            m_active;
 	QTime           m_synced;
-	const AnAddress m_laddr;
-	const AnAddress m_haddr;
+	AnAddress       m_laddr;
+	AnAddress       m_haddr;
 
 };
 

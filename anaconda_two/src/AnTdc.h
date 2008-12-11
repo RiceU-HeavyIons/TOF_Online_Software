@@ -16,12 +16,14 @@ public:
 	AnTdc(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
 //  AnCanObject
-	virtual AnCanObject *at(int i) { return NULL; }
+	virtual AnCanObject *at(int i) { return this; }
+	virtual AnCanObject *hat(int i) { return this; }
 
 	virtual QString dump() const;
 	virtual void sync(int lelve);
 	virtual void reset();
 	virtual void config();
+	virtual void write() { /* do nothing */ }
 
 //  Own Functions
 	quint16 configId() const { return m_config; }

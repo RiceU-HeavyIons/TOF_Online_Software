@@ -18,12 +18,14 @@ public:
 	virtual ~AnSerdes();
 
 // from AnCanObject
-	virtual AnCanObject *at(int i) { return (AnCanObject*)this; } // no child objs
+	virtual AnCanObject *at(int i)  { return this; } // no child objs
+	virtual AnCanObject *hat(int i) { return this; } // no child objs	
 
 	virtual QString dump() const;
 	virtual void sync(int level = 0);
 	virtual void reset() { /* place holder */}
 	virtual void config()  { /* place holder */}
+	virtual void write();
 
 	virtual QString firmwareString() const;
 

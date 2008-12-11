@@ -33,6 +33,22 @@ AnTcpu::~AnTcpu()
     delete m_tdig[i];
 }
 
+AnCanObject *AnTcpu::at(int i)
+{
+	if(i >= 1 && i <= 9)
+		return m_tdig[i - 1];
+	else
+		return this;
+}
+
+AnCanObject *AnTcpu::hat(int i)
+{
+	if(i >= 0x10 && i <= 0x17)
+		return m_tdig[i - 0x10];
+	else
+		return this;
+}
+
 //-----------------------------------------------------------------------------
 void AnTcpu::sync(int level)
 {
@@ -113,6 +129,24 @@ void AnTcpu::config()
 	}
 }
 
+//-----------------------------------------------------------------------------
+void AnTcpu::write()
+{
+	if (active()) {
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+		// write to PLD REG[2]
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02);
+	    agent()->write_read(msg, rmsg, 2);
+
+//		for (int i = 0; i < 8; ++i) m_tdig[i]->write();
+	}
+}
+
+/**
+ * Return CANBus id for read
+ */
 quint32 AnTcpu::canidr() const
 {
 	return haddr().at(1) << 4 | 0x4;

@@ -28,6 +28,22 @@ AnThub::~AnThub()
 	// do nothing
 }
 
+AnCanObject *AnThub::at(int i)
+{
+	if (i >= 1 && i <= 8)
+		return m_serdes[i - 1];
+	return
+		this;
+}
+
+AnCanObject *AnThub::hat(int i)
+{
+	if (i >= 1 && i <= 8)
+		return m_serdes[i - 1];
+	return
+		this;
+}
+
 QString AnThub::dump() const
 {
 	QStringList sl;

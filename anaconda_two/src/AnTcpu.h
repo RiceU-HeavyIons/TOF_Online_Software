@@ -20,7 +20,8 @@ public:
 
 // Inherited from AnCanObject
 
-	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdig[i-1] : static_cast<AnCanObject*>(this); }
+	virtual AnCanObject *at(int i);
+	virtual AnCanObject *hat(int i);
 
 	virtual bool setActive(bool act);
 
@@ -28,6 +29,7 @@ public:
 	virtual void sync(int level = 0);
 	virtual void reset();
 	virtual void config();
+	virtual void write();	
 
 // Inherited from AnBoard
 

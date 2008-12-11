@@ -68,6 +68,21 @@ void AnSerdes::sync(int level)
   }
 }
 
+void AnSerdes::write()
+{
+  if (active()) {
+	quint8  srdid = hAddress().at(2);
+
+    TPCANMsg    msg;
+    TPCANRdMsg  rmsg;
+
+    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid, pld9xSet());
+    agent()->write_read(msg, rmsg, 2);
+    setEcsr(rmsg.Msg.DATA[1]);
+
+  }	
+}
+
 QString AnSerdes::ecsrString() const
 {
   static const char* msg_list[] = {

@@ -25,14 +25,14 @@ debug {
 DESTDIR = ../lib
 
 # Input
-HEADERS += AnLAddress.h AnHAddress.h AnAddress.h \
+HEADERS += AnAddress.h \
            AnCanObject.h AnCanNet.h AnBoard.h \
            AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \
            AnRoot.h AnAgent.h \
            AnRdMsg.h
 
-SOURCES += AnLAddress.cpp AnHAddress.cpp AnAddress.cpp \
+SOURCES += AnAddress.cpp \
            AnCanObject.cpp AnCanNet.cpp AnBoard.cpp \
            AnTcpu.cpp AnTdig.cpp AnTdc.cpp AnTdcConfig.cpp \
            AnThub.cpp AnSerdes.cpp \

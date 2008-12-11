@@ -332,6 +332,12 @@ void AnAgent::run()
 			brd->config();
 			emit progress(m_id, 100*(++step)/total);
 		}
+	} else if (m_mode == AnRoot::TASK_WRITE) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->write();
+			emit progress(m_id, 100*(++step)/total);
+		}
 	}
 	// make sure send out finish
 	emit progress(m_id, 100);

@@ -12,6 +12,12 @@ AnCanNet::AnCanNet(AnCanObject *parent) : AnCanObject(parent)
 	setObjectName(QString("CanNet ") + laddr().toString());
 }
 
+AnCanNet::AnCanNet(const AnCanNet &rhs)
+  : AnCanObject(rhs.laddr(), rhs.haddr(), dynamic_cast<AnCanObject*>(rhs.parent()))
+{
+	
+}
+
 AnCanNet::AnCanNet(
     const AnAddress &laddr,
     const AnAddress &haddr,
@@ -19,6 +25,22 @@ AnCanNet::AnCanNet(
       : AnCanObject(laddr, haddr, parent)
 {
 	// do nothing here
+}
+
+AnCanNet& AnCanNet::operator=(const AnCanNet& rhs)
+{
+	setActive(rhs.active());
+	setSynced(rhs.synced());
+	laddr() = rhs.laddr();
+	haddr() = rhs.haddr();
+}
+
+AnCanObject *AnCanNet::hat(int i)
+{
+	foreach(AnBoard *brd, m_map) {
+		if (brd->haddr().at(1) == i) return brd;
+	}
+	return NULL;
 }
 
 /**

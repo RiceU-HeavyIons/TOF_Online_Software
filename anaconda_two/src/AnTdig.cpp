@@ -34,6 +34,14 @@ AnTdig::~AnTdig()
     delete m_tdc[i];
 }
 
+AnCanObject *AnTdig::hat(int i)
+{
+	if(i >= 1 && i <= 3)
+		return m_tdc[i];
+	else
+		return this;
+}
+
 void AnTdig::sync(int level)
 {
   if (active() && level >= 0) {
@@ -114,6 +122,21 @@ void AnTdig::config()
 		} else {
 			for(int i = 1; i < 4; i++) m_tdc[i]->config();
 		}
+	}
+}
+
+void AnTdig::write()
+{
+	if(active()) {
+		TPCANMsg msg;
+		TPCANRdMsg rmsg;
+
+		// write threshold
+		quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
+		quint8  vl  = (val & 0xff);
+		quint8  vh  = ((val >> 8) & 0x0f);
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
+		agent()->write_read(msg, rmsg, 2);
 	}
 }
 

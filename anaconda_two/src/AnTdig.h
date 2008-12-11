@@ -22,6 +22,7 @@ public:
 
 // Inherited from AnCanObject
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdc[i] : dynamic_cast<AnCanObject*>(this); }
+	virtual AnCanObject *hat(int i);
 
 	virtual bool setActive(bool act);
 	virtual QString dump() const;
@@ -29,6 +30,7 @@ public:
 	virtual void sync(int level = 0);
 	virtual void reset();
 	virtual void config();
+	virtual void write();
 
 // Inherited from AnBoard
 	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
@@ -39,6 +41,7 @@ public:
 // Own Functions
 	int threshold() const { return m_threshold; }
 	int setThreshold(int t) { return (m_threshold = t); }
+
 	QString thresholdString() const { return QString::number(m_threshold) + QString(" mV"); }
 	QString tempString() const { return QString::number(temp()) + QString(" C");}
 	quint64 chipId() const { return m_chipid; }

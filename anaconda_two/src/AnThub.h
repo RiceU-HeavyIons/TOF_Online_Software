@@ -21,9 +21,10 @@ public:
 	virtual void sync(int level = 0);
 	virtual void reset();
 	virtual void config() { /* place holder */ }
+	virtual void write() { /* place holder */ }	
 
-	virtual AnCanObject *at(int i) { return (i > 0) ? m_serdes[i-1] : static_cast<AnCanObject*>(this); }
-
+	virtual AnCanObject *at(int i);
+	virtual AnCanObject *hat(int i);
 
 // from AnBoard
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }

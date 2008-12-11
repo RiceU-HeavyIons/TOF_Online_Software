@@ -9,6 +9,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>
 #include "libpcan.h"
+#include "AnAddress.h"
 
 class AnRdMsg {
 
@@ -18,15 +19,19 @@ public:
 	AnRdMsg(const quint8 devid, const PCAN::TPCANMsg& msg);	
 	virtual ~AnRdMsg();
 
-	quint8  devid() const { return m_devid; }
-	quint16 id() const { return m_id; }
-	quint8  type() const { return m_type; }
-	quint8  len()  const { return m_len; }
+	quint8  devid()     const { return m_devid; }
+	quint32 id()        const { return m_id; }
+	quint8  type()      const { return m_type; }
+	quint8  len()       const { return m_len; }
 	quint8  data(int i) const { return m_data[i]; }
+	quint64 data() const;
+
+	AnAddress source() const;
+	quint8    payload() const;
 
 private:
 	quint8          m_devid;
-	quint16         m_id;
+	quint32         m_id;
 	quint8          m_type;
 	quint8          m_len;
 	quint8          m_data[8];
