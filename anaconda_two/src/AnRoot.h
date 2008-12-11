@@ -24,6 +24,7 @@
 #include "AnTcpu.h"
 #include "AnTdig.h"
 #include "AnTdcConfig.h"
+#include "AnRdMsg.h"
 
 class AnRoot : public AnCanObject {
 	Q_OBJECT
@@ -75,11 +76,13 @@ public:
 
 signals:
 	void updated(AnBoard*);
+	void updated();
 
 public slots:
 	void autosync();
 	void watcher(int sock);
 	void agentFinished(int id);
+	void received(AnRdMsg rmsg);
 
 private:
 	struct mode {

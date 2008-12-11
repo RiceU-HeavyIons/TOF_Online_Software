@@ -33,8 +33,8 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon[4] = QIcon(":icons/white.png");	
 
 	connect(m_root, SIGNAL(updated(AnBoard*)), this, SLOT(updated(AnBoard*)));
+	connect(m_root, SIGNAL(updated()),         this, SLOT(updated()));
 }
-
 //-----------------------------------------------------------------------------
 int KLevel1Model::rowCount(const QModelIndex &parent) const
 {
@@ -214,4 +214,8 @@ void KLevel1Model::updated(AnBoard *brd)
 		QModelIndex m2 = createIndex(row, m_columns, brd);
 		emit dataChanged(m1, m2);
 	}
+}
+void KLevel1Model::updated()
+{
+	reset();
 }

@@ -40,6 +40,7 @@ public slots:
 	void toggleMode(int i);
 	void setSelection(int slt);
 	void updated(AnBoard *brd);
+	void updated();
 
 private:
 	int m_rows;

@@ -69,7 +69,6 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
   unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
   int er = 0;
 
-
   for (unsigned int i = 0; i < niter && !er; ++i) {
     er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
     if (er != 0) {
@@ -80,7 +79,7 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
         fprintf(stderr, "System error: 0x%x\n", status);
     }
     if (TCAN_DEBUG) {
-      printf("<< ");
+      printf("<< (%p)", m_handle);
       print(rmsg);
     }
     length += rmsg.Msg.LEN;
@@ -100,59 +99,71 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     unsigned int return_length, unsigned int time_out)
 {
 
-  if(m_handle == NULL) {
-    qDebug() << "device is not open";
-    return -1;
-  }
+	if(m_handle == NULL) {
+		qDebug() << "device is not open";
+		return -1;
+	}
 
-  quint64 data = 0;
-  unsigned int length = 0;
-  unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
-  int er;
+	quint64 data = 0;
+	unsigned int length = 0;
+	unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
+	int er;
 
-  if (TCAN_DEBUG) {
-    printf(">> ");
-    print(msg);
-  }
+	if (TCAN_DEBUG) {
+		printf(">> ");
+		print(msg);
+	}
 
-  er = CAN_Write(m_handle, &msg);
-  if (er != 0) {
-    int status = CAN_Status(m_handle);
-    if (status > 0)
-      fprintf(stderr, "CANbus error: 0x%x\n", status);
-    else
-      fprintf(stderr, "System error: 0x%x\n", status);
-  }
+	er = CAN_Write(m_handle, &msg);
+	if (er != 0) {
+		int status = CAN_Status(m_handle);
+		if (status > 0)
+			fprintf(stderr, "CANbus error: 0x%x\n", status);
+		else
+			fprintf(stderr, "System error: 0x%x\n", status);
+	}
 
-  for (unsigned int i = 0; i < niter && !er; ++i) {
-    er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-    if (er != 0) {
-      int status = CAN_Status(m_handle);
-      if (status > 0)
-        fprintf(stderr, "CANbus error: 0x%x\n", status);
-      else
-        fprintf(stderr, "System error: 0x%x\n", status);
-    }
-    if (TCAN_DEBUG) {
-      printf("<< ");
-      print(rmsg);
-    }
-    if (rmsg.Msg.DATA[0] != msg.DATA[0]) {
-      fprintf(stderr, "Return payload doesn't match.\n");
-      er = -1;
-    }
-    length += rmsg.Msg.LEN;
-    for(int j = 1; j < rmsg.Msg.LEN; ++j)
-      data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
-  }
+	for (unsigned int i = 0; i < niter && !er; ++i) {
+		int ntry = 10;
+		for (; ntry > 0; --ntry) {
+			er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
+			if (er != 0) {
+				int status = CAN_Status(m_handle);
+				if (status > 0)
+					fprintf(stderr, "CANbus error: 0x%x\n", status);
+				else
+					fprintf(stderr, "System error: 0x%x\n", status);
+			}
+			if (TCAN_DEBUG) {
+				printf("<< ");
+				print(rmsg);
+			}
+			if (match(msg, rmsg.Msg)) {
+				break;
+			} else {
+				emit received(AnRdMsg(devid(), rmsg));
+			}
+		}
+		if (ntry == 0) {
+			fprintf(stderr, "Didn't receive reply message.\n");
+			break;
+		}  else {
+			if (rmsg.Msg.DATA[0] != msg.DATA[0]) {
+				fprintf(stderr, "Return payload doesn't match.\n");
+				er = -1;
+			}
+			length += rmsg.Msg.LEN;
+			for(int j = 1; j < rmsg.Msg.LEN; ++j)
+				data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+		}
+	}
 
-  if (return_length != length) {
-    fprintf(stderr, "Return length doesn't match.\n");
-  }
+	if (return_length != length) {
+	fprintf(stderr, "Return length doesn't match.\n");
+	}
 
-  return data;
+	return data;
 }
-
 //-----------------------------------------------------------------------------
 QMap<int, AnAgent*> AnAgent::open(QList<int> &dev_id_list) {
 
@@ -333,5 +344,15 @@ void AnAgent::setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs)
 	m_tcnfs.clear();
 	foreach(int k, tcnfs.keys()) { // copy each item
 		m_tcnfs[k] = new AnTdcConfig(tcnfs[k], this);
+	}
+}
+
+//-----------------------------------------------------------------------------
+bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
+{
+	if(snd.MSGTYPE == MSGTYPE_EXTENDED) {
+		return ((snd.ID | 0x400000) == rcv.ID);
+	} else {
+		return ((snd.ID | 0x1) == rcv.ID);
 	}
 }

@@ -87,7 +87,7 @@ insert into configs values (null,   2,  3,  23,   2, 255,   0,   0,     15);
 insert into configs values (null,   2,  4,  33,   2, 255, 255,   0,   1500);
 insert into configs values (null,   2,  5,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   2,  6,  42,   2, 255,   1,   1,     14);
-insert into configs values (null,   2,  7,  41,   2, 255,   5,   1,     14);
+insert into configs values (null,   2,  7,  42,   2, 255,   5,   1,     14);
 insert into configs values (null,   2,  8, 131,   2, 255, 255,   0,      0);
 
 -- THUBs

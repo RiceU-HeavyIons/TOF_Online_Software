@@ -18,6 +18,7 @@
 #include "libpcan.h"
 
 #include "AnTdcConfig.h"
+#include "AnRdMsg.h"
 
 class AnBoard;
 
@@ -67,9 +68,13 @@ private:
 	HANDLE                   m_handle;
 	quint8                   addr;
 	QString                  dev_path;
+	
+	bool match(TPCANMsg &snd, TPCANMsg &rcv);
 
 signals:
 	void progress(int id, int percent);
 	void finished(int id);
+	
+	void received(AnRdMsg);
 };
 #endif

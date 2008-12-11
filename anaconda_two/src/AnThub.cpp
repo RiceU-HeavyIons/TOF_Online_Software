@@ -48,6 +48,23 @@ QString AnThub::dump() const
 	return sl.join("\n");
 }
 
+/**
+ * Reset THUB
+ */
+void AnThub::reset()
+{
+	if (active()) {
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+
+		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
+		agent()->write_read(msg, rmsg, 2);
+	}
+}
+
+/**
+ * Sync THUB
+ */
 void AnThub::sync(int level)
 {
 	if (active() && level >= 0) {

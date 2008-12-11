@@ -23,6 +23,8 @@ int main(int argc, char **argv)
 
 	app.setFont(QFont("Lucida Grande", 10));
 
+	qRegisterMetaType<AnRdMsg>("AnRdMsg");
+
 	KMainWindow kmw;
 	kmw.setWindowTitle(app.applicationName());
 	kmw.show();

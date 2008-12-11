@@ -42,6 +42,7 @@ static dinfo dlist[] = {
 };
 
 static pthread_t *thrd = NULL;
+
 //****************************************************************************
 //  CAN_Open()
 //  creates a path to a CAN port
@@ -191,6 +192,7 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 	if (ptr->irq == 0) return -1;
 
 	memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+	pMsgBuff->ID |= 0x1;
 	switch(pMsgBuff->DATA[0]) {
 
 	case 0x01: // MCU Firmware ID
@@ -259,6 +261,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 
 	switch (pMsgBuff->MSGTYPE) {
 		case MSGTYPE_STANDARD: /* TCPU */
+		pMsgBuff->ID |= 0x1;
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
 			pMsgBuff->LEN = 3;
@@ -295,6 +298,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		}
 		break;
 	case MSGTYPE_EXTENDED:
+		pMsgBuff->ID |= 0x400000;
 		switch(pMsgBuff->DATA[0]) {
 		case 0x04: // Control TDC
 			pMsgBuff->LEN = 2;
@@ -575,6 +579,8 @@ int nGetLastError(void)
 
 void* runner(void *arg)
 {
+	static int id = 0;
+
 	dinfo *ptr;
 	srand(100);
 
@@ -608,7 +614,7 @@ void* runner(void *arg)
 			rmsg.Msg.DATA[0] = 0xff;
 			for(i = 1; i < 4; ++i) rmsg.Msg.DATA[i] = 0;
 			send(fd, &rmsg, sizeof(rmsg), 0);
-
+//			fprintf(stderr, "sent msg %d (%p)\n", id++, pthread_self());
 			close(fd);
 
 			sleep(10);
@@ -624,6 +630,10 @@ void* runner(void *arg)
 //
 HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 {
+	static int cnt = 0;
+	static pthread_mutex_t mutex;
+	pthread_mutex_lock(&mutex);
+
 	int i;
 	HANDLE h = 0;
 
@@ -655,12 +665,15 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 		free(bn);
 	}
 
-	if(h != NULL && thrd == NULL) {
+	if(h != NULL && cnt == 0) {
 		thrd = malloc(sizeof(pthread_t));
-		if(pthread_create(thrd, NULL, runner, NULL))
+		if (pthread_create(thrd, NULL, runner, NULL))
 			perror("pthread_create");
+		fprintf(stderr, "thrd(%p)= %p\n", &thrd, thrd);
+		++cnt;
 	}
 
+	pthread_mutex_unlock(&mutex);
 	return h;
 }
 

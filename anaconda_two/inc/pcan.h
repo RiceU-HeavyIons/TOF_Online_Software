@@ -36,12 +36,12 @@
 //****************************************************************************
 // INCLUDES
 #if defined(__DARWIN_UNIX03)
-#define  __u8     unsigned char
-#define  __u16    unsigned short
-#define  __u32    unsigned int
+# define  __u8     unsigned char
+# define  __u16    unsigned short
+# define  __u32    unsigned int
 #else
-#include <linux/types.h>
-#include <linux/ioctl.h>
+# include <linux/types.h>
+# include <linux/ioctl.h>
 #endif
 //****************************************************************************
 // DEFINES

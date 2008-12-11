@@ -19,7 +19,7 @@ public:
 //  inherited from AnCanbusObject
 	virtual QString dump() const;
 	virtual void sync(int level = 0);
-	virtual void reset()  { /* place holder */}
+	virtual void reset();
 	virtual void config() { /* place holder */ }
 
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_serdes[i-1] : static_cast<AnCanObject*>(this); }

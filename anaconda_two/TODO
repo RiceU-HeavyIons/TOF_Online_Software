@@ -2,17 +2,22 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-09
+Updated: 2008-12-10
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2008-12-10:
+  - device logical id = agent id = watch id
+  - sync w/o l1model but w/ signal feedback to l1model
+  - hw address <-> logical address dictionary
+
   2008-12-09:
   - greeting and error capture in write/read
   - output in console window
   - single action / double action for setMode
-  - TCPU PLD Reg 03
-  - Msg/RdMsg wrapper
-  - Msg queue
-  - Msg queue handler
+  - (X) TCPU PLD Reg 03
+  - (X) Msg/RdMsg wrapper
+  - (X) Msg queue
+  - (X) Msg queue handler
 
   2008-12-05:
   - reduce TDC status get
@@ -98,12 +103,12 @@ Entry:
   - (X) Input Lijuan's map
 
   2008-11-25:
-  - TDIG threshold writing after reset
+  - (X) TDIG threshold writing after reset
   - TDC mask readout from database
   - TDC mask display
   - Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
   - Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
-  - TCPU PLD register 02, set value and read value.
+  - (X) TCPU PLD register 02, set value and read value.
   - TDIG, TCPU chip id verification. Again, set value and read value consistency
 
   2008-11-24:

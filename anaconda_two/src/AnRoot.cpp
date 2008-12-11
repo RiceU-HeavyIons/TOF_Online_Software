@@ -97,6 +97,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		m_watch[sock]->setEnabled(true);
 
 		connect(ag, SIGNAL(finished(int)), this, SLOT(agentFinished(int)));
+		connect(ag, SIGNAL(received(AnRdMsg)), this, SLOT(received(AnRdMsg)));
 	}
 }
 
@@ -118,14 +119,12 @@ QString AnRoot::dump() const
 {
 	QStringList sl;
 
-	sl << QString().sprintf("AnCanNet(%p):", this);
+	sl << QString().sprintf("AnRoot(%p):", this);
 	sl << QString("  Name             : ") + name();
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
 	sl << QString("  Synchronized     : ") + synced().toString();
-//	sl << QString("  Status           : ") + QString::number(status());
-//	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
 
 	return sl.join("\n");
 }
@@ -328,6 +327,7 @@ void AnRoot::setMode(int i)
 			}
 		}
 		if (ct == "TDIG_RESET") {
+			qDebug() << ct;
 			foreach(AnAddress ad, expand(addr)) {
 				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
 				if (tdig) tdig->reset();
@@ -351,6 +351,7 @@ void AnRoot::setMode(int i)
 			}
 		}	
 	}
+	emit updated();
 }
 
 //-----------------------------------------------------------------------------
@@ -490,6 +491,9 @@ void AnRoot::startAutoSync()
 	if (!m_timer->isActive()) m_timer->start();
 }
 
+//==============================================================================
+// Public Slots
+
 /**
  * Stop AutoSync
  */
@@ -544,17 +548,14 @@ void AnRoot::disableWatch()
  */
 void AnRoot::watcher(int sock)
 {
-
 	if (m_watch.contains(sock)) {
 		// disable watch again
 		m_watch[sock]->setEnabled(false);
 
 		AnAgent *ag = m_socket_agent_map[sock];
-// TODO read message and deliver to the source device
-//  parse
-//  set powerup flag and etc on the device, i.e. THUB, TCPU or TDIG
 		TPCANRdMsg rmsg;
 		ag->read(rmsg, 4);
+		received(AnRdMsg(ag->devid(), rmsg));
 
 		// enable watch again
 		m_watch[sock]->setEnabled(true);
@@ -564,4 +565,10 @@ void AnRoot::watcher(int sock)
 void AnRoot::agentFinished(int id)
 {
 	m_watch[agentById(id)->socket()]->setEnabled(true);
+}
+
+void AnRoot::received(AnRdMsg rmsg)
+{
+	qDebug() << "Running" << isRunning();
+	qDebug() << rmsg;
 }
