@@ -39,7 +39,10 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
   grid->addWidget(m_ecsr = new QLabel(""), row, 1);
 
   grid->addWidget(new QLabel("PLD Reg[02]:"), ++row, 0);
-  grid->addWidget(m_pld = new QLabel("----"),  row, 1);
+  grid->addWidget(m_pld02 = new QLabel("----"),  row, 1);
+
+  grid->addWidget(new QLabel("PLD Reg[03]:"), ++row, 0);
+  grid->addWidget(m_pld03 = new QLabel("----"),  row, 1);
 
 // QToolBox *tab = new QToolBox();
 // tab->addItem(new QLabel("they"), QIcon(":icons/blue.png"),  "TDIG 1");
@@ -91,7 +94,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   if(tcpu) {
     tcpu->sync(1);
     m_tcpu = tcpu;
-    setTitle(tcpu->name());
+    setTitle(tcpu->objectName());
     if (tcpu->traySn() != "") {
       QString ustr = QString("http://www.rhip.utexas.edu/~tofp/tray/view.php?sn=%1")
                             .arg(tcpu->traySn());
@@ -111,7 +114,8 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_ecsr->setText("0x" + QString::number(tcpu->ecsr(), 16));
     m_ecsr->setToolTip(tcpu->ecsrString());
 
-    m_pld->setText(tcpu->pldRegString());
+    m_pld02->setText(tcpu->pldReg02String());
+    m_pld03->setText(tcpu->pldReg03String());
 
     m_model->setTcpu(tcpu);
   }

@@ -35,7 +35,7 @@ public:
 	static void set_msg(TPCANMsg &msg, ...);
 	static void print(const TPCANMsg &msg);
 	static void print(const TPCANRdMsg &rmsg);
-	static QMap<int, AnAgent*> open(QList<int> &dev_id_list);
+	static QMap<int, AnAgent*> open(QMap<int, int> &devid_map);
 
 	int open(quint8 dev_id);
 	quint64 read(TPCANRdMsg &rmsg,

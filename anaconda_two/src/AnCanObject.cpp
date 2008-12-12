@@ -38,7 +38,14 @@ AnCanObject::AnCanObject(
 
 QString AnCanObject::name() const
 {
-  return objectName();
+	if (m_name == "")
+		return objectName();
+	else
+		return m_name;
+}
+
+QString AnCanObject::setName(const QString& name) {
+	return (m_name = name);
 }
 
 AnCanObject *AnCanObject::root()

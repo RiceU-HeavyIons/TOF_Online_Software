@@ -10,6 +10,7 @@
 KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
  : QDialog(parent), m_root(root)
 {
+
 	m_size = m_root->nAgents();
 
     setWindowTitle("In Progress...");
@@ -30,8 +31,8 @@ KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
 	connect(box, SIGNAL(accepted()), this, SLOT(close()));
 
 	m_bar[0].setRange(0, m_size*100);
-	gl->addWidget(new QLabel("Total"), 0, 0, 1, 1);
-	gl->addWidget(&m_bar[0],              0 ,1, 1, 1);
+	gl->addWidget(new QLabel("Total"),  0, 0, 1, 1);
+	gl->addWidget(&m_bar[0],            0 ,1, 1, 1);
 
 	for(int i = 1; i <= m_size; ++i) {
     	m_bar[i].setRange(0, 100);
@@ -42,9 +43,9 @@ KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
 
 
 	for (int i = 0; i < m_size; ++i) {
-	 	connect(m_root->agentById(i), SIGNAL(progress(int, int)),
+	 	connect(m_root->agentById(i+1), SIGNAL(progress(int, int)),
 			this, SLOT(setProgress(int, int)));
-		connect(m_root->agentById(i), SIGNAL(finished()),
+		connect(m_root->agentById(i+1), SIGNAL(finished()),
 			parent, SLOT(agentFinished()));
 	}
 }
@@ -66,11 +67,11 @@ void KProgressIndicator::start()
 	exec();
 }
 
-void KProgressIndicator::setProgress(int i, int j)
+void KProgressIndicator::setProgress(int id, int j)
 {
 	QMutexLocker locker(&m_mutex);
 
-	m_bar[i+1].setValue(m_val[i+1] = j);
+	m_bar[id].setValue(m_val[id] = j);
 	m_val[0] = 0;
 	for(int x = 1; x <= m_size; ++x) m_val[0] += m_val[x];
 	m_bar[0].setValue(m_val[0]);

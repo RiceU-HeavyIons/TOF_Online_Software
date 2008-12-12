@@ -23,8 +23,9 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_rows = m_list.count();
 	m_columns = 5;
 
-	m_selectionList << "All" << "THUBs" << "TCPUs"
-					<< "East" << "West" << "Errors";
+	m_selectionList << "All" << "THUBs" << "TCPUs";
+	m_selectionList << m_root->deviceNames();
+	m_selectionList << "Errors";
 
 	m_statusIcon[0] = QIcon(":icons/black.png");
 	m_statusIcon[1] = QIcon(":icons/blue.png");
@@ -75,12 +76,16 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 		switch (c) {
 			case 0: return QVariant();
 			case 1: return cobj->name();
-			case 2: return cobj->hAddress().toString();
-			case 3: return cobj->isEast() ? QString("East") : QString("West");
+			case 2: return m_root->deviceNameByDevid(cobj->hAddress().at(0));
+			case 3: return cobj->hAddress().toString();
 			case 4: return QString::number(cobj->maxTemp(), 'f', 2);
 		}
 	} else if (role == Qt::ToolTipRole) {
-		return QString("%1 x %2").arg(r).arg(c);
+		switch(c) {
+			case 1: return cobj->objectName();
+			case 2: return cobj->hAddress().toString();
+			default: return QVariant();
+		}
 
 	} else if (role == Qt::DecorationRole) {
 		if (c == 0) return m_statusIcon[cobj->status()];
@@ -109,8 +114,8 @@ QVariant KLevel1Model::headerData(int section,
     switch (section) {
 	case 0: return QVariant();
     case 1: return QString(tr("Name"));
-    case 2: return QString(tr("Address"));
-    case 3: return QString(tr("East/West"));
+    case 2: return QString(tr("CANBus Name"));
+    case 3: return QString(tr("LV/HV"));
     case 4: return QString(tr("Max Temp"));
     }
     return QString("Field %1").arg(section + 1);
@@ -188,15 +193,12 @@ void KLevel1Model::setSelection(int slt) {
 		foreach(AnBoard *b, m_root->list())
 			if (dynamic_cast<AnTcpu*>(b)) m_list << b;
 
-	} else if (m_selection == 3) {
+	} else if (m_selection <= 2 + m_root->nDevices()) {
+		quint8 devid = m_root->devidByIndex(m_selection - 3);
 		foreach(AnBoard *b, m_root->list())
-			if (b->isEast()) m_list << b;
+			if (dynamic_cast<AnBoard*>(b)->haddr().at(0) == devid) m_list << b;
 
-	} else if (m_selection == 4) {
-		foreach(AnBoard *b, m_root->list())
-			if (b->isWest()) m_list << b;
-
-	} else if (m_selection == 5) {
+	} else {
 		foreach(AnBoard *b, m_root->list())
 			if (b->status() == AnBoard::STATUS_ERROR) m_list << b;
 	}

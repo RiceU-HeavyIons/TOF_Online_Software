@@ -46,8 +46,22 @@ public:
 	virtual AnAgent* agent() const;
 //
 	AnTdig *tdig(int i) const { return m_tdig[i-1]; }
+
+	quint8  pldReg02() const { return m_pld02; }
 	quint8  setPldReg02(quint8 v) { return (m_pld02 = v); }
-	QString pldRegString() const;
+	quint8  pldReg02Set() const { return m_pld02Set; }
+	quint8  setPldReg02Set(quint8 v) { return (m_pld02Set = v); }
+
+	quint8  pldReg03() const { return m_pld03; }
+	quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
+
+	quint8  pldReg0e() const { return m_pld0e; }
+	quint8  setPldReg0e(quint8 v) { return (m_pld0e = v); }
+	quint8  pldReg0eSet() const { return m_pld0eSet; }
+	quint8  setPldReg0eSet(quint8 v) { return (m_pld0eSet = v); }
+
+	QString pldReg02String() const;
+	QString pldReg03String() const;	
 
 	quint64 chipId() const { return m_chipid; }
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
@@ -60,13 +74,16 @@ public:
 	QString traySn() const { return m_tray_sn; }
 	QString setTraySn(QString sn) { return (m_tray_sn = sn); }
 
-private:
-	AnTdig   *m_tdig[8];
-	quint8   m_pld02, m_pld03, m_pld0e;
-	quint64  m_chipid;
 
-	quint8   m_tray_id;
-	QString  m_tray_sn;
+private:
+	AnTdig     *m_tdig[8];
+	quint8      m_pld02, m_pld02Set;
+	quint8      m_pld03; // read-only register	
+	quint8      m_pld0e, m_pld0eSet;
+	quint64     m_chipid;
+
+	quint8      m_tray_id;
+	QString     m_tray_sn;
 };
 
 #endif /* ANTCPU_H_ */

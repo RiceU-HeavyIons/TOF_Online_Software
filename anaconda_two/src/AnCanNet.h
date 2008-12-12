@@ -37,11 +37,14 @@ public:
 //  own functions
 	QList<AnBoard*> list() const { return m_map.values(); }
 	int count() const { return m_map.count(); }
+	int devid() const { return haddr().at(0); }
 
 	AnBoard*& operator[](const int& idx) { return m_map[idx]; }
 //	const AnBoard* operator[](const int& idx) const { return m_map[idx]; }
 private:
 	QMap<int, AnBoard*> m_map;
 };
+
+QDebug operator<<(QDebug dbg, const AnCanNet &a);
 
 #endif /* AnCanNet_H_ */

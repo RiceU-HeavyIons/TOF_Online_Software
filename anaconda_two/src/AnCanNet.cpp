@@ -15,7 +15,8 @@ AnCanNet::AnCanNet(AnCanObject *parent) : AnCanObject(parent)
 AnCanNet::AnCanNet(const AnCanNet &rhs)
   : AnCanObject(rhs.laddr(), rhs.haddr(), dynamic_cast<AnCanObject*>(rhs.parent()))
 {
-	
+	setObjectName( rhs.objectName() );
+	m_map = rhs.m_map;
 }
 
 AnCanNet::AnCanNet(
@@ -33,6 +34,7 @@ AnCanNet& AnCanNet::operator=(const AnCanNet& rhs)
 	setSynced(rhs.synced());
 	laddr() = rhs.laddr();
 	haddr() = rhs.haddr();
+	setObjectName( rhs.objectName() );
 }
 
 AnCanObject *AnCanNet::hat(int i)
@@ -61,3 +63,10 @@ QString AnCanNet::dump() const
 	return sl.join("\n");
 }
 
+QDebug operator<<(QDebug dbg, const AnCanNet &a)
+{
+	char buf[64];
+	sprintf(buf, "AnCanNet(%p)", &a);
+	dbg << buf;
+	return dbg;
+}

@@ -12,18 +12,24 @@ AnTcpu::AnTcpu(
 	const AnAddress &laddr,
 	const AnAddress &haddr,
 	AnCanObject *parent) : AnBoard(laddr, haddr, parent),
-	m_tray_id(0), m_tray_sn()
+	m_tray_id(0),
+	m_pld02(0), m_pld02Set(0),
+	m_pld0e(0), m_pld0eSet(0)
 {
-  setObjectName(QString("TCPU ") + lAddress().toString());
+	setObjectName(QString("TCPU ") + lAddress().toString());
+	setName(QString("Tray %1").arg(lAddress().at(1)));
 
-  AnAddress lad = lAddress();
-  AnAddress had = hAddress();
+	AnAddress lad = lAddress();
+	AnAddress had = hAddress();
 
-  for(int i = 0; i < 8; ++i) {
-    lad.set(2, i + 1);
-    had.set(2, 0x10 + i);
-    m_tdig[i] = new AnTdig(lad, had, this);
-  }
+	for(int i = 0; i < 8; ++i) {
+		lad.set(2, i + 1);
+		had.set(2, 0x10 + i);
+		m_tdig[i] = new AnTdig(lad, had, this);
+	}
+	m_tray_sn = "";
+	m_chipid = 0;
+	m_pld03 = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +87,7 @@ void AnTcpu::sync(int level)
 	//     AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
 	//     sock->write_read(msg, rmsg, 5);
 	// m_pld02 = rmsg.Msg.DATA[2];
-	// m_pld0e = rmsg.Msg.DATA[3];
+	// m_pld0e = rmsg.Msg.DATA[4];
     AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x2);
     agent()->write_read(msg, rmsg, 3);
 	m_pld02 = rmsg.Msg.DATA[2];
@@ -137,7 +143,7 @@ void AnTcpu::write()
 	    TPCANRdMsg  rmsg;
 
 		// write to PLD REG[2]
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02);
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
 	    agent()->write_read(msg, rmsg, 2);
 
 //		for (int i = 0; i < 8; ++i) m_tdig[i]->write();
@@ -190,6 +196,8 @@ QString AnTcpu::dump() const
 	sl << QString("  Temperature      : ") + tempString();
 	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
 	sl << QString("  PLD Reg[02]      : 0x") + QString::number(m_pld02, 16);
+	sl << QString("  PLD Reg[02] Set  : 0x") + QString::number(m_pld02Set, 16);
+	sl << QString("  PLD Reg[03]      : 0x") + QString::number(m_pld03, 16);
 	sl << QString("  Status           : ") + QString::number(status());
 	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
 
@@ -250,10 +258,17 @@ int AnTcpu::status() const
 
 
 //-----------------------------------------------------------------------------
-QString AnTcpu::pldRegString() const
+QString AnTcpu::pldReg02String() const
 {
 	// QString ret = "0x" + QString::number(m_pld02, 16) + ", "
 	//             + "0x" + QString::number(m_pld0e, 16);
 	QString ret = "0x" + QString::number(m_pld02, 16);
+	ret += " (0x" + QString::number(m_pld02Set, 16) + ")";
+	return ret;
+}
+//-----------------------------------------------------------------------------
+QString AnTcpu::pldReg03String() const
+{
+	QString ret = "0x" + QString::number(m_pld03, 16);
 	return ret;
 }

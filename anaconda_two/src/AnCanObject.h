@@ -28,6 +28,8 @@ public:
 	virtual bool setActive(bool act) { return (m_active = act); }
 
 	virtual QString name() const;
+	QString setName(const QString& name);
+
 	virtual QString dump() const = 0;
 
 	virtual void sync(int level = 0) = 0;
@@ -53,6 +55,8 @@ private:
 	QTime           m_synced;
 	AnAddress       m_laddr;
 	AnAddress       m_haddr;
+	
+	QString         m_name;
 
 };
 

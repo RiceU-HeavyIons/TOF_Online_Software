@@ -43,7 +43,8 @@ private:
 	QLabel      *m_chip;
 	QLabel      *m_temp;
 	QLabel      *m_ecsr;
-	QLabel      *m_pld;
+	QLabel      *m_pld02;
+	QLabel      *m_pld03;
 
 
 	KTdigModel  *m_model;

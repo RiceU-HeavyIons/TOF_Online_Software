@@ -12,7 +12,7 @@ AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *pare
  : AnBoard(laddr, haddr, parent)
 {
 	setObjectName(QString("THUB ") + lAddress().toString());
-
+	setName(QString("THUB %1").arg(lAddress().at(1)));
 	AnAddress lad = lAddress();
 	AnAddress had = hAddress();
 

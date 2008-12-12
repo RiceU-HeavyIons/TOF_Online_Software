@@ -27,16 +27,21 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	if (!m_db.open() )
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
 	QSqlQuery qry;
-	qry.exec("SELECT id, active FROM devices");
+	qry.exec("SELECT id, devid, name, active FROM devices");
 	while(qry.next()) {
-		int id      = qry.value(0).toInt();
-		bool active = qry.value(1).toBool();
-		if (active) { m_devid_list << id; }
-		m_hnet[id] = AnCanNet(AnAddress(), AnAddress(id, 0, 0, 0));
+		int id       = qry.value(0).toInt();
+		int devid    = qry.value(1).toInt();		
+		QString name = qry.value(2).toString();
+		bool active  = qry.value(3).toBool();
+
+		m_devid_map[devid] = id;
+		m_hnet[id] = AnCanNet(AnAddress(id, 0, 0, 0), AnAddress(devid, 0, 0, 0));
 		m_hnet[id].setActive(active);
+		m_hnet[id].setObjectName(name);
 	}
+
 	// open devices and create gents 
-	m_agents = AnAgent::open(m_devid_list);
+	m_agents = AnAgent::open(m_devid_map);
 
 	// create THUB objects
 	qry.exec("SELECT id, device_id, canbus_id, active FROM thubs");
@@ -45,13 +50,14 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		int device_id = qry.value(1).toInt();
 		int canbus_id = qry.value(2).toInt();
 		bool active   = qry.value(3).toBool();
-		AnThub *th = new AnThub(AnAddress(1, id, 0, 0),
-										AnAddress(device_id, canbus_id, 0, 0), this);
+		int devid     = m_hnet[device_id].devid();
+		AnThub *th    = new AnThub(AnAddress(1, id, 0, 0),
+		                           AnAddress(devid, canbus_id, 0, 0), this);
 //		if(!active) continue;
 		th->setActive(active);
 		m_lnet[1][id] = th;
 		m_hnet[device_id][canbus_id] = th;
-		m_devid_thub_map[device_id] = th;
+		m_devid_thub_map[devid] = th;
 	}
 
 	// create TCPU objects
@@ -65,9 +71,10 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		QString tray_sn = qry.value(4).toString();
 		QString serdes  = qry.value(5).toString();
 
+		int devid = m_hnet[device_id].devid();
 //		if(!active) continue;
 		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
-									AnAddress(device_id, canbus_id, 0, 0), this);
+		                        AnAddress(devid, canbus_id, 0, 0), this);
 		tc->setActive(active);
 //		tc->setTrayId(tray_id);
 		tc->setTraySn(tray_sn);
@@ -80,13 +87,11 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 			if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
 				qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
 			}
-			thubByDevId(device_id)->serdes(nsrds)->setTcpu(port, tc);
+			thubByDevid(devid)->serdes(nsrds)->setTcpu(port, tc);
 		}
 	}
 	readModeList();
 	readTdcConfig();
-
-	qDebug() << count() << m_lnet[1].count() << m_lnet[2].count();
 
 	setMode(0);
 
@@ -135,17 +140,11 @@ QString AnRoot::dump() const
 
 void AnRoot::sync(int level)
 {
-	int n = m_devid_list.count();
-	QList<AnBoard*> blist[n];
-	foreach(AnBoard *brd, list()) {
-		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
-	}
-
 	disableWatch();
-	for(int i = 0; i < n; ++i) {
-		AnAgent *ag = agent(m_devid_list[i]);
+	foreach (int id, m_hnet.keys()) {
+		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_SYNC, blist[i]);
+		ag->init(TASK_SYNC, m_hnet[id].list());
 		ag->start();
 	}
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
@@ -156,18 +155,11 @@ void AnRoot::sync(int level)
 //-----------------------------------------------------------------------------
 void AnRoot::reset()
 {
-	int n = m_devid_list.count();
-	QList<AnBoard*> blist[n];
-
-	foreach(AnBoard *brd, list()) {
-		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
-	}
-
 	disableWatch();
-	for(int i = 0; i < n; ++i) {
-		AnAgent *ag = agent(m_devid_list[i]);
+	foreach (int id, m_hnet.keys()) {
+		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_RESET, blist[i]);
+		ag->init(TASK_RESET, m_hnet[id].list());
 		ag->start();
 	}
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
@@ -176,41 +168,28 @@ void AnRoot::reset()
 //-----------------------------------------------------------------------------
 void AnRoot::config()
 {
-	int n = nAgents();
-	QList<AnBoard*> blist[n];
-
-	foreach(AnBoard *brd, list()) {
-		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
-	}
-
 	disableWatch();
-	foreach(AnAgent *ag, m_agents) {
+	foreach (int id, m_hnet.keys()) {
+		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_CONFIG, blist[m_devid_list.indexOf(ag->devid())]);
+		ag->init(TASK_CONFIG, m_hnet[id].list());
 		ag->start();
 	}
-
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::write()
 {
-	int n = nAgents();
-	QList<AnBoard*> blist[n];
-
-	foreach(AnBoard *brd, list()) {
-		blist[m_devid_list.indexOf(brd->hAddress().at(0))] << brd;
-	}
-
 	disableWatch();
-	foreach(AnAgent *ag, m_agents) {
+	foreach (int id, m_hnet.keys()) {
+		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_WRITE, blist[m_devid_list.indexOf(ag->devid())]);
+		ag->init(TASK_WRITE, m_hnet[id].list());
 		ag->start();
 	}
-
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
+
 }
 
 //-----------------------------------------------------------------------------
@@ -451,11 +430,29 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
+	qDebug() << "AnRoot::hfind" << had;
+	qDebug() << hat(had.at(0));
+	qDebug() << hat(had.at(0))->hat(had.at(1));	
 	return dynamic_cast<AnCanObject*>
 				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }
 
+// QList<AnBoard*> AnRoot::boardsByIndex(int i) const
+// {
+// 	int id = m_hnet.values().at(i).laddr().at(0);
+// 	qDebug() << id;
+// 	qDebug() << m_hnet;
+// 	qDebug() << m_hnet[id];
+// 	qDebug() << m_hnet[id].list();
+// 	return m_hnet[id].list();
+// }
 
+QStringList AnRoot::deviceNames() const
+{
+	QStringList st;
+	foreach(AnCanNet a, m_hnet) st << a.name();
+	return st;
+}
 //==============================================================================
 // private functions
 

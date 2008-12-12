@@ -46,6 +46,7 @@ public:
 	virtual quint32 cantyp() const { return MSGTYPE_STANDARD; }
 	virtual AnAgent* agent() const = 0;
 
+
 	enum {
 		STATUS_UNKNOWN = 0,
 		STATUS_STANBY  = 1,
@@ -67,6 +68,7 @@ private:
 	quint16 m_firmware_mcu;
 	quint8  m_firmware_fpga;
 	quint64 m_chipid;
+
 };
 
 #endif /* ANBOARD_H_ */

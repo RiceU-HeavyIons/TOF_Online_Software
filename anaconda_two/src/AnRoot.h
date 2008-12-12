@@ -41,7 +41,7 @@ public:
 
  	virtual QString dump() const;
 	virtual AnCanObject* at(int i) { return (i > 0) ? &m_lnet[i] : (AnCanObject*)this; }
-	virtual AnCanObject* hat(int i) { return &m_hnet[i]; }
+	virtual AnCanObject* hat(int i) { return &m_hnet[m_devid_map[i]]; }
 
 	enum {
 		TASK_SYNC   = 0x01,
@@ -53,21 +53,26 @@ public:
 	QList<AnBoard*> list() { return (m_lnet[1].list() + m_lnet[2].list()); }
 	int count() { return (m_lnet[1].count() + m_lnet[2].count()); }
 
-	AnAgent* agent(int i) const { return m_agents[i]; }
-	AnAgent* agentById(int i) const { return m_agents[ m_devid_list[i] ]; }
+	QMap<int, AnAgent*> agents() { return m_agents; }
+	AnAgent* agent(int i) const { return m_agents[ m_devid_map[i] ]; }
+	AnAgent* agentById(int i) const { return m_agents[i]; }
 
 //  Own functions
 	void setMode(int i);
 	QStringList modeList() const;
-	
-	AnThub *thubByDevId(int i) const { return m_devid_thub_map[i]; }
+
+	AnThub *thubByDevid(int i) const { return m_devid_thub_map[i]; }
 
 	AnCanObject      *find(const AnAddress &lad);
 	QList<AnAddress>  expand(const AnAddress &lad);
 	AnCanObject      *hfind(const AnAddress &had);
 
-	int nAgents()  const { return m_devid_list.count(); }
-	int nDevices() const { return m_devid_list.count(); }
+	int nAgents()  const { return m_agents.count(); }
+	int nDevices() const { return m_hnet.count(); }
+	quint8 devidByIndex(int i) const { return m_hnet.values().at(i).devid(); };
+	QStringList deviceNames() const;
+	QString deviceNameByDevid(int d) const { return m_hnet[m_devid_map[d]].name(); }
+
 	bool isRunning() const;
 	void stop() const;
 	void terminate() const;
@@ -98,10 +103,10 @@ private:
 
 	QMap<int, AnThub*>      m_devid_thub_map;
 
+	QMap<int, int>          m_devid_map;
 	QMap<int, AnCanNet>     m_hnet;
 	QMap<int, AnCanNet>     m_lnet;
 
-	QList<int>              m_devid_list;
 	QMap<int, AnAgent*>     m_agents;
 	QMap<int, AnAgent*>     m_socket_agent_map;
 	QMap<int, AnAgent*>     m_devid_agent_map;

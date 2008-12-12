@@ -165,10 +165,10 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	return data;
 }
 //-----------------------------------------------------------------------------
-QMap<int, AnAgent*> AnAgent::open(QList<int> &dev_id_list) {
+QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
 
 	QMap<int, AnAgent*> sock_map;
-	foreach(int dev_id, dev_id_list) sock_map[dev_id] = NULL;
+	foreach(int id, devid_map) sock_map[id] = NULL;
 
 	char *dev_path;
 
@@ -203,13 +203,13 @@ QMap<int, AnAgent*> AnAgent::open(QList<int> &dev_id_list) {
 		LINUX_CAN_Statistics(h, &tpdiag);
 		int dev_id = tpdiag.wIrqLevel;
 
-		if (sock_map.contains(dev_id)) {
+		if (devid_map.contains(dev_id)) {
 			CAN_Init(h, wBTR0BTR1, nExtended);
 			AnAgent *sock = new AnAgent();
 			sock->m_handle = h;
 			sock->addr = dev_id;
 			sock->dev_path = dev_path;
-			sock_map[dev_id] = sock;
+			sock_map[devid_map[dev_id]] = sock;
 
 			if (TCAN_DEBUG) {
 				CAN_VersionInfo(h, txt_buff);
@@ -224,10 +224,10 @@ QMap<int, AnAgent*> AnAgent::open(QList<int> &dev_id_list) {
 	}
 	globfree(&globb);
 
-	foreach(int dev_id, sock_map.keys()) {
-		if (sock_map[dev_id] == NULL)
-			qFatal("Device %d is not found.", dev_id);
-		sock_map[dev_id]->setId(dev_id_list.indexOf(dev_id));
+	foreach(int id, devid_map) {
+		if (sock_map[id] == NULL)
+			qFatal("Device %d is not found.", id);
+		sock_map[id]->setId(id);
 	}
 	return sock_map;
 }

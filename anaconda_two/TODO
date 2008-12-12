@@ -7,6 +7,7 @@ Description: TODO file for Anaconda 2 development.
 Entry:
   2008-12-11:
   - error string in main table's tooltip
+  - devid / device_id / socket clearity
 
   2008-12-10:
   - device logical id = agent id = watch id
