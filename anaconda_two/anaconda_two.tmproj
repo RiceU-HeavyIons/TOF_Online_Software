@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/AnRoot.cpp</string>
+	<string>TODO</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2008-12-12T04:37:29Z</date>
+			<date>2008-12-12T04:48:29Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -301,9 +303,7 @@
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-12T04:37:29Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2008-12-12T04:48:29Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -834,34 +834,19 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>4</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>94</integer>
+				<integer>89</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>74</integer>
-		</dict>
-		<key>src/AnRoot.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>16</integer>
-				<key>line</key>
-				<integer>424</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>62</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>TODO</string>
-		<string>src/AnRoot.cpp</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
