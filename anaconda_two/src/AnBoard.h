@@ -46,6 +46,9 @@ public:
 	virtual quint32 cantyp() const { return MSGTYPE_STANDARD; }
 	virtual AnAgent* agent() const = 0;
 
+	virtual QString lvHvString() const { return QString(); }
+	virtual QString lvString()   const { return QString(); }
+	virtual QString hvString()   const { return QString(); }
 
 	enum {
 		STATUS_UNKNOWN = 0,

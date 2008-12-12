@@ -21,7 +21,7 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	  cobj->sync(0);
 
 	m_rows = m_list.count();
-	m_columns = 5;
+	m_columns = 6;
 
 	m_selectionList << "All" << "THUBs" << "TCPUs";
 	m_selectionList << m_root->deviceNames();
@@ -77,8 +77,9 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 			case 0: return QVariant();
 			case 1: return cobj->name();
 			case 2: return m_root->deviceNameByDevid(cobj->hAddress().at(0));
-			case 3: return cobj->hAddress().toString();
-			case 4: return QString::number(cobj->maxTemp(), 'f', 2);
+			case 3: return cobj->lvString();
+			case 4: return cobj->hvString();
+			case 5: return QString::number(cobj->maxTemp(), 'f', 2);
 		}
 	} else if (role == Qt::ToolTipRole) {
 		switch(c) {
@@ -96,6 +97,7 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 			case 2: return Qt::AlignCenter;
 			case 3: return Qt::AlignCenter;
 			case 4: return Qt::AlignCenter;
+			case 5: return Qt::AlignCenter;
 		}
 	}
 	return QVariant();
@@ -115,8 +117,9 @@ QVariant KLevel1Model::headerData(int section,
 	case 0: return QVariant();
     case 1: return QString(tr("Name"));
     case 2: return QString(tr("CANBus Name"));
-    case 3: return QString(tr("LV/HV"));
-    case 4: return QString(tr("Max Temp"));
+    case 3: return QString(tr("LV"));
+    case 4: return QString(tr("HV"));
+    case 5: return QString(tr("Max Temp"));
     }
     return QString("Field %1").arg(section + 1);
 }

@@ -44,7 +44,8 @@ public:
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;
 	virtual AnAgent* agent() const;
-//
+
+// Own Functions
 	AnTdig *tdig(int i) const { return m_tdig[i-1]; }
 
 	quint8  pldReg02() const { return m_pld02; }
@@ -74,6 +75,10 @@ public:
 	QString traySn() const { return m_tray_sn; }
 	QString setTraySn(QString sn) { return (m_tray_sn = sn); }
 
+	void setLvHv(int lb, int lc, int hb, int hc);
+	virtual QString lvHvString() const;
+	virtual QString lvString() const;
+	virtual QString hvString() const;
 
 private:
 	AnTdig     *m_tdig[8];
@@ -84,6 +89,8 @@ private:
 
 	quint8      m_tray_id;
 	QString     m_tray_sn;
+	qint8       m_lv_box, m_lv_ch;
+	qint8       m_hv_box, m_hv_ch;
 };
 
 #endif /* ANTCPU_H_ */

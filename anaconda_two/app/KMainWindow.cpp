@@ -41,6 +41,9 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	m_l1view->setModel(m_l1model);
 	m_l1view->sortByColumn(1, Qt::AscendingOrder);
 	m_l1view->setColumnWidth(0, 32);
+	m_l1view->setColumnWidth(1, 64);
+	m_l1view->setColumnWidth(3, 64);
+	m_l1view->setColumnWidth(4, 64);
 
 	QSizePolicy policy = m_l1view->sizePolicy();
 	policy.setHorizontalStretch(2);

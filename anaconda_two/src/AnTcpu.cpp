@@ -200,6 +200,7 @@ QString AnTcpu::dump() const
 	sl << QString("  PLD Reg[03]      : 0x") + QString::number(m_pld03, 16);
 	sl << QString("  Status           : ") + QString::number(status());
 	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	sl << QString("  LV / HV          : ") + lvHvString();
 
 	return sl.join("\n");
 }
@@ -270,5 +271,44 @@ QString AnTcpu::pldReg02String() const
 QString AnTcpu::pldReg03String() const
 {
 	QString ret = "0x" + QString::number(m_pld03, 16);
+	return ret;
+}
+//-----------------------------------------------------------------------------
+void AnTcpu::setLvHv(int lb, int lc, int hb, int hc)
+{
+	m_lv_box = lb;
+	m_lv_ch  = lc;
+	m_hv_box = hb;
+	m_hv_ch  = hc;
+}
+/**
+ * Return LV / HV String
+ */
+QString AnTcpu::lvHvString() const
+{
+	QString ret;
+	if(active())
+		ret = QString("PS%1-U%2 / BOX%3-%4")
+		 .arg(m_lv_box).arg(m_lv_ch).arg(m_hv_box).arg(m_hv_ch);
+	return ret;
+}
+/**
+ * Return LV tring
+ */
+QString AnTcpu::lvString() const
+{
+	QString ret;
+	if(active())
+		ret = QString("PS%1-U%2").arg(m_lv_box).arg(m_lv_ch);
+	return ret;
+}
+/**
+ * Return HV String
+ */
+QString AnTcpu::hvString() const
+{
+	QString ret;
+	if(active())
+		ret = QString("BOX%3-%4").arg(m_hv_box).arg(m_hv_ch);
 	return ret;
 }

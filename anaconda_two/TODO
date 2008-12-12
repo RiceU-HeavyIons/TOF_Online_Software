@@ -13,7 +13,7 @@ Entry:
   - device logical id = agent id = watch id
   - sync w/o l1model but w/ signal feedback to l1model
   - (X) hw address <-> logical address dictionary
-  - hv/lv info
+  - (X) hv/lv info
 
   2008-12-09:
   - (X) greeting and error capture in write/read

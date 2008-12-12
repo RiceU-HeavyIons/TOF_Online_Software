@@ -61,15 +61,19 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	}
 
 	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, active, tray_sn, serdes FROM tcpus");
+	qry.exec("SELECT id, device_id, canbus_id, active, tray_sn, serdes,"
+	         " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
 	while (qry.next()) {
 		int id          = qry.value(0).toInt();
 		int device_id   = qry.value(1).toInt();
 		int canbus_id   = qry.value(2).toInt();
 		bool active     = qry.value(3).toBool();
-//		int tray_id     = qry.value(4).toInt();
 		QString tray_sn = qry.value(4).toString();
 		QString serdes  = qry.value(5).toString();
+		int lv_box      = qry.value(6).toInt();
+		int lv_ch       = qry.value(7).toInt();
+		int hv_box      = qry.value(8).toInt();
+		int hv_ch       = qry.value(9).toInt();
 
 		int devid = m_hnet[device_id].devid();
 //		if(!active) continue;
@@ -78,6 +82,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		tc->setActive(active);
 //		tc->setTrayId(tray_id);
 		tc->setTraySn(tray_sn);
+		tc->setLvHv(lv_box, lv_ch, hv_box, hv_ch);
+
 		m_lnet[2][id] = tc;
 		m_hnet[device_id][canbus_id] = tc;
 
@@ -430,9 +436,6 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
-	qDebug() << "AnRoot::hfind" << had;
-	qDebug() << hat(had.at(0));
-	qDebug() << hat(had.at(0))->hat(had.at(1));	
 	return dynamic_cast<AnCanObject*>
 				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }
