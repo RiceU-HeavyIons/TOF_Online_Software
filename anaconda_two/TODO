@@ -2,17 +2,20 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-10
+Updated: 2008-12-11
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2008-12-11:
+  - error string in main table's tooltip
+
   2008-12-10:
   - device logical id = agent id = watch id
   - sync w/o l1model but w/ signal feedback to l1model
-  - hw address <-> logical address dictionary
+  - (X) hw address <-> logical address dictionary
   - hv/lv info
 
   2008-12-09:
-  - greeting and error capture in write/read
+  - (X) greeting and error capture in write/read
   - output in console window
   - single action / double action for setMode
   - (X) TCPU PLD Reg 03
@@ -21,10 +24,10 @@ Entry:
   - (X) Msg queue handler
 
   2008-12-05:
-  - reduce TDC status get
-  - clear hw hierarchy -> NE/SE, NW/SW
+  - (X) reduce TDC status get
+  - (X) clear hw hierarchy -> NE/SE, NW/SW
   - pc syntax
-  - greeting message -> status
+  - (X) greeting message -> status
   - color legend
   - communication error
   - non expert mode
@@ -44,11 +47,11 @@ Entry:
   - javadoc / ROOT / Qt inline documentation
 
   2008-12-02:
-  - canbus name in main table instead of hardware address
+  - (X) canbus name in main table instead of hardware address
   - network name in progress
-  - network name in selector
+  - (X) network name in selector
   - enable/disable by console
-  - set threshold
+  - (X) set threshold
   - set mask
 
   2008-12-01:
