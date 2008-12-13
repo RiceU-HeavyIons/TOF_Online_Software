@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xgetStatus.cc,v 1.8 2008-11-04 21:00:42 jschamba Exp $";
+"$Id: xgetStatus.cc,v 1.9 2008-12-13 04:09:33 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -202,7 +202,7 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
 	    status[4], status[3], status[2],
 	    status[1], status[0]);
     if(status[0]){cout << "VERNIER ERROR [0]\n";}
-    if(status[1]){cout << "COURSE ERROR [1]\n";}
+    if(status[1]){cout << "COARSE ERROR [1]\n";}
     if(status[2]){cout << "CHANNEL SELECT ERROR [2]\n";}
     if(status[3]){cout << "L1 BUFFER PARITY ERROR [3]\n";}
     if(status[4]){cout << "TRIGGER FIFO PARITY ERROR [4]\n";}
