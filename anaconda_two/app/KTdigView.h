@@ -9,6 +9,7 @@
 #define KTDIGVIEW_H_
 #include <QtCore/QDebug>
 #include <QtCore/QModelIndex>
+
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
 #include <QtGui/QGroupBox>
@@ -16,19 +17,27 @@
 
 #include <QtGui/QTableView>
 #include <QtGui/QStandardItemModel>
+#include <QtGui/QItemSelectionModel>
 
 #include "AnTdig.h"
 
 class KTdigView : public QGroupBox {
-  Q_OBJECT
+	Q_OBJECT
 public:
-  KTdigView(QWidget *parent = 0);
-  virtual ~KTdigView();
+	KTdigView(QWidget *parent = 0);
+	virtual ~KTdigView();
+
+	QItemSelectionModel *selectionModel() const { return m_selectionModel; }
+	void setSelectionModel(QItemSelectionModel *md);	
 
 public slots:
-  void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
+	void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
+	void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
 
 private:
+	QItemSelectionModel *m_selectionModel;
+
 	QGroupBox *m_box;
 	QLabel    *m_laddr, *l_laddr;
 	QLabel    *m_haddr, *l_haddr;

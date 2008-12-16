@@ -7,91 +7,97 @@
 
 #include "KTcpuView.h"
 #include <QtGui/QToolBox>
+#include <QtGui/QHeaderView>
 
-KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent) {
+KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent)
+{
 
-  QGridLayout *grid = new QGridLayout(this);
+	QVBoxLayout *vbox = new QVBoxLayout(this);
+	vbox->setContentsMargins(4, 4, 4, 4);
 
-  int row = -1;
+	QWidget *winfo = new QWidget(this);
+//	winfo->setAutoFillBackground(true);
+	QGridLayout *grid = new QGridLayout(winfo);
+	grid->setSpacing(2);
+	grid->setContentsMargins(2, 0, 2, 0);
 
-  grid->addWidget(new QLabel("Tray SN:"), ++row, 0);
-  grid->addWidget(m_tray = new QLabel(""),  row, 1);
-  m_tray->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-  m_tray->setOpenExternalLinks(true);
+	int row = -1;
 
-  // grid->addWidget(new QLabel("Logical Address:"), ++row, 0);
-  // grid->addWidget(m_laddr = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Tray SN:"), ++row, 0);
+	grid->addWidget(m_tray = new QLabel(""),  row, 1);
+	m_tray->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+	m_tray->setOpenExternalLinks(true);
 
-  grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
-  grid->addWidget(m_haddr = new QLabel(""), row, 1);
+// grid->addWidget(new QLabel("Logical Address:"), ++row, 0);
+// grid->addWidget(m_laddr = new QLabel(""), row, 1);
+
+	grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
+	grid->addWidget(m_haddr = new QLabel(""), row, 1);
 
 
-  grid->addWidget(new QLabel("Firmware:"), ++row, 0);
-  grid->addWidget(m_firm = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Firmware:"), ++row, 0);
+	grid->addWidget(m_firm = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Chip ID:"), ++row, 0);
-  grid->addWidget(m_chip = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Chip ID:"), ++row, 0);
+	grid->addWidget(m_chip = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Temperature:"), ++row, 0);
-  grid->addWidget(m_temp = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Temperature:"), ++row, 0);
+	grid->addWidget(m_temp = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("ECSR:"), ++row, 0);
-  grid->addWidget(m_ecsr = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("ECSR:"), ++row, 0);
+	grid->addWidget(m_ecsr = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("PLD Reg[02]:"), ++row, 0);
-  grid->addWidget(m_pld02 = new QLabel("----"),  row, 1);
+	grid->addWidget(new QLabel("PLD Reg[02]:"), ++row, 0);
+	grid->addWidget(m_pld02 = new QLabel("----"),  row, 1);
 
-  grid->addWidget(new QLabel("PLD Reg[03]:"), ++row, 0);
-  grid->addWidget(m_pld03 = new QLabel("----"),  row, 1);
+	grid->addWidget(new QLabel("PLD Reg[03]:"), ++row, 0);
+	grid->addWidget(m_pld03 = new QLabel("----"),  row, 1);
 
-// QToolBox *tab = new QToolBox();
-// tab->addItem(new QLabel("they"), QIcon(":icons/blue.png"),  "TDIG 1");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 2");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 3");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 4");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 5");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 6");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 7");
-// tab->addItem(new QLabel("they"), QIcon(":icons/black.png"), "TDIG 8");
-// grid->addWidget(tab, ++row, 0, 1, 2);
-
+	vbox->addWidget(winfo);
 // TDIG
-  QTableView *view = new QTableView();
-  m_model = new KTdigModel;
-  view->setModel(m_model);
-  view->setSelectionBehavior(QAbstractItemView::SelectRows);
-  for(int i = 0; i < 8; ++i) {
-    view->setRowHeight(i, 20);
-  }
-  view->setMinimumHeight(20*8);
-  view->setColumnWidth(0, 100);
-  view->setColumnWidth(1, 60);
-  view->setColumnWidth(2, 60);
+	m_view = new QTableView();
+	m_model = new KTdigModel;
+	m_view->setModel(m_model);
+	m_view->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_view->setAlternatingRowColors(true);
 
-  grid->addWidget(view, ++row, 0, 1, 2);
+	for(int i = 0; i < 8; ++i) {
+		m_view->setRowHeight(i, 20);
+	}
+	int h = 20*8 + m_view->horizontalHeader()->height() + 8;
+	m_view->setMinimumHeight(h);
+	m_view->setMaximumHeight(h);
+	m_view->setColumnWidth(0, 100);
+	m_view->setColumnWidth(1, 60);
+	m_view->setColumnWidth(2, 60);
+	m_view->setMinimumWidth(100+60+60+8);
 
-  m_tdigView = new KTdigView(this);
-  grid->addWidget(m_tdigView, ++row, 0, 1, 2);
+//	grid->addWidget(view, ++row, 0, 1, 2);
+	vbox->addWidget(m_view);
 
-  grid->spacing();
+	m_tdigView = new KTdigView(this);
+//	grid->addWidget(m_tdigView, ++row, 0, 1, 2);
+	vbox->addWidget(m_tdigView);
 
-  QObject::connect(
-        view->selectionModel(),
-        SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
-        m_tdigView,
-        SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
+//	grid->addStretch(++row, 0, 1, 2);
+//	grid->setSpacing(0);
+	vbox->addStretch();
+	m_tdigView->setSelectionModel(m_view->selectionModel());
 
 }
 
-KTcpuView::~KTcpuView() {
-  // TODO Auto-generated destructor stub
+KTcpuView::~KTcpuView()
+{
+// TODO Auto-generated destructor stub
 }
 
 void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
+  m_view->clearSelection();
+
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
-  if(tcpu) {
+  if (tcpu) {
     tcpu->sync(1);
     m_tcpu = tcpu;
     setTitle(tcpu->objectName());
@@ -114,8 +120,8 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_ecsr->setText("0x" + QString::number(tcpu->ecsr(), 16));
     m_ecsr->setToolTip(tcpu->ecsrString());
 
-    m_pld02->setText(tcpu->pldReg02String());
-    m_pld03->setText(tcpu->pldReg03String());
+    m_pld02->setText(tcpu->pldReg02String(true));
+    m_pld03->setText(tcpu->pldReg03String(true));
 
     m_model->setTcpu(tcpu);
   }

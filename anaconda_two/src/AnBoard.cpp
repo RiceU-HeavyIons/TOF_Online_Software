@@ -15,6 +15,7 @@ AnBoard::AnBoard(const AnAddress &laddr, const AnAddress &haddr,
 {
 	m_temp[0] = 0.0;
 	m_temp[1] = 0.0;
+	m_temp_alarm = 0;
 }
 
 AnBoard::AnBoard(const AnBoard &rhs) : AnCanObject(rhs),
@@ -28,6 +29,19 @@ AnBoard::AnBoard(const AnBoard &rhs) : AnCanObject(rhs),
 QString AnBoard::tempString(int i) const
 {
 	return QString::number(m_temp[i], 'f', 2) + " C";
+}
+
+QString AnBoard::maxTempString() const
+{
+	if (active())
+		return QString::number(maxTemp(), 'f', 2);
+	else
+		return QString();
+}
+
+QString AnBoard::tempAlarmString() const
+{
+	return QString::number(m_temp_alarm) + " C";
 }
 
 QString AnBoard::firmwareString() const

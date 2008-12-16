@@ -10,25 +10,32 @@
 #include <QtCore/QModelIndex>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
+#include <QtGui/QItemSelectionModel>
 
 #include "AnSerdes.h"
 
 class KSerdesView : public QGroupBox {
-  Q_OBJECT
+	Q_OBJECT
+
 public:
-  KSerdesView(QWidget *parent = 0);
-  virtual ~KSerdesView();
+	KSerdesView(QWidget *parent = 0);
+	virtual ~KSerdesView();
+
+	QItemSelectionModel* selectionModel() const { return m_selectionModel; }
+	void setSelectionModel(QItemSelectionModel *md);
 
 public slots:
-  void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
+	void currentRowChanged(const QModelIndex&, const QModelIndex&);
+	void selectionChanged(const QItemSelection&, const QItemSelection&);
+
 
 private:
-
-  QLabel    *m_laddr;
-  QLabel    *m_haddr;
-  QLabel    *m_firm;
-  QLabel    *m_temp;
-  QLabel    *m_ecsr;
+	QItemSelectionModel *m_selectionModel;
+	QLabel              *m_laddr;
+	QLabel              *m_haddr;
+	QLabel              *m_firm;
+	QLabel              *m_temp;
+	QLabel              *m_ecsr;
 };
 
 #endif /* KTCPUVIEW_H_ */

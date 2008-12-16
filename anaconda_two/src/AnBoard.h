@@ -21,6 +21,11 @@ public:
 	double temp(int i = 0) const { return m_temp[i]; }
 	virtual QString tempString(int i = 0) const;
 	virtual double maxTemp() const { return m_temp[0]; };
+	virtual QString maxTempString() const;
+
+	virtual int tempAlarm() const { return m_temp_alarm; }
+	virtual int setTempAlarm(int ta) { return (m_temp_alarm = ta); }
+	virtual QString tempAlarmString() const;
 
 	quint8 ecsr() const { return m_ecsr; }
 	virtual QString ecsrString() const { return QString(); }
@@ -49,6 +54,8 @@ public:
 	virtual QString lvHvString() const { return QString(); }
 	virtual QString lvString()   const { return QString(); }
 	virtual QString hvString()   const { return QString(); }
+	virtual int lvOrder() const { return 0; }
+	virtual int hvOrder() const { return 0; }
 
 	enum {
 		STATUS_UNKNOWN = 0,
@@ -71,7 +78,7 @@ private:
 	quint16 m_firmware_mcu;
 	quint8  m_firmware_fpga;
 	quint64 m_chipid;
-
+	int     m_temp_alarm;
 };
 
 #endif /* ANBOARD_H_ */

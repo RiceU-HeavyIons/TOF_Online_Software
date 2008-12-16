@@ -10,8 +10,8 @@
 
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QModelIndex>
-#include <QtCore/QStringList>
 #include <QtCore/QList>
+#include <QtGui/QListWidget>
 #include <QtGui/QIcon>
 
 #include "AnBoard.h"
@@ -32,9 +32,7 @@ public:
 
 	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 
-	QStringList selectionList() { return m_selectionList; }
-
-	void sync(int level);
+	QList<QListWidgetItem*> selectionList() { return m_selectionList; }
 
 public slots:
 	void toggleMode(int i);
@@ -43,17 +41,17 @@ public slots:
 	void updated();
 
 private:
+	AnRoot *m_root;
 	int m_rows;
 	int m_columns;
 	int m_sort_column;
 	Qt::SortOrder m_sort_order;
-	AnRoot *m_root;
 	int m_selection;
 
-	QStringList m_selectionList;
+	QList<QListWidgetItem*> m_selectionList;
+	QList<QIcon> m_statusIcon;
 	QList<AnBoard*> m_list;
 
-	QIcon m_statusIcon[5];
 };
 
 #endif /* KLevel1Model_H_ */

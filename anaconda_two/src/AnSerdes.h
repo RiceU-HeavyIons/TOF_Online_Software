@@ -22,10 +22,12 @@ public:
 	virtual AnCanObject *hat(int i) { return this; } // no child objs	
 
 	virtual QString dump() const;
-	virtual void sync(int level = 0);
-	virtual void reset() { /* place holder */}
-	virtual void config()  { /* place holder */}
-	virtual void write();
+
+	virtual void init (int level) { /* place holder */}
+	virtual void config(int level);
+	virtual void reset (int level) { /* place holder */}
+	virtual void sync  (int level);
+
 
 	virtual QString firmwareString() const;
 
@@ -49,7 +51,8 @@ public:
 
 	quint8 pld9xBase() const { return m_pld9xBase; }
 	quint8 setPld9xBase(quint8 s) { return (m_pld9xBase = s); }
-
+	
+	QString pld9xString() const;
 
 private:
 	enum { NPORT = 4 };

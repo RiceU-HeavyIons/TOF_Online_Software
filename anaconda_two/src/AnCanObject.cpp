@@ -11,10 +11,11 @@ AnCanObject::AnCanObject(AnCanObject *parent)
   : QObject(parent),
     m_laddr(AnAddress(0, 0, 0, 0)),
     m_haddr(AnAddress(0, 0, 0, 0)),
-    m_active(false),
     m_synced(0, 0, 0, 0)
 {
-  setObjectName(QString("CanObject ") + m_laddr.toString());
+	setObjectName(QString("CanObject ") + m_laddr.toString());
+	m_active = false;
+	m_installed = false;
 }
 
 AnCanObject::AnCanObject(const AnCanObject& rhs)

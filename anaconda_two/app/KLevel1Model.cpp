@@ -12,26 +12,32 @@
 KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	QAbstractTableModel(parent), m_root(root)
 {
+	// set default sort order
 	m_sort_order = Qt::AscendingOrder;
 	m_sort_column = 1;
 
 	m_list = m_root->list(); // full copy the list
 
-	foreach(AnCanObject *cobj, m_list)
-	  cobj->sync(0);
-
 	m_rows = m_list.count();
 	m_columns = 6;
 
-	m_selectionList << "All" << "THUBs" << "TCPUs";
-	m_selectionList << m_root->deviceNames();
-	m_selectionList << "Errors";
+	// load status icons
+	m_statusIcon << QIcon(":icons/black.png");
+	m_statusIcon << QIcon(":icons/blue.png");
+	m_statusIcon << QIcon(":icons/green.png");
+	m_statusIcon << QIcon(":icons/red.png");
+	m_statusIcon << QIcon(":icons/gray.png");	
 
-	m_statusIcon[0] = QIcon(":icons/black.png");
-	m_statusIcon[1] = QIcon(":icons/blue.png");
-	m_statusIcon[2] = QIcon(":icons/green.png");
-	m_statusIcon[3] = QIcon(":icons/red.png");
-	m_statusIcon[4] = QIcon(":icons/white.png");	
+	m_selectionList << new QListWidgetItem(tr("All"));
+	m_selectionList << new QListWidgetItem(tr("THUBs"));
+	m_selectionList << new QListWidgetItem(tr("TCPUs"));
+	foreach(QString name, m_root->deviceNames())
+		m_selectionList << new QListWidgetItem(name);
+	m_selectionList << new QListWidgetItem(m_statusIcon[0], "Disabled"   );
+	m_selectionList << new QListWidgetItem(m_statusIcon[1], "Standby"    );
+	m_selectionList << new QListWidgetItem(m_statusIcon[2], "Healty"     );
+	m_selectionList << new QListWidgetItem(m_statusIcon[3], "Error"      );
+	m_selectionList << new QListWidgetItem(m_statusIcon[4], "Comm. Error");
 
 	connect(m_root, SIGNAL(updated(AnBoard*)), this, SLOT(updated(AnBoard*)));
 	connect(m_root, SIGNAL(updated()),         this, SLOT(updated()));
@@ -52,21 +58,8 @@ int KLevel1Model::columnCount(const QModelIndex &parent) const
 QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 {
 	int r, c;
-	static Qt::SortOrder prev_order = m_sort_order;
-	static int prev_column = m_sort_column;
 
-	if (prev_order != m_sort_order ||
-			prev_column != m_sort_column) { // rebuild mapping
-		prev_order = m_sort_order;
-		prev_column = m_sort_column;
-	}
-
-	if (m_sort_order == Qt::DescendingOrder) {
-		r = m_rows - index.row() - 1;
-	} else {
-		r = index.row();
-	}
-
+	r = index.row();
 	c = index.column();
 
 	AnBoard *cobj = dynamic_cast<AnBoard*>(m_list.at(r));
@@ -79,7 +72,7 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 			case 2: return m_root->deviceNameByDevid(cobj->hAddress().at(0));
 			case 3: return cobj->lvString();
 			case 4: return cobj->hvString();
-			case 5: return QString::number(cobj->maxTemp(), 'f', 2);
+			case 5: return cobj->maxTempString();
 		}
 	} else if (role == Qt::ToolTipRole) {
 		switch(c) {
@@ -150,33 +143,71 @@ void KLevel1Model::toggleMode(int i) {
 //-----------------------------------------------------------------------------
 void KLevel1Model::sort(int column, Qt::SortOrder order)
 {
-  switch(order) {
-  case Qt::DescendingOrder:
-    qDebug() << "descending";
-    break;
-  case Qt::AscendingOrder:
-    qDebug() << "ascending";
-  }
-  qDebug() << "column: " << column;
-  m_sort_column = column;
-  m_sort_order = order;
-  reset();
+
+	QList<AnBoard*> wlist(m_list);
+	m_list.clear();
+
+	if (column == 0) { /* status sort */
+		QMultiMap<int, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			AnAddress ad = bd->laddr();
+			int ord = 10000*bd->status() + 100*ad.at(0) + ad.at(1);
+			wmap.insert(ord, bd);
+		}
+		wlist = wmap.values();
+
+	} else if (column == 1) { /* name sort */
+		QMultiMap<int, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			AnAddress ad = bd->laddr();
+			wmap.insert(1000*ad.at(0) + ad.at(1), bd);
+		}
+		wlist = wmap.values();
+	} else if (column == 2) {
+		QMultiMap<int, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			AnAddress ad = bd->laddr();
+			int ord = 10000*m_root->deviceIdFromDevid(bd->haddr().at(0))
+			        + 1000*ad.at(0) + ad.at(1);
+			wmap.insert(ord, bd);
+		}
+		wlist = wmap.values();
+	} else if (column == 3) { /* LV */
+		QMultiMap<int, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			wmap.insert(bd->lvOrder(), bd);
+		}
+		wlist = wmap.values();
+	} else if (column == 4) { /* HV */
+		QMultiMap<int, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			wmap.insert(bd->hvOrder(), bd);
+		}
+		wlist = wmap.values();
+	} else if (column == 5) { /* Max Temp. */
+		QMultiMap<double, AnBoard*> wmap;
+		foreach(AnBoard *bd, wlist) {
+			wmap.insert(bd->maxTemp(), bd);
+		}
+		wlist = wmap.values();
+	}
+
+	if (order == Qt::AscendingOrder) {
+		m_list << wlist;
+	} else {
+		for(; !wlist.isEmpty(); wlist.pop_back()) m_list << wlist.last();
+	}
+
+	m_sort_column = column;
+	m_sort_order = order;
+	reset();
 }
 
 //-----------------------------------------------------------------------------
 QModelIndex KLevel1Model::index(int row, int column,
-											const QModelIndex &parent) const
+	const QModelIndex &parent) const
 {
-  return createIndex(row, column, m_list.at(row));
-}
-
-//-----------------------------------------------------------------------------
-void KLevel1Model::sync(int level)
-{
-//	foreach(AnBoard *brd, m_list) brd->sync(level);
-	m_root->sync();
-	qDebug() << "end sync";
-	reset();
+	return createIndex(row, column, m_list.at(row));
 }
 
 //-----------------------------------------------------------------------------
@@ -202,12 +233,14 @@ void KLevel1Model::setSelection(int slt) {
 			if (dynamic_cast<AnBoard*>(b)->haddr().at(0) == devid) m_list << b;
 
 	} else {
+		int trgt = m_selection - (m_root->nDevices() + 3);
 		foreach(AnBoard *b, m_root->list())
-			if (b->status() == AnBoard::STATUS_ERROR) m_list << b;
+			if (b->status() == trgt) m_list << b;
 	}
 
 	m_rows = m_list.count();
-
+	sort(m_sort_column, m_sort_order);
+	
 	reset();
 }
 

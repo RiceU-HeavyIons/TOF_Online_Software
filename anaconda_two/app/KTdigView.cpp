@@ -11,6 +11,8 @@
 KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
 
   QGridLayout *grid = new QGridLayout(this);
+  grid->setSpacing(2);
+  grid->setContentsMargins(10, 2, 10, 2);
 
   int row = -1;
   // grid->addWidget(l_laddr = new QLabel("Logical Address:"), ++row, 0);
@@ -51,10 +53,28 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
 		l_status[i]->setFont(ft);
 		m_status[i]->setFont(ft);
 	}
+	setVisible(false);
 }
 
 KTdigView::~KTdigView() {
   // TODO Auto-generated destructor stub
+}
+
+void KTdigView::setSelectionModel(QItemSelectionModel *md)
+{
+	m_selectionModel = md;
+
+	QObject::connect(
+		m_selectionModel,
+		SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
+		this,
+		SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
+
+	QObject::connect(
+		m_selectionModel,
+		SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+		this,
+		SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
 void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
@@ -76,5 +96,15 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));
 			m_status[i]->setToolTip(tdig->tdc(i+1)->statusTipString());
 		}
+		setVisible(true);
+	}
+}
+
+void KTdigView::selectionChanged(
+	const QItemSelection& selected,
+	const QItemSelection& deselected)
+{
+	if (m_selectionModel->selection().indexes().count() == 0) {
+		setVisible(false);
 	}
 }

@@ -21,12 +21,13 @@ int main(int argc, char **argv)
 	app.setApplicationName(QFileInfo(app.applicationFilePath()).baseName());
 	app.setApplicationVersion("2.0.0");
 
-	app.setFont(QFont("Lucida Grande", 10));
+//	app.setFont(QFont("Lucida Grande", 9));
 
 	qRegisterMetaType<AnRdMsg>("AnRdMsg");
 
 	KMainWindow kmw;
 	kmw.setWindowTitle(app.applicationName());
+	kmw.resize(960, 700);
 	kmw.show();
 
 	return app.exec();

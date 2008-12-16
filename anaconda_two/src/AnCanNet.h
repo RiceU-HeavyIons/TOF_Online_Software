@@ -29,10 +29,10 @@ public:
 
 	virtual QString dump() const;
 
-	virtual void sync(int level = 0) { /* do nothing */ }
-	virtual void reset() { /* do nothing */ }
-	virtual void config() { /* do nothing */ }
-	virtual void write() { /* do nothing */ }	
+	virtual void init  (int level) { /* do nothing */ }	
+	virtual void config(int level) { /* do nothing */ }
+	virtual void reset (int level) { /* do nothing */ }
+	virtual void sync  (int level) { /* do nothing */ }
 
 //  own functions
 	QList<AnBoard*> list() const { return m_map.values(); }

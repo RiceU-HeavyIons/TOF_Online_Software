@@ -31,25 +31,46 @@ QString AnSerdes::dump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnSerdes(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized     : ") + synced().toString();
-	sl << QString("  Firmware ID      : ") + firmwareString();
-	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  PLD REG9x Set    : 0x") + QString::number(pld9xSet(), 16);
-		sl << QString("  Status           : ") + QString::number(status());
-	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized      : ") + synced().toString();
+	sl << QString("  Firmware ID       : ") + firmwareString();
+	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD REG9x Set     : 0x") + QString::number(pld9xSet(), 16);
+		sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 	for(int i = 1; i <= NPORT; ++i)
-		sl << QString().sprintf("  Port[%i]          : Tcpu(%p)", i, tcpu(i));
+		sl << QString("  Port[%1]           : %2")
+		      .arg(i).arg((tcpu(i) != NULL)? tcpu(i)->objectName() : "n/a");
 
 	return sl.join("\n");
 }
 
+/**
+ * Configure Serdes
+ */
+void AnSerdes::config(int level)
+{
+  if (active() && level >= 1) {
+	quint8  srdid = hAddress().at(2);
+
+    TPCANMsg    msg;
+    TPCANRdMsg  rmsg;
+
+    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
+    agent()->write_read(msg, rmsg, 2);
+  }	
+}
+
+/**
+ * Sync Serdes info into on-memory object
+ */
 void AnSerdes::sync(int level)
 {
-  if (active() && level >= 0) {
+  if (active() && level >= 1) {
 	quint8  srdid = hAddress().at(2);
 
     TPCANMsg    msg;
@@ -68,20 +89,6 @@ void AnSerdes::sync(int level)
   }
 }
 
-void AnSerdes::write()
-{
-  if (active()) {
-	quint8  srdid = hAddress().at(2);
-
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
-
-    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid, pld9xSet());
-    agent()->write_read(msg, rmsg, 2);
-    setEcsr(rmsg.Msg.DATA[1]);
-
-  }	
-}
 
 QString AnSerdes::ecsrString() const
 {
@@ -144,8 +151,16 @@ int AnSerdes::status() const
 
 quint8 AnSerdes::pld9xSet() const {
 	quint8 bts = m_pld9xBase;
-	for(int i = 0; i < 4; ++i)
-		if(m_tcpu[i] && m_tcpu[i]->active()) bts |= (1 << i);
-
+	if (bts != 0) {
+		for (int i = 0; i < 4; ++i)
+			if(m_tcpu[i] && m_tcpu[i]->active()) bts |= (1 << i);
+	}
 	return bts;
+}
+
+QString AnSerdes::pld9xString() const
+{
+	QString ret = "0x" + QString::number(ecsr(), 16);
+	ret += " (0x" + QString::number(pld9xSet(), 16) + ")";
+	return ret;
 }

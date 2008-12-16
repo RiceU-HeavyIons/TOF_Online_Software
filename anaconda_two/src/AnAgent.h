@@ -36,31 +36,52 @@ public:
 	static void print(const TPCANMsg &msg);
 	static void print(const TPCANRdMsg &rmsg);
 	static QMap<int, AnAgent*> open(QMap<int, int> &devid_map);
+	static int debug() { return TCAN_DEBUG; }
+	static int setDebug(int d) { return (TCAN_DEBUG = d); }
 
 	int open(quint8 dev_id);
 	quint64 read(TPCANRdMsg &rmsg,
-	      unsigned int return_length, unsigned int time_out = 4000000);
+	            int return_length, unsigned int time_out = 4000000);
+	void raw_write(TPCANMsg &msg, int time_out = 4000000);
 	quint64 write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	      unsigned int return_length, unsigned int time_out = 4000000);
 
+	int id() const { return m_id; }
 	int setId(int id) { return (m_id = id); }
-	void init(int mode, QList<AnBoard*> list);
+	void init(int mode, int level, QList<AnBoard*> list);
 	void setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs);
 
 	quint8 devid() const { return addr; }
 	int socket() const { return LINUX_CAN_FileHandle(m_handle); }
 
+	QString deviceName() const { return m_deviceName; }
+	QString setDeviceName(const QString& nm) { return (m_deviceName = nm); }
+
 	AnTdcConfig *tdcConfig(int i) const { return m_tcnfs[i]; }
+
 
 public slots:
 	void stop() { m_cancel = true; }
+
+signals:
+	void init(int id);
+	void progress(int id, int percent);
+	void finished(int id);
+
+	void received(AnRdMsg);
+	void debug_recv(AnRdMsg);
+	void debug_send(AnRdMsg);
 
 protected:
 	virtual void run();
 
 private:
+	bool match(TPCANMsg &snd, TPCANMsg &rcv);
+
 	int                      m_mode;
+	int                      m_level;
 	QList<AnBoard*>          m_list;
+
 	int                      m_id;
 	bool                     m_cancel;
 	QMap<int, AnTdcConfig*>  m_tcnfs; // thread local copy of tdc configs
@@ -68,13 +89,9 @@ private:
 	HANDLE                   m_handle;
 	quint8                   addr;
 	QString                  dev_path;
-	
-	bool match(TPCANMsg &snd, TPCANMsg &rcv);
 
-signals:
-	void progress(int id, int percent);
-	void finished(int id);
-	
-	void received(AnRdMsg);
+	QString                  m_deviceName;
+
+
 };
 #endif

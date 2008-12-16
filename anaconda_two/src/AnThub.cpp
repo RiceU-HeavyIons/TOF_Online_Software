@@ -49,17 +49,19 @@ QString AnThub::dump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnThub(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized     : ") + synced().toString();
-	sl << QString("  Firmware ID      : ") + firmwareString();
-	sl << QString("  Temperature 1    : ") + tempString(0);
-	sl << QString("  Temperature 2    : ") + tempString(1);
-	sl << QString("  CRC              : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  Status           : ") + QString::number(status());
-	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized      : ") + synced().toString();
+	sl << QString("  Firmware ID       : ") + firmwareString();
+	sl << QString("  Temperature 1     : ") + tempString(0);
+	sl << QString("  Temperature 2     : ") + tempString(1);
+	sl << QString("  Temperature Alarm : ") + tempAlarmString();
+	sl << QString("  CRC               : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 
 	return sl.join("\n");
 }
@@ -67,14 +69,17 @@ QString AnThub::dump() const
 /**
  * Reset THUB
  */
-void AnThub::reset()
+void AnThub::reset(int level)
 {
-	if (active()) {
+	if (active() && level >= 1) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 
 		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
 		agent()->write_read(msg, rmsg, 2);
+		
+		if (--level >= 1)
+			for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 	}
 }
 
@@ -83,7 +88,7 @@ void AnThub::reset()
  */
 void AnThub::sync(int level)
 {
-	if (active() && level >= 0) {
+	if (active() && level >= 1) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		quint64 rdata;
@@ -109,7 +114,7 @@ void AnThub::sync(int level)
 		setEcsr(rmsg.Msg.DATA[1]);
 
 		// readout serdes infomation
-		if (--level >= 0)
+		if (--level >= 1)
 			for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
 
 		setSynced();
@@ -132,11 +137,32 @@ AnAgent *AnThub::agent() const
 	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
 }
 
+bool AnThub::setInstalled(bool b) {
+
+	AnCanObject::setInstalled(b);
+	for (int i = 0; i < 8; ++i)
+		m_serdes[i]->setInstalled(installed());
+
+	return installed();
+}
+
+bool AnThub::setActive(bool b) {
+
+	AnCanObject::setActive(b);
+	for (int i = 0; i < 8; ++i)
+		m_serdes[i]->setActive(active());
+
+	return active();
+}
+
 int AnThub::status() const
 {
 // TO-DO implement real logic
 	int err = 0;
-	if (maxTemp() > 40.0) err++;
+	if (maxTemp() > tempAlarm()) err++;
+
+	for (int i = 0; i < 8; ++i)
+		if (m_serdes[i]->status() == STATUS_ERROR) ++err;
 
 	if (active()) {
 		if (err) return STATUS_ERROR;

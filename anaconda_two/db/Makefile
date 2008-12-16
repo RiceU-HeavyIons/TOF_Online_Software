@@ -1,7 +1,8 @@
 
 all: configurations.db
 
-configurations.db : configurations.sql devices.sql tdc_configurations.sql
+configurations.db : configs.sql devices.sql thubs.sql tcpus.sql \
+                    tdc_configs.sql
 	@for i in $^; do sqlite3 $@ < $$i; done
 	ruby initialize.rb
 	

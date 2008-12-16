@@ -4,62 +4,77 @@
  *  Created on: Nov 23, 2008
  *      Author: koheik
  */
-
+#include <QtGui/QHeaderView>
 #include "KThubView.h"
 
-KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent) {
+KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent)
+{
 
-  QGridLayout *grid = new QGridLayout(this);
+	QVBoxLayout *vbox = new QVBoxLayout(this);
+	vbox->setContentsMargins(4, 4, 4, 4);
 
-  int row = 0;
-  grid->addWidget(new QLabel("Logical Address:"), row, 0);
-  grid->addWidget(m_laddr = new QLabel(""), row, 1);
+	QWidget *winfo = new QWidget();
+	QGridLayout *grid = new QGridLayout(winfo);
+	grid->setSpacing(2);
+	grid->setContentsMargins(2, 0, 2, 0);
 
-  grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
-  grid->addWidget(m_haddr = new QLabel(""), row, 1);
+	int row = 0;
+	grid->addWidget(new QLabel("Logical Address:"), row, 0);
+	grid->addWidget(m_laddr = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Firmware:"), ++row, 0);
-  grid->addWidget(m_firm = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Hardware Address:"), ++row, 0);
+	grid->addWidget(m_haddr = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Temperature 1:"), ++row, 0);
-  grid->addWidget(m_temp1 = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Firmware:"), ++row, 0);
+	grid->addWidget(m_firm = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("Temperature 2:"), ++row, 0);
-  grid->addWidget(m_temp2 = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Temperature 1:"), ++row, 0);
+	grid->addWidget(m_temp1 = new QLabel(""), row, 1);
 
-  grid->addWidget(new QLabel("CRC:"), ++row, 0);
-  grid->addWidget(m_ecsr = new QLabel(""), row, 1);
+	grid->addWidget(new QLabel("Temperature 2:"), ++row, 0);
+	grid->addWidget(m_temp2 = new QLabel(""), row, 1);
+
+	grid->addWidget(new QLabel("CRC:"), ++row, 0);
+	grid->addWidget(m_ecsr = new QLabel(""), row, 1);
+	
+	vbox->addWidget(winfo);
 
 // TDIG / SERDES Selector
-  QTableView *view = new QTableView();
-  int fonth = QFontMetrics(view->font()).height();
-  m_model = new KSerdesModel;
-  view->setModel(m_model);
-  view->setSelectionBehavior(QAbstractItemView::SelectRows);
-  for(int i = 0; i < 8; ++i) {
-    view->setRowHeight(i, 20);
-  }
-  view->setMinimumHeight(9*fonth);
-  view->setMaximumHeight(9*1.2*fonth);
-  view->setColumnWidth(0, 30);
-  view->setColumnWidth(1, 80);
-  view->setColumnWidth(2, 80);
+	m_tblview = new QTableView();
+	int fonth = QFontMetrics(m_tblview->font()).height();
+	m_model = new KSerdesModel;
+	m_tblview->setModel(m_model);
+	m_tblview->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_tblview->setAlternatingRowColors(true);
 
-  grid->addWidget(view, ++row, 0, 1, 2);
+	for(int i = 0; i < 8; ++i) {
+		m_tblview->setRowHeight(i, 20);
+	}
+	int h = 20*8 + m_tblview->horizontalHeader()->height() + 8;
+	m_tblview->setMinimumHeight(h);
+	m_tblview->setMaximumHeight(h);
+	m_tblview->setColumnWidth(0, 30);
+	m_tblview->setColumnWidth(1, 80);
+	m_tblview->setColumnWidth(2, 80);
+	m_tblview->setMinimumWidth(30+80+80+8);
 
-  m_view = new KSerdesView(this);
-  grid->addWidget(m_view, ++row, 0, 1, 2);
+//	grid->addWidget(view, ++row, 0, 1, 2);
+	vbox->addWidget(m_tblview);
 
-  QObject::connect(
-        view->selectionModel(),
-        SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
-        m_view,
-        SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
+	m_view = new KSerdesView(this);
+	m_view->setSelectionModel(m_tblview->selectionModel());
+
+//	grid->addWidget(m_view, ++row, 0, 1, 2);
+	vbox->addWidget(m_view);
+
+	vbox->addStretch();
+
 
 }
 
-KThubView::~KThubView() {
-  // TODO Auto-generated destructor stub
+KThubView::~KThubView()
+{
+// TODO Auto-generated destructor stub
 }
 
 void KThubView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)

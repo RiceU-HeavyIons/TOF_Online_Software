@@ -21,37 +21,26 @@ QString AnTdc::dump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnTdc(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Status Word      : 0x").arg(QString::number(m_status, 16));
-	sl << QString("  Status           : ") + QString::number(status());
-//	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
-	sl << QString("  Synchronized     : ") + synced().toString();
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Status Word       : 0x").arg(QString::number(m_status, 16));
+	sl << QString("  Status            : ") + QString::number(status());
+//	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
+	sl << QString("  Synchronized      : ") + synced().toString();
 
 	return sl.join("\n");
 }
 
+
 /**
- * Sync TDC information
+ * Initialize TDC
  */
-void AnTdc::sync(int level)
-{
-	if (active() and level >= 0) {
-		quint8  data0 = 0x04 | hAddress().at(3);
+void AnTdc::init(int level) {
 
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-        AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
-        m_status = agent()->write_read(msg, rmsg, 10);
-        setSynced();
-	}
-}
-
-void AnTdc::init() {
-
-	if (active()) {
+	if (active() && level >= 1) {
 		quint8  data0 = 0x04 | hAddress().at(3);
 
 	    TPCANMsg    msg;
@@ -68,29 +57,18 @@ void AnTdc::init() {
 	}
 }
 
-void AnTdc::reset() {
-
-	if (active()) {
-		quint8  data0 = 0x90 | hAddress().at(3);
-
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, data0);
-	    agent()->write_read(msg, rmsg, 2);
-	}
-}
-
-
-void AnTdc::config()
+/**
+ * Configure TDC
+ */
+void AnTdc::config(int level)
 {
 
-	if (active()) {
+	if (active() && level >= 1) {
 		quint64 rdata;
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		AnTdcConfig *tc = agent()->tdcConfig(configId());
-		qDebug() << tc;
+		qDebug() << "AnTdc::config()" << tc;
 
 		// block start //
 		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x10);
@@ -119,6 +97,38 @@ void AnTdc::config()
 		rdata = agent()->write_read(msg, rmsg, 2);
 	}
 }
+/**
+  * Reset TDC
+  */
+void AnTdc::reset(int level) {
+
+	if (active() && level >= 1) {
+		quint8  data0 = 0x90 | hAddress().at(3);
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, data0);
+	    agent()->write_read(msg, rmsg, 2);
+	}
+}
+
+/**
+ * Sync TDC information
+ */
+void AnTdc::sync(int level)
+{
+	if (active() and level >= 1) {
+		quint8  data0 = 0x04 | hAddress().at(3);
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+        AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
+        m_status = agent()->write_read(msg, rmsg, 10);
+        setSynced();
+	}
+}
+
 //-----------------------------------------------------------------------------
 quint32 AnTdc::canidr() const
 {

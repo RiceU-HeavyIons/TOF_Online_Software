@@ -24,13 +24,14 @@ public:
 	virtual AnCanObject *at(int i) { return (i > 0) ? m_tdc[i] : dynamic_cast<AnCanObject*>(this); }
 	virtual AnCanObject *hat(int i);
 
-	virtual bool setActive(bool act);
+	virtual bool setInstalled(bool b);
+	virtual bool setActive(bool b);
 	virtual QString dump() const;
 
-	virtual void sync(int level = 0);
-	virtual void reset();
-	virtual void config();
-	virtual void write();
+	virtual void init  (int level);
+	virtual void config(int level);
+	virtual void reset (int level);
+	virtual void sync  (int level);
 
 // Inherited from AnBoard
 	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
@@ -52,8 +53,6 @@ public:
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
-	
-	virtual void init();
 
 private:
 	AnTdc    *m_tdc[4];

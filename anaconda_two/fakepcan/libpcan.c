@@ -265,7 +265,9 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
 			pMsgBuff->LEN = 3;
-			pMsgBuff->DATA[2] = 0x0f;
+			if (pMsgBuff->DATA[1] == 0x2) pMsgBuff->DATA[2] = 0x0f;
+			if (pMsgBuff->DATA[1] == 0x3) pMsgBuff->DATA[2] = 0x03;
+			if (pMsgBuff->DATA[1] == 0xe) pMsgBuff->DATA[2] = 0x00;
 			break;
 
 		case 0xb0:
@@ -405,6 +407,11 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->LEN = 2;
 			pMsgBuff->DATA[1] = 0;
 			usleep(500000);
+		break;
+		case 0x90: // Reset All TDCs
+			pMsgBuff->LEN = 2;
+			pMsgBuff->DATA[1] = 0;
+			usleep(30000);
 		break;
 		case 0xb0: // Get Board Status
 		    temp = 30.0 + 10.0*rand()/RAND_MAX;
@@ -584,6 +591,8 @@ void* runner(void *arg)
 	dinfo *ptr;
 	srand(100);
 
+	sleep(10);
+
 	for (ptr = dlist; ; ptr++) {
 		if (ptr->irq == 0) ptr = dlist;
 
@@ -669,7 +678,7 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 		thrd = malloc(sizeof(pthread_t));
 		if (pthread_create(thrd, NULL, runner, NULL))
 			perror("pthread_create");
-		fprintf(stderr, "thrd(%p)= %p\n", &thrd, thrd);
+//		fprintf(stderr, "thrd(%p)= %p\n", &thrd, thrd);
 		++cnt;
 	}
 

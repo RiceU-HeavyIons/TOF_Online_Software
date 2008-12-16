@@ -31,6 +31,9 @@ public:
 public slots:
   void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
 
+protected:
+	void mouseReleaseEvent(QMouseEvent *event) { m_view->clearSelection(); }
+
 private:
 
 	AnTcpu      *m_tcpu;
@@ -49,6 +52,7 @@ private:
 
 	KTdigModel  *m_model;
 	KTdigView   *m_tdigView;
+	QTableView  *m_view;
 };
 
 #endif /* KTCPUVIEW_H_ */

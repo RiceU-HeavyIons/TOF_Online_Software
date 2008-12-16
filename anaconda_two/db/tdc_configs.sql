@@ -7,4 +7,3 @@ CREATE TABLE tdc_configs (
     hex_string  VARCHAR(256)    NOT NULL,
     bit_string  VARCHAR(1024)   NOT NULL
 );
-SELECT * FROM tdc_configs;

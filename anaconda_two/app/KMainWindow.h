@@ -36,11 +36,11 @@
 #include <QtGui/QProgressBar>
 
 #include <QtGui/QMainWindow>
-#include <QtGui/QDockWidget>
 
 #include "KProgressIndicator.h"
 #include "KConsole.h"
 #include "KLevel1Model.h"
+#include "KLevel2View.h"
 #include "AnRoot.h"
 
 
@@ -53,19 +53,28 @@ public:
 	~KMainWindow();
 
 public slots:
+	void doInit();
+	void doConfig();
 	void doReset();
 	void doSync();
-	void doConfigure();
+
 	void toggleToolbar();
 	void toggleConsole();
 	void toggleAutoSync();
 
 	void setMode(int i);
 
+protected:
+	void mouseReleaseEvent(QMouseEvent *event);
+
 protected slots:
 	void agentFinished();
+	void setSelection(int select);
+
 
 private:
+	QList<AnBoard*> selectedBoards();
+
 	void createActions();
 	void createMenus();
 	void createToolBars();
@@ -74,17 +83,21 @@ private:
 	void updateBars();
 
 	void setBusy(bool sw = true);
+
+
+	bool                m_busy;
+
 	// Actions
-	bool     m_busy;
-	QAction *m_ResetAction;
-	QAction *m_SyncAction;
-	QAction *m_ConfigAction;
-	QAction *m_ToggleToolbarAction;
-	QAction *m_ToggleConsoleAction;
-	QAction *m_ToggleAutoSyncAction;
+	QAction            *m_InitAction;
+	QAction            *m_ConfigAction;
+	QAction            *m_ResetAction;
+	QAction            *m_SyncAction;
+
+	QAction            *m_ToggleToolbarAction;
+	QAction            *m_ToggleConsoleAction;
+	QAction            *m_ToggleAutoSyncAction;
 
 	QToolBar           *m_CommandToolbar;
-
 	QComboBox          *m_combo;
 
 	AnRoot             *m_root;
@@ -98,6 +111,6 @@ private:
 	KLevel1Model       *m_l1model;
 	QListWidget        *m_selector;
 
-	QDockWidget        *m_l2view;
+	KLevel2View        *m_l2view;
 };
 #endif

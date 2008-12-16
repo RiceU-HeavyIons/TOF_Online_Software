@@ -12,9 +12,7 @@ AnTcpu::AnTcpu(
 	const AnAddress &laddr,
 	const AnAddress &haddr,
 	AnCanObject *parent) : AnBoard(laddr, haddr, parent),
-	m_tray_id(0),
-	m_pld02(0), m_pld02Set(0),
-	m_pld0e(0), m_pld0eSet(0)
+	m_tray_id(0)
 {
 	setObjectName(QString("TCPU ") + lAddress().toString());
 	setName(QString("Tray %1").arg(lAddress().at(1)));
@@ -29,7 +27,13 @@ AnTcpu::AnTcpu(
 	}
 	m_tray_sn = "";
 	m_chipid = 0;
-	m_pld03 = 0;
+	
+	m_pld02    = 0;
+	m_pld02Set = 0;
+	m_pld03    = 0;
+	m_pld03Set = 0;
+	m_pld0e    = 0;
+	m_pld0eSet = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -53,6 +57,66 @@ AnCanObject *AnTcpu::hat(int i)
 		return m_tdig[i - 0x10];
 	else
 		return this;
+}
+
+
+
+//-----------------------------------------------------------------------------
+void AnTcpu::config(int level)
+{
+	if (active() && level >= 1) {
+		if(--level >= 1) {
+			for (int i = 0; i < 8; ++i) {
+				m_tdig[i]->config(level);
+			}
+		}
+		// catch final messages
+		// for (int i = 0; i < 8; ++i)
+		// agent()->read(rmsg);
+		// write to PLD REG[2]
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
+		agent()->write_read(msg, rmsg, 2);
+
+	}
+}
+//-----------------------------------------------------------------------------
+void AnTcpu::init(int level)
+{
+
+	if (active() && level >= 1) {
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+		// this may not implemented yet
+		AnAgent::set_msg(msg, canidw(),
+		                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+	    agent()->write_read(msg, rmsg, 2);
+
+		if (--level >= 1)
+			for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void AnTcpu::reset(int level)
+{
+
+	if (active() && level >= 1) {
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+		// this may not implemented yet
+		AnAgent::set_msg(msg, canidw(),
+		                 MSGTYPE_STANDARD, 5, 0xe, 0x1, 0x3, 0x1, 0x0);
+	    agent()->write_read(msg, rmsg, 2);
+
+		if (--level >= 1)
+			for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -104,51 +168,6 @@ void AnTcpu::sync(int level)
 }
 
 
-//-----------------------------------------------------------------------------
-void AnTcpu::reset()
-{
-
-	if (active()) {
-
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-
-		// this may not implemented yet
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD,
-											5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-	    agent()->write_read(msg, rmsg, 2);
-
-		for (int i = 0; i < 8; ++i) m_tdig[i]->reset();
-	}
-}
-
-//-----------------------------------------------------------------------------
-void AnTcpu::config()
-{
-	if (active()) {
-		for (int i = 0; i < 8; ++i) {
-			m_tdig[i]->config();
-		}
-		// catch final messages
-//		for (int i = 0; i < 8; ++i)
-//			agent()->read(rmsg);
-	}
-}
-
-//-----------------------------------------------------------------------------
-void AnTcpu::write()
-{
-	if (active()) {
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-
-		// write to PLD REG[2]
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
-	    agent()->write_read(msg, rmsg, 2);
-
-//		for (int i = 0; i < 8; ++i) m_tdig[i]->write();
-	}
-}
 
 /**
  * Return CANBus id for read
@@ -169,14 +188,22 @@ AnAgent *AnTcpu::agent() const
 }
 
 //-----------------------------------------------------------------------------
-bool AnTcpu::setActive(bool act) {
+bool AnTcpu::setInstalled(bool b) {
 
-	AnCanObject::setActive(act);
+	AnCanObject::setInstalled(b);
+	for (int i = 0; i < 8; ++i)
+		m_tdig[i]->setInstalled(installed());
+		
+	return installed();
+}
 
-	if(!active()) {
-		for (int i = 0; i < 8; ++i)
-			m_tdig[i]->setActive(false);
-	}
+bool AnTcpu::setActive(bool b) {
+
+	AnCanObject::setActive(b);
+	for (int i = 0; i < 8; ++i)
+		m_tdig[i]->setActive(active());
+
+	return active();
 }
 
 QString AnTcpu::dump() const
@@ -184,23 +211,28 @@ QString AnTcpu::dump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnTcpu(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized     : ") + synced().toString();
-	sl << QString("  Tray ID          : ") + trayIdString();
-	sl << QString("  Tray SN          : ") + traySn();
-	sl << QString("  Firmware ID      : ") + firmwareString();
-	sl << QString("  Chip ID          : ") + chipIdString();
-	sl << QString("  Temperature      : ") + tempString();
-	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  PLD Reg[02]      : 0x") + QString::number(m_pld02, 16);
-	sl << QString("  PLD Reg[02] Set  : 0x") + QString::number(m_pld02Set, 16);
-	sl << QString("  PLD Reg[03]      : 0x") + QString::number(m_pld03, 16);
-	sl << QString("  Status           : ") + QString::number(status());
-	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
-	sl << QString("  LV / HV          : ") + lvHvString();
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized      : ") + synced().toString();
+	sl << QString("  Tray ID           : ") + trayIdString();
+	sl << QString("  Tray SN           : ") + traySn();
+	sl << QString("  Firmware ID       : ") + firmwareString();
+	sl << QString("  Chip ID           : ") + chipIdString();
+	sl << QString("  Temperature       : ") + tempString();
+	sl << QString("  Temperature Alarm : ") + tempAlarmString();
+	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD Reg[02]       : 0x") + QString::number(m_pld02, 16);
+	sl << QString("  PLD Reg[02] Set   : 0x") + QString::number(m_pld02Set, 16);
+	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
+	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
+	sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
+	sl << QString("  PLD Reg[0E] Set   : 0x") + QString::number(m_pld0eSet, 16);
+	sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
+	sl << QString("  LV / HV           : ") + lvHvString();
 
 	return sl.join("\n");
 }
@@ -244,8 +276,14 @@ int AnTcpu::status() const
 {
 	int stat, err = 0;
 
-	if (maxTemp() > 40.0) ++err;
+	if (temp() > tempAlarm()) ++err;
 	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
+	
+	if (m_pld02 != m_pld02Set) ++err;
+	if (m_pld03 != m_pld03Set) ++err;
+	
+	for (int i = 0; i < 8; ++i)
+		if (m_tdig[i]->status() == STATUS_ERROR) ++err;
 
 	if (err)
 		stat = STATUS_ERROR;
@@ -259,18 +297,38 @@ int AnTcpu::status() const
 
 
 //-----------------------------------------------------------------------------
-QString AnTcpu::pldReg02String() const
+QString AnTcpu::pldReg02String(bool hlite) const
 {
 	// QString ret = "0x" + QString::number(m_pld02, 16) + ", "
 	//             + "0x" + QString::number(m_pld0e, 16);
 	QString ret = "0x" + QString::number(m_pld02, 16);
 	ret += " (0x" + QString::number(m_pld02Set, 16) + ")";
+
+	if (hlite && m_pld02 != m_pld02Set)
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
 	return ret;
 }
 //-----------------------------------------------------------------------------
-QString AnTcpu::pldReg03String() const
+QString AnTcpu::pldReg03String(bool hlite) const
 {
 	QString ret = "0x" + QString::number(m_pld03, 16);
+	ret += " (0x" + QString::number(m_pld03Set, 16) + ")";
+	
+	if (hlite && m_pld03 != m_pld03Set)
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
+}
+//-----------------------------------------------------------------------------
+QString AnTcpu::pldReg0eString(bool hlite) const
+{
+	QString ret = "0x" + QString::number(m_pld0e, 16);
+	ret += " (0x" + QString::number(m_pld0eSet, 16) + ")";
+
+	if (hlite && m_pld0e != m_pld0eSet)
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+	
 	return ret;
 }
 //-----------------------------------------------------------------------------

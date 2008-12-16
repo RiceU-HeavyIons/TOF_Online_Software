@@ -23,13 +23,14 @@ public:
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);
 
-	virtual bool setActive(bool act);
+	virtual bool setInstalled(bool b);
+	virtual bool setActive(bool b);
 
 	virtual QString dump() const;
-	virtual void sync(int level = 0);
-	virtual void reset();
-	virtual void config();
-	virtual void write();	
+	virtual void init  (int level);
+	virtual void config(int level);
+	virtual void reset (int level);
+	virtual void sync  (int level = 0);
 
 // Inherited from AnBoard
 
@@ -55,14 +56,17 @@ public:
 
 	quint8  pldReg03() const { return m_pld03; }
 	quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
+	quint8  pldReg03Set() const { return m_pld03Set; }
+	quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
 
 	quint8  pldReg0e() const { return m_pld0e; }
 	quint8  setPldReg0e(quint8 v) { return (m_pld0e = v); }
 	quint8  pldReg0eSet() const { return m_pld0eSet; }
 	quint8  setPldReg0eSet(quint8 v) { return (m_pld0eSet = v); }
 
-	QString pldReg02String() const;
-	QString pldReg03String() const;	
+	QString pldReg02String(bool hlite = false) const;
+	QString pldReg03String(bool hlite = false) const;	
+	QString pldReg0eString(bool hlite = false) const;	
 
 	quint64 chipId() const { return m_chipid; }
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
@@ -79,11 +83,13 @@ public:
 	virtual QString lvHvString() const;
 	virtual QString lvString() const;
 	virtual QString hvString() const;
+	virtual int lvOrder() const { return 100*m_lv_box + m_lv_ch; }
+	virtual int hvOrder() const { return 100*m_hv_box + m_hv_ch; }
 
 private:
 	AnTdig     *m_tdig[8];
 	quint8      m_pld02, m_pld02Set;
-	quint8      m_pld03; // read-only register	
+	quint8      m_pld03, m_pld03Set; // read-only register	
 	quint8      m_pld0e, m_pld0eSet;
 	quint64     m_chipid;
 

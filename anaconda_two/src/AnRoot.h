@@ -14,7 +14,6 @@
 #include <QtCore/QSocketNotifier>
 
 #include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
 
 #include "AnAgent.h"
 #include "AnCanObject.h"
@@ -26,6 +25,8 @@
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
 
+class AnMaster;
+
 class AnRoot : public AnCanObject {
 	Q_OBJECT
 
@@ -34,44 +35,55 @@ public:
  	virtual ~AnRoot();
 
  // inherited from AnCanObject
-	virtual void sync(int level = 0);
-	virtual void reset();
-	virtual void config();
-	virtual void write();
-
  	virtual QString dump() const;
+
+	virtual void init  (int level);
+	virtual void config(int level);
+	virtual void reset (int level);
+	virtual void sync  (int level);
+
+
 	virtual AnCanObject* at(int i) { return (i > 0) ? &m_lnet[i] : (AnCanObject*)this; }
 	virtual AnCanObject* hat(int i) { return &m_hnet[m_devid_map[i]]; }
 
 	enum {
-		TASK_SYNC   = 0x01,
-		TASK_RESET  = 0x02,
-		TASK_CONFIG = 0x04,
-		TASK_WRITE  = 0x08
+		TASK_INIT   = 0x01,
+		TASK_CONFIG = 0x02,
+		TASK_RESET  = 0x04,
+		TASK_SYNC   = 0x08
 	};
+
+//  Own functions
 
 	QList<AnBoard*> list() { return (m_lnet[1].list() + m_lnet[2].list()); }
 	int count() { return (m_lnet[1].count() + m_lnet[2].count()); }
 
+	int nAgents()  const { return m_agents.count(); }
 	QMap<int, AnAgent*> agents() { return m_agents; }
 	AnAgent* agent(int i) const { return m_agents[ m_devid_map[i] ]; }
 	AnAgent* agentById(int i) const { return m_agents[i]; }
 
-//  Own functions
 	void setMode(int i);
 	QStringList modeList() const;
+
+	void init  (int level, const QList<AnBoard*>& blist);	
+	void config(int level, const QList<AnBoard*>& blist);
+	void reset (int level, const QList<AnBoard*>& blist);
+	void sync  (int level, const QList<AnBoard*>& blist);
 
 	AnThub *thubByDevid(int i) const { return m_devid_thub_map[i]; }
 
 	AnCanObject      *find(const AnAddress &lad);
+	QList<AnBoard*>   find(const QList<AnAddress>& alist);
+
 	QList<AnAddress>  expand(const AnAddress &lad);
 	AnCanObject      *hfind(const AnAddress &had);
 
-	int nAgents()  const { return m_agents.count(); }
 	int nDevices() const { return m_hnet.count(); }
 	quint8 devidByIndex(int i) const { return m_hnet.values().at(i).devid(); };
 	QStringList deviceNames() const;
 	QString deviceNameByDevid(int d) const { return m_hnet[m_devid_map[d]].name(); }
+	int deviceIdFromDevid(int d) { return m_devid_map[d]; }
 
 	bool isRunning() const;
 	void stop() const;
@@ -84,9 +96,15 @@ public:
 	void enableWatch();
 	void disableWatch();
 
+	void emit_updated()  { emit updated(); }
+	void emit_finished() { emit finished(); }	
+
 signals:
 	void updated(AnBoard*);
 	void updated();
+
+	void aboutStart();
+	void finished();
 
 public slots:
 	void autosync();
@@ -107,6 +125,7 @@ private:
 	QMap<int, AnCanNet>     m_hnet;
 	QMap<int, AnCanNet>     m_lnet;
 
+	AnMaster               *m_master;
 	QMap<int, AnAgent*>     m_agents;
 	QMap<int, AnAgent*>     m_socket_agent_map;
 	QMap<int, AnAgent*>     m_devid_agent_map;
@@ -117,9 +136,9 @@ private:
 	QList<mode>             m_mode_list;
 
 	// AutoSync timer and coursor
-	QTimer                 *m_timer;
-	int                     m_cur1;
-	int                     m_cur2;
+	QTimer                         *m_timer;
+	QList<AnBoard*>::const_iterator m_autoSyncIter;
+	QList<AnBoard*>                 m_autoSyncList;
 
 	QMap<int, QSocketNotifier*>  m_watch;
 

@@ -8,7 +8,7 @@
 #include "AnAgent.h"
 #include "AnRoot.h"
 
-int AnAgent::TCAN_DEBUG = 1;
+int AnAgent::TCAN_DEBUG = 0;
 const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
 
 //-----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ void AnAgent::print(const TPCANRdMsg &rmsg)
 
 //-----------------------------------------------------------------------------
 quint64 AnAgent::read(TPCANRdMsg &rmsg,
-    unsigned int return_length, unsigned int time_out)
+    int return_length, unsigned int time_out)
 {
 
   if(m_handle == NULL) {
@@ -79,19 +79,46 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
         fprintf(stderr, "System error: 0x%x\n", status);
     }
     if (TCAN_DEBUG) {
-      printf("<< (%p)", m_handle);
-      print(rmsg);
+      // printf("<< (%p)", m_handle);
+      // print(rmsg);
+      emit debug_recv(AnRdMsg(devid(), rmsg));
     }
     length += rmsg.Msg.LEN;
     for(int j = 1; j < rmsg.Msg.LEN; ++j)
       data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
   }
 
-  if (return_length != length) {
+  if (return_length >= 0 && return_length != (int)length) {
     fprintf(stderr, "Return length doesn't match.\n");
   }
 
   return data;
+}
+
+//-----------------------------------------------------------------------------
+void AnAgent::raw_write(TPCANMsg &msg, int time_out)
+{
+	if(m_handle == NULL) {
+		qDebug() << "device is not open";
+		return;
+	}
+
+	int er;
+
+	if (TCAN_DEBUG) {
+		// printf(">> ");
+		// print(msg);
+		emit debug_send(AnRdMsg(devid(), msg));
+	}
+
+	er = LINUX_CAN_Write_Timeout(m_handle, &msg, time_out);
+	if (er != 0) {
+		int status = CAN_Status(m_handle);
+		if (status > 0)
+			fprintf(stderr, "CANbus error: 0x%x\n", status);
+		else
+			fprintf(stderr, "System error: 0x%x\n", status);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -110,8 +137,9 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	int er;
 
 	if (TCAN_DEBUG) {
-		printf(">> ");
-		print(msg);
+		// printf(">> ");
+		// print(msg);
+		emit debug_send(AnRdMsg(devid(), msg));
 	}
 
 	er = CAN_Write(m_handle, &msg);
@@ -135,8 +163,9 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 					fprintf(stderr, "System error: 0x%x\n", status);
 			}
 			if (TCAN_DEBUG) {
-				printf("<< ");
-				print(rmsg);
+				// printf("<< ");
+				// print(rmsg);
+				emit debug_recv(AnRdMsg(devid(), rmsg));
 			}
 			if (match(msg, rmsg.Msg)) {
 				break;
@@ -300,9 +329,10 @@ int AnAgent::open(quint8 dev_id) {
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::init(int mode, QList<AnBoard*> list)
+void AnAgent::init(int mode, int level, QList<AnBoard*> list)
 {
 	m_mode = mode;
+	m_level = level;
 	m_list = list;
 }
 
@@ -314,31 +344,40 @@ void AnAgent::run()
 	int total = m_list.count();
 	int step  = 0;
 
-	if (m_mode == AnRoot::TASK_SYNC) {
+	emit init(m_id);
+
+	if (m_mode & AnRoot::TASK_INIT) {
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
-			brd->sync(3);
-			emit progress(m_id, 100*(++step)/total);
-		}
-	} else if (m_mode == AnRoot::TASK_RESET) {
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->reset();
-			emit progress(m_id, 100*(++step)/total);
-		}
-	} else if (m_mode == AnRoot::TASK_CONFIG) {
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->config();
-			emit progress(m_id, 100*(++step)/total);
-		}
-	} else if (m_mode == AnRoot::TASK_WRITE) {
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->write();
+			brd->init(m_level);
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
+
+	if (m_mode & AnRoot::TASK_CONFIG) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->config(m_level);
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
+
+	if (m_mode & AnRoot::TASK_RESET) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->reset(m_level);
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
+
+	if (m_mode & AnRoot::TASK_SYNC) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->sync(m_level);
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
+
 	// make sure send out finish
 	emit progress(m_id, 100);
 	emit finished(m_id);

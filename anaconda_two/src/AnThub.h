@@ -18,13 +18,17 @@ public:
 
 //  inherited from AnCanbusObject
 	virtual QString dump() const;
-	virtual void sync(int level = 0);
-	virtual void reset();
-	virtual void config() { /* place holder */ }
-	virtual void write() { /* place holder */ }	
+
+	virtual void init  (int level) { /* place holder */ }	
+	virtual void config(int level) { /* place holder */ }
+	virtual void reset (int level);
+	virtual void sync  (int level);
 
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);
+	
+	virtual bool setInstalled(bool b);
+	virtual bool setActive(bool b);
 
 // from AnBoard
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }

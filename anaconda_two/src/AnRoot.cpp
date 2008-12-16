@@ -9,6 +9,9 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 
+#include <QtSql/QSqlQuery>
+#include "AnMaster.h"
+
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 {
@@ -27,16 +30,17 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	if (!m_db.open() )
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
 	QSqlQuery qry;
-	qry.exec("SELECT id, devid, name, active FROM devices");
+	qry.exec("SELECT id, devid, name, installed FROM devices");
 	while(qry.next()) {
-		int id       = qry.value(0).toInt();
-		int devid    = qry.value(1).toInt();		
-		QString name = qry.value(2).toString();
-		bool active  = qry.value(3).toBool();
+		int id          = qry.value(0).toInt();
+		int devid       = qry.value(1).toInt();		
+		QString name    = qry.value(2).toString();
+		bool installed  = qry.value(3).toBool();
 
 		m_devid_map[devid] = id;
 		m_hnet[id] = AnCanNet(AnAddress(id, 0, 0, 0), AnAddress(devid, 0, 0, 0));
-		m_hnet[id].setActive(active);
+		m_hnet[id].setInstalled(installed);
+		m_hnet[id].setActive(installed);
 		m_hnet[id].setObjectName(name);
 	}
 
@@ -44,30 +48,31 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	m_agents = AnAgent::open(m_devid_map);
 
 	// create THUB objects
-	qry.exec("SELECT id, device_id, canbus_id, active FROM thubs");
+	qry.exec("SELECT id, device_id, canbus_id, installed FROM thubs");
 	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		int device_id = qry.value(1).toInt();
-		int canbus_id = qry.value(2).toInt();
-		bool active   = qry.value(3).toBool();
-		int devid     = m_hnet[device_id].devid();
-		AnThub *th    = new AnThub(AnAddress(1, id, 0, 0),
+		int id         = qry.value(0).toInt();
+		int device_id  = qry.value(1).toInt();
+		int canbus_id  = qry.value(2).toInt();
+		bool installed = qry.value(3).toBool();
+		int devid      = m_hnet[device_id].devid();
+		AnThub *th     = new AnThub(AnAddress(1, id, 0, 0),
 		                           AnAddress(devid, canbus_id, 0, 0), this);
 //		if(!active) continue;
-		th->setActive(active);
+		th->setInstalled(installed);
+		th->setActive(installed);
 		m_lnet[1][id] = th;
 		m_hnet[device_id][canbus_id] = th;
 		m_devid_thub_map[devid] = th;
 	}
 
 	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, active, tray_sn, serdes,"
+	qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, serdes,"
 	         " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
 	while (qry.next()) {
 		int id          = qry.value(0).toInt();
 		int device_id   = qry.value(1).toInt();
 		int canbus_id   = qry.value(2).toInt();
-		bool active     = qry.value(3).toBool();
+		bool installed  = qry.value(3).toBool();
 		QString tray_sn = qry.value(4).toString();
 		QString serdes  = qry.value(5).toString();
 		int lv_box      = qry.value(6).toInt();
@@ -79,7 +84,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 //		if(!active) continue;
 		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 		                        AnAddress(devid, canbus_id, 0, 0), this);
-		tc->setActive(active);
+		tc->setInstalled(installed);
+		tc->setActive(installed);
 //		tc->setTrayId(tray_id);
 		tc->setTraySn(tray_sn);
 		tc->setLvHv(lv_box, lv_ch, hv_box, hv_ch);
@@ -87,7 +93,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		m_lnet[2][id] = tc;
 		m_hnet[device_id][canbus_id] = tc;
 
-		if (active) {
+		if (installed) {
 			int nsrds = serdes[0].toAscii() - 'A' + 1;
 			int port  = serdes[1].toAscii() - '0' + 1;
 			if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
@@ -99,12 +105,14 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	readModeList();
 	readTdcConfig();
 
+	m_master = new AnMaster(this);
 	setMode(0);
 
 	initAutoSync();
 
 	// setup various maps and watches for incoming messages
 	foreach(AnAgent *ag, m_agents) {
+		ag->setDeviceName(m_hnet[ag->id()].objectName());
 		m_devid_agent_map[ag->devid()] = ag;
 		int sock = ag->socket();
 		m_socket_agent_map[sock] = ag;
@@ -137,66 +145,111 @@ QString AnRoot::dump() const
 	sl << QString("  Name             : ") + name();
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed        : ") + (installed() ? "yes" : "no");
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
 	sl << QString("  Synchronized     : ") + synced().toString();
 
 	return sl.join("\n");
 }
 
+//-----------------------------------------------------------------------------
+void AnRoot::init(int level)
+{
+	if (level >= 1) init(level, list());
+}
 
+//-----------------------------------------------------------------------------
+void AnRoot::config(int level)
+{
+	if(level >= 1) config(level, list());
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::reset(int level)
+{
+	if(level >= 1) reset(level, list()); // reset all
+}
+
+//-----------------------------------------------------------------------------
 void AnRoot::sync(int level)
 {
+	if(level >= 1) sync(level, list()); // sync all
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::init(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
 	disableWatch();
-	foreach (int id, m_hnet.keys()) {
+	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_SYNC, m_hnet[id].list());
+		ag->init(TASK_INIT, level, bmap[id]);
 		ag->start();
 	}
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::config(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
+	disableWatch();
+	foreach (int id, bmap.keys()) {
+		AnAgent *ag = agentById(id);
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_CONFIG, level, bmap[id]);
+		ag->start();
+	}
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::reset(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
+	disableWatch();
+	foreach (int id, bmap.keys()) {
+		AnAgent *ag = agentById(id);
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_RESET, level, bmap[id]);
+		ag->start();
+	}
+}
+
+/**
+ * Sync all boards in the list
+ */
+void AnRoot::sync(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
+	disableWatch();
+	foreach (int id, bmap.keys()) {
+		AnAgent *ag = agentById(id);
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_SYNC, level, bmap[id]);
+		ag->start();
+	}
+
 //	for(int i = 0; i < n; ++i) m_agent[i].wait();
 // TODO it's too early to set this flag
 	setSynced();
 }
 
-//-----------------------------------------------------------------------------
-void AnRoot::reset()
-{
-	disableWatch();
-	foreach (int id, m_hnet.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_RESET, m_hnet[id].list());
-		ag->start();
-	}
-//	for(int i = 0; i < n; ++i) m_agent[i].wait();
-}
-
-//-----------------------------------------------------------------------------
-void AnRoot::config()
-{
-	disableWatch();
-	foreach (int id, m_hnet.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_CONFIG, m_hnet[id].list());
-		ag->start();
-	}
-//	for(int i = 0; i < n; ++i) m_agent[i].wait();
-}
-
-//-----------------------------------------------------------------------------
-void AnRoot::write()
-{
-	disableWatch();
-	foreach (int id, m_hnet.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_WRITE, m_hnet[id].list());
-		ag->start();
-	}
-//	for(int i = 0; i < n; ++i) m_agent[i].wait();
-
-}
 
 //-----------------------------------------------------------------------------
 // Agents support
@@ -218,10 +271,21 @@ void AnRoot::terminate() const {
 	foreach(AnAgent *ag, m_agents) ag->stop();
 	foreach(AnAgent *ag, m_agents) ag->terminate();
 	foreach(AnAgent *ag, m_agents) ag->wait();
+	m_master->terminate();
+	m_master->wait();
 }
 
 void AnRoot::wait() const {
 	foreach(AnAgent *ag, m_agents) ag->wait();
+}
+
+void AnRoot::agentFinished(int id)
+{
+	m_watch[agentById(id)->socket()]->setEnabled(true);
+	if(!isRunning()) {
+		emit finished();
+		emit updated();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -235,134 +299,12 @@ QStringList AnRoot::modeList() const
 //-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
+	disableWatch();
 	m_mode = m_mode_list[i].id;
-
-	qDebug() << "new mode: " << m_mode;
-
-	QSqlQuery qry;
-	qry.prepare("SELECT c.id, ct.name, c.addr1, c.addr2, c.addr3, c.addr4, c.val"
-	            " FROM configs c INNER JOIN config_types ct on c.config_type_id = ct.id"
-	            " WHERE c.config_set_id=:cs_id "
-	            " ORDER BY c.config_set_order");
-	qry.bindValue(":cs_id", m_mode);
-	qry.exec();
-	while (qry.next()) {
-		int id        = qry.value(0).toInt();
-		QString ct    = qry.value(1).toString();
-		int addr1     = qry.value(2).toInt();
-		int addr2     = qry.value(3).toInt();
-		int addr3     = qry.value(4).toInt();
-		int addr4     = qry.value(5).toInt();
-		int val       = qry.value(6).toInt();
-		AnAddress addr(addr1, addr2, addr3, addr4);
-
-		// THUB
-		if (ct == "THUB_ENABLE") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnThub *thub = dynamic_cast<AnThub*>( find(ad) );
-				if (thub) thub->setActive(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-
-		if (ct == "THUB_RESET") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnThub *thub = dynamic_cast<AnThub*>( find(ad) );
-				if (thub) thub->reset();
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-
-		// Serdes
-		if (ct == "SRDS_ENABLE") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
-				if (srds) srds->setActive(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "SRDS_PLDREG9XBASE") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
-				if (srds) srds->setPld9xBase(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "SRDS_RESET") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnSerdes *srds = dynamic_cast<AnSerdes*>( find(ad) );
-				if (srds) srds->reset();
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-
-		// TCPU
-		if (ct == "TCPU_ENABLE") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
-				if (tcpu) tcpu->setActive(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "TCPU_PLDREG02") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
-				if (tcpu) tcpu->setPldReg02(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "TCPU_RESET") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( find(ad) );
-				if (tcpu) tcpu->reset();
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-
-		// TDIG
-		if (ct == "TDIG_ENABLE") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
-				if (tdig) tdig->setActive(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "TDIG_THRESHOLD") {
-			foreach(AnAddress ad, expand(addr)) {
-				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
-				if (tdig) tdig->setThreshold(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-		if (ct == "TDIG_RESET") {
-			qDebug() << ct;
-			foreach(AnAddress ad, expand(addr)) {
-				AnTdig *tdig = dynamic_cast<AnTdig*>( find(ad) );
-				if (tdig) tdig->reset();
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}
-
-		// TDC
-		if (ct == "TDC_ENABLE"){
-			foreach(AnAddress ad, expand(addr)) {
-				AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
-				if (tdc) tdc->setActive(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}	
-		if (ct == "TDC_CONFIG"){
-			foreach(AnAddress ad, expand(addr)) {
-				AnTdc *tdc = dynamic_cast<AnTdc*>( find(ad) );
-				if (tdc) tdc->setConfigId(val);
-				else qDebug() << "invalid address: " << ad.toString();
-			}
-		}	
-	}
-	emit updated();
+	emit aboutStart();
+	m_master->setMode(m_mode);
 }
 
-//-----------------------------------------------------------------------------
 /**
  * Find object from logical address. Validation is not implemented and causes
  * segmentation fault very very easily.
@@ -372,6 +314,18 @@ AnCanObject *AnRoot::find(const AnAddress &lad)
 {
 	return dynamic_cast<AnCanObject*>
 				( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
+}
+
+/**
+ * Find object by Address list and return object list 
+ */
+QList<AnBoard*> AnRoot::find(const QList<AnAddress> &alist)
+{
+	QList<AnBoard*> blist;
+	foreach(AnAddress lad, alist)
+		blist << dynamic_cast<AnBoard*>(find(lad));
+
+	return blist;
 }
 
 // TODO Implement array version of find
@@ -456,6 +410,93 @@ QStringList AnRoot::deviceNames() const
 	foreach(AnCanNet a, m_hnet) st << a.name();
 	return st;
 }
+
+
+//==============================================================================
+// Public Slots
+
+/**
+ * Stop AutoSync
+ */
+void AnRoot::stopAutoSync()
+{
+	if (m_timer->isActive()) m_timer->stop();
+}
+
+/**
+ * AutoSync main function
+ */
+void AnRoot::autosync()
+{
+
+	if (!isRunning()) {
+		disableWatch();
+		(*m_autoSyncIter)->sync(2);
+		enableWatch();
+		emit updated(*m_autoSyncIter);
+		++m_autoSyncIter;
+		if (m_autoSyncIter == m_autoSyncList.constEnd())
+			m_autoSyncIter = m_autoSyncList.constBegin();
+	}
+}
+
+/**
+ * Enable all socket watches
+ */
+void AnRoot::enableWatch()
+{
+	foreach (QSocketNotifier *sn, m_watch) {
+		sn->setEnabled(true);
+	}
+}
+
+/**
+ * Disable all socket watches
+ */
+void AnRoot::disableWatch()
+{
+	foreach (QSocketNotifier *sn, m_watch) {
+		sn->setEnabled(false);
+	}
+}
+/**
+ * QSocketNotifier's activated signal triggers this function.
+ */
+void AnRoot::watcher(int sock)
+{
+	if (m_watch.contains(sock)) {
+		// disable watch again
+		m_watch[sock]->setEnabled(false);
+
+		AnAgent *ag = m_socket_agent_map[sock];
+		TPCANRdMsg rmsg;
+		ag->read(rmsg, -1);
+		received(AnRdMsg(ag->devid(), rmsg));
+
+		// enable watch again
+		m_watch[sock]->setEnabled(true);
+	}
+}
+
+void AnRoot::received(AnRdMsg rmsg)
+{
+	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
+	if (brd != NULL) {
+		if (rmsg.payload() == 0x7) {
+			if (rmsg.data() == 0xff000000) {
+				if(!isRunning()) {
+					brd->sync(1);
+					emit updated(brd);
+				}
+			} else {
+				qDebug() << "Received error message: " << rmsg;
+			}
+		}
+	} else {
+		qFatal("Received message from unknown source");
+	}
+}
+
 //==============================================================================
 // private functions
 
@@ -493,7 +534,6 @@ void AnRoot::readTdcConfig()
 		if (cnf->length() != length || cnf->checksum() != checksum) {
 			qWarning("failed to load tdc_config[%d]", id);
 		} else {
-			qDebug() << "id" << id;
 			m_tcnfs[id] = cnf;
 		}
 
@@ -508,8 +548,8 @@ void AnRoot::readTdcConfig()
  */
 void AnRoot::initAutoSync() {
 	m_timer = new QTimer(this);
-	m_cur1  = 1;
-	m_cur2  = 1;
+	m_autoSyncList = list();
+	m_autoSyncIter = m_autoSyncList.constBegin();
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
 	m_timer->setInterval(2000);
 //	m_timer->start();
@@ -521,96 +561,4 @@ void AnRoot::initAutoSync() {
 void AnRoot::startAutoSync()
 {
 	if (!m_timer->isActive()) m_timer->start();
-}
-
-//==============================================================================
-// Public Slots
-
-/**
- * Stop AutoSync
- */
-void AnRoot::stopAutoSync()
-{
-	if (m_timer->isActive()) m_timer->stop();
-}
-
-/**
- * AutoSync main function
- */
-void AnRoot::autosync()
-{
-
-	if (!isRunning()) {
-		qDebug() << "autosync" << m_cur1 << m_cur2;
-		AnBoard *brd = m_lnet[m_cur1][m_cur2];
-		disableWatch();
-		brd->sync(2);
-		enableWatch();
-		emit updated(brd);
-		++m_cur2;
-		if ( m_cur2 >= m_lnet[m_cur1].count() ) {
-			m_cur2 = 1;
-			++m_cur1;
-		}
-		if (m_cur1 >= 2) m_cur1 = 1;
-	}
-}
-
-/**
- * Enable all socket watches
- */
-void AnRoot::enableWatch()
-{
-	foreach (QSocketNotifier *sn, m_watch) {
-		sn->setEnabled(true);
-	}
-}
-
-/**
- * Disable all socket watches
- */
-void AnRoot::disableWatch()
-{
-	foreach (QSocketNotifier *sn, m_watch) {
-		sn->setEnabled(false);
-	}
-}
-/**
- * QSocketNotifier's activated signal triggers this function.
- */
-void AnRoot::watcher(int sock)
-{
-	if (m_watch.contains(sock)) {
-		// disable watch again
-		m_watch[sock]->setEnabled(false);
-
-		AnAgent *ag = m_socket_agent_map[sock];
-		TPCANRdMsg rmsg;
-		ag->read(rmsg, 4);
-		received(AnRdMsg(ag->devid(), rmsg));
-
-		// enable watch again
-		m_watch[sock]->setEnabled(true);
-	}
-}
-
-void AnRoot::agentFinished(int id)
-{
-	m_watch[agentById(id)->socket()]->setEnabled(true);
-}
-
-void AnRoot::received(AnRdMsg rmsg)
-{
-	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
-	if (brd != NULL) {
-		if (rmsg.payload() == 0x7) {
-			if (rmsg.data() == 0xff000000) {
-				brd->write();
-			} else {
-				qDebug() << "Received error message: " << rmsg;
-			}
-		}
-	} else {
-		qFatal("Received message from unknown source");
-	}
 }

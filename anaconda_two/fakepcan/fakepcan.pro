@@ -8,14 +8,14 @@ TARGET = pcan
 DEPENDPATH += .
 INCLUDEPATH += ../inc
 
-STATIC = yes
-message("STATIC: $$STATIC")
-contains(STATIC, yes) {
-  CONFIG += static
-}
-contains(STATIC, no) {
-  CONFIG += shared
-}
+#STATIC = yes
+#message("STATIC: $$STATIC")
+#contains(STATIC, yes) {
+#  CONFIG += static
+#}
+#contains(STATIC, no) {
+#  CONFIG += shared
+#}
 
 # Input
 SOURCES += libpcan.c

@@ -20,10 +20,11 @@ public:
 	virtual AnCanObject *hat(int i) { return this; }
 
 	virtual QString dump() const;
-	virtual void sync(int lelve);
-	virtual void reset();
-	virtual void config();
-	virtual void write() { /* do nothing */ }
+
+	virtual void init  (int level);
+	virtual void config(int level);
+	virtual void reset (int level);
+	virtual void sync  (int level);
 
 //  Own Functions
 	quint16 configId() const { return m_config; }
@@ -37,8 +38,6 @@ public:
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
-	
-	virtual void init();
 
 private:
 	quint16 m_config;

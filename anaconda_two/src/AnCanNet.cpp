@@ -56,6 +56,7 @@ QString AnCanNet::dump() const
 	sl << QString("  Name             : ") + name();
 	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
 	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed        : ") + (installed() ? "yes" : "no");
 	sl << QString("  Active           : ") + (active() ? "yes" : "no");
 //	sl << QString("  Status           : ") + QString::number(status());
 //	sl << QString("  East / West      : ") + (isEast()? "East" : "West");

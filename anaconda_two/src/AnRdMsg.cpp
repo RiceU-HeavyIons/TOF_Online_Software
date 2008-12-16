@@ -65,6 +65,24 @@ quint8 AnRdMsg::payload() const
 		return (m_id & 0xf);
 }
 
+QString AnRdMsg::toString() const
+{
+	char buf1[128];
+	char buf2[16];
+
+	sprintf(buf1, "AnRdMsg(DEVID=0x%x ID=0x%x TYPE=0x%x LEN=%d DATA=[",
+		devid(), id(), type(), len());
+	for(int i = 0; i < len(); ++i) {
+		if (i == 0)
+			sprintf(buf2, "0x%02x", data(i));
+		else
+			sprintf(buf2, " 0x%02x", data(i));
+		strcat(buf1, buf2);
+	}
+	strcat(buf1, "])");
+	return QString(buf1);
+}
+
 QDebug operator<<(QDebug dbg, const AnRdMsg &m)
 {
 	char buf1[128];

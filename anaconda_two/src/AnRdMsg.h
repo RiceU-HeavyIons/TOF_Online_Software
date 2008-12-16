@@ -28,6 +28,8 @@ public:
 
 	AnAddress source() const;
 	quint8    payload() const;
+	
+	QString toString() const;
 
 private:
 	quint8          m_devid;

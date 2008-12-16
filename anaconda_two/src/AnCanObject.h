@@ -25,17 +25,20 @@ public:
 	AnAddress hAddress() const { return m_haddr; }
 
 	bool active() const { return m_active; }
-	virtual bool setActive(bool act) { return (m_active = act); }
+	virtual bool setActive(bool act) { return (m_active = (act & m_installed)); }
+	
+	bool installed() const { return m_installed; }
+	virtual bool setInstalled(bool inst) { return (m_installed = inst); }
 
 	virtual QString name() const;
 	QString setName(const QString& name);
 
 	virtual QString dump() const = 0;
 
-	virtual void sync(int level = 0) = 0;
-	virtual void reset()  = 0;
-	virtual void config() = 0;
-	virtual void write() = 0;
+	virtual void init  (int level) = 0;
+	virtual void config(int level) = 0;
+	virtual void reset (int level) = 0;
+	virtual void sync  (int level) = 0;
 
 	virtual AnCanObject *at(int i) = 0;
 	virtual AnCanObject *hat(int i) = 0;
@@ -52,10 +55,12 @@ public:
 
 private:
 	bool            m_active;
+	bool            m_installed;
+
 	QTime           m_synced;
 	AnAddress       m_laddr;
 	AnAddress       m_haddr;
-	
+
 	QString         m_name;
 
 };

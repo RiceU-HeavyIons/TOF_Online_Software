@@ -1,6 +1,6 @@
 
 if [ `hostname` = 'natsu.local' ]; then
-  export DYLD_LIBRARY_PATH=`pwd`/lib
+  export DYLD_LIBRARY_PATH=`pwd`/lib:`pwd`/fakepcan
   ANA2DIR=`pwd`
   alias  ana="pushd ${ANA2DIR}; ./AnacondaII.app/Contents/MacOS/AnacondaII; popd"
 fi

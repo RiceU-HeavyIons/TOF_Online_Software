@@ -44,7 +44,7 @@ AnCanObject *AnTdig::hat(int i)
 
 void AnTdig::sync(int level)
 {
-  if (active() && level >= 0) {
+  if (active() && level >= 1) {
 
     TPCANMsg    msg;
     TPCANRdMsg  rmsg;
@@ -55,7 +55,7 @@ void AnTdig::sync(int level)
     setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
     setEcsr(rmsg.Msg.DATA[3]);
 
-    if (level >= 2) {
+    if (level >= 3) {
 		// get firmware version
 		AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
 	    rdata = agent()->write_read(msg, rmsg, 4);
@@ -67,7 +67,7 @@ void AnTdig::sync(int level)
 	    setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
 	}
 
-    if (--level >= 0)
+    if (--level >= 1)
       for(quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
 
     setSynced();
@@ -77,9 +77,9 @@ void AnTdig::sync(int level)
 /**
  * Initialized TDIG
  */
-void AnTdig::init()
+void AnTdig::init(int level)
 {
-	if (active()) {
+	if (active() && level >= 1) {
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
 
@@ -87,18 +87,42 @@ void AnTdig::init()
 		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 		agent()->write_read(msg, rmsg, 2);
 
-		m_tdc[0]->init();
+		if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 	}
 	
 }
+void AnTdig::config(int level)
+{
+	if (active() && level >= 1) {
+		if (--level >= 1) { /* configure tdcs */
+			if( tdc(1)->configId() == tdc(2)->configId() &&
+		    	tdc(2)->configId() == tdc(3)->configId() )
+			{
+				tdc(0)->setConfigId(tdc(1)->configId());
+				tdc(0)->config(level);
+			} else {
+				for(int i = 1; i < 4; i++) m_tdc[i]->config(level);
+			}
+		}
+
+		// write threshold
+		TPCANMsg msg;
+		TPCANRdMsg rmsg;
+		quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
+		quint8  vl  = (val & 0xff);
+		quint8  vh  = ((val >> 8) & 0x0f);
+		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
+		agent()->write_read(msg, rmsg, 2);
+	}
+}
 /**
  * Rest TDIG
  */
-void AnTdig::reset()
+void AnTdig::reset(int level)
 {
 
-	if (active()) {
+	if (active() && level >= 1) {
 		// do nothing here
 		// TPCANMsg    msg;
 		// TPCANRdMsg  rmsg;
@@ -106,37 +130,9 @@ void AnTdig::reset()
 		// AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x90);
 		// agent()->write_read(msg, rmsg, 2);
 
-		m_tdc[0]->reset();
+		if (--level >= 1)
+		m_tdc[0]->reset(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
-	}
-}
-
-void AnTdig::config()
-{
-	if (active()) {
-		if( tdc(1)->configId() == tdc(2)->configId() &&
-		    tdc(2)->configId() == tdc(3)->configId() )
-		{
-			tdc(0)->setConfigId(tdc(1)->configId());
-			tdc(0)->config();
-		} else {
-			for(int i = 1; i < 4; i++) m_tdc[i]->config();
-		}
-	}
-}
-
-void AnTdig::write()
-{
-	if(active()) {
-		TPCANMsg msg;
-		TPCANRdMsg rmsg;
-
-		// write threshold
-		quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
-		quint8  vl  = (val & 0xff);
-		quint8  vh  = ((val >> 8) & 0x0f);
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
-		agent()->write_read(msg, rmsg, 2);
 	}
 }
 
@@ -162,14 +158,22 @@ AnAgent *AnTdig::agent() const
 }
 
 //-----------------------------------------------------------------------------
-bool AnTdig::setActive(bool act) {
+bool AnTdig::setInstalled(bool b) {
 
-	AnCanObject::setActive(act);
+	AnCanObject::setInstalled(b);
+	for (int i = 0; i < 4; ++i)
+		m_tdc[i]->setInstalled(installed());
 
-	if(!active()) {
-		for (int i = 0; i < 4; ++i)
-			m_tdc[i]->setActive(false);
-	}
+	return installed();
+}
+
+//-----------------------------------------------------------------------------
+bool AnTdig::setActive(bool b) {
+
+	AnCanObject::setActive(b);
+	for (int i = 0; i < 4; ++i)
+		m_tdc[i]->setActive(active());
+
 	return active();
 }
 
@@ -179,18 +183,20 @@ QString AnTdig::dump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnTdig(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized     : ") + synced().toString();
-	sl << QString("  Firmware ID      : ") + firmwareString();
-	sl << QString("  Chip ID          : ") + chipIdString();
-	sl << QString("  Temperature      : ") + tempString();
-	sl << QString("  ECSR             : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  Threshold        : ") + thresholdString();
-	sl << QString("  Status           : ") + QString::number(status());
-	sl << QString("  East / West      : ") + (isEast()? "East" : "West");
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Synchronized      : ") + synced().toString();
+	sl << QString("  Firmware ID       : ") + firmwareString();
+	sl << QString("  Chip ID           : ") + chipIdString();
+	sl << QString("  Temperature       : ") + tempString();
+	sl << QString("  Temperature Alarm : ") + tempAlarmString();
+	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  Threshold         : ") + thresholdString();
+	sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 
 
 	return sl.join("\n");
@@ -225,7 +231,7 @@ int AnTdig::status() const
 {
 	int stat, err = 0;
 
-	if (temp() > 40.0) ++err;
+	if (temp() > tempAlarm()) ++err;
 	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
 
 	if (err)

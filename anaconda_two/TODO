@@ -2,22 +2,52 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-11
+Updated: 2008-12-16
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2008-12-16:
+  - Serdes info at TCPU side
+
+  2008-12-15:
+  - fast debug output
+  - fix console update problem
+  - static/dynamic option in bootstrap
+  - parallelized console
+  - user command 1-4
+  - (X) disable propergation to serdes
+  - (X) TCPU PLD 03 target
+
+  2008-12-14:
+  - (X) installed property and cannot activate/enable not installed device
+  - (X) selected sync
+  - (X) write
+  - (X) initialize
+  - generalized AnMaster
+  - move agent functions to AnMaster
+
+  2008-12-12:
+  - error selection after sync
+  - initialization action
+  - serdes port info in TCPU view
+  - fix TDIG/SERDES selection view
+  - why automatically select row 0 after sync?
+  - going back to standby. w/o write setMode. i.e. setMode(int, bool write_reg=true)
+  - (X) fix auto-sync bug
+  - read/write lock at board level
+
   2008-12-11:
   - error string in main table's tooltip
   - devid / device_id / socket clearity
 
   2008-12-10:
   - device logical id = agent id = watch id
-  - sync w/o l1model but w/ signal feedback to l1model
+  - (X) sync w/o l1model but w/ signal feedback to l1model
   - (X) hw address <-> logical address dictionary
   - (X) hv/lv info
 
   2008-12-09:
   - (X) greeting and error capture in write/read
-  - output in console window
+  - (X) output in console window
   - single action / double action for setMode
   - (X) TCPU PLD Reg 03
   - (X) Msg/RdMsg wrapper
@@ -27,17 +57,16 @@ Entry:
   2008-12-05:
   - (X) reduce TDC status get
   - (X) clear hw hierarchy -> NE/SE, NW/SW
-  - pc syntax
+  - (X) pc syntax
   - (X) greeting message -> status
-  - color legend
+  - (X) color legend
   - communication error
   - non expert mode
-  - connected vs non existence
+  - (X) connected vs non existence
   - error highlight
-  - connected / non-conncected
-  - power unit address?
+  - (X) connected / non-conncected
+  - (X) power unit address?
   - simple normal mode
-  - communication error
 
   2008-12-03:
   - (X) toggle autosync
@@ -49,7 +78,7 @@ Entry:
 
   2008-12-02:
   - (X) canbus name in main table instead of hardware address
-  - network name in progress
+  - (X) network name in progress
   - (X) network name in selector
   - enable/disable by console
   - (X) set threshold
@@ -58,9 +87,9 @@ Entry:
   2008-12-01:
   - (X) disable tdig, tdc and serdes if parent is disabled
   - turn on / off in-time sync
-  - temperature threshold for every thub, tcpu and tdig
+  - (X) temperature threshold for every thub, tcpu and tdig
   - eclipse like intialize indicator
-  - toggle debug by console command
+  - (X) toggle debug by console command
 
   2008-11-30:
   - unit tests
@@ -71,12 +100,12 @@ Entry:
 
   2008-11-29:
   - log facility db? console dialog
-  - pc compatible console
+  - (X) pc compatible console
   - (X) console extension: SHOW 2.2.8.255, RESET 2.2.10.0 etc.
   - console extension: hardware address version
   - console extension: password lock
   - address validator espeially AnRoot::find
-  - add List<X> AnRoot::find(AnAddress) returns empty list if address is not valid
+  - (X) add List<X> AnRoot::find(AnAddress) returns empty list if address is not valid
   - (X) think about THUB <=> TCPU relation. Parent <-> children relation is better? And assign logical address like THUB(1.0.0.0), TCPU(1.x.0.0). This hierarchy reminds me reset-order. Now question is numbering of x for TCPU: x=1-120 or x=1-30? => with this scheme, tcpu and serdes come to same level.
   - (X) fix AnRoot::expand bug for Serdes address. last 255 has to be zero.
   - (X) console: read / write
@@ -91,20 +120,20 @@ Entry:
   - asynchronous (non-blocking) configuration
   - modal/modeless progress dialog
   - total progress in status bar
-  - device / network name propergation
+  - (X) device / network name propergation
   - thub reset order (master -> slave)?
   - (X) tray_id or tray_sn display
   - serdes port <-> tray mapping awareness
   - font/stylesheet, session manager
 
   2008-11-27:
-  - selected actions, and un-select mechanism
+  - (X) selected actions, and un-select mechanism
   - making test framework (read, read+write, etc.)
   - asynchronous (non-blocking) synchronization -- need to disable command actions and block synchronization when you push item on main table. also need to update the main model and view after finishing synchronization. maybe not full reset() but partially updating for each item.
 
   2008-11-26:
   - (X) Tray SN (tray_id) lookup
-  - Real sort functionality
+  - (X) Real sort functionality
   - (X) Input Lijuan's map
 
   2008-11-25:
@@ -112,7 +141,7 @@ Entry:
   - TDC mask readout from database
   - TDC mask display
   - Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
-  - Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
+  - (X) Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
   - (X) TCPU PLD register 02, set value and read value.
   - TDIG, TCPU chip id verification. Again, set value and read value consistency
 

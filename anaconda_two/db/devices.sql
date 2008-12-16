@@ -3,7 +3,7 @@ create table devices (
 	id			integer primary key,
 	devid       integer not null,
 	name		char(64) not null,
-	active		boolean  not null default 'f'
+	installed	boolean  not null default 'f'
 );
 insert into devices values (1, 251, "CANBus NW", 't');
 insert into devices values (2, 255, "CANBus SW", 't');

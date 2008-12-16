@@ -3,6 +3,6 @@
 for d in fakepcan src app .
 do
   pushd $d
-  qmake
+  qmake $@
   popd
 done

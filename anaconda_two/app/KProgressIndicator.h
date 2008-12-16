@@ -18,6 +18,7 @@
 #include <QtGui/QDialogButtonBox>
 
 #include "AnRoot.h"
+#include "AnAgent.h"
 
 class KProgressIndicator : public QDialog
 {
@@ -28,19 +29,22 @@ public:
 	~KProgressIndicator();
 
 public slots:
-	void start();
-	void setProgress(int i, int j);
 	void cancel();
+	void init();
+	void init(int id);
+	void progress(int i, int j);
+	void finished();
 
 private:
-	AnRoot         *m_root;
-	int             m_size;
-	int            *m_val;
-	QProgressBar   *m_bar;
-	QPushButton    *m_cancel;
-	QPushButton    *m_ok;
-
-	QMutex          m_mutex;
-
+	AnRoot             *m_root;
+	int                 m_size;
+	int                *m_val;
+	QProgressBar       *m_bar;
+	QPushButton        *m_cancel;
+	QPushButton        *m_ok;
+	QLabel             *m_label;
+	QMutex              m_mutex;
+	QList<int>          m_actives;
+	QMap<int, AnAgent*> m_agents;
 };
 #endif

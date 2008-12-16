@@ -7,6 +7,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QThread>
 #include <QtCore/QModelIndexList>
+#include <QtCore/QModelIndex>
 
 #include <QtGui/QFontMetrics>
 
@@ -38,6 +39,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	m_l1view = new QTableView(this);
 	m_l1view->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_l1view->setSortingEnabled(true);
+	m_l1view->setAlternatingRowColors(true);
 	m_l1view->setModel(m_l1model);
 	m_l1view->sortByColumn(1, Qt::AscendingOrder);
 	m_l1view->setColumnWidth(0, 32);
@@ -47,6 +49,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 
 	QSizePolicy policy = m_l1view->sizePolicy();
 	policy.setHorizontalStretch(2);
+	policy.setVerticalStretch(1);	
 	m_l1view->setSizePolicy(policy);
 
 	createSelector();
@@ -77,21 +80,17 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	//  l2view->setSelectionModel(view->selectionModel());
 	//  gl->addWidget(l2view, 2, 5, 4, 1);
 
-	m_l2view = new KLevel2View("Information", this);
+	m_l2view = new KLevel2View(tr("Detail View"), this);
+	m_l2view->setSelectionModel(m_l1view->selectionModel());
 	addDockWidget(Qt::RightDockWidgetArea, m_l2view);
 
 	createActions();
 	createToolBars();
 	createMenus();
 
-	QObject::connect(
-		m_l1view->selectionModel(),
-		SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
-		m_l2view,
-		SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
 
 	QObject::connect(m_selector, SIGNAL(currentRowChanged(int)),
-						m_l1model, SLOT(setSelection(int)));
+	                 this, SLOT(setSelection(int)));
 
 	m_progress = new KProgressIndicator(m_root, this);
 	// for (int i = 0; i < m_root->nAgents(); ++i) {
@@ -100,6 +99,9 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	// 	connect(m_root->agent(i), SIGNAL(finished()),
 	// 		this, SLOT(agentFinished()));
 	// }
+
+	// QObject::connect(m_root, SIGNAL(aboutStart()), this, SLOT(task_start()));
+	QObject::connect(m_root, SIGNAL(finished()),  this, SLOT(agentFinished()));
 
 	m_console = new KConsole(m_root, this);
 
@@ -115,12 +117,25 @@ KMainWindow::~KMainWindow()
 
 void KMainWindow::createActions()
 {
+	m_InitAction = new QAction( QIcon(":images/new.png"), tr("Init"), this);
+	m_InitAction->setShortcut(tr("Ctrl+I"));
+	m_InitAction->setEnabled(true);
+	m_InitAction->setStatusTip(tr("Initialize Electronics"));
+	m_InitAction->setToolTip(tr("Init"));
+	QObject::connect(m_InitAction, SIGNAL(triggered()), this, SLOT(doInit()));
+
+	m_ConfigAction = new QAction( QIcon(":images/config.png"), tr("Confg"), this);
+	m_ConfigAction->setShortcut(tr("Ctrl+U"));
+	m_ConfigAction->setEnabled(true);
+	m_ConfigAction->setStatusTip(tr("Configure Electronics"));
+	m_ConfigAction->setToolTip(tr("Config"));
+	QObject::connect(m_ConfigAction, SIGNAL(triggered()), this, SLOT(doConfig()));
+	
 	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Reset"), this);
 	m_ResetAction->setShortcut(tr("Ctrl+R"));
-	m_ResetAction->setStatusTip(tr("Reset System"));
+	m_ResetAction->setStatusTip(tr("Reset Electronics"));
 	m_ResetAction->setToolTip(tr("Reset"));
-	QObject::connect(m_ResetAction, SIGNAL(triggered()),
-						this, SLOT(doReset()));
+	QObject::connect(m_ResetAction, SIGNAL(triggered()), this, SLOT(doReset()));
 
 	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Sync"), this);
 	m_SyncAction->setShortcut(tr("Ctrl+S"));
@@ -129,21 +144,13 @@ void KMainWindow::createActions()
 	QObject::connect(m_SyncAction, SIGNAL(triggered()),
 						this, SLOT(doSync()));
 
-	m_ConfigAction = new QAction( QIcon(":images/new.png"), tr("Upload"), this);
-	m_ConfigAction->setShortcut(tr("Ctrl+U"));
-	m_ConfigAction->setEnabled(true);
-	m_ConfigAction->setStatusTip(tr("Upload Configurations to System"));
-	m_ConfigAction->setToolTip(tr("Upload Configurations"));
-	QObject::connect(m_ConfigAction, SIGNAL(triggered()),
-	                 this, SLOT(doConfigure()));
-
 	// m_ToggleToolbarAction = new QAction(tr("Toolbars"), this);
 	// m_ToggleToolbarAction->setCheckable(true);
 	// m_ToggleToolbarAction->setChecked(true);
 	// QObject::connect(m_ToggleToolbarAction, SIGNAL(triggered()),
 	// 					this, SLOT(toggleToolbar()));
 
-	m_ToggleConsoleAction = new QAction(tr("Consle"), this);
+	m_ToggleConsoleAction = new QAction(tr("Console"), this);
 	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
 	// m_ToggleConsoleAction->setCheckable(true);
 	// m_ToggleConsoleAction->setChecked(false);
@@ -165,6 +172,7 @@ void KMainWindow::createMenus()
 	QMenu *menu;
 
 	menu = menuBar()->addMenu(tr("Command"));
+	menu->addAction(m_InitAction);
 	menu->addAction(m_ConfigAction);
 	menu->addAction(m_ResetAction);
 	menu->addAction(m_SyncAction);
@@ -182,6 +190,7 @@ void KMainWindow::createMenus()
 void KMainWindow::createToolBars()
 {
 	m_CommandToolbar = addToolBar(tr("Command Toolbar"));
+	m_CommandToolbar->addAction(m_InitAction);
 	m_CommandToolbar->addAction(m_ConfigAction);
 	m_CommandToolbar->addAction(m_ResetAction);
 	m_CommandToolbar->addAction(m_SyncAction);
@@ -189,7 +198,9 @@ void KMainWindow::createToolBars()
 	QToolBar *bar = addToolBar(tr("Mode Toolbar"));
 	// m_CommandToolbar->addSeparator();
 	// QWidget *w = new QWidget();
-	bar->addWidget(new QLabel(tr("Mode:")));
+	QLabel *lbl = new QLabel(tr("Mode:"));
+	lbl->setMinimumHeight(32);
+	bar->addWidget(lbl);
 	// m_comboAction = bar->addWidget(m_combo);
 	bar->addWidget(m_combo);
 }
@@ -197,43 +208,90 @@ void KMainWindow::createToolBars()
 //-----------------------------------------------------------------------------
 void KMainWindow::createSelector()
 {
-	QStringList slist = m_l1model->selectionList();
 	m_selector = new QListWidget(this);
-	m_selector->addItems(slist);
-	m_selector->setCurrentRow(0);
 
+	foreach(QListWidgetItem *itm, m_l1model->selectionList())
+		m_selector->addItem(itm);
+
+	m_selector->setSpacing(1);
+	m_selector->setCurrentRow(0);
+	m_selector->setAlternatingRowColors(true);
 	QSizePolicy policy = m_selector->sizePolicy();
 	policy.setHorizontalStretch(1);
-	policy.setVerticalPolicy(QSizePolicy::Fixed);
+//	policy.setVerticalPolicy(QSizePolicy::Fixed);
 	m_selector->setSizePolicy(policy);
-	// m_selector->setMaximumHeight(
-	// 	1.2*slist.count()*QFontMetrics(QApplication::font()).height());
+	int fh = QFontMetrics(m_selector->font()).height();
+	m_selector->setMaximumHeight(m_selector->count()*(fh+2));
 
+}
+
+QList<AnBoard*> KMainWindow::selectedBoards()
+{
+	QList<AnBoard*> blist;
+	if (m_l1view->selectionModel()->hasSelection()) {
+		foreach(QModelIndex idx, m_l1view->selectionModel()->selectedRows()) {
+			blist << static_cast<AnBoard*>(idx.internalPointer());
+		}
+	}
+
+	return blist;
 }
 
 //------------------------------------------------------------------------------
 // Public Slots
 
+/**
+ * Slot for initialization action
+ */
+void KMainWindow::doInit()
+{
+	setBusy(true);
+	QList<AnBoard*> blist = selectedBoards();
+	if (blist.count() > 0) {
+		m_root->init(3, blist);
+	} else {
+		m_root->init(3);
+	}
+}
+
+/**
+ * Slot for configuration action
+ */
+void KMainWindow::doConfig()
+{
+	setBusy(true);
+	QList<AnBoard*> blist = selectedBoards();
+	if (blist.count() > 0) {
+		m_root->config(3, blist);
+	} else {
+		m_root->config(3);
+	}
+}
+
+//-----------------------------------------------------------------------------
 void KMainWindow::doReset()
 {
 	setBusy(true);
-	m_root->reset();
-	m_progress->start();
+
+	QList<AnBoard*> blist = selectedBoards();
+	if (blist.count() > 0) {
+		m_root->reset(3, blist);
+	} else {
+		m_root->reset(3);
+	}
 }
+
 //-----------------------------------------------------------------------------
 void KMainWindow::doSync()
 {
 	setBusy(true);
-	m_progress->show();
-	m_l1model->sync(1);
-	m_progress->start();
-}
-//-----------------------------------------------------------------------------
-void KMainWindow::doConfigure()
-{
-	setBusy(true);
-	m_root->config();
-	m_progress->start();
+
+	QList<AnBoard*> blist = selectedBoards();
+	if (blist.count() > 0) {
+		m_root->sync(3, blist);
+	} else {
+		m_root->sync(3);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -262,6 +320,7 @@ void KMainWindow::toggleAutoSync()
 //-----------------------------------------------------------------------------
 void KMainWindow::setMode(int i) {
 
+	setBusy(true);
 	m_root->setMode(i);
 }
 
@@ -275,10 +334,19 @@ void KMainWindow::setMode(int i) {
 void KMainWindow::setBusy(bool sw)
 {
 	m_busy = sw;
+	m_InitAction->setEnabled(!sw);
+	m_ConfigAction->setEnabled(!sw);
 	m_ResetAction->setEnabled(!sw);
 	m_SyncAction->setEnabled(!sw);
-	m_ConfigAction->setEnabled(!sw);
 	m_combo->setEnabled(!sw);
+}
+
+/**
+ * Capture mouse release event
+ */
+void KMainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+	m_l1view->clearSelection();
 }
 
 //-----------------------------------------------------------------------------
@@ -287,3 +355,10 @@ void KMainWindow::agentFinished()
 {
 	if (!m_root->isRunning()) setBusy(false);
 }
+
+void KMainWindow::setSelection(int select)
+{
+	m_l1view->clearSelection();
+	m_l1model->setSelection(select);
+}
+
