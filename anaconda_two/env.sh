@@ -4,6 +4,11 @@ if [ `hostname` = 'natsu.local' ]; then
   ANA2DIR=`pwd`
   alias  ana="pushd ${ANA2DIR}; ./AnacondaII.app/Contents/MacOS/AnacondaII; popd"
 fi
+if [ `uname` = 'Darwin' ]; then
+  export DYLD_LIBRARY_PATH=`pwd`/lib:`pwd`/fakepcan
+  ANA2DIR=`pwd`
+  alias  ana="pushd ${ANA2DIR}; ./AnacondaII.app/Contents/MacOS/AnacondaII; popd"
+fi
 
 if [ `hostname` = 'pisces.rhip.utexas.edu' ]; then
   export LD_LIBRARY_PATH=`pwd`/lib:`pwd`/fakepcan:/homes/koheik/local/x86_64/qt/lib
