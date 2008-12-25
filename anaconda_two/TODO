@@ -2,9 +2,13 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-16
+Updated: 2008-12-23
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2008-12-23:
+  - How to display more TDC info (status, mask, configuration file etc.)?
+  - separate icon column for TDIG selector table view
+ 
   2008-12-16:
   - Serdes info at TCPU side
 
@@ -82,7 +86,7 @@ Entry:
   - (X) network name in selector
   - enable/disable by console
   - (X) set threshold
-  - set mask
+  - (X) set mask
 
   2008-12-01:
   - (X) disable tdig, tdc and serdes if parent is disabled
@@ -138,9 +142,9 @@ Entry:
 
   2008-11-25:
   - (X) TDIG threshold writing after reset
-  - TDC mask readout from database
-  - TDC mask display
-  - Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
+  - (X) TDC mask readout from database
+  - (X) TDC mask display
+  - (X) Think about activeness: what does it mean actually? (dis)connected, enabled/disabled, responding...
   - (X) Don't get Firmware IDs and Chip IDs every time because they don't change much. -- put them in deep level?
   - (X) TCPU PLD register 02, set value and read value.
   - TDIG, TCPU chip id verification. Again, set value and read value consistency

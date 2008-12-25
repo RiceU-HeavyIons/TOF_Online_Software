@@ -46,7 +46,7 @@ insert into config_types values ( 32, "TDIG_TEMP_ALARM"  );
 insert into config_types values ( 33, "TDIG_THRESHOLD"   );
 insert into config_types values ( 41, "TDC_ENABLE"       );
 insert into config_types values ( 42, "TDC_CONFIG_ID"    );
-insert into config_types values ( 43, "TDC_MASK"         );
+insert into config_types values ( 43, "TDC_CH_MASK"      );
 
 -- action items
 insert into config_types values (101, "INIT"  );
@@ -95,4 +95,5 @@ insert into configs values (null,   3,  4,  33,   2, 255, 255,   0,   1500);
 insert into configs values (null,   3,  5,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   3,  6,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   3,  7,  42,   2, 255,   5,   1,     14);
-insert into configs values (null,   3,  8, 103,   2, 255,   0,   0,      3);
+insert into configs values (null,   3,  8,  43,   2, 255, 255,   1,      7);
+insert into configs values (null,   3,  9, 103,   2, 255,   0,   0,      3);

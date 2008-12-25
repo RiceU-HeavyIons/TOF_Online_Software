@@ -569,7 +569,7 @@ DWORD LINUX_CAN_Extended_Status(HANDLE hHandle, int *nPendingReads, int *nPendin
 //
 DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff)
 {
-	fprintf(stderr, "LINUX_CAN_VersionInfo(%p, %p)\n", hHandle, lpszTextBuff);
+//	fprintf(stderr, "LINUX_CAN_VersionInfo(%p, %p)\n", hHandle, lpszTextBuff);
 	strcpy(lpszTextBuff, VERSION_STRING);
 	return CAN_ERR_OK;
 }
@@ -691,20 +691,20 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 //
 DWORD LINUX_CAN_Statistics(HANDLE hHandle, TPDIAG *diag)
 {
-	// typedef struct
-	// {
-	//   WORD  wType;           // the type of interface hardware - see HW_....
-	//   DWORD dwBase;          // the base address or port of this device
-	//   WORD  wIrqLevel;       // the irq level of this device
-	//   DWORD dwReadCounter;   // counts all reads to this device from start
-	//   DWORD dwWriteCounter;  // counts all writes
-	//   DWORD dwIRQcounter;    // counts all interrupts
-	//   DWORD dwErrorCounter;  // counts all errors
-	//   WORD  wErrorFlag;      // gathers all errors
-	//   int   nLastError;      // the last local error for this device
-	//   int   nOpenPaths;      // number of open paths for this device
-	//   char  szVersionString[VERSIONSTRING_LEN]; // driver version string
-	// } TPDIAG;
+// typedef struct
+// {
+//   WORD  wType;           // the type of interface hardware - see HW_....
+//   DWORD dwBase;          // the base address or port of this device
+//   WORD  wIrqLevel;       // the irq level of this device
+//   DWORD dwReadCounter;   // counts all reads to this device from start
+//   DWORD dwWriteCounter;  // counts all writes
+//   DWORD dwIRQcounter;    // counts all interrupts
+//   DWORD dwErrorCounter;  // counts all errors
+//   WORD  wErrorFlag;      // gathers all errors
+//   int   nLastError;      // the last local error for this device
+//   int   nOpenPaths;      // number of open paths for this device
+//   char  szVersionString[VERSIONSTRING_LEN]; // driver version string
+// } TPDIAG;
 	int i;
 #ifdef DEBUG
 	fprintf(stderr, "FAKE::LINUX_CAN_Statistics(%p, %p)\n", hHandle, diag);

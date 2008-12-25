@@ -10,9 +10,12 @@
 
 AnTdc::AnTdc(const AnAddress &laddr, const AnAddress &haddr,
     AnCanObject *parent)
-  : AnCanObject(laddr, haddr, parent), m_status(0)
+  : AnCanObject(laddr, haddr, parent)
 {
-  setObjectName(QString("TDC ") + lAddress().toString());
+	setObjectName(QString("TDC ") + lAddress().toString());
+
+	m_status = 0x0;
+	m_mask   = 0x0;
 }
 
 
@@ -26,8 +29,10 @@ QString AnTdc::dump() const
 	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
 	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
 	sl << QString("  Active            : ") + (active() ? "yes" : "no");
-	sl << QString("  Status Word       : 0x").arg(QString::number(m_status, 16));
 	sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  Status Word       : 0x%1").arg(QString::number(m_status, 16));
+	sl << QString("  Channel Mask      : 0x%1").arg(QString::number(m_mask, 16));
+	sl << QString("  Config ID         : %1").arg(QString::number(configId(), 10));
 //	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 	sl << QString("  Synchronized      : ") + synced().toString();
 
@@ -95,8 +100,44 @@ void AnTdc::config(int level)
 		// finalize
 		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x40 | haddr().at(3));
 		rdata = agent()->write_read(msg, rmsg, 2);
+
+
+		// set mask
+		set_mask_msg(msg);
+		agent()->write_read(msg, rmsg, 2);
 	}
 }
+
+/**
+  * Set TPCANMsg for write channel mask
+  */
+void AnTdc::set_mask_msg(TPCANMsg &msg) const
+{
+	// 40bit control word for setting mask is...
+	// 0b 100h hhhg gggf fffe eeed dddc cccb bbba aaa0 1000
+	// where a-h are 0/1 for disabled/enabled channels.
+	// initialized control word with base word
+	quint64 cwrd = 0x8000000004ULL;
+
+	// m_mask is simple 8bit flag for channel mask
+	// in the form of '0b HGFE DCBA'
+	// so expand each bit as
+	// 0b0 -> 0b1111 (0x0->0xf)
+	// 0b1 -> 0b0000 (0x1->0x0)
+	// and set on 40bit control word 'cwrd.'
+	for (int i = 0; i < 8; ++i)
+		cwrd |= ((0x1 & (m_mask >> i)) ? 0x0ULL : 0xfULL) << (4*i + 5);
+
+	msg.ID = canidw();
+	msg.MSGTYPE = MSGTYPE_EXTENDED;
+	msg.LEN = 6;
+	msg.DATA[0] = 0x40 | haddr().at(3);
+		
+	for (int i = 0; i < 5; i++)
+		msg.DATA[i + 1] = 0xff & (cwrd >> 8*i);
+}
+
+
 /**
   * Reset TDC
   */

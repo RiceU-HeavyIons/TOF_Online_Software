@@ -173,6 +173,14 @@ void AnMaster::p_setMode(int mode)
 			}
 		}
 
+		if (ct == "TDC_CH_MASK"){
+			foreach(AnAddress ad, m_root->expand(addr)) {
+				AnTdc *tdc = dynamic_cast<AnTdc*>( m_root->find(ad) );
+				if (tdc) tdc->setMask(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+
 		// Action Items
 		if (ct == "INIT") {
 			m_root->init(val, m_root->find( m_root->expand(addr) ) );

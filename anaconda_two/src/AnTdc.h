@@ -26,7 +26,6 @@ public:
 	virtual void reset (int level);
 	virtual void sync  (int level);
 
-//  Own Functions
 	quint16 configId() const { return m_config; }
 	quint16 setConfigId(quint16 cf) { return (m_config = cf); }
 
@@ -39,7 +38,13 @@ public:
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
 
+//  Own Functions
+	quint8 mask() const { return m_mask; }
+	quint8  setMask(quint8 msk) { return (m_mask = msk); }
+
 private:
+	void set_mask_msg(TPCANMsg &msg) const;
+
 	quint16 m_config;
 	quint64 m_status;
 
@@ -52,6 +57,7 @@ private:
 	static field_t field[26];
 	QString fkey(int i)   const;
 	quint8  fvalue(int i) const;
+	quint8  m_mask;
 };
 
 #endif /* ANTDC_H_ */
