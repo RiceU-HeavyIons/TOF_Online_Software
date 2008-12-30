@@ -7,6 +7,12 @@
  <file>images/undo.png</file>
  <file>images/sync.png</file>
  <file>images/config.png</file>
+
+ <file>images/user1.png</file>
+ <file>images/user2.png</file>
+ <file>images/user3.png</file>
+ <file>images/user4.png</file>
+
  <file>icons/red.png</file>
  <file>icons/green.png</file>
  <file>icons/blue.png</file>

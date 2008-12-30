@@ -117,7 +117,7 @@ KMainWindow::~KMainWindow()
 
 void KMainWindow::createActions()
 {
-	m_InitAction = new QAction( QIcon(":images/new.png"), tr("Init"), this);
+	m_InitAction = new QAction( QIcon(":images/user1.png"), tr("Init"), this);
 	m_InitAction->setShortcut(tr("Ctrl+I"));
 	m_InitAction->setEnabled(true);
 	m_InitAction->setStatusTip(tr("Initialize Electronics"));
@@ -131,7 +131,7 @@ void KMainWindow::createActions()
 	m_ConfigAction->setToolTip(tr("Config"));
 	QObject::connect(m_ConfigAction, SIGNAL(triggered()), this, SLOT(doConfig()));
 	
-	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Reset"), this);
+	m_ResetAction = new QAction( QIcon(":images/user3.png"), tr("Reset"), this);
 	m_ResetAction->setShortcut(tr("Ctrl+R"));
 	m_ResetAction->setStatusTip(tr("Reset Electronics"));
 	m_ResetAction->setToolTip(tr("Reset"));
