@@ -15,22 +15,30 @@ KTdigModel::KTdigModel(QObject *parent)
 	m_statusIcon[1] = QIcon(":icons/blue.png");
 	m_statusIcon[2] = QIcon(":icons/green.png");
 	m_statusIcon[3] = QIcon(":icons/red.png");
+	m_statusIcon[4] = QIcon(":icons/gray.png");
 }
 
 QVariant KTdigModel::data(const QModelIndex &index, int role) const
 {
-  if (role == Qt::DisplayRole) {
-    int r = index.row();
-    switch (index.column()) {
-    case 0: return QString("TDIG %1").arg(index.row() + 1);
-    case 1: return m_tcpu == NULL ? QString("") : QString::number(m_tcpu->tdig(r+1)->temp(), 'f', 2);
-    case 2: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->ecsr(), 16);
-    }
-  } else if (role == Qt::DecorationRole) {
-    switch (index.column()) {
-    case 0: return m_statusIcon[m_tcpu->tdig(index.row() + 1)->status()];
-    }
-  }
+	if (role == Qt::DisplayRole) {
+		int r = index.row();
+		switch (index.column()) {
+			case 1: return QString(tr("TDIG %1")).arg(index.row() + 1);
+			case 2: return m_tcpu == NULL ? QString("") : QString::number(m_tcpu->tdig(r+1)->temp(), 'f', 2);
+			case 3: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->ecsr(), 16);
+		}
+	} else if (role == Qt::DecorationRole) {
+		switch (index.column()) {
+			case 0: return m_statusIcon[m_tcpu->tdig(index.row() + 1)->status()];
+		}
+	} else if (role == Qt::SizeHintRole) {
+		return QSize(20, 20);
+	} else if (role == Qt::TextAlignmentRole) {
+		switch (index.column()) {
+			case 1: return Qt::AlignCenter;
+			case 2: return Qt::AlignCenter;
+		}
+	}
   return QVariant();
 }
 
@@ -43,9 +51,9 @@ QVariant KTdigModel::headerData(int section, Qt::Orientation orientaion, int rol
     return QVariant();
 
   switch(section) {
-  case 0: return QString("Name");
-  case 1: return QString("Temp");
-  case 2: return QString("ECSR");
+  case 1: return QString("Name");
+  case 2: return QString("Temp");
+  case 3: return QString("ECSR");
   default:
     return QVariant();
   }

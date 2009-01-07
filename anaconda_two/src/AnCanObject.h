@@ -52,6 +52,11 @@ public:
 	AnAddress& laddr() { return m_laddr; }
 	AnAddress haddr() const { return m_haddr; }
 	AnAddress& haddr() { return m_haddr; }
+	
+	int commError() const { return m_comm_err; }
+	int setCommError(int ce) { return (m_comm_err = ce); }
+	int incCommError() { return ++m_comm_err; }
+	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }
 
 private:
 	bool            m_active;
@@ -62,6 +67,8 @@ private:
 	AnAddress       m_haddr;
 
 	QString         m_name;
+	
+	int             m_comm_err;
 
 };
 

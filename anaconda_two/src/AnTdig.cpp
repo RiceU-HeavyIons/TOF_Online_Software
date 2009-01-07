@@ -7,6 +7,7 @@
 
 #include "AnRoot.h"
 #include "AnTdig.h"
+#include "AnExceptions.h"
 
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
   : AnBoard(laddr, haddr, parent), m_threshold(0), m_chipid(0)
@@ -44,95 +45,122 @@ AnCanObject *AnTdig::hat(int i)
 
 void AnTdig::sync(int level)
 {
-  if (active() && level >= 1) {
+	if (active() && level >= 1 && commError() == 0) {
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
-    quint64     rdata;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+		quint64     rdata;
 
-    AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
-    rdata = agent()->write_read(msg, rmsg, 8);
-    setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
-    setEcsr(rmsg.Msg.DATA[3]);
+		try {
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
+			rdata = agent()->write_read(msg, rmsg, 8);
+			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+			setEcsr(rmsg.Msg.DATA[3]);
 
-    if (level >= 3) {
-		// get firmware version
-		AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
-	    rdata = agent()->write_read(msg, rmsg, 4);
-	    setFirmwareId(0xFFFFFF & rdata);
+			if (level >= 3) {
+			// get firmware version
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
+				rdata = agent()->write_read(msg, rmsg, 4);
+				setFirmwareId(0xFFFFFF & rdata);
 
-		// get chip id
-	    AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
-	    rdata = agent()->write_read(msg, rmsg, 8);
-	    setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+			// get chip id
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
+				rdata = agent()->write_read(msg, rmsg, 8);
+				setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+			}
+
+			if (--level >= 1) {
+				for (quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
+			}
+			setSynced();
+
+		} catch (AnExCanError ex) {
+			qDebug() << "Can Communication Error Occurred: " << ex.status();
+			incCommError();
+		}
 	}
-
-    if (--level >= 1)
-      for(quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
-
-    setSynced();
-  }
 }
 
 /**
  * Initialized TDIG
- */
+**/
+
 void AnTdig::init(int level)
 {
 	if (active() && level >= 1) {
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+		try {
+			// this might not be implemented yet
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+			agent()->write_read(msg, rmsg, 2);
 
-		// this might not be implemented yet
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-		agent()->write_read(msg, rmsg, 2);
-
-		if(--level >= 1) m_tdc[0]->init(level);
+			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+		} catch (AnExCanError ex) {
+			incCommError();
+			qDebug() << "Communication Error Occurred: " << ex.status();
+		}
 	}
-	
 }
+
+/**
+ * Configure TDIG and TDCs
+**/
 void AnTdig::config(int level)
 {
-	if (active() && level >= 1) {
-		if (--level >= 1) { /* configure tdcs */
-			if( tdc(1)->configId() == tdc(2)->configId() &&
-		    	tdc(2)->configId() == tdc(3)->configId() )
-			{
-				tdc(0)->setConfigId(tdc(1)->configId());
-				tdc(0)->config(level);
-			} else {
-				for(int i = 1; i < 4; i++) m_tdc[i]->config(level);
+	if (active() && level >= 1 && commError() == 0) {
+		try {
+			if (--level >= 1) { /* configure tdcs */
+				if( tdc(1)->configId() == tdc(2)->configId() &&
+				tdc(2)->configId() == tdc(3)->configId() )
+				{
+					tdc(0)->setConfigId(tdc(1)->configId());
+					tdc(0)->config(level);
+				} else {
+					for(int i = 1; i < 4; i++) m_tdc[i]->config(level);
+				}
 			}
-		}
 
 		// write threshold
-		TPCANMsg msg;
-		TPCANRdMsg rmsg;
-		quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
-		quint8  vl  = (val & 0xff);
-		quint8  vh  = ((val >> 8) & 0x0f);
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
-		agent()->write_read(msg, rmsg, 2);
+			TPCANMsg msg;
+			TPCANRdMsg rmsg;
+			quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
+			quint8  vl  = (val & 0xff);
+			quint8  vh  = ((val >> 8) & 0x0f);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			incCommError();
+			qDebug() << "Communication Error Occurred: " << ex.status();
+		}
 	}
 }
 /**
  * Rest TDIG
- */
+**/
 void AnTdig::reset(int level)
 {
 
 	if (active() && level >= 1) {
-		// do nothing here
+		try {
+			// do nothing here
 		// TPCANMsg    msg;
 		// TPCANRdMsg  rmsg;
 		// 
 		// AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x90);
 		// agent()->write_read(msg, rmsg, 2);
 
-		if (--level >= 1)
-		m_tdc[0]->reset(level);
+			if (--level >= 1) {
+				m_tdc[0]->reset(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+			}
+
+			setCommError(0);
+		} catch (AnExCanError ex) {
+			incCommError();
+			qDebug() << "Communication Error Occurred: " << ex.status();
+		}
 	}
 }
 
@@ -238,6 +266,8 @@ int AnTdig::status() const
 		stat = STATUS_ERROR;
 	else if (!active())
 		stat = STATUS_UNKNOWN;
+	else if (commError() != 0)
+		stat = STATUS_COMM_ERR;
 	else if (ecsr() & 0x10)
 		stat = STATUS_ON;
 	else

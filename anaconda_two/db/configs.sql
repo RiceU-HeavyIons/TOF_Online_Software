@@ -80,14 +80,14 @@ insert into configs values (null,   1,  9,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   1, 10,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   1, 11,  42,   2, 255,   5,   1,     14);
 
----------------------------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 insert into configs values (null,   2,  1,  12,   1, 255, 255,   0,     16);
 insert into configs values (null,   2,  2,  23,   2, 255,   0,   0,     15);
 insert into configs values (null,   2,  3,  24,   2, 255,   0,   0,      3);
 insert into configs values (null,   2,  4, 102,   2, 255,   0,   0,      1);
 insert into configs values (null,   2,  5, 102,   1, 255, 255,   0,      1);
 
----------------------------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 insert into configs values (null,   3,  1,   1,   1, 255,   0,   0,      0);
 insert into configs values (null,   3,  2,  12,   1, 255, 255,   0,     16);
 insert into configs values (null,   3,  3,  23,   2, 255,   0,   0,     15);
@@ -97,3 +97,18 @@ insert into configs values (null,   3,  6,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   3,  7,  42,   2, 255,   5,   1,     14);
 insert into configs values (null,   3,  8,  43,   2, 255, 255,   1,      7);
 insert into configs values (null,   3,  9, 103,   2, 255,   0,   0,      3);
+
+---- User Command 1 -------   id  set  ord, typ ad1  ad2  ad3  ad4   value
+insert into configs values (null, 101,  1,  101,  1, 255,   0,   0,     2);
+insert into configs values (null, 101,  2,  101,  2, 255,   0,   0,     4);
+
+---- User Command 2 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+insert into configs values (null, 102,  1,  102,  2, 255,   0,   0,     4);
+
+---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+insert into configs values (null, 103,  1,  103,  1, 255,   0,   0,     2);
+insert into configs values (null, 103,  2,  103,  2, 255,   0,   0,     4);
+
+---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+insert into configs values (null, 104,  1,  104,  1, 255,   0,   0,     2);
+insert into configs values (null, 104,  2,  104,  2, 255,   0,   0,     4);

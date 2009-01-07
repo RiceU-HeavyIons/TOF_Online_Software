@@ -32,7 +32,7 @@ public:
 
 private:
 	AnThub  *m_thub;            // pointer to parent Thub
-	QIcon    m_statusIcon[4];
+	QIcon    m_statusIcon[5];
 };
 
 #endif /* KSerdesModel_H_ */

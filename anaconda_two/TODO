@@ -2,12 +2,15 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2008-12-23
+Updated: 2009-01-06
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-01-06:
+  - small icons for Linux or TableView for selector
+
   2008-12-23:
   - How to display more TDC info (status, mask, configuration file etc.)?
-  - separate icon column for TDIG selector table view
+  - (X) separate icon column for TDIG selector table view
  
   2008-12-16:
   - Serdes info at TCPU side
@@ -17,7 +20,7 @@ Entry:
   - fix console update problem
   - static/dynamic option in bootstrap
   - parallelized console
-  - user command 1-4
+  - (X) user command 1-4
   - (X) disable propergation to serdes
   - (X) TCPU PLD 03 target
 
@@ -70,7 +73,7 @@ Entry:
   - error highlight
   - (X) connected / non-conncected
   - (X) power unit address?
-  - simple normal mode
+  - (X) simple normal mode
 
   2008-12-03:
   - (X) toggle autosync

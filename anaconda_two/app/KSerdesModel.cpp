@@ -16,6 +16,7 @@ KSerdesModel::KSerdesModel(QObject *parent)
 	m_statusIcon[1] = QIcon(":icons/blue.png");
 	m_statusIcon[2] = QIcon(":icons/green.png");
 	m_statusIcon[3] = QIcon(":icons/red.png");
+	m_statusIcon[4] = QIcon(":icons/gray.png");
 }
 
 QVariant KSerdesModel::data(const QModelIndex &index, int role) const
@@ -26,7 +27,7 @@ QVariant KSerdesModel::data(const QModelIndex &index, int role) const
 		int r = index.row();
 		switch (index.column()) {
 			case 0: return QVariant();
-			case 1: return QString("SERDES %1").arg(index.row() + 1);
+			case 1: return QString(tr("SERDES %1")).arg(index.row() + 1);
 			case 2: return m_thub == NULL ? QString("") : "0x" + QString::number(m_thub->serdes(r+1)->ecsr(), 16);
 		}
 	} else if (role == Qt::DecorationRole) {

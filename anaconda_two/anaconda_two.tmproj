@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>TODO</string>
+	<string>src/AnAgent.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2008-12-29T17:43:41Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2009-01-06T22:59:48Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -39,13 +37,13 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-29T17:43:41Z</date>
+					<date>2009-01-06T22:08:38Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T06:27:36Z</date>
+					<date>2009-01-06T18:46:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -63,7 +61,7 @@
 					<key>filename</key>
 					<string>app/KLevel2View.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-15T03:18:14Z</date>
+					<date>2009-01-06T21:58:54Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -93,7 +91,7 @@
 					<key>filename</key>
 					<string>app/KTcpuView.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T07:26:20Z</date>
+					<date>2009-01-06T22:08:35Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -111,13 +109,13 @@
 					<key>filename</key>
 					<string>app/KTdigModel.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-09T21:47:07Z</date>
+					<date>2009-01-06T22:08:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTdigModel.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-13T04:02:44Z</date>
+					<date>2009-01-06T22:08:37Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -129,7 +127,7 @@
 					<key>filename</key>
 					<string>app/KThubView.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-13T04:08:31Z</date>
+					<date>2009-01-06T22:08:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -147,19 +145,19 @@
 					<key>filename</key>
 					<string>app/KSerdesModel.h</string>
 					<key>lastUsed</key>
-					<date>2008-11-26T10:01:12Z</date>
+					<date>2009-01-06T22:04:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KSerdesModel.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-13T04:37:57Z</date>
+					<date>2009-01-06T22:08:37Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KProgressIndicator.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-15T12:25:22Z</date>
+					<date>2009-01-06T19:35:59Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -188,76 +186,29 @@
 			<array>
 				<dict>
 					<key>filename</key>
-					<string>db/initialize.rb</string>
-					<key>lastUsed</key>
-					<date>2008-11-30T09:41:13Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/configs.sql</string>
-					<key>lastUsed</key>
-					<date>2008-12-23T14:24:43Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/tdc_configs.sql</string>
-					<key>lastUsed</key>
-					<date>2008-12-16T05:20:06Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/Makefile</string>
-					<key>lastUsed</key>
-					<date>2008-12-12T18:24:30Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/devices.sql</string>
-					<key>lastUsed</key>
-					<date>2008-12-16T05:50:20Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/thubs.sql</string>
-					<key>lastUsed</key>
-					<date>2008-12-16T05:50:06Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>db/tcpus.sql</string>
-					<key>lastUsed</key>
-					<date>2008-12-16T05:50:10Z</date>
-				</dict>
-			</array>
-			<key>name</key>
-			<string>db</string>
-		</dict>
-		<dict>
-			<key>children</key>
-			<array>
-				<dict>
-					<key>filename</key>
 					<string>src/src.pro</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T02:09:42Z</date>
+					<date>2009-01-07T00:08:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-21T00:43:11Z</date>
+					<date>2009-01-07T04:11:55Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T04:30:48Z</date>
+					<date>2009-01-07T04:11:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-23T12:20:19Z</date>
+					<date>2009-01-07T03:34:59Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -269,13 +220,13 @@
 					<key>filename</key>
 					<string>src/AnCanObject.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:38:49Z</date>
+					<date>2009-01-07T04:05:20Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:38:50Z</date>
+					<date>2009-01-07T04:04:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -287,7 +238,7 @@
 					<key>filename</key>
 					<string>src/AnCanNet.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T01:06:19Z</date>
+					<date>2009-01-07T04:04:43Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -305,13 +256,13 @@
 					<key>filename</key>
 					<string>src/AnRoot.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T06:16:21Z</date>
+					<date>2009-01-06T18:28:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T06:54:37Z</date>
+					<date>2009-01-06T19:07:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -329,7 +280,7 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T07:22:19Z</date>
+					<date>2009-01-07T04:11:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -341,13 +292,13 @@
 					<key>filename</key>
 					<string>src/AnTdig.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:44:41Z</date>
+					<date>2009-01-07T03:56:17Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T06:52:41Z</date>
+					<date>2009-01-07T04:11:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -401,7 +352,7 @@
 					<key>filename</key>
 					<string>src/AnRdMsg.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-15T12:03:53Z</date>
+					<date>2009-01-07T03:56:18Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -413,17 +364,74 @@
 					<key>filename</key>
 					<string>src/AnMaster.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T06:27:56Z</date>
+					<date>2009-01-07T00:11:22Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-23T14:24:44Z</date>
+					<date>2009-01-06T22:08:38Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>src/AnExceptions.h</string>
+					<key>lastUsed</key>
+					<date>2009-01-07T03:56:13Z</date>
+				</dict>
+			</array>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>src</string>
+		</dict>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>filename</key>
+					<string>db/initialize.rb</string>
+					<key>lastUsed</key>
+					<date>2008-11-30T09:41:13Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/configs.sql</string>
+					<key>lastUsed</key>
+					<date>2009-01-06T21:03:40Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/tdc_configs.sql</string>
+					<key>lastUsed</key>
+					<date>2009-01-06T18:31:36Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/Makefile</string>
+					<key>lastUsed</key>
+					<date>2008-12-12T18:24:30Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/devices.sql</string>
+					<key>lastUsed</key>
+					<date>2008-12-16T05:50:20Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/thubs.sql</string>
+					<key>lastUsed</key>
+					<date>2008-12-16T05:50:06Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>db/tcpus.sql</string>
+					<key>lastUsed</key>
+					<date>2008-12-16T05:50:10Z</date>
 				</dict>
 			</array>
 			<key>name</key>
-			<string>src</string>
+			<string>db</string>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -435,8 +443,6 @@
 					<date>2008-12-21T00:26:24Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>fakepcan</string>
 		</dict>
@@ -456,8 +462,6 @@
 					<date>2008-12-21T00:43:14Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>inc</string>
 		</dict>
@@ -670,8 +674,6 @@
 							<date>2008-12-13T18:44:32Z</date>
 						</dict>
 					</array>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>iconfactory</string>
 				</dict>
@@ -860,16 +862,39 @@
 							<date>2008-12-15T08:01:00Z</date>
 						</dict>
 					</array>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>error_handling</string>
+				</dict>
+			</array>
+			<key>name</key>
+			<string>qttest</string>
+		</dict>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>filename</key>
+					<string>ref/can_utils.cc</string>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>ref/pcanloop.cc</string>
+					<key>lastUsed</key>
+					<date>2009-01-07T02:00:14Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>ref/xenableChannel.cc</string>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>ref/xsetThreshold.cc</string>
 				</dict>
 			</array>
 			<key>expanded</key>
 			<true/>
 			<key>name</key>
-			<string>qttest</string>
+			<string>ref</string>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
@@ -881,38 +906,68 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>21</integer>
+				<integer>51</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>8</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>88</integer>
+			<integer>0</integer>
 		</dict>
-		<key>app/KMainWindow.cpp</key>
+		<key>ref/pcanloop.cc</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>50</integer>
+				<integer>43</integer>
 				<key>line</key>
-				<integer>133</integer>
+				<integer>529</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>431</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>41</integer>
+				<key>line</key>
+				<integer>529</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>529</integer>
+			</dict>
+		</dict>
+		<key>src/AnAgent.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>91</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>99</integer>
+			<integer>63</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>app/KMainWindow.cpp</string>
-		<string>TODO</string>
+		<string>ref/pcanloop.cc</string>
+		<string>src/AnAgent.cpp</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{342, 19}, {783, 759}}</string>
+	<string>{{343, 19}, {783, 759}}</string>
 </dict>
 </plist>

@@ -305,6 +305,13 @@ void AnRoot::setMode(int i)
 	m_master->setMode(m_mode);
 }
 
+void AnRoot::doUserCmd(int i)
+{
+	disableWatch();
+	emit aboutStart();
+	m_master->setMode(i + 100);
+}
+
 /**
  * Find object from logical address. Validation is not implemented and causes
  * segmentation fault very very easily.

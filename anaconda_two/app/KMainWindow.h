@@ -58,6 +58,11 @@ public slots:
 	void doReset();
 	void doSync();
 
+	void doUser1();
+	void doUser2();
+	void doUser3();
+	void doUser4();
+
 	void toggleToolbar();
 	void toggleConsole();
 	void toggleAutoSync();
@@ -96,6 +101,7 @@ private:
 	QAction            *m_ToggleToolbarAction;
 	QAction            *m_ToggleConsoleAction;
 	QAction            *m_ToggleAutoSyncAction;
+	QAction            *m_UserAction[4];
 
 	QToolBar           *m_CommandToolbar;
 	QComboBox          *m_combo;

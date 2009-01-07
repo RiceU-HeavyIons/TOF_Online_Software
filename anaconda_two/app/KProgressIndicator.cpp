@@ -14,7 +14,7 @@ KProgressIndicator::KProgressIndicator(AnRoot *root, QWidget *parent)
 	m_size = m_root->nAgents();
 	m_agents = m_root->agents();
 
-    setWindowTitle("In Progress...");
+    setWindowTitle(tr("Task Progress"));
 	resize(400, 100);
 
 	m_val = new int[m_size + 1];
@@ -69,7 +69,7 @@ KProgressIndicator::~KProgressIndicator()
 
 void KProgressIndicator::cancel()
 {
-	setWindowTitle("Canceling tasks...");
+//	setWindowTitle("Canceling tasks...");
 	m_root->stop();
 	m_ok->setEnabled(true);
 	m_cancel->setEnabled(false);

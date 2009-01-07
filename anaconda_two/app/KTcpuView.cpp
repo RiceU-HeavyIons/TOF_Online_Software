@@ -67,10 +67,11 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent)
 	int h = 20*8 + m_view->horizontalHeader()->height() + 8;
 	m_view->setMinimumHeight(h);
 	m_view->setMaximumHeight(h);
-	m_view->setColumnWidth(0, 100);
+	m_view->setColumnWidth(0, 30);
 	m_view->setColumnWidth(1, 60);
 	m_view->setColumnWidth(2, 60);
-	m_view->setMinimumWidth(100+60+60+8);
+	m_view->setColumnWidth(3, 60);
+	m_view->setMinimumWidth(30+60+60+60+8);
 
 //	grid->addWidget(view, ++row, 0, 1, 2);
 	vbox->addWidget(m_view);

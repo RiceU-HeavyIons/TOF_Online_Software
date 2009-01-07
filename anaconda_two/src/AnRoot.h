@@ -66,6 +66,8 @@ public:
 	void setMode(int i);
 	QStringList modeList() const;
 
+	void doUserCmd(int i);
+
 	void init  (int level, const QList<AnBoard*>& blist);	
 	void config(int level, const QList<AnBoard*>& blist);
 	void reset (int level, const QList<AnBoard*>& blist);

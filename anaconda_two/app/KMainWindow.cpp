@@ -9,18 +9,16 @@
 #include <QtCore/QModelIndexList>
 #include <QtCore/QModelIndex>
 
-#include <QtGui/QFontMetrics>
-
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
 #include <QtGui/QProgressBar>
 #include <QtGui/QPushButton>
 #include <QtGui/QDialogButtonBox>
+#include <QtGui/QFontMetrics>
 
 #include "KMainWindow.h"
 #include "KLevel2View.h"
 #include "KTcpuView.h"
-
 
 //-----------------------------------------------------------------------------
 // Constructors
@@ -150,6 +148,16 @@ void KMainWindow::createActions()
 	// QObject::connect(m_ToggleToolbarAction, SIGNAL(triggered()),
 	// 					this, SLOT(toggleToolbar()));
 
+	for (int i = 0 ; i < 4; ++i) {
+		m_UserAction[i] = new QAction(
+			QIcon(QString(":images/user%1.png").arg(i + 1) ),
+			QString(tr("User Command %1")).arg(i + 1), this);
+	}
+	QObject::connect(m_UserAction[0], SIGNAL(triggered()), this, SLOT(doUser1()));
+	QObject::connect(m_UserAction[1], SIGNAL(triggered()), this, SLOT(doUser2()));
+	QObject::connect(m_UserAction[2], SIGNAL(triggered()), this, SLOT(doUser3()));
+	QObject::connect(m_UserAction[3], SIGNAL(triggered()), this, SLOT(doUser4()));
+
 	m_ToggleConsoleAction = new QAction(tr("Console"), this);
 	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
 	// m_ToggleConsoleAction->setCheckable(true);
@@ -189,12 +197,14 @@ void KMainWindow::createMenus()
 //-----------------------------------------------------------------------------
 void KMainWindow::createToolBars()
 {
+	// Command Toolbar
 	m_CommandToolbar = addToolBar(tr("Command Toolbar"));
 	m_CommandToolbar->addAction(m_InitAction);
 	m_CommandToolbar->addAction(m_ConfigAction);
 	m_CommandToolbar->addAction(m_ResetAction);
 	m_CommandToolbar->addAction(m_SyncAction);
 
+	// Mode Toolbar
 	QToolBar *bar = addToolBar(tr("Mode Toolbar"));
 	// m_CommandToolbar->addSeparator();
 	// QWidget *w = new QWidget();
@@ -203,6 +213,11 @@ void KMainWindow::createToolBars()
 	bar->addWidget(lbl);
 	// m_comboAction = bar->addWidget(m_combo);
 	bar->addWidget(m_combo);
+
+	// User Toolbar
+	bar = addToolBar(tr("User Toolbar"));
+	for (int i = 0; i < 4; ++i)
+		bar->addAction(m_UserAction[i]);
 }
 
 //-----------------------------------------------------------------------------
@@ -295,6 +310,34 @@ void KMainWindow::doSync()
 }
 
 //-----------------------------------------------------------------------------
+void KMainWindow::doUser1()
+{
+	setBusy(true);
+	m_root->doUserCmd(1);
+}
+
+//-----------------------------------------------------------------------------
+void KMainWindow::doUser2()
+{
+	setBusy(true);
+	m_root->doUserCmd(2);
+}
+
+//-----------------------------------------------------------------------------
+void KMainWindow::doUser3()
+{
+	setBusy(true);
+	m_root->doUserCmd(3);
+}
+
+//-----------------------------------------------------------------------------
+void KMainWindow::doUser4()
+{
+	setBusy(true);
+	m_root->doUserCmd(4);
+}
+
+//-----------------------------------------------------------------------------
 void KMainWindow::toggleToolbar()
 {
 	m_CommandToolbar->setVisible(m_ToggleToolbarAction->isChecked());
@@ -338,6 +381,7 @@ void KMainWindow::setBusy(bool sw)
 	m_ConfigAction->setEnabled(!sw);
 	m_ResetAction->setEnabled(!sw);
 	m_SyncAction->setEnabled(!sw);
+	for (int i = 0; i < 4; ++i) m_UserAction[i]->setEnabled(!sw);
 	m_combo->setEnabled(!sw);
 }
 

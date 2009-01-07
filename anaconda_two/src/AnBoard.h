@@ -58,10 +58,11 @@ public:
 	virtual int hvOrder() const { return 0; }
 
 	enum {
-		STATUS_UNKNOWN = 0,
-		STATUS_STANBY  = 1,
-		STATUS_ON      = 2,
-		STATUS_ERROR   = 3
+		STATUS_UNKNOWN  = 0,
+		STATUS_STANBY   = 1,
+		STATUS_ON       = 2,
+		STATUS_ERROR    = 3,
+		STATUS_COMM_ERR = 4
 	};
 
 protected:

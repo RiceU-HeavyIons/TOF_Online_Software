@@ -77,6 +77,7 @@ protected:
 
 private:
 	bool match(TPCANMsg &snd, TPCANMsg &rcv);
+	void error_handle(int er);
 
 	int                      m_mode;
 	int                      m_level;

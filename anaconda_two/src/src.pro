@@ -25,7 +25,8 @@ debug {
 DESTDIR = ../lib
 
 # Input
-HEADERS += AnAddress.h \
+HEADERS += AnExceptions.h \
+           AnAddress.h \
            AnCanObject.h AnCanNet.h AnBoard.h \
            AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \

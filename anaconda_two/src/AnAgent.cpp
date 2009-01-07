@@ -7,6 +7,7 @@
 
 #include "AnAgent.h"
 #include "AnRoot.h"
+#include "AnExceptions.h"
 
 int AnAgent::TCAN_DEBUG = 0;
 const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
@@ -30,7 +31,7 @@ void AnAgent::set_msg(TPCANMsg &msg, ...)
 	msg.ID      = va_arg(argptr, int);
 	msg.MSGTYPE = va_arg(argptr, int);
 	msg.LEN     = va_arg(argptr, int);
-	for (int i = 0; i < msg.LEN && i < 8; i++)
+	for (int i = 0; i < msg.LEN && i < 8; ++i)
 		msg.DATA[i] = va_arg(argptr, int);
 
 	va_end(argptr);
@@ -54,46 +55,44 @@ void AnAgent::print(const TPCANRdMsg &rmsg)
   print(rmsg.Msg);
 }
 
+// member functions
+
 //-----------------------------------------------------------------------------
 quint64 AnAgent::read(TPCANRdMsg &rmsg,
     int return_length, unsigned int time_out)
 {
 
-  if(m_handle == NULL) {
-    qDebug() << "device is not open";
-    return -1;
-  }
+	if(m_handle == NULL) {
+		qDebug() << "device is not open";
+		return -1;
+	}
 
-  quint64 data = 0;
-  unsigned int length = 0;
-  unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
-  int er = 0;
+	quint64 data = 0;
+	unsigned int length = 0;
+	unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
+	int er = 0;
 
-  for (unsigned int i = 0; i < niter && !er; ++i) {
-    er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-    if (er != 0) {
-      int status = CAN_Status(m_handle);
-      if (status > 0)
-        fprintf(stderr, "CANbus error: 0x%x\n", status);
-      else
-        fprintf(stderr, "System error: 0x%x\n", status);
-    }
-    if (TCAN_DEBUG) {
-      // printf("<< (%p)", m_handle);
-      // print(rmsg);
-      emit debug_recv(AnRdMsg(devid(), rmsg));
-    }
-    length += rmsg.Msg.LEN;
-    for(int j = 1; j < rmsg.Msg.LEN; ++j)
-      data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
-  }
+	for (unsigned int i = 0; i < niter && !er; ++i) {
+		er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
+		error_handle(er);
 
-  if (return_length >= 0 && return_length != (int)length) {
-    fprintf(stderr, "Return length doesn't match.\n");
-  }
+		if (TCAN_DEBUG) {
+			// printf("<< (%p)", m_handle);
+			// print(rmsg);
+			emit debug_recv(AnRdMsg(devid(), rmsg));
+		}
+		length += rmsg.Msg.LEN;
+		for (int j = 1; j < rmsg.Msg.LEN; ++j)
+			data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+	}
 
-  return data;
-}
+	if (return_length >= 0 && return_length != (int)length) {
+		fprintf(stderr, "Return length doesn't match.\n");
+		throw AnExCanError(0);
+	}
+
+		return data;
+	}
 
 //-----------------------------------------------------------------------------
 void AnAgent::raw_write(TPCANMsg &msg, int time_out)
@@ -112,13 +111,7 @@ void AnAgent::raw_write(TPCANMsg &msg, int time_out)
 	}
 
 	er = LINUX_CAN_Write_Timeout(m_handle, &msg, time_out);
-	if (er != 0) {
-		int status = CAN_Status(m_handle);
-		if (status > 0)
-			fprintf(stderr, "CANbus error: 0x%x\n", status);
-		else
-			fprintf(stderr, "System error: 0x%x\n", status);
-	}
+	error_handle(er);
 }
 
 //-----------------------------------------------------------------------------
@@ -143,25 +136,13 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
 
 	er = CAN_Write(m_handle, &msg);
-	if (er != 0) {
-		int status = CAN_Status(m_handle);
-		if (status > 0)
-			fprintf(stderr, "CANbus error: 0x%x\n", status);
-		else
-			fprintf(stderr, "System error: 0x%x\n", status);
-	}
+	error_handle(er);
 
 	for (unsigned int i = 0; i < niter && !er; ++i) {
-		int ntry = 10;
+		int ntry = 10; // tra 10 times
 		for (; ntry > 0; --ntry) {
 			er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-			if (er != 0) {
-				int status = CAN_Status(m_handle);
-				if (status > 0)
-					fprintf(stderr, "CANbus error: 0x%x\n", status);
-				else
-					fprintf(stderr, "System error: 0x%x\n", status);
-			}
+			error_handle(er);
 			if (TCAN_DEBUG) {
 				// printf("<< ");
 				// print(rmsg);
@@ -175,11 +156,11 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 		}
 		if (ntry == 0) {
 			fprintf(stderr, "Didn't receive reply message.\n");
-			break;
+			throw AnExCanError(0);
 		}  else {
 			if (rmsg.Msg.DATA[0] != msg.DATA[0]) {
 				fprintf(stderr, "Return payload doesn't match.\n");
-				er = -1;
+				throw AnExCanError(0);
 			}
 			length += rmsg.Msg.LEN;
 			for(int j = 1; j < rmsg.Msg.LEN; ++j)
@@ -188,7 +169,8 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
 
 	if (return_length != length) {
-	fprintf(stderr, "Return length doesn't match.\n");
+		fprintf(stderr, "Return length doesn't match.\n");
+		throw AnExCanError(0);
 	}
 
 	return data;
@@ -331,9 +313,9 @@ int AnAgent::open(quint8 dev_id) {
 //-----------------------------------------------------------------------------
 void AnAgent::init(int mode, int level, QList<AnBoard*> list)
 {
-	m_mode = mode;
+	m_mode  = mode;
 	m_level = level;
-	m_list = list;
+	m_list  = list;
 }
 
 //-----------------------------------------------------------------------------
@@ -392,6 +374,8 @@ void AnAgent::setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs)
 	}
 }
 
+// private functions
+
 //-----------------------------------------------------------------------------
 bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 {
@@ -401,3 +385,22 @@ bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 		return ((snd.ID | 0x1) == rcv.ID);
 	}
 }
+
+//-----------------------------------------------------------------------------
+void AnAgent::error_handle(int er)
+{
+	if (er != 0) {
+		int status = CAN_Status(m_handle);
+		if (status == CAN_ERR_QRCVEMPTY) {
+			fprintf(stderr, "CANbus error: 0x%x\n", status);
+			throw AnExCanTimeOut(status);
+		} else if (status > 0) {
+			fprintf(stderr, "CANbus error: 0x%x\n", status);
+			throw AnExCanError(status);
+		} else {
+			fprintf(stderr, "System error: 0x%x\n", status);
+			throw AnExCanError(status);
+		}
+	}
+}
+
