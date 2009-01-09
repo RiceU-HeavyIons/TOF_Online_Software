@@ -6,7 +6,7 @@
  */
 #include "AnRoot.h"
 #include "AnTcpu.h"
-
+#include "AnExceptions.h"
 //-----------------------------------------------------------------------------
 AnTcpu::AnTcpu(
 	const AnAddress &laddr,
@@ -20,7 +20,7 @@ AnTcpu::AnTcpu(
 	AnAddress lad = lAddress();
 	AnAddress had = hAddress();
 
-	for(int i = 0; i < 8; ++i) {
+	for (int i = 0; i < 8; ++i) {
 		lad.set(2, i + 1);
 		had.set(2, 0x10 + i);
 		m_tdig[i] = new AnTdig(lad, had, this);
@@ -59,12 +59,10 @@ AnCanObject *AnTcpu::hat(int i)
 		return this;
 }
 
-
-
 //-----------------------------------------------------------------------------
 void AnTcpu::config(int level)
 {
-	if (active() && level >= 1) {
+	if (active() && level >= 1 && commError() == 0) {
 		if(--level >= 1) {
 			for (int i = 0; i < 8; ++i) {
 				m_tdig[i]->config(level);
@@ -74,29 +72,40 @@ void AnTcpu::config(int level)
 		// for (int i = 0; i < 8; ++i)
 		// agent()->read(rmsg);
 		// write to PLD REG[2]
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
-		agent()->write_read(msg, rmsg, 2);
+		try {
+			TPCANMsg    msg;
+			TPCANRdMsg  rmsg;
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 
 	}
 }
+
 //-----------------------------------------------------------------------------
 void AnTcpu::init(int level)
 {
 
-	if (active() && level >= 1) {
+	if (active() && level >= 1 && commError() == 0) {
 
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
 
-		// this may not implemented yet
-		AnAgent::set_msg(msg, canidw(),
-		                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-	    agent()->write_read(msg, rmsg, 2);
+		try {
+			// this may not implemented yet
+			AnAgent::set_msg(msg, canidw(),
+			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+			agent()->write_read(msg, rmsg, 2);
 
-		if (--level >= 1)
-			for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
+			if (--level >= 1)
+				for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 	}
 }
 
@@ -109,69 +118,79 @@ void AnTcpu::reset(int level)
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
 
-		// this may not implemented yet
-		AnAgent::set_msg(msg, canidw(),
-		                 MSGTYPE_STANDARD, 5, 0xe, 0x1, 0x3, 0x1, 0x0);
-	    agent()->write_read(msg, rmsg, 2);
+		try {
+			// this may not implemented yet
+			AnAgent::set_msg(msg, canidw(),
+		                 	MSGTYPE_STANDARD, 5, 0xe, 0x1, 0x3, 0x1, 0x0);
+			agent()->write_read(msg, rmsg, 2);
 
-		if (--level >= 1)
-			for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
+			if (--level >= 1)
+				for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
+
+			clearCommError();
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 void AnTcpu::sync(int level)
 {
-  if (active() && level >= 0) {
+	if (active() && level >= 1 && commError() == 0) {
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
-    quint64     rdata;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+		quint64     rdata;
 
-	// get temperature and ecsr
-	// HLP 3f says "ESCSR Temp Temp AD1L AD1H AD2L AD2H"...
-    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
-    agent()->write_read(msg, rmsg, 8);
-    setEcsr(rmsg.Msg.DATA[3]);
-    setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+		try {
+			// get temperature and ecsr
+			// HLP 3f says "ESCSR Temp Temp AD1L AD1H AD2L AD2H"...
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
+			agent()->write_read(msg, rmsg, 8);
+			setEcsr(rmsg.Msg.DATA[3]);
+			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 
-	if (level >= 3) {
-		// get firmware versions
-	    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
-	    rdata = agent()->write_read(msg, rmsg, 4);
-	    setFirmwareId(0xFFFFFF & rdata);
+			if (level >= 3) {
+				// get firmware versions
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
+				rdata = agent()->write_read(msg, rmsg, 4);
+				setFirmwareId(0xFFFFFF & rdata);
 
-		// get chip id
-	    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
-	    rdata = agent()->write_read(msg, rmsg, 8);
-	    setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+				// get chip id
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
+				rdata = agent()->write_read(msg, rmsg, 8);
+				setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+			}
+
+			// get PLD 0x02 and 0x0e
+			// AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
+			// sock->write_read(msg, rmsg, 5);
+			// m_pld02 = rmsg.Msg.DATA[2];
+			// m_pld0e = rmsg.Msg.DATA[4];
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x2);
+			agent()->write_read(msg, rmsg, 3);
+			m_pld02 = rmsg.Msg.DATA[2];
+
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
+			agent()->write_read(msg, rmsg, 3);
+			m_pld03 = rmsg.Msg.DATA[2];
+
+			if (--level >= 0)
+				for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
+
+			setSynced();
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 	}
-
-	// get PLD 0x02 and 0x0e
-	//     AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
-	//     sock->write_read(msg, rmsg, 5);
-	// m_pld02 = rmsg.Msg.DATA[2];
-	// m_pld0e = rmsg.Msg.DATA[4];
-    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x2);
-    agent()->write_read(msg, rmsg, 3);
-	m_pld02 = rmsg.Msg.DATA[2];
-
-    AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
-    agent()->write_read(msg, rmsg, 3);
-	m_pld03 = rmsg.Msg.DATA[2];
-
-    if (--level >= 0)
-      for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
-
-    setSynced();
-  }
 }
-
-
 
 /**
  * Return CANBus id for read
- */
+**/
 quint32 AnTcpu::canidr() const
 {
 	return haddr().at(1) << 4 | 0x4;
@@ -287,14 +306,15 @@ int AnTcpu::status() const
 
 	if (err)
 		stat = STATUS_ERROR;
+	else if (commError() != 0)
+		stat = STATUS_COMM_ERR;
 	else
 		stat = (m_pld02 & 0x1) ? STATUS_ON : STATUS_STANBY;
 
-	if (!active()) stat = 0;
+	if (!active()) stat = STATUS_UNKNOWN;
 
 	return stat;
 }
-
 
 //-----------------------------------------------------------------------------
 QString AnTcpu::pldReg02String(bool hlite) const
@@ -309,6 +329,7 @@ QString AnTcpu::pldReg02String(bool hlite) const
 
 	return ret;
 }
+
 //-----------------------------------------------------------------------------
 QString AnTcpu::pldReg03String(bool hlite) const
 {
@@ -320,6 +341,7 @@ QString AnTcpu::pldReg03String(bool hlite) const
 
 	return ret;
 }
+
 //-----------------------------------------------------------------------------
 QString AnTcpu::pldReg0eString(bool hlite) const
 {
@@ -331,6 +353,7 @@ QString AnTcpu::pldReg0eString(bool hlite) const
 	
 	return ret;
 }
+
 //-----------------------------------------------------------------------------
 void AnTcpu::setLvHv(int lb, int lc, int hb, int hc)
 {
@@ -339,9 +362,10 @@ void AnTcpu::setLvHv(int lb, int lc, int hb, int hc)
 	m_hv_box = hb;
 	m_hv_ch  = hc;
 }
+
 /**
  * Return LV / HV String
- */
+**/
 QString AnTcpu::lvHvString() const
 {
 	QString ret;
@@ -350,9 +374,10 @@ QString AnTcpu::lvHvString() const
 		 .arg(m_lv_box).arg(m_lv_ch).arg(m_hv_box).arg(m_hv_ch);
 	return ret;
 }
+
 /**
  * Return LV tring
- */
+**/
 QString AnTcpu::lvString() const
 {
 	QString ret;
@@ -362,7 +387,7 @@ QString AnTcpu::lvString() const
 }
 /**
  * Return HV String
- */
+**/
 QString AnTcpu::hvString() const
 {
 	QString ret;

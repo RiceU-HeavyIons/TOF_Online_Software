@@ -7,6 +7,7 @@
 
 #include "AnTdc.h"
 #include "AnRoot.h"
+#include "AnExceptions.h"
 
 AnTdc::AnTdc(const AnAddress &laddr, const AnAddress &haddr,
     AnCanObject *parent)
@@ -18,7 +19,9 @@ AnTdc::AnTdc(const AnAddress &laddr, const AnAddress &haddr,
 	m_mask   = 0x0;
 }
 
-
+/**
+ * Dump Object Information
+**/
 QString AnTdc::dump() const
 {
 	QStringList sl;
@@ -42,23 +45,29 @@ QString AnTdc::dump() const
 
 /**
  * Initialize TDC
- */
-void AnTdc::init(int level) {
+**/
+void AnTdc::init(int level)
+{
 
-	if (active() && level >= 1) {
+	if (active() && level >= 1 && commError() == 0) {
 		quint8  data0 = 0x04 | hAddress().at(3);
 
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
 
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0xff);
-	    agent()->write_read(msg, rmsg, 2);
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x3f);
-	    agent()->write_read(msg, rmsg, 2);
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xf4, 0xff, 0xff, 0xff, 0x1f);
-	    agent()->write_read(msg, rmsg, 2);
-	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
-	    agent()->write_read(msg, rmsg, 2);
+		try {
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0xff);
+			agent()->write_read(msg, rmsg, 2);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x3f);
+			agent()->write_read(msg, rmsg, 2);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xf4, 0xff, 0xff, 0xff, 0x1f);
+			agent()->write_read(msg, rmsg, 2);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 	}
 }
 
@@ -75,36 +84,41 @@ void AnTdc::config(int level)
 		AnTdcConfig *tc = agent()->tdcConfig(configId());
 		qDebug() << "AnTdc::config()" << tc;
 
-		// block start //
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x10);
-		agent()->write_read(msg, rmsg, 2);
-
-		// blocks //
-		for (int l = 0; l < tc->blockLength(); ++l) {
-			tc->setBlockMsg(&msg, l);
+		try {
+			// block start //
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x10);
 			agent()->write_read(msg, rmsg, 2);
+
+			// blocks //
+			for (int l = 0; l < tc->blockLength(); ++l) {
+				tc->setBlockMsg(&msg, l);
+				agent()->write_read(msg, rmsg, 2);
+			}
+
+			// block end //
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x30);
+			rdata = agent()->write_read(msg, rmsg, 8);
+			quint8  sts = (0x0000FF & rdata);
+			quint32 len = (0x00FFFF & rdata >> 8);
+			quint32 csm = (0xFFFFFF & rdata >> 24);
+			if (sts != 0 || tc->length() != len || tc->checksum() != csm) {
+				qDebug() << objectName();
+				qFatal("Block Sending Error: "
+				       "config_id=%d, status=%d, length=%d, checksum=%d",
+			           tc->id(), sts, len, csm);
+			}
+			// finalize
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x40 | haddr().at(3));
+			rdata = agent()->write_read(msg, rmsg, 2);
+
+
+			// set mask
+			set_mask_msg(msg);
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
 		}
-
-		// block end //
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x30);
-		rdata = agent()->write_read(msg, rmsg, 8);
-		quint8  sts = (0x0000FF & rdata);
-		quint32 len = (0x00FFFF & rdata >> 8);
-		quint32 csm = (0xFFFFFF & rdata >> 24);
-		if (sts != 0 || tc->length() != len || tc->checksum() != csm) {
-			qDebug() << objectName();
-			qFatal("Block Sending Error: "
-			       "config_id=%d, status=%d, length=%d, checksum=%d",
-		           tc->id(), sts, len, csm);
-		}
-		// finalize
-		AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x40 | haddr().at(3));
-		rdata = agent()->write_read(msg, rmsg, 2);
-
-
-		// set mask
-		set_mask_msg(msg);
-		agent()->write_read(msg, rmsg, 2);
 	}
 }
 

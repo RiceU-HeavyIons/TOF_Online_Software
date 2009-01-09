@@ -156,7 +156,7 @@ void AnTdig::reset(int level)
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 			}
 
-			setCommError(0);
+			clearCommError();
 		} catch (AnExCanError ex) {
 			incCommError();
 			qDebug() << "Communication Error Occurred: " << ex.status();

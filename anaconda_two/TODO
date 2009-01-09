@@ -67,7 +67,7 @@ Entry:
   - (X) pc syntax
   - (X) greeting message -> status
   - (X) color legend
-  - communication error
+  - (X) communication error
   - non expert mode
   - (X) connected vs non existence
   - error highlight
@@ -171,8 +171,8 @@ Entry:
   - (X) Progress message for Sync, Reset, Configuration
   - Reduce sync process by introducing last updated time-stamp and minimal interval
   - (X) Automatic sync process
-  - Robust PCAN error handling
-  - Simplify message send / receive handling
+  - (X) Robust PCAN error handling
+  - (X) Simplify message send / receive handling
   - TDC data handling with QSocketNotifier
   - (X) Greeting message handling with QSocketNotifier
   - Icons for Rest and Configuration

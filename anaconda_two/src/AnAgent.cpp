@@ -18,7 +18,8 @@ AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0)
 }
 
 //-----------------------------------------------------------------------------
-AnAgent::~AnAgent() {
+AnAgent::~AnAgent()
+{
 	if (m_handle) CAN_Close(m_handle);
 }
 

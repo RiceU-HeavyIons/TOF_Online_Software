@@ -57,6 +57,7 @@ public:
 	int setCommError(int ce) { return (m_comm_err = ce); }
 	int incCommError() { return ++m_comm_err; }
 	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }
+	void clearCommError() { m_comm_err = 0; }
 
 private:
 	bool            m_active;

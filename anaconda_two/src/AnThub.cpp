@@ -7,6 +7,7 @@
 
 #include "AnRoot.h"
 #include "AnThub.h"
+#include "AnExceptions.h"
 
 AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent)
  : AnBoard(laddr, haddr, parent)
@@ -75,11 +76,18 @@ void AnThub::reset(int level)
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 
-		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
-		agent()->write_read(msg, rmsg, 2);
+		try {
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
+			agent()->write_read(msg, rmsg, 2);
 		
-		if (--level >= 1)
-			for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
+			if (--level >= 1)
+				for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
+
+			clearCommError();
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
 	}
 }
 
@@ -88,36 +96,41 @@ void AnThub::reset(int level)
  */
 void AnThub::sync(int level)
 {
-	if (active() && level >= 1) {
+	if (active() && level >= 1 && commError() == 0) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		quint64 rdata;
 
-		// readout master firmware id
-		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
-		rdata = agent()->write_read(msg, rmsg, 3);
-		setMcuFirmwareId(rdata);
-		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
-		agent()->write_read(msg, rmsg, 3);
-		setFpgaFirmwareId(rmsg.Msg.DATA[2]);
-
-		// readout temperature
-		for (int i = 0; i < 2; ++i) {
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
+		try {
+			// readout master firmware id
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
 			rdata = agent()->write_read(msg, rmsg, 3);
-			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0, i);
+			setMcuFirmwareId(rdata);
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
+			agent()->write_read(msg, rmsg, 3);
+			setFpgaFirmwareId(rmsg.Msg.DATA[2]);
+
+			// readout temperature
+			for (int i = 0; i < 2; ++i) {
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
+				rdata = agent()->write_read(msg, rmsg, 3);
+				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0, i);
+			}
+
+			// readout crc error bits
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
+			agent()->write_read(msg, rmsg, 2);
+			setEcsr(rmsg.Msg.DATA[1]);
+
+			// readout serdes infomation
+			if (--level >= 1)
+				for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
+
+			setSynced();
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
 		}
-
-		// readout crc error bits
-		AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
-		agent()->write_read(msg, rmsg, 2);
-		setEcsr(rmsg.Msg.DATA[1]);
-
-		// readout serdes infomation
-		if (--level >= 1)
-			for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
-
-		setSynced();
 	}
 
 }

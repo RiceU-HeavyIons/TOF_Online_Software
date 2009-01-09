@@ -7,6 +7,7 @@
 
 #include "AnRoot.h"
 #include "AnSerdes.h"
+#include "AnExceptions.h"
 
 AnSerdes::AnSerdes(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
  : AnBoard(laddr, haddr, parent)
@@ -54,15 +55,20 @@ QString AnSerdes::dump() const
  */
 void AnSerdes::config(int level)
 {
-  if (active() && level >= 1) {
-	quint8  srdid = hAddress().at(2);
+	if (active() && level >= 1) {
+		quint8  srdid = hAddress().at(2);
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
 
-    AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
-    agent()->write_read(msg, rmsg, 2);
-  }	
+		try {
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
+	}	
 }
 
 /**
