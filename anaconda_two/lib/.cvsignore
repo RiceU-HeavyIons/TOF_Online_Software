@@ -2,3 +2,4 @@
 libanaconda.so.*
 libanaconda.so
 .DS_Store
+libanaconda.a
