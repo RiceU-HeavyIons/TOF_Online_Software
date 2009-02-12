@@ -17,6 +17,7 @@
 #include <QtGui/QFontMetrics>
 
 #include "KMainWindow.h"
+#include "KSimpleWindow.h"
 #include "KLevel2View.h"
 #include "KTcpuView.h"
 
@@ -26,6 +27,8 @@
 KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 {
 
+	setWindowTitle(QApplication::applicationName());
+	resize(960, 700);
 	QStatusBar *statusbar = statusBar();
 
 	m_root = new AnRoot(0);
@@ -101,15 +104,35 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	// QObject::connect(m_root, SIGNAL(aboutStart()), this, SLOT(task_start()));
 	QObject::connect(m_root, SIGNAL(finished()),  this, SLOT(agentFinished()));
 
-	m_console = new KConsole(m_root, this);
-
 	setCentralWidget(center);
+
+
+	m_console = new KConsole(m_root, this);
+	QObject::connect(m_console, SIGNAL(changeExpertMode(bool)), this, SLOT(setExpertMode(bool)));
+
+	m_simple = new KSimpleWindow(this);
+	setExpertMode(true); // defalt mode
+
 }
 
 KMainWindow::~KMainWindow()
 {
 	delete m_root;
 }
+
+void KMainWindow::setExpertMode(bool em)
+{
+	if ( (m_expertMode = em) ) {
+		m_combo->setCurrentIndex(m_root->modeIdx());
+		show();
+		m_simple->hide();
+	} else {
+		hide();
+		m_simple->selectMode(m_root->modeIdx());
+		m_simple->show();
+	}
+}
+
 //------------------------------------------------------------------------------
 // Private Functions
 
@@ -186,6 +209,12 @@ void KMainWindow::createMenus()
 	menu->addAction(m_SyncAction);
 //	menu->addAction(m_comboAction);
 	menu->addSeparator();
+	
+	for (int i = 0 ; i < 4; ++i) {
+		menu->addAction(m_UserAction[i]);
+	}
+	menu->addSeparator();
+
 	menu->addAction(m_ToggleAutoSyncAction);
 
 	menu = menuBar()->addMenu(tr("View"));
@@ -198,26 +227,32 @@ void KMainWindow::createMenus()
 void KMainWindow::createToolBars()
 {
 	// Command Toolbar
-	m_CommandToolbar = addToolBar(tr("Command Toolbar"));
-	m_CommandToolbar->addAction(m_InitAction);
-	m_CommandToolbar->addAction(m_ConfigAction);
-	m_CommandToolbar->addAction(m_ResetAction);
-	m_CommandToolbar->addAction(m_SyncAction);
+	QToolBar *bar = addToolBar(tr("Command Toolbar"));
 
 	// Mode Toolbar
-	QToolBar *bar = addToolBar(tr("Mode Toolbar"));
-	// m_CommandToolbar->addSeparator();
-	// QWidget *w = new QWidget();
+//	QToolBar *bar = addToolBar(tr("Mode Toolbar"));
+//	m_CommandToolbar->addSeparator();
+//	QWidget *w = new QWidget();
 	QLabel *lbl = new QLabel(tr("Mode:"));
 	lbl->setMinimumHeight(32);
 	bar->addWidget(lbl);
-	// m_comboAction = bar->addWidget(m_combo);
+//	m_comboAction = bar->addWidget(m_combo);
 	bar->addWidget(m_combo);
 
+	bar->addSeparator();
+	bar->addAction(m_InitAction);
+	bar->addAction(m_ConfigAction);
+	bar->addAction(m_ResetAction);
+	bar->addAction(m_SyncAction);
+
+
 	// User Toolbar
-	bar = addToolBar(tr("User Toolbar"));
+	bar->addSeparator();
+//	bar = addToolBar(tr("User Toolbar"));
 	for (int i = 0; i < 4; ++i)
 		bar->addAction(m_UserAction[i]);
+
+	m_CommandToolbar = bar;
 }
 
 //-----------------------------------------------------------------------------

@@ -250,7 +250,20 @@ void AnRoot::sync(int level, const QList<AnBoard*>& blist)
 	setSynced();
 }
 
+int AnRoot::status()
+{
+	int hist[5];
+	for(int i = 0; i < 5; ++i) hist[i] = 0;
 
+	foreach (AnBoard *bd, list()) {
+		if (bd->active())
+			hist[bd->status()]++;
+	}
+	int ret = 0;
+	if(hist[AnBoard::STATUS_ERROR]) ret = AnBoard::STATUS_ERROR;
+	if(hist[AnBoard::STATUS_COMM_ERR]) ret = AnBoard::STATUS_COMM_ERR;
+	return ret;
+}
 //-----------------------------------------------------------------------------
 // Agents support
 bool AnRoot::isRunning() const
@@ -300,6 +313,7 @@ QStringList AnRoot::modeList() const
 void AnRoot::setMode(int i)
 {
 	disableWatch();
+	m_mode_idx = i;
 	m_mode = m_mode_list[i].id;
 	emit aboutStart();
 	m_master->setMode(m_mode);
@@ -492,8 +506,8 @@ void AnRoot::received(AnRdMsg rmsg)
 		if (rmsg.payload() == 0x7) {
 			if (rmsg.data() == 0xff000000) {
 				if(!isRunning()) {
-					brd->sync(1);
-					emit updated(brd);
+//					brd->sync(1);
+//					emit updated(brd);
 				}
 			} else {
 				qDebug() << "Received error message: " << rmsg;

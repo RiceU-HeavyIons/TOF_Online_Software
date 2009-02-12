@@ -39,10 +39,14 @@
 
 #include "KProgressIndicator.h"
 #include "KConsole.h"
+#include "KSimpleWindow.h"
 #include "KLevel1Model.h"
 #include "KLevel2View.h"
 #include "AnRoot.h"
 
+#define CMD_INIT   1
+#define CMD_RESET  1
+#define CMD_CONFIG 1
 
 class KMainWindow : public QMainWindow
 {
@@ -51,6 +55,10 @@ class KMainWindow : public QMainWindow
 public:
 	KMainWindow(QWidget *parent = 0);
 	~KMainWindow();
+	
+	AnRoot *root() const { return m_root; }
+	
+	bool expertMode() const { return m_expertMode; }
 
 public slots:
 	void doInit();
@@ -68,6 +76,7 @@ public slots:
 	void toggleAutoSync();
 
 	void setMode(int i);
+	void setExpertMode(bool em);
 
 protected:
 	void mouseReleaseEvent(QMouseEvent *event);
@@ -93,7 +102,9 @@ private:
 	bool                m_busy;
 
 	// Actions
+#ifdef CMD_INIT
 	QAction            *m_InitAction;
+#endif
 	QAction            *m_ConfigAction;
 	QAction            *m_ResetAction;
 	QAction            *m_SyncAction;
@@ -111,6 +122,7 @@ private:
 	QDialog            *progress_diag;
 	KProgressIndicator *m_progress;
 	KConsole           *m_console;
+	KSimpleWindow      *m_simple;
 
 	//  models and views
 	QTableView         *m_l1view;
@@ -118,5 +130,7 @@ private:
 	QListWidget        *m_selector;
 
 	KLevel2View        *m_l2view;
+	
+	bool                m_expertMode;
 };
 #endif

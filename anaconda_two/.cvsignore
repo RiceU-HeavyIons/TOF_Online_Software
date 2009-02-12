@@ -2,3 +2,4 @@ Makefile
 AnacondaII.app
 AnacondaII
 Debug
+.DS_

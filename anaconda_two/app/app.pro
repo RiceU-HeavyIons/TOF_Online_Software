@@ -24,7 +24,7 @@ HEADERS += \
            KLevel1Model.h \
            KLevel2View.h \
            KLevel3View.h \
-           KMainWindow.h KProgressIndicator.h\
+           KMainWindow.h KProgressIndicator.h KSimpleWindow.h \
            KTcpuView.h \
            KTdigModel.h \
            KTdigView.h \
@@ -36,7 +36,7 @@ SOURCES += main.cpp \
            KLevel1Model.cpp \
            KLevel2View.cpp \
            KLevel3View.cpp \
-           KMainWindow.cpp KProgressIndicator.cpp \
+           KMainWindow.cpp KProgressIndicator.cpp KSimpleWindow.cpp \
            KTcpuView.cpp \
            KTdigModel.cpp \
            KTdigView.cpp \

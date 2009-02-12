@@ -64,6 +64,7 @@ public:
 	AnAgent* agentById(int i) const { return m_agents[i]; }
 
 	void setMode(int i);
+	int modeIdx() const { return m_mode_idx; }
 	QStringList modeList() const;
 
 	void doUserCmd(int i);
@@ -72,6 +73,8 @@ public:
 	void config(int level, const QList<AnBoard*>& blist);
 	void reset (int level, const QList<AnBoard*>& blist);
 	void sync  (int level, const QList<AnBoard*>& blist);
+	
+	int status();
 
 	AnThub *thubByDevid(int i) const { return m_devid_thub_map[i]; }
 
@@ -135,6 +138,7 @@ private:
 	QMap<int, AnTdcConfig*> m_tcnfs;
 	QSqlDatabase            m_db;
 	int                     m_mode;
+	int                     m_mode_idx;
 	QList<mode>             m_mode_list;
 
 	// AutoSync timer and coursor

@@ -26,9 +26,7 @@ int main(int argc, char **argv)
 	qRegisterMetaType<AnRdMsg>("AnRdMsg");
 
 	KMainWindow kmw;
-	kmw.setWindowTitle(app.applicationName());
-	kmw.resize(960, 700);
-	kmw.show();
+//	kmw.show();
 
 	return app.exec();
 }

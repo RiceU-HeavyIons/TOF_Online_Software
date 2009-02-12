@@ -95,9 +95,9 @@ void AnTcpu::init(int level)
 		TPCANRdMsg  rmsg;
 
 		try {
-			// this may not implemented yet
 			AnAgent::set_msg(msg, canidw(),
-			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+			                 MSGTYPE_STANDARD, 5, 0x8a, 0x69, 0x96, 0xa5, 0x5a);
+//			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			agent()->write_read(msg, rmsg, 2);
 
 			if (--level >= 1)
@@ -146,7 +146,7 @@ void AnTcpu::sync(int level)
 
 		try {
 			// get temperature and ecsr
-			// HLP 3f says "ESCSR Temp Temp AD1L AD1H AD2L AD2H"...
+			// HLP 3f says "ECSR Temp Temp AD1L AD1H AD2L AD2H"...
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
 			agent()->write_read(msg, rmsg, 8);
 			setEcsr(rmsg.Msg.DATA[3]);
@@ -177,7 +177,7 @@ void AnTcpu::sync(int level)
 			agent()->write_read(msg, rmsg, 3);
 			m_pld03 = rmsg.Msg.DATA[2];
 
-			if (--level >= 0)
+			if (--level >= 1)
 				for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
 
 			setSynced();

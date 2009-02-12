@@ -143,3 +143,8 @@ insert into tcpus values (117, 4, 54,  85,  81,  'F1',  7,  8, 10,  9,  1);
 insert into tcpus values (118, 4, 55,  96,  92,  'F2',  7,  9, 10, 10,  1);
 insert into tcpus values (119, 4, 56, 100,  96,  'F3',  7, 10, 10, 11,  1);
 insert into tcpus values (120, 4, 57,  84,  78,  'G0',  7, 11, 10, 12,  1);
+
+-- upVPD WEST
+insert into tcpus values (121, 1, 32,   0,  'W',  'H2', 10,  9,  0,  0,  1);
+-- upVPD EAST
+insert into tcpus values (122, 3, 32,   0,  'E',  'H2', 10,  8,  0,  0,  1);

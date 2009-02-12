@@ -53,7 +53,8 @@ public:
 	AnAddress haddr() const { return m_haddr; }
 	AnAddress& haddr() { return m_haddr; }
 	
-	int commError() const { return m_comm_err; }
+//	int commError() const { return m_comm_err; }
+	int commError() const { return 0; }
 	int setCommError(int ce) { return (m_comm_err = ce); }
 	int incCommError() { return ++m_comm_err; }
 	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }

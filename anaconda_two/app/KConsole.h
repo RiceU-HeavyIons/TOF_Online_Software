@@ -33,8 +33,12 @@ public slots:
 	void debug_send(AnRdMsg);
 	void debug_recv(AnRdMsg);
 
+signals:
+	void changeExpertMode(bool);
+
 private:
 	void cmd_debug (const QStringList &cmdl);
+	void cmd_expert(const QStringList &cmdl);
 	
 	void cmd_sync  (const QStringList &cmdl);
 	void cmd_reset (const QStringList &cmdl);

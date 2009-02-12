@@ -65,6 +65,7 @@ void AnMaster::p_setMode(int mode)
 		int val       = qry.value(6).toInt();
 		AnAddress addr(addr1, addr2, addr3, addr4);
 
+		qDebug() << id << ct;
 		// THUB
 		if (ct == "THUB_ENABLE") {
 			foreach(AnAddress ad, m_root->expand(addr)) {

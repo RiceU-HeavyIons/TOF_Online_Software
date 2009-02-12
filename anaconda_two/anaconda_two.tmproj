@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>TODO</string>
+	<string>src/AnRoot.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-01-09T03:56:51Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2009-02-12T04:57:26Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -21,31 +19,31 @@
 					<key>filename</key>
 					<string>app/app.pro</string>
 					<key>lastUsed</key>
-					<date>2008-11-29T09:43:52Z</date>
+					<date>2009-02-11T04:05:05Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/main.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:05:19Z</date>
+					<date>2009-02-11T16:10:30Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/toolbar.qrc</string>
 					<key>lastUsed</key>
-					<date>2008-12-29T13:50:02Z</date>
+					<date>2009-02-11T04:25:14Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-06T22:08:38Z</date>
+					<date>2009-02-11T23:01:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-06T18:46:45Z</date>
+					<date>2009-02-11T16:11:31Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -105,7 +103,7 @@
 					<key>filename</key>
 					<string>app/KTdigView.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-13T04:02:41Z</date>
+					<date>2009-02-11T04:05:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -171,15 +169,29 @@
 					<key>filename</key>
 					<string>app/KConsole.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T04:34:40Z</date>
+					<date>2009-02-11T05:09:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KConsole.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T03:45:34Z</date>
+					<date>2009-02-11T16:10:31Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSimpleWindow.cpp</string>
+					<key>lastUsed</key>
+					<date>2009-02-11T20:10:29Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>app/KSimpleWindow.h</string>
+					<key>lastUsed</key>
+					<date>2009-02-11T16:10:26Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -196,37 +208,37 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T19:55:39Z</date>
+					<date>2009-02-12T05:03:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-07T04:11:55Z</date>
+					<date>2009-02-11T19:13:25Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-07T03:34:59Z</date>
+					<date>2009-02-12T04:54:58Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-23T12:20:14Z</date>
+					<date>2009-02-12T04:55:00Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:46:13Z</date>
+					<date>2009-02-12T04:55:26Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:46:13Z</date>
+					<date>2009-02-12T04:55:01Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -256,13 +268,15 @@
 					<key>filename</key>
 					<string>src/AnRoot.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:18:11Z</date>
+					<date>2009-02-11T20:10:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-06T19:07:50Z</date>
+					<date>2009-02-12T05:03:48Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -280,13 +294,13 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:17:48Z</date>
+					<date>2009-02-11T20:10:32Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:46:09Z</date>
+					<date>2009-02-12T04:54:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -298,43 +312,43 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-08T21:46:08Z</date>
+					<date>2009-02-12T04:42:33Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdc.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-23T14:24:43Z</date>
+					<date>2009-02-11T19:59:25Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdc.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-09T03:56:51Z</date>
+					<date>2009-02-12T04:38:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:47:28Z</date>
+					<date>2009-02-11T22:49:17Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-09T01:07:18Z</date>
+					<date>2009-02-11T22:49:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnSerdes.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T01:25:42Z</date>
+					<date>2009-02-11T18:58:31Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnSerdes.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-09T01:09:09Z</date>
+					<date>2009-02-11T18:59:41Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -370,7 +384,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-01-06T22:08:38Z</date>
+					<date>2009-02-12T04:52:02Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -379,6 +393,8 @@
 					<date>2009-01-09T01:07:23Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -395,7 +411,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-01-06T21:03:40Z</date>
+					<date>2009-02-12T05:03:40Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -413,7 +429,7 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:50:20Z</date>
+					<date>2009-02-12T02:10:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -425,9 +441,11 @@
 					<key>filename</key>
 					<string>db/tcpus.sql</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T05:50:10Z</date>
+					<date>2009-02-12T04:24:59Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -889,8 +907,6 @@
 					<string>ref/xsetThreshold.cc</string>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>ref</string>
 		</dict>
@@ -904,23 +920,219 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>8</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>174</integer>
+				<integer>8</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
-			<integer>95</integer>
+			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>115</integer>
+			<integer>0</integer>
+		</dict>
+		<key>app/KMainWindow.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>110</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>87</integer>
+		</dict>
+		<key>db/configs.sql</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>31</integer>
+				<key>line</key>
+				<integer>130</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>73</integer>
+		</dict>
+		<key>src/AnBoard.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/AnCanObject.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/AnCanObject.h</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>33</integer>
+				<key>line</key>
+				<integer>56</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>29</integer>
+		</dict>
+		<key>src/AnMaster.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>22</integer>
+				<key>line</key>
+				<integer>193</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>167</integer>
+		</dict>
+		<key>src/AnRoot.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>509</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>491</integer>
+		</dict>
+		<key>src/AnRoot.h</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>76</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>55</integer>
+		</dict>
+		<key>src/AnTcpu.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>84</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>54</integer>
+		</dict>
+		<key>src/AnTdc.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>155</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>136</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>155</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>155</integer>
+			</dict>
+		</dict>
+		<key>src/AnTdig.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>7</integer>
+				<key>line</key>
+				<integer>158</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>139</integer>
+		</dict>
+		<key>src/AnThub.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>TODO</string>
+		<string>src/AnRoot.h</string>
+		<string>db/configs.sql</string>
+		<string>src/AnTdig.cpp</string>
+		<string>src/AnTdc.cpp</string>
+		<string>src/AnMaster.cpp</string>
+		<string>src/AnRoot.cpp</string>
+		<string>app/KMainWindow.cpp</string>
+		<string>src/AnThub.cpp</string>
+		<string>src/AnTcpu.cpp</string>
+		<string>src/AnBoard.cpp</string>
+		<string>src/AnCanObject.cpp</string>
+		<string>src/AnCanObject.h</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{349, 19}, {783, 759}}</string>
+	<string>{{326, 19}, {783, 759}}</string>
 </dict>
 </plist>
