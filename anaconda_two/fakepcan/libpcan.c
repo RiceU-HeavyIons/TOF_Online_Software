@@ -596,7 +596,7 @@ void* runner(void *arg)
 	for (ptr = dlist; ; ptr++) {
 		if (ptr->irq == 0) ptr = dlist;
 
-		if (ptr->sock > 0 && ptr->irq != 252) { /* the device is open */
+		if (ptr->sock > 0 && ptr->irq != 252 && ptr->irq != 253) { /* the device is open */
 			TPCANRdMsg rmsg;
 			int i, fd;
 			struct sockaddr_un addr;

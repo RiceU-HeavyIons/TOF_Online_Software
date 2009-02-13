@@ -148,4 +148,4 @@ insert into tcpus values (120, 4, 57,  84,  78,  4,  'G0',  7, 11, 10, 12,  1);
 -- upVPD WEST
 insert into tcpus values (121, 5, 32,   0,  'W', 1,  'H2', 10,  9,  0,  0,  1);
 -- upVPD EAST
-insert into tcpus values (122, 5, 32,   0,  'E', 3,  'H2', 10,  8,  0,  0,  1);
+insert into tcpus values (122, 6, 32,   0,  'E', 3,  'H0', 10,  8,  0,  0,  1);
