@@ -78,8 +78,8 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 		error_handle(er);
 
 		if (TCAN_DEBUG) {
-			// printf("<< (%p)", m_handle);
-			// print(rmsg);
+			printf("<< (%p)", m_handle);
+			print(rmsg);
 			emit debug_recv(AnRdMsg(devid(), rmsg));
 		}
 		length += rmsg.Msg.LEN;

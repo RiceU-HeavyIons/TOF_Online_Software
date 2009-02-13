@@ -159,7 +159,7 @@ quint8 AnSerdes::pld9xSet() const {
 	quint8 bts = m_pld9xBase;
 	if (bts != 0) {
 		for (int i = 0; i < 4; ++i)
-			if(m_tcpu[i] && m_tcpu[i]->active()) bts |= (1 << i);
+			if(m_tcpu[i] && m_tcpu[i]->fibermode()) bts |= (1 << i);
 	}
 	return bts;
 }

@@ -66,7 +66,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	}
 
 	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, serdes,"
+	qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, thub_id, serdes,"
 	         " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
 	while (qry.next()) {
 		int id          = qry.value(0).toInt();
@@ -74,11 +74,12 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		int canbus_id   = qry.value(2).toInt();
 		bool installed  = qry.value(3).toBool();
 		QString tray_sn = qry.value(4).toString();
-		QString serdes  = qry.value(5).toString();
-		int lv_box      = qry.value(6).toInt();
-		int lv_ch       = qry.value(7).toInt();
-		int hv_box      = qry.value(8).toInt();
-		int hv_ch       = qry.value(9).toInt();
+		int thub_id     = qry.value(5).toInt();
+		QString serdes  = qry.value(6).toString();
+		int lv_box      = qry.value(7).toInt();
+		int lv_ch       = qry.value(8).toInt();
+		int hv_box      = qry.value(9).toInt();
+		int hv_ch       = qry.value(10).toInt();
 
 		int devid = m_hnet[device_id].devid();
 //		if(!active) continue;
@@ -99,7 +100,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 			if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
 				qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
 			}
-			thubByDevid(devid)->serdes(nsrds)->setTcpu(port, tc);
+			dynamic_cast<AnThub*>(m_lnet[1][thub_id])->serdes(nsrds)->setTcpu(port, tc);
 		}
 	}
 	readModeList();
@@ -376,7 +377,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 		if (a1 == 1 && a2 == 255)
 			for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
 		else if (a1 == 2 && a2 == 255)
-			for(int i = 1; i <= 120; ++i) lst2 << AnAddress(a1, i, a3, a4);
+			for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
 		else
 			lst2 << AnAddress(a1, a2, a3, a4);
 	}
@@ -411,6 +412,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
+	qDebug () << had;
 	return dynamic_cast<AnCanObject*>
 				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }

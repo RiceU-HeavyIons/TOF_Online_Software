@@ -85,6 +85,8 @@ public:
 	virtual QString hvString() const;
 	virtual int lvOrder() const { return 100*m_lv_box + m_lv_ch; }
 	virtual int hvOrder() const { return 100*m_hv_box + m_hv_ch; }
+	
+	bool fibermode() const;
 
 private:
 	AnTdig     *m_tdig[8];

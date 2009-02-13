@@ -395,3 +395,8 @@ QString AnTcpu::hvString() const
 		ret = QString("BOX%3-%4").arg(m_hv_box).arg(m_hv_ch);
 	return ret;
 }
+
+bool AnTcpu::fibermode() const
+{
+	return active() && (m_pld02Set & 0x8);
+}
