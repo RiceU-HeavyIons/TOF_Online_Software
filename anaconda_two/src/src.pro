@@ -17,9 +17,16 @@ CONFIG += debug
 # !contains(STATIC, yes) {
 #   CONFIG += shared
 # }
+message(PCAN: $$PCAN)
+contains(PCAN, fake) {
+  LIBS += -L../fakepcan -lpcan
+} else {
+  LIBS += -lpcan
+}
+
 message(CONFIG: $$CONFIG)
 debug {
-  LIBS += -L../fakepcan -lpcan
+#  LIBS += -L../fakepcan -lpcan
 }
 
 DESTDIR = ../lib

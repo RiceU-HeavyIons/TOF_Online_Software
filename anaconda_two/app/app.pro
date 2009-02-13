@@ -11,8 +11,15 @@ CONFIG += debug
 CONFIG -= release
 
 LIBS += -L../lib -lanaconda
-debug {
+
+message(PCAN: $$PCAN)
+contains(PCAN, fake) {
   LIBS += -L../fakepcan -lpcan
+} else {
+  LIBS += -lpcan
+}
+
+debug {
 }
 message($$CONFIG)
 
