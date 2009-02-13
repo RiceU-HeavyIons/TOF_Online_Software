@@ -22,11 +22,11 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_columns = 6;
 
 	// load status icons
-	m_statusIcon << QIcon(":icons/black.png");
-	m_statusIcon << QIcon(":icons/blue.png");
-	m_statusIcon << QIcon(":icons/green.png");
-	m_statusIcon << QIcon(":icons/red.png");
-	m_statusIcon << QIcon(":icons/gray.png");	
+	m_statusIcon << QIcon(":icons/black16.png");
+	m_statusIcon << QIcon(":icons/blue16.png");
+	m_statusIcon << QIcon(":icons/green16.png");
+	m_statusIcon << QIcon(":icons/red16.png");
+	m_statusIcon << QIcon(":icons/gray16.png");	
 
 	m_selectionList << new QListWidgetItem(tr("All"));
 	m_selectionList << new QListWidgetItem(tr("THUBs"));
