@@ -41,10 +41,10 @@ public:
 
 	int open(quint8 dev_id);
 	quint64 read(TPCANRdMsg &rmsg,
-	            int return_length, unsigned int time_out = 4000000);
-	void raw_write(TPCANMsg &msg, int time_out = 4000000);
+	            int return_length, unsigned int time_out = 5000000);
+	void raw_write(TPCANMsg &msg, int time_out = 5000000);
 	quint64 write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
-	      unsigned int return_length, unsigned int time_out = 4000000);
+	      unsigned int return_length, unsigned int time_out = 5000000);
 
 	int id() const { return m_id; }
 	int setId(int id) { return (m_id = id); }
