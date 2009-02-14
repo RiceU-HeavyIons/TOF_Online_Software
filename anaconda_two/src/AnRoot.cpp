@@ -498,10 +498,12 @@ void AnRoot::watcher(int sock)
 
 		AnAgent *ag = m_socket_agent_map[sock];
 		TPCANRdMsg rmsg;
-		ag->read(rmsg, -1);
-		qDebug() << rmsg;
-		received(AnRdMsg(ag->devid(), rmsg));
-
+		try {
+			ag->read(rmsg, -1);
+			received(AnRdMsg(ag->devid(), rmsg));
+		} catch (AnExCanError ex) {
+			qDebug() << "AnRoot::watcher: Communication Error Occurred: " << ex.status();
+		}
 		// enable watch again
 		m_watch[sock]->setEnabled(true);
 	}
