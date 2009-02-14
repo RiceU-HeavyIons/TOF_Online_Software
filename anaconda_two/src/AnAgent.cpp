@@ -394,7 +394,8 @@ void AnAgent::error_handle(int er)
 		int status = CAN_Status(m_handle);
 		if (status == CAN_ERR_QRCVEMPTY) {
 			fprintf(stderr, "CANbus error: 0x%x\n", status);
-			throw AnExCanTimeOut(status);
+			throw AnExCanError(status);
+//			throw AnExCanTimeOut(status);
 		} else if (status > 0) {
 			fprintf(stderr, "CANbus error: 0x%x\n", status);
 			throw AnExCanError(status);
