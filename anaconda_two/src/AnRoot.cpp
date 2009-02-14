@@ -491,6 +491,7 @@ void AnRoot::disableWatch()
  */
 void AnRoot::watcher(int sock)
 {
+	qDebug() << "AnRoot::watcher" << sock;
 	if (m_watch.contains(sock)) {
 		// disable watch again
 		m_watch[sock]->setEnabled(false);
