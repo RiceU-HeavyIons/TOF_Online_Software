@@ -481,7 +481,7 @@ void AnRoot::enableWatch()
  */
 void AnRoot::disableWatch()
 {
-	qDebug() << "AnRoot::enableWatch";
+	qDebug() << "AnRoot::disableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(false);
 	}
