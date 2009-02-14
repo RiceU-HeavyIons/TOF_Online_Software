@@ -7,8 +7,11 @@ Description: TODO file for Anaconda 2 development.
 Entry:
   2009-02-14:
   - AnRoot::received work around
-  - re-activeate thub firmware check (they not repeat payload)
-  - 
+  - re-activate thub firmware check (they not repeat payload)
+  - re-activate watch
+  - init and config button?
+  - user commands?
+
   2009-02-11:
   - activate comm error
 

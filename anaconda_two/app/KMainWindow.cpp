@@ -295,6 +295,9 @@ QList<AnBoard*> KMainWindow::selectedBoards()
  */
 void KMainWindow::doInit()
 {
+	qDebug() << "Init command is not active";
+	return;
+
 	setBusy(true);
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {
@@ -309,6 +312,9 @@ void KMainWindow::doInit()
  */
 void KMainWindow::doConfig()
 {
+	qDebug() << "Config command is not active";
+	return;
+
 	setBusy(true);
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {

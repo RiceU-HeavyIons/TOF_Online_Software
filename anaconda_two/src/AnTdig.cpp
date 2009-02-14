@@ -141,7 +141,7 @@ void AnTdig::config(int level)
 **/
 void AnTdig::reset(int level)
 {
-	qDebug() << "AnTdig::reset" << laddr();
+//	qDebug() << "AnTdig::reset" << laddr();
 	if (active() && level >= 1) {
 		try {
 			// do nothing here
