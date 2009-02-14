@@ -103,13 +103,14 @@ void AnThub::sync(int level)
 
 		try {
 			// readout master firmware id
-			// AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
-			// rdata = agent()->write_read(msg, rmsg, 3);
-			// setMcuFirmwareId(rdata);
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
-			agent()->write_read(msg, rmsg, 3);
-			setFpgaFirmwareId(rmsg.Msg.DATA[2]);
-
+			if (level >= 3) {
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
+				rdata = agent()->write_read(msg, rmsg, 3);
+				setMcuFirmwareId(rdata);
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
+				agent()->write_read(msg, rmsg, 3);
+				setFpgaFirmwareId(rmsg.Msg.DATA[2]);
+			}
 			// readout temperature
 			for (int i = 0; i < 2; ++i) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
