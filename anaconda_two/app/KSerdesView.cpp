@@ -61,8 +61,8 @@ void KSerdesView::setSelectionModel(QItemSelectionModel *md)
 void KSerdesView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
 	AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
-//  tdig->sync(1);
 	if(AnSerdes *srd = dynamic_cast<AnSerdes*>(brd)) {
+		srd->sync(1);
 		setTitle(srd->name());
 		m_laddr->setText(srd->lAddress().toString());
 		m_haddr->setText(srd->hAddress().toString());
