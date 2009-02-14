@@ -103,7 +103,8 @@ insert into configs values (null,   1, 96,  31,   2, 122,   8,   0,      0);
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- 1. Put TCPUs in stanby mode
 insert into configs values (null,   2, 42,  23,   2, 255,   0,   0,      0);
-insert into configs values (null,   2, 43, 102,   2, 255,   0,   0,      2);
+insert into configs values (null,   2, 43,  24,   2, 255,   0,   0,      1);
+insert into configs values (null,   2, 44, 102,   2, 255,   0,   0,      2);
 
 -- 2. Turn off all of the Serdes
 insert into configs values (null,   2, 51,  12,   1, 255, 255,   0,      0);
