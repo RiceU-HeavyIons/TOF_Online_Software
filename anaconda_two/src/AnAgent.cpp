@@ -159,7 +159,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 			fprintf(stderr, "Didn't receive reply message.\n");
 			throw AnExCanError(0);
 		}  else {
-			if (rmsg.Msg.DATA[0] != msg.DATA[0]) {
+			if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
 				fprintf(stderr, "Return payload doesn't match.\n");
 				throw AnExCanError(0);
 			}

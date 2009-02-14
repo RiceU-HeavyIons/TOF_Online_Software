@@ -103,9 +103,9 @@ void AnThub::sync(int level)
 
 		try {
 			// readout master firmware id
-			if (level >= 3) {
+			if (level >= 1) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
-				rdata = agent()->write_read(msg, rmsg, 3);
+				rdata = agent()->write_read(msg, rmsg, 7);
 				setMcuFirmwareId(rdata);
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
 				agent()->write_read(msg, rmsg, 3);
@@ -114,8 +114,8 @@ void AnThub::sync(int level)
 			// readout temperature
 			for (int i = 0; i < 2; ++i) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
-				rdata = agent()->write_read(msg, rmsg, 3);
-				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0, i);
+				rdata = agent()->write_read(msg, rmsg, 2);
+				setTemp((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0, i);
 			}
 
 			// readout crc error bits
