@@ -30,8 +30,8 @@ AnTcpu::AnTcpu(
 	
 	m_pld02    = 0;
 	m_pld02Set = 0;
-	m_pld03    = 0;
-	m_pld03Set = 0;
+	m_pld03    = 1;
+	m_pld03Set = 1;
 	m_pld0e    = 0;
 	m_pld0eSet = 0;
 }
