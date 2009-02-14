@@ -381,7 +381,7 @@ void AnAgent::setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs)
 bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 {
 	if(snd.MSGTYPE == MSGTYPE_EXTENDED) {
-		return ((snd.ID | 0x400000) == rcv.ID);
+		return ((snd.ID | 0x40000) == rcv.ID);
 	} else {
 		return ((snd.ID | 0x1) == rcv.ID);
 	}
