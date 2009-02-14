@@ -412,7 +412,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
-	qDebug () << had;
+	qDebug () << "AnRoot::hfind" << had;
 	return dynamic_cast<AnCanObject*>
 				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }
@@ -503,7 +503,9 @@ void AnRoot::watcher(int sock)
 
 void AnRoot::received(AnRdMsg rmsg)
 {
+	qDebug() << "AnRoot::received" << rmsg;
 	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
+	qDebug() << "AnRoot::received" << brd;
 	if (brd != NULL) {
 		if (rmsg.payload() == 0x7) {
 			if (rmsg.data() == 0xff000000) {

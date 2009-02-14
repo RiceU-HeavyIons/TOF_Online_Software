@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>src/AnThub.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -29,19 +31,19 @@
 					<key>filename</key>
 					<string>app/toolbar.qrc</string>
 					<key>lastUsed</key>
-					<date>2009-02-11T04:25:14Z</date>
+					<date>2009-02-13T23:19:47Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T17:42:57Z</date>
+					<date>2009-02-13T23:22:02Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-11T16:11:31Z</date>
+					<date>2009-02-13T23:00:47Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -53,7 +55,7 @@
 					<key>filename</key>
 					<string>app/KLevel1Model.cpp</string>
 					<key>lastUsed</key>
-					<date>2008-12-15T03:17:59Z</date>
+					<date>2009-02-13T23:21:37Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -204,37 +206,37 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T17:42:55Z</date>
+					<date>2009-02-14T05:27:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-11T19:13:25Z</date>
+					<date>2009-02-14T05:27:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T04:54:58Z</date>
+					<date>2009-02-14T05:27:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T18:57:40Z</date>
+					<date>2009-02-14T05:23:09Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T18:57:39Z</date>
+					<date>2009-02-14T05:27:40Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T18:57:39Z</date>
+					<date>2009-02-14T05:27:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -294,19 +296,19 @@
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T00:31:35Z</date>
+					<date>2009-02-14T05:27:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdig.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-07T03:56:17Z</date>
+					<date>2009-02-14T05:27:47Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T16:57:06Z</date>
+					<date>2009-02-14T05:27:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -318,7 +320,7 @@
 					<key>filename</key>
 					<string>src/AnTdc.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T16:57:05Z</date>
+					<date>2009-02-14T05:27:44Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -330,7 +332,9 @@
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T17:42:56Z</date>
+					<date>2009-02-14T05:27:50Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -384,9 +388,11 @@
 					<key>filename</key>
 					<string>src/AnExceptions.h</string>
 					<key>lastUsed</key>
-					<date>2009-01-09T01:07:23Z</date>
+					<date>2009-02-14T05:27:50Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -403,9 +409,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T00:31:38Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2009-02-14T05:27:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -423,19 +427,19 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T17:42:59Z</date>
+					<date>2009-02-13T22:59:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/thubs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-12T17:22:17Z</date>
+					<date>2009-02-13T22:59:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/tcpus.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T00:31:35Z</date>
+					<date>2009-02-13T22:59:51Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -450,7 +454,7 @@
 					<key>filename</key>
 					<string>fakepcan/libpcan.c</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T00:31:34Z</date>
+					<date>2009-02-13T22:59:54Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -465,15 +469,17 @@
 					<key>filename</key>
 					<string>inc/libpcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-21T00:43:11Z</date>
+					<date>2009-02-14T03:53:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>inc/pcan.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-21T00:43:14Z</date>
+					<date>2009-02-14T03:54:10Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>inc</string>
 		</dict>
@@ -906,14 +912,55 @@
 			<key>name</key>
 			<string>ref</string>
 		</dict>
+		<dict>
+			<key>filename</key>
+			<string>env.sh</string>
+			<key>lastUsed</key>
+			<date>2009-02-13T22:34:26Z</date>
+		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>268</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>src/AnThub.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>18</integer>
+				<key>line</key>
+				<integer>80</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>61</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
+				<integer>80</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>18</integer>
+				<key>line</key>
+				<integer>80</integer>
+			</dict>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>src/AnThub.cpp</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{326, 19}, {783, 759}}</string>
+	<string>{{371, 19}, {783, 759}}</string>
 </dict>
 </plist>
