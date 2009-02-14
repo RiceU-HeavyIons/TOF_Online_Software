@@ -499,6 +499,7 @@ void AnRoot::watcher(int sock)
 		AnAgent *ag = m_socket_agent_map[sock];
 		TPCANRdMsg rmsg;
 		ag->read(rmsg, -1);
+		qDebug() << rmsg;
 		received(AnRdMsg(ag->devid(), rmsg));
 
 		// enable watch again
