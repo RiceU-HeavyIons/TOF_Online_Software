@@ -11,6 +11,7 @@
 
 #include <QtSql/QSqlQuery>
 #include "AnMaster.h"
+#include "AnExceptions.h"
 
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
