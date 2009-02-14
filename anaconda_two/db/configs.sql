@@ -111,6 +111,7 @@ insert into configs values (null,   2, 51,  12,   1, 255, 255,   0,      0);
 insert into configs values (null,   2, 52, 102,   1, 255, 255,   0,      1);
 
 
+-- Set 3
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- 1. Load TCPU FPGA from Eeprom 2
 insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      1);
