@@ -74,7 +74,7 @@ insert into configs values (null,   1,  2,  12,   1, 255, 255,   0,      0);
 -- TCPU
 insert into configs values (null,   1,  3,  22,   2, 255,   0,   0,     45);
 insert into configs values (null,   1,  4,  23,   2, 255,   0,   0,      0);
-insert into configs values (null,   1,  5,  24,   2, 255,   0,   0,      0);
+insert into configs values (null,   1,  5,  24,   2, 255,   0,   0,      1);
 insert into configs values (null,   1,  6,  25,   2, 255,   0,   0,      0);
 -- TDIG
 insert into configs values (null,   1,  7,  32,   2, 255, 255,   0,     45);
