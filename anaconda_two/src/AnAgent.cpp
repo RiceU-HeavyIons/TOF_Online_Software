@@ -152,7 +152,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 			if (match(msg, rmsg.Msg)) {
 				break;
 			} else {
-				emit received(AnRdMsg(devid(), rmsg));
+//				emit received(AnRdMsg(devid(), rmsg));
 			}
 		}
 		if (ntry == 0) {
