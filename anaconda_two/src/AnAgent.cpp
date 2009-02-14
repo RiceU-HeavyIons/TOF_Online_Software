@@ -170,7 +170,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
 
 	if (return_length != length) {
-		fprintf(stderr, "Return length doesn't match.\n");
+		fprintf(stderr, "Return length doesn't match: %d != %d\n", return_length, length);
 		throw AnExCanError(0);
 	}
 

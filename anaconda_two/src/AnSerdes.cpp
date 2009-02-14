@@ -83,15 +83,15 @@ void AnSerdes::sync(int level)
     TPCANRdMsg  rmsg;
     quint64     rdata;
 
-    if (level >= 2) {
+    if (level >= 1) {
       AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, srdid);
       rdata = agent()->write_read(msg, rmsg, 4);
       setFpgaFirmwareId(rmsg.Msg.DATA[2]);
     }
 
     AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid);
-    rdata = agent()->write_read(msg, rmsg, 2);
-    setEcsr(rmsg.Msg.DATA[1]);
+    rdata = agent()->write_read(msg, rmsg, 1);
+    setEcsr(rmsg.Msg.DATA[0]);
 
     setSynced();
   }
