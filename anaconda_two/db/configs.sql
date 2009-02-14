@@ -98,8 +98,10 @@ insert into configs values (null,   1, 94,  31,   2, 122,   4,   0,      0);
 insert into configs values (null,   1, 95,  31,   2, 122,   7,   0,      0);
 insert into configs values (null,   1, 96,  31,   2, 122,   8,   0,      0);
 
+
+-- Set 2
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
--- 1. Put TCPUs in run mode
+-- 1. Put TCPUs in stanby mode
 insert into configs values (null,   2, 42,  23,   2, 255,   0,   0,      0);
 insert into configs values (null,   2, 43, 102,   2, 255,   0,   0,      2);
 
@@ -124,7 +126,8 @@ insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1500);
 insert into configs values (null,   3, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   3, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   3, 42,  23,   2, 255,   0,   0,     15);
-insert into configs values (null,   3, 43, 102,   2, 255,   0,   0,      2);
+insert into configs values (null,   3, 43,  24,   2, 255,   0,   0,      2);
+insert into configs values (null,   3, 44, 102,   2, 255,   0,   0,      2);
 
 -- 5. Trun on THUB serdes channels
 insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
@@ -135,6 +138,7 @@ insert into configs values (null,   3, 61,  23,   2,  46,   0,   0,      0);
 insert into configs values (null,   3, 62, 102,   2, 255,   0,   0,      1);
 insert into configs values (null,   3, 63,  23,   2,  46,   0,   0,     15);
 insert into configs values (null,   3, 64, 102,   2, 255,   0,   0,      1);
+
 
 
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
