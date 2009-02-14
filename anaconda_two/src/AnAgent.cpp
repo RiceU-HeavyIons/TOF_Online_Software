@@ -131,8 +131,8 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	int er;
 
 	if (TCAN_DEBUG) {
-		// printf(">> ");
-		// print(msg);
+		printf(">> ");
+		print(msg);
 		emit debug_send(AnRdMsg(devid(), msg));
 	}
 
@@ -145,8 +145,8 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 			er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
 			error_handle(er);
 			if (TCAN_DEBUG) {
-				// printf("<< ");
-				// print(rmsg);
+				printf("<< ");
+				print(rmsg);
 				emit debug_recv(AnRdMsg(devid(), rmsg));
 			}
 			if (match(msg, rmsg.Msg)) {
