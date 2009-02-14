@@ -108,7 +108,7 @@ void AnThub::sync(int level)
 				rdata = agent()->write_read(msg, rmsg, 8);
 				setMcuFirmwareId(rdata);
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
-				agent()->write_read(msg, rmsg, 3);
+				agent()->write_read(msg, rmsg, 4);
 				setFpgaFirmwareId(rmsg.Msg.DATA[2]);
 			}
 			// readout temperature
