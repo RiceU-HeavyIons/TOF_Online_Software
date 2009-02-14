@@ -282,6 +282,7 @@ void AnRoot::stop() const {
 }
 
 void AnRoot::terminate() const {
+	qDebug() << "AnRoot::terminate";
 	foreach(AnAgent *ag, m_agents) ag->stop();
 	foreach(AnAgent *ag, m_agents) ag->terminate();
 	foreach(AnAgent *ag, m_agents) ag->wait();
@@ -313,6 +314,7 @@ QStringList AnRoot::modeList() const
 //-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
+	qDebug() << "AnRoot::setMode" << i;
 	disableWatch();
 	m_mode_idx = i;
 	m_mode = m_mode_list[i].id;
@@ -468,6 +470,7 @@ void AnRoot::autosync()
  */
 void AnRoot::enableWatch()
 {
+	qDebug() << "AnRoot::enableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(true);
 	}
@@ -478,6 +481,7 @@ void AnRoot::enableWatch()
  */
 void AnRoot::disableWatch()
 {
+	qDebug() << "AnRoot::enableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(false);
 	}

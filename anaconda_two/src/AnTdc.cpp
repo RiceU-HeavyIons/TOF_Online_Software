@@ -164,7 +164,7 @@ void AnTdc::reset(int level) {
 	    TPCANRdMsg  rmsg;
 
 	    AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, data0);
-	    agent()->write_read(msg, rmsg, 2);
+	    agent()->write_read(msg, rmsg, 2, 6000000);
 	}
 }
 
