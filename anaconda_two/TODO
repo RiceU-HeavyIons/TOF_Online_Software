@@ -11,6 +11,7 @@ Entry:
   - re-activate watch
   - init and config button?
   - user commands?
+  - ugly work around for upVPD in AnTcpu::init
 
   2009-02-11:
   - activate comm error
