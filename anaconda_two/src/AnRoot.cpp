@@ -504,8 +504,11 @@ void AnRoot::watcher(int sock)
 void AnRoot::received(AnRdMsg rmsg)
 {
 	qDebug() << "AnRoot::received" << rmsg;
+	
+	if (rmsg.type() == 0x80) return; // work around segmentation fault
+
 	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
-	qDebug() << "AnRoot::received" << brd;
+
 	if (brd != NULL) {
 		if (rmsg.payload() == 0x7) {
 			if (rmsg.data() == 0xff000000) {
