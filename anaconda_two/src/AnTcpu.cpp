@@ -62,9 +62,9 @@ AnCanObject *AnTcpu::hat(int i)
 //-----------------------------------------------------------------------------
 void AnTcpu::config(int level)
 {
-	qDebug() << "AnTcpu::config: " << laddr();
-	qDebug() << "AnTcpu::config: level = " << level;
-	qDebug() << "AnTcpu::config: commError = " << commError();
+//	qDebug() << "AnTcpu::config: " << laddr();
+//	qDebug() << "AnTcpu::config: level = " << level;
+//	qDebug() << "AnTcpu::config: commError = " << commError();
 	
 	if (active() && level >= 1 && commError() == 0) {
 		if(--level >= 1) {
