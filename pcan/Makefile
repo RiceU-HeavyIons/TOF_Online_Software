@@ -6,22 +6,23 @@ DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
 		Makefile xp_config.cc xp_config_scripted.cc \
 		pcan_find.cc xgetStatus.cc \
 		xenableChannel.cc xsetThreshold.cc \
-		cfig_test014*.txt cfig_test016*.txt x*.sh *script.txt \
-		enableStart*.sh
+		getFWIDs.cc getTHUBFWIDS.cc getChecksum*.cc x_getChecksum*.cc \
+		cfig_test014*.txt cfig_test016*.txt cfig_test018*.txt \
+		initTHUB*.sh turnonscript*.sh
 
 # Targets:
 
 all:		pcanloop pc pcan_find \
 		xgetStatus xp_config xsetThreshold xenableChannel \
-		xp_config_scripted \
-		xMCU2 xp_eeprom2 xp_config_reset p_config \
+		xp_config_scripted xp_config_reset p_config \
+		x_getChecksum_l getChecksum_l xp_config_scripted_l \
 		setThreshold getStatus enableChannel x_getChecksum getChecksum\
+		MCUchecksum THUBchecksum getFWIDs getTHUBFWIDs \
 		change_mcu_program analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
-		MCUchecksum THUBchecksum getFWIDs getTHUBFWIDs \
 		p_eeprom2_l p_progPLD_l p_progMCU_l MCU2_l \
-		xp_eeprom2_l xMCU2_l xp_config_pm_l xp_config_scripted_l \
-		x_getChecksum_l getChecksum_l
+		xMCU2 xp_eeprom2 \
+		xp_eeprom2_l xMCU2_l xp_config_pm_l
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
@@ -124,10 +125,11 @@ getFWIDs:		getFWIDs.o can_utils.o
 
 clean:
 	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
-		p_config_run5 analyze_noise clientpc MCU2 \
+		p_config_run5 analyze_noise clientpc MCU2 xp_config_scripted \
 		p_progPLD p_progMCU can_utils.o getStatus p_eeprom2 enableChannel \
 		xgetStatus xp_config xsetThreshold xenableChannel \
-		xMCU2 xp_eeprom2 xp_config_reset
+		xMCU2 xp_eeprom2 xp_config_reset getChecksum x_getChecksum \
+		getFWIDs getTHUBFWIDs MCUchecksum THUBchecksum xp_config_pm *_l 
 
 backup:
 	rm -f pcan.tgz; \
