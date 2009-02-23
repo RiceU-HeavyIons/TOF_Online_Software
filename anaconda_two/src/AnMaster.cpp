@@ -184,18 +184,22 @@ void AnMaster::p_setMode(int mode)
 
 		// Action Items
 		if (ct == "INIT") {
+			m_root->disableWatch();
 			m_root->init(val, m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
 		if (ct == "CONFIG") {
+			m_root->disableWatch();
 			m_root->config(val, m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
 		if (ct == "RESET") {
+			m_root->disableWatch();
 			m_root->reset(val, m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
 		if (ct == "SYNC") {
+			m_root->disableWatch();
 			m_root->sync(val,  m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}

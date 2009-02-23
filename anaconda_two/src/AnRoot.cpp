@@ -318,7 +318,7 @@ QStringList AnRoot::modeList() const
 void AnRoot::setMode(int i)
 {
 	qDebug() << "AnRoot::setMode" << i;
-	disableWatch();
+//	disableWatch();
 	m_mode_idx = i;
 	m_mode = m_mode_list[i].id;
 	emit aboutStart();
