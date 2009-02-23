@@ -24,7 +24,7 @@ create table config_sets (
 insert into config_sets values (1, "Default",     "default mode uploaded when frontend starts");
 insert into config_sets values (2, "Standby",     "Stanby");
 insert into config_sets values (3, "Phys Mode",   "Physics mode");
--- insert into config_sets values (4, "Test Mode",   "Test mode");
+insert into config_sets values (4, "Phys Mode (Passive)",   "Physics Mode (Passive)");
 
 drop table if exists config_types;
 create table config_types (
@@ -141,18 +141,46 @@ insert into configs values (null,   3, 62, 102,   2, 255,   0,   0,      1);
 insert into configs values (null,   3, 63,  23,   2,  46,   0,   0,     15);
 insert into configs values (null,   3, 64, 102,   2, 255,   0,   0,      1);
 
-
-
+-- Set 4
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
-insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);
-insert into configs values (null,   4,  2,  12,   1, 255, 255,   0,     16);
-insert into configs values (null,   4,  3,  23,   2, 255,   0,   0,     15);
-insert into configs values (null,   4,  4,  33,   2, 255, 255,   0,   1500);
-insert into configs values (null,   4,  5,  42,   2, 255, 255, 255,     13);
-insert into configs values (null,   4,  6,  42,   2, 255,   1,   1,     14);
-insert into configs values (null,   4,  7,  42,   2, 255,   5,   1,     14);
-insert into configs values (null,   4,  8,  43,   2, 255, 255,   1,      7);
-insert into configs values (null,   4,  9, 103,   2, 255,   0,   0,      3);
+-- 1. Load TCPU FPGA from Eeprom 2
+-- insert into configs values (null,   4, 11, 101,   2, 255,   0,   0,      1);
+
+-- 2. Turn off all of the Serdes
+insert into configs values (null,   4, 21,  12,   1, 255, 255,   0,      0);
+-- insert into configs values (null,   4, 22, 102,   1, 255, 255,   0,      1);
+
+-- 3. Reset all TDCs on TDIG
+-- insert into configs values (null,   4, 31, 103,   2, 255, 255,   0,      2);
+
+-- 4. Set TDIG threshold to 1500mV and 500mV for upVPD, and then put in run mode
+insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   1500);
+insert into configs values (null,   4, 41,  33,   2, 121, 255,   0,    500);
+insert into configs values (null,   4, 41,  33,   2, 122, 255,   0,    500);
+insert into configs values (null,   4, 42,  23,   2, 255,   0,   0,     15);
+insert into configs values (null,   4, 43,  24,   2, 255,   0,   0,      2);
+-- insert into configs values (null,   4, 44, 102,   2, 255,   0,   0,      2);
+
+-- 5. Trun on THUB serdes channels
+insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
+-- insert into configs values (null,   4, 52, 102,   1, 255, 255,   0,      1);
+
+-- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
+insert into configs values (null,   4, 61,  23,   2,  46,   0,   0,      0);
+-- insert into configs values (null,   4, 62, 102,   2, 255,   0,   0,      1);
+insert into configs values (null,   4, 63,  23,   2,  46,   0,   0,     15);
+-- insert into configs values (null,   4, 64, 102,   2, 255,   0,   0,      1);
+
+-- ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
+-- insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);
+-- insert into configs values (null,   4,  2,  12,   1, 255, 255,   0,     16);
+-- insert into configs values (null,   4,  3,  23,   2, 255,   0,   0,     15);
+-- insert into configs values (null,   4,  4,  33,   2, 255, 255,   0,   1500);
+-- insert into configs values (null,   4,  5,  42,   2, 255, 255, 255,     13);
+-- insert into configs values (null,   4,  6,  42,   2, 255,   1,   1,     14);
+-- insert into configs values (null,   4,  7,  42,   2, 255,   5,   1,     14);
+-- insert into configs values (null,   4,  8,  43,   2, 255, 255,   1,      7);
+-- insert into configs values (null,   4,  9, 103,   2, 255,   0,   0,      3);
 
 
 ---- User Command 1 -------   id  set  ord, typ ad1  ad2  ad3  ad4   value
