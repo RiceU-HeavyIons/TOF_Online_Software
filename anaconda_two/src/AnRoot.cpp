@@ -299,7 +299,7 @@ void AnRoot::agentFinished(int id)
 {
 	qDebug() << "AnRoot::agentFinished" << id;
 	qDebug() << "AnRoot::agentFinished: enableWatch" << agentById(id)->socket();
-//	m_watch[agentById(id)->socket()]->setEnabled(true);
+	m_watch[agentById(id)->socket()]->setEnabled(true);
 	if(!isRunning()) {
 		emit finished();
 		emit updated();
