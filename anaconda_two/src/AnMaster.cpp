@@ -198,7 +198,6 @@ void AnMaster::p_setMode(int mode)
 		}
 		if (ct == "RESET") {
 			qDebug() << "RESET";
-			m_root->disableWatch();
 			m_root->reset(val, m_root->find( m_root->expand(addr) ) );
 			qDebug() << "RESET: start waiting";
 			m_root->wait();
