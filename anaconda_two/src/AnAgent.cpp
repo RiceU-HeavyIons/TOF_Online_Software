@@ -326,7 +326,6 @@ void AnAgent::init(int mode, int level, QList<AnBoard*> list)
 //-----------------------------------------------------------------------------
 void AnAgent::run()
 {
-	qDebug() << "AnAgent::run start" << m_id;
 	m_root->disableWatch(m_id);
 	m_cancel = false;
 
@@ -371,7 +370,6 @@ void AnAgent::run()
 	emit progress(m_id, 100);
 	emit finished(m_id);
 	m_root->enableWatch(m_id);
-	qDebug() << "AnAgent::run end" << m_id;	
 }
 
 //-----------------------------------------------------------------------------
