@@ -99,7 +99,9 @@ public:
 	void stopAutoSync();
 
 	void enableWatch();
+	void enableWatch(int id);
 	void disableWatch();
+	void disableWatch(int id);
 	void watchStatus();
 
 	void emit_updated()  { emit updated(); }

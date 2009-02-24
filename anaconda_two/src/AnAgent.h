@@ -21,6 +21,7 @@
 #include "AnRdMsg.h"
 
 class AnBoard;
+class AnRoot;
 
 class AnAgent : public QThread {
 	Q_OBJECT
@@ -58,6 +59,8 @@ public:
 	QString setDeviceName(const QString& nm) { return (m_deviceName = nm); }
 
 	AnTdcConfig *tdcConfig(int i) const { return m_tcnfs[i]; }
+	
+	AnRoot *setRoot(AnRoot *root) { return (m_root = root); }
 
 
 public slots:
@@ -92,6 +95,7 @@ private:
 	QString                  dev_path;
 
 	QString                  m_deviceName;
+	AnRoot                  *m_root;
 
 
 };

@@ -114,6 +114,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 
 	// setup various maps and watches for incoming messages
 	foreach(AnAgent *ag, m_agents) {
+		ag->setRoot(this);
 		ag->setDeviceName(m_hnet[ag->id()].objectName());
 		m_devid_agent_map[ag->devid()] = ag;
 		int sock = ag->socket();
@@ -300,7 +301,7 @@ void AnRoot::agentFinished(int id)
 {
 	qDebug() << "AnRoot::agentFinished" << id;
 	qDebug() << "AnRoot::agentFinished: enableWatch" << agentById(id)->socket();
-	m_watch[agentById(id)->socket()]->setEnabled(true);
+//	m_watch[agentById(id)->socket()]->setEnabled(true);
 	if(!isRunning()) {
 		emit finished();
 		emit updated();
@@ -480,6 +481,12 @@ void AnRoot::enableWatch()
 	}
 }
 
+void AnRoot::enableWatch(int id)
+{
+	qDebug() << "AnRoot::enableWatch" << id;
+	m_watch[agentById(id)->socket()]->setEnabled(true);	
+}
+
 /**
  * Disable all socket watches
  */
@@ -489,6 +496,12 @@ void AnRoot::disableWatch()
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(false);
 	}
+}
+
+void AnRoot::disableWatch(int id)
+{
+	qDebug() << "AnRoot::disableWatch" << id;
+	m_watch[agentById(id)->socket()]->setEnabled(false);	
 }
 
 void AnRoot::watchStatus()
