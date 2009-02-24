@@ -48,7 +48,7 @@ void AnAgent::print(const TPCANMsg &msg)
 	for (i = 0; i < msg.LEN && i < 8; i++)
 		printf("0x%02x ", msg.DATA[i]);
 	puts("");
-	fflash(stdout);
+	fflush(stdout);
 }
 
 //-----------------------------------------------------------------------------
