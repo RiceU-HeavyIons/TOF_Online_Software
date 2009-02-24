@@ -10,7 +10,7 @@
 #include "AnExceptions.h"
 
 int AnAgent::TCAN_DEBUG = 0;
-const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
+const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcan*";
 
 //-----------------------------------------------------------------------------
 AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0)
@@ -48,6 +48,7 @@ void AnAgent::print(const TPCANMsg &msg)
 	for (i = 0; i < msg.LEN && i < 8; i++)
 		printf("0x%02x ", msg.DATA[i]);
 	puts("");
+	fflash(stdout);
 }
 
 //-----------------------------------------------------------------------------
