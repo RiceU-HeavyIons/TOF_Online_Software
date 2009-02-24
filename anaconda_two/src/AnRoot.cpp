@@ -468,7 +468,7 @@ void AnRoot::autosync()
  */
 void AnRoot::enableWatch()
 {
-	qDebug() << "AnRoot::enableWatch";
+//	qDebug() << "AnRoot::enableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(true);
 	}
@@ -476,7 +476,7 @@ void AnRoot::enableWatch()
 
 void AnRoot::enableWatch(int id)
 {
-	qDebug() << "AnRoot::enableWatch" << id;
+//	qDebug() << "AnRoot::enableWatch" << id;
 	m_watch[agentById(id)->socket()]->setEnabled(true);	
 }
 
