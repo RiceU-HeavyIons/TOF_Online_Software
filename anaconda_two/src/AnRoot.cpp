@@ -223,6 +223,7 @@ void AnRoot::reset(int level, const QList<AnBoard*>& blist)
 	disableWatch();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
+		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_RESET, level, bmap[id]);
 		ag->start();
