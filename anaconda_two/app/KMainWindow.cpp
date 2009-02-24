@@ -295,6 +295,7 @@ QList<AnBoard*> KMainWindow::selectedBoards()
  */
 void KMainWindow::doInit()
 {
+	m_root->watchStatus();
 	qDebug() << "Init command is not active";
 	return;
 

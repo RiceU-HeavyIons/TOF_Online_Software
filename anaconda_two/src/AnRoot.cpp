@@ -489,6 +489,16 @@ void AnRoot::disableWatch()
 		sn->setEnabled(false);
 	}
 }
+
+void AnRoot::watchStatus()
+{
+	qDebug() << "AnRoot::watchStatus";
+	foreach (QSocketNotifier *sn, m_watch) {
+		qDebug() << "isEnabled" << sn->isEnabled() << "socket" << sn->socket();
+	}
+	
+}
+
 /**
  * QSocketNotifier's activated signal triggers this function.
  */
@@ -511,6 +521,7 @@ void AnRoot::watcher(int sock)
 		m_watch[sock]->setEnabled(true);
 	}
 }
+
 
 void AnRoot::received(AnRdMsg rmsg)
 {

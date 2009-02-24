@@ -100,6 +100,7 @@ public:
 
 	void enableWatch();
 	void disableWatch();
+	void watchStatus();
 
 	void emit_updated()  { emit updated(); }
 	void emit_finished() { emit finished(); }	
