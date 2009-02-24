@@ -7,6 +7,7 @@ Description: TODO file for Anaconda 2 development.
 Entry:
   2009-02-24:
   - remove socket notifier debug from init action
+  - implement bunch reset
 
   2009-02-23:
   - terminate actions if you got too much network errors
@@ -15,9 +16,9 @@ Entry:
   - have to capture alerm messages from board in future
 
   2009-02-14:
-  - AnRoot::received work around
+  - (X) AnRoot::received work around
   - re-activate thub firmware check (they not repeat payload)
-  - re-activate watch
+  - (X) re-activate watch
   - init and config button?
   - user commands?
   - ugly work around for upVPD in AnTcpu::init

@@ -485,7 +485,7 @@ void AnRoot::enableWatch(int id)
  */
 void AnRoot::disableWatch()
 {
-	qDebug() << "AnRoot::disableWatch";
+//	qDebug() << "AnRoot::disableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(false);
 	}
@@ -493,7 +493,7 @@ void AnRoot::disableWatch()
 
 void AnRoot::disableWatch(int id)
 {
-	qDebug() << "AnRoot::disableWatch" << id;
+//	qDebug() << "AnRoot::disableWatch" << id;
 	m_watch[agentById(id)->socket()]->setEnabled(false);	
 }
 

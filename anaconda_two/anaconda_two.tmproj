@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/AnRoot.cpp</string>
+	<string>TODO</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-02-24T02:40:14Z</date>
+			<date>2009-02-24T22:58:09Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -37,7 +39,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:50:51Z</date>
+					<date>2009-02-24T22:58:09Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -208,13 +210,13 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:38:50Z</date>
+					<date>2009-02-24T22:24:24Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnAgent.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-14T23:06:55Z</date>
+					<date>2009-02-24T22:13:34Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -232,13 +234,13 @@
 					<key>filename</key>
 					<string>src/AnCanObject.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-14T23:42:34Z</date>
+					<date>2009-02-24T22:28:05Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-23T20:12:28Z</date>
+					<date>2009-02-24T22:28:09Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -268,15 +270,13 @@
 					<key>filename</key>
 					<string>src/AnRoot.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:50:55Z</date>
+					<date>2009-02-24T22:29:18Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:51:30Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2009-02-24T22:56:11Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -312,7 +312,7 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-14T22:45:57Z</date>
+					<date>2009-02-24T22:29:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -324,7 +324,7 @@
 					<key>filename</key>
 					<string>src/AnTdc.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-14T22:44:56Z</date>
+					<date>2009-02-24T22:29:39Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -336,7 +336,7 @@
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-23T23:15:09Z</date>
+					<date>2009-02-24T22:29:43Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -384,7 +384,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:51:30Z</date>
+					<date>2009-02-24T22:29:12Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -393,8 +393,6 @@
 					<date>2009-02-14T05:27:50Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -411,7 +409,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T02:38:52Z</date>
+					<date>2009-02-24T18:08:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -429,7 +427,7 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T22:59:53Z</date>
+					<date>2009-02-24T22:13:18Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -444,8 +442,6 @@
 					<date>2009-02-13T22:59:51Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -459,8 +455,6 @@
 					<date>2009-02-13T22:59:54Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>fakepcan</string>
 		</dict>
@@ -480,8 +474,6 @@
 					<date>2009-02-14T03:54:10Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>inc</string>
 		</dict>
@@ -930,83 +922,23 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>4</integer>
 				<key>line</key>
-				<integer>23</integer>
+				<integer>41</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>app/KMainWindow.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>411</integer>
-		</dict>
-		<key>src/AnMaster.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>205</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>171</integer>
-		</dict>
-		<key>src/AnRoot.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>27</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>551</integer>
-		</dict>
-		<key>src/AnRoot.h</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>81</integer>
+			<integer>6</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>TODO</string>
-		<string>app/KMainWindow.cpp</string>
-		<string>src/AnRoot.cpp</string>
-		<string>src/AnMaster.cpp</string>
-		<string>src/AnRoot.h</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{325, 19}, {783, 759}}</string>
+	<string>{{386, 19}, {783, 759}}</string>
 </dict>
 </plist>
