@@ -326,7 +326,7 @@ void AnAgent::init(int mode, int level, QList<AnBoard*> list)
 //-----------------------------------------------------------------------------
 void AnAgent::run()
 {
-	qDebug() "AnAgent::run start" << m_id;
+	qDebug() << "AnAgent::run start" << m_id;
 	m_cancel = false;
 
 	int total = m_list.count();
@@ -369,7 +369,7 @@ void AnAgent::run()
 	// make sure send out finish
 	emit progress(m_id, 100);
 	emit finished(m_id);
-	qDebug() "AnAgent::run end" << m_id;	
+	qDebug() << "AnAgent::run end" << m_id;	
 }
 
 //-----------------------------------------------------------------------------
