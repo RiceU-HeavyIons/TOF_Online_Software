@@ -10,6 +10,7 @@
 #include "AnExceptions.h"
 
 int AnAgent::TCAN_DEBUG = 0;
+//const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
 const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcan*";
 
 //-----------------------------------------------------------------------------
