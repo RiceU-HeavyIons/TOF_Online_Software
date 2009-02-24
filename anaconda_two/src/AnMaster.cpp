@@ -184,31 +184,21 @@ void AnMaster::p_setMode(int mode)
 
 		// Action Items
 		if (ct == "INIT") {
-			qDebug() << "INIT";
-			m_root->disableWatch();
 			m_root->init(val, m_root->find( m_root->expand(addr) ) );
-			qDebug() << "INIT: start waiting";
 			m_root->wait();
-			qDebug() << "INIT: waiting done";
 		}
 		if (ct == "CONFIG") {
-			m_root->disableWatch();
 			m_root->config(val, m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
 		if (ct == "RESET") {
-			qDebug() << "RESET";
 			m_root->reset(val, m_root->find( m_root->expand(addr) ) );
-			qDebug() << "RESET: start waiting";
 			m_root->wait();
-			qDebug() << "RESET: waiting done";
 		}
 		if (ct == "SYNC") {
-			m_root->disableWatch();
 			m_root->sync(val,  m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
-
 	}
 	m_root->emit_finished();
 	m_root->emit_updated();

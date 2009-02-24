@@ -187,7 +187,6 @@ void AnRoot::init(int level, const QList<AnBoard*>& blist)
 		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
 	emit aboutStart();
-	disableWatch();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
@@ -204,7 +203,6 @@ void AnRoot::config(int level, const QList<AnBoard*>& blist)
 		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
 	emit aboutStart();
-	disableWatch();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
@@ -221,7 +219,6 @@ void AnRoot::reset(int level, const QList<AnBoard*>& blist)
 		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
 	emit aboutStart();
-	disableWatch();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
@@ -241,7 +238,6 @@ void AnRoot::sync(int level, const QList<AnBoard*>& blist)
 		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
 	emit aboutStart();
-	disableWatch();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
@@ -329,7 +325,7 @@ void AnRoot::setMode(int i)
 
 void AnRoot::doUserCmd(int i)
 {
-	disableWatch();
+//	disableWatch();
 	emit aboutStart();
 	m_master->setMode(i + 100);
 }
