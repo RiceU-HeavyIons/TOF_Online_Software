@@ -5,6 +5,9 @@ Created: 2008-11-24
 Updated: 2009-01-06
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-02-24:
+  - remove socket notifier debug from init action
+
   2009-02-23:
   - terminate actions if you got too much network errors
   - relase monitor part first
