@@ -190,6 +190,7 @@ insert into configs values (null,   4, 71, 201,   1,   1,   0,   0,      1);
 
 
 ---- User Command 1 -------   id  set  ord, typ ad1  ad2  ad3  ad4   value
+insert into configs values (null,   101,  1, 201,   1,   1,   0,   0,      1);
 -- insert into configs values (null, 101,  1,  101,  1, 255,   0,   0,     2);
 -- insert into configs values (null, 101,  2,  101,  2, 255,   0,   0,     4);
 
