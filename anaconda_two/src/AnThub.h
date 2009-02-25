@@ -23,6 +23,7 @@ public:
 	virtual void config(int level) { /* place holder */ }
 	virtual void reset (int level);
 	virtual void sync  (int level);
+	void bunchReset(int level);
 
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);

@@ -79,7 +79,7 @@ void AnThub::reset(int level)
 		try {
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
 			agent()->write_read(msg, rmsg, 1);
-		
+
 			if (--level >= 1)
 				for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 
@@ -133,8 +133,27 @@ void AnThub::sync(int level)
 			incCommError();
 		}
 	}
-
 }
+/**
+ * THUB Bunch Reset
+ */
+void AnThub::bunchReset(int level)
+{
+	if (active() && level >= 1 && commError() == 0) {
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+
+		try {
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x99, 0x1);
+			agent()->write_read(msg, rmsg, 1);
+
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
+	}
+}
+
 
 quint32 AnThub::canidr() const
 {

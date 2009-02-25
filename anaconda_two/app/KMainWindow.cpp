@@ -138,21 +138,25 @@ void KMainWindow::setExpertMode(bool em)
 
 void KMainWindow::createActions()
 {
+#ifdef CMD_INIT
 	m_InitAction = new QAction( QIcon(":images/user1.png"), tr("Init"), this);
 	m_InitAction->setShortcut(tr("Ctrl+I"));
 	m_InitAction->setEnabled(true);
 	m_InitAction->setStatusTip(tr("Initialize Electronics"));
 	m_InitAction->setToolTip(tr("Init"));
 	QObject::connect(m_InitAction, SIGNAL(triggered()), this, SLOT(doInit()));
+#endif
 
+#ifdef CMD_CONFIG
 	m_ConfigAction = new QAction( QIcon(":images/config.png"), tr("Confg"), this);
 	m_ConfigAction->setShortcut(tr("Ctrl+U"));
 	m_ConfigAction->setEnabled(true);
 	m_ConfigAction->setStatusTip(tr("Configure Electronics"));
 	m_ConfigAction->setToolTip(tr("Config"));
 	QObject::connect(m_ConfigAction, SIGNAL(triggered()), this, SLOT(doConfig()));
-	
-	m_ResetAction = new QAction( QIcon(":images/user3.png"), tr("Reset"), this);
+#endif
+
+	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Reset"), this);
 	m_ResetAction->setShortcut(tr("Ctrl+R"));
 	m_ResetAction->setStatusTip(tr("Reset Electronics"));
 	m_ResetAction->setToolTip(tr("Reset"));
@@ -203,8 +207,12 @@ void KMainWindow::createMenus()
 	QMenu *menu;
 
 	menu = menuBar()->addMenu(tr("Command"));
+#ifdef CMD_INIT
 	menu->addAction(m_InitAction);
+#endif
+#ifdef CMD_CONFIG
 	menu->addAction(m_ConfigAction);
+#endif
 	menu->addAction(m_ResetAction);
 	menu->addAction(m_SyncAction);
 //	menu->addAction(m_comboAction);
@@ -240,8 +248,12 @@ void KMainWindow::createToolBars()
 	bar->addWidget(m_combo);
 
 	bar->addSeparator();
+#ifdef CMD_INIT
 	bar->addAction(m_InitAction);
+#endif
+#ifdef CMD_CONFIG
 	bar->addAction(m_ConfigAction);
+#endif
 	bar->addAction(m_ResetAction);
 	bar->addAction(m_SyncAction);
 
@@ -418,8 +430,12 @@ void KMainWindow::setMode(int i) {
 void KMainWindow::setBusy(bool sw)
 {
 	m_busy = sw;
+#ifdef CMD_INIT
 	m_InitAction->setEnabled(!sw);
+#endif
+#ifdef CMD_CONFIG
 	m_ConfigAction->setEnabled(!sw);
+#endif
 	m_ResetAction->setEnabled(!sw);
 	m_SyncAction->setEnabled(!sw);
 	for (int i = 0; i < 4; ++i) m_UserAction[i]->setEnabled(!sw);

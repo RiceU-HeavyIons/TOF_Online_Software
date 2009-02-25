@@ -44,9 +44,9 @@
 #include "KLevel2View.h"
 #include "AnRoot.h"
 
-#define CMD_INIT   1
+// #define CMD_INIT   1
+// #define CMD_CONFIG 1
 #define CMD_RESET  1
-#define CMD_CONFIG 1
 
 class KMainWindow : public QMainWindow
 {
@@ -105,7 +105,9 @@ private:
 #ifdef CMD_INIT
 	QAction            *m_InitAction;
 #endif
+#ifdef CMD_CONFIG
 	QAction            *m_ConfigAction;
+#endif
 	QAction            *m_ResetAction;
 	QAction            *m_SyncAction;
 

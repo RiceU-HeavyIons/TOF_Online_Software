@@ -199,6 +199,13 @@ void AnMaster::p_setMode(int mode)
 			m_root->sync(val,  m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
+		if (ct == "THUB_BUNCH_RESET") {
+			foreach(AnAddress ad, m_root->expand(addr)) {
+				AnThub *thub = dynamic_cast<AnThub*>( m_root->find(ad) );
+				if (thub) thub->bunchReset(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
 	}
 	m_root->emit_finished();
 	m_root->emit_updated();

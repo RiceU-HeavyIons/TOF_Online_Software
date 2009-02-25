@@ -24,7 +24,7 @@ create table config_sets (
 insert into config_sets values (1, "Default",     "default mode uploaded when frontend starts");
 insert into config_sets values (2, "Standby",     "Stanby");
 insert into config_sets values (3, "Phys Mode",   "Physics mode");
-insert into config_sets values (4, "Phys Mode (Passive)",   "Physics Mode (Passive)");
+insert into config_sets values (4, "Phys Mode (dry run)",   "Physics Mode (dry run)");
 
 drop table if exists config_types;
 create table config_types (
@@ -54,6 +54,9 @@ insert into config_types values (101, "INIT"  );
 insert into config_types values (102, "CONFIG");
 insert into config_types values (103, "RESET" );
 insert into config_types values (104, "SYNC"  );
+
+insert into config_types values (201, "THUB_BUNCH_RESET");
+insert into config_types values (211, "TCPU_RESYNC");
 
 drop table if exists configs;
 create table configs (
@@ -141,6 +144,9 @@ insert into configs values (null,   3, 62, 102,   2, 255,   0,   0,      1);
 insert into configs values (null,   3, 63,  23,   2,  46,   0,   0,     15);
 insert into configs values (null,   3, 64, 102,   2, 255,   0,   0,      1);
 
+-- 7. Bunch Reset
+insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
+
 -- Set 4
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- 1. Load TCPU FPGA from Eeprom 2
@@ -171,6 +177,9 @@ insert into configs values (null,   4, 61,  23,   2,  46,   0,   0,      0);
 insert into configs values (null,   4, 63,  23,   2,  46,   0,   0,     15);
 -- insert into configs values (null,   4, 64, 102,   2, 255,   0,   0,      1);
 
+-- 7. Bunch Reset
+insert into configs values (null,   4, 71, 201,   1,   1,   0,   0,      1);
+	
 -- ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);
 -- insert into configs values (null,   4,  2,  12,   1, 255, 255,   0,     16);
