@@ -194,6 +194,26 @@ void AnTcpu::sync(int level)
 	}
 }
 
+//-----------------------------------------------------------------------------
+void AnTcpu::resync(int level)
+{
+	
+	if (active() && level >= 1 && commError() == 0) {
+		try {
+			TPCANMsg    msg;
+			TPCANRdMsg  rmsg;
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x0);
+			agent()->write_read(msg, rmsg, 2);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
+			agent()->write_read(msg, rmsg, 2);
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
+	}
+}
+
+
 /**
  * Return CANBus id for read
 **/
