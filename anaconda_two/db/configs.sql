@@ -126,8 +126,8 @@ insert into configs values (null,   3, 22, 102,   1, 255, 255,   0,      1);
 -- 3. Reset all TDCs on TDIG
 insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
 
--- 4. Set TDIG threshold to 1500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1500);
+-- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
+insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   2500);
 insert into configs values (null,   3, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   3, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   3, 42,  23,   2, 255,   0,   0,     15);
@@ -158,8 +158,8 @@ insert into configs values (null,   4, 21,  12,   1, 255, 255,   0,      0);
 -- 3. Reset all TDCs on TDIG
 -- insert into configs values (null,   4, 31, 103,   2, 255, 255,   0,      2);
 
--- 4. Set TDIG threshold to 1500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   1500);
+-- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
+insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   2500);
 insert into configs values (null,   4, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   4, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   4, 42,  23,   2, 255,   0,   0,     15);

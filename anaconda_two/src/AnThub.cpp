@@ -191,13 +191,15 @@ bool AnThub::setActive(bool b) {
 int AnThub::status() const
 {
 // TO-DO implement real logic
-	int err = 0;
-	if (maxTemp() > tempAlarm()) err++;
-
-	for (int i = 0; i < 8; ++i)
-		if (m_serdes[i]->status() == STATUS_ERROR) ++err;
-
 	if (active()) {
+		if (commError()) return STATUS_COMM_ERR;
+
+		int err = 0;
+		if (maxTemp() > tempAlarm()) err++;
+
+		for (int i = 0; i < 8; ++i)
+			if (m_serdes[i]->status() == STATUS_ERROR) ++err;
+
 		if (err) return STATUS_ERROR;
 		return STATUS_ON;
 	} else

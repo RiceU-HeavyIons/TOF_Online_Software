@@ -127,7 +127,7 @@ void AnTcpu::reset(int level)
 		try {
 			// this may not implemented yet
 			AnAgent::set_msg(msg, canidw(),
-		                 	MSGTYPE_STANDARD, 5, 0xe, 0x1, 0x3, 0x1, 0x0);
+			                 MSGTYPE_STANDARD, 5, 0xe, 0x1, 0x3, 0x1, 0x0);
 			agent()->write_read(msg, rmsg, 2);
 
 			if (--level >= 1)

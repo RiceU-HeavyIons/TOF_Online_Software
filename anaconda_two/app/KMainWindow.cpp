@@ -138,6 +138,14 @@ void KMainWindow::setExpertMode(bool em)
 
 void KMainWindow::createActions()
 {
+#ifdef CMD_RESYNC
+	m_ResyncAction = new QAction( QIcon("images/user1.png"), tr("Resync"), this);
+	m_ResyncAction->setEnabled(true);
+	m_ResyncAction->setStatusTip(tr("Resynchronize TCPU"));
+	m_ResyncAction->setToolTip(tr("Resync"));
+	QObject::connect(m_ResyncAction, SIGNAL(triggered()), this, SLOT(doResync()));
+#endif
+
 #ifdef CMD_INIT
 	m_InitAction = new QAction( QIcon(":images/user1.png"), tr("Init"), this);
 	m_InitAction->setShortcut(tr("Ctrl+I"));
@@ -207,6 +215,9 @@ void KMainWindow::createMenus()
 	QMenu *menu;
 
 	menu = menuBar()->addMenu(tr("Command"));
+#ifdef CMD_RESYNC
+	menu->addAction(m_ResyncAction);
+#endif
 #ifdef CMD_INIT
 	menu->addAction(m_InitAction);
 #endif
@@ -248,6 +259,10 @@ void KMainWindow::createToolBars()
 	bar->addWidget(m_combo);
 
 	bar->addSeparator();
+#ifdef CMD_RESYNC
+	bar->addAction(m_ResyncAction);
+#endif
+
 #ifdef CMD_INIT
 	bar->addAction(m_InitAction);
 #endif
@@ -305,6 +320,18 @@ QList<AnBoard*> KMainWindow::selectedBoards()
 /**
  * Slot for initialization action
  */
+//-----------------------------------------------------------------------------
+void KMainWindow::doResync()
+{
+	setBusy(true);
+
+	QList<AnBoard*> blist = selectedBoards();
+	foreach(AnBoard *bd, blist) {
+		AnTcpu *tcpu = dynamic_cast<AnTcpu*>(bd);
+		if (tcpu) tcpu->resync(1);
+	}
+}
+
 void KMainWindow::doInit()
 {
 	qDebug() << "Init command is not active";
@@ -430,6 +457,9 @@ void KMainWindow::setMode(int i) {
 void KMainWindow::setBusy(bool sw)
 {
 	m_busy = sw;
+#ifdef CMD_RESYNC
+	m_ResyncAction->setEnabled(!sw);
+#endif
 #ifdef CMD_INIT
 	m_InitAction->setEnabled(!sw);
 #endif

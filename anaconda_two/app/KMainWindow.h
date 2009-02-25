@@ -44,6 +44,7 @@
 #include "KLevel2View.h"
 #include "AnRoot.h"
 
+#define CMD_RESYNC 1
 // #define CMD_INIT   1
 // #define CMD_CONFIG 1
 #define CMD_RESET  1
@@ -61,6 +62,7 @@ public:
 	bool expertMode() const { return m_expertMode; }
 
 public slots:
+	void doResync();
 	void doInit();
 	void doConfig();
 	void doReset();
@@ -102,6 +104,9 @@ private:
 	bool                m_busy;
 
 	// Actions
+#ifdef CMD_RESYNC
+	QAction            *m_ResyncAction;
+#endif
 #ifdef CMD_INIT
 	QAction            *m_InitAction;
 #endif

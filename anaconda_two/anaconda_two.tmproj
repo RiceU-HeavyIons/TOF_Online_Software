@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/AnMaster.cpp</string>
+	<string>app/KMainWindow.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-02-25T00:58:09Z</date>
+			<date>2009-02-25T02:39:02Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -37,13 +37,15 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T00:59:42Z</date>
+					<date>2009-02-25T02:43:42Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T00:59:25Z</date>
+					<date>2009-02-25T02:43:42Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -121,7 +123,7 @@
 					<key>filename</key>
 					<string>app/KThubView.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T01:22:19Z</date>
+					<date>2009-02-25T02:43:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -292,13 +294,13 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-14T19:39:32Z</date>
+					<date>2009-02-25T02:39:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-15T00:25:01Z</date>
+					<date>2009-02-25T02:39:14Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -328,13 +330,13 @@
 					<key>filename</key>
 					<string>src/AnThub.h</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T01:18:54Z</date>
+					<date>2009-02-25T02:39:27Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T01:19:31Z</date>
+					<date>2009-02-25T02:04:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -364,7 +366,7 @@
 					<key>filename</key>
 					<string>src/AnRdMsg.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T01:21:04Z</date>
+					<date>2009-02-25T02:39:23Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -382,9 +384,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T01:22:19Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2009-02-25T02:43:31Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -411,7 +411,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-24T18:08:45Z</date>
+					<date>2009-02-25T02:43:30Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -444,6 +444,8 @@
 					<date>2009-02-13T22:59:51Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -926,26 +928,26 @@
 				<key>column</key>
 				<integer>4</integer>
 				<key>line</key>
-				<integer>41</integer>
+				<integer>19</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>6</integer>
+			<integer>5</integer>
 		</dict>
 		<key>app/KMainWindow.cpp</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>49</integer>
+				<integer>26</integer>
 				<key>line</key>
-				<integer>158</integer>
+				<integer>198</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>140</integer>
+			<integer>167</integer>
 		</dict>
 		<key>app/KMainWindow.h</key>
 		<dict>
@@ -973,27 +975,27 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
+			<integer>11</integer>
+		</dict>
+		<key>db/configs.sql</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>55</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
 			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>65</integer>
 		</dict>
 		<key>src/AnMaster.cpp</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>201</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>167</integer>
-		</dict>
-		<key>src/AnRdMsg.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
 				<integer>0</integer>
@@ -1001,35 +1003,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/AnThub.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>75</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>53</integer>
-		</dict>
-		<key>src/AnThub.h</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>20</integer>
-				<key>line</key>
-				<integer>22</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>3</integer>
+			<integer>180</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
@@ -1039,13 +1013,11 @@
 		<string>app/KMainWindow.h</string>
 		<string>app/KThubView.h</string>
 		<string>src/AnMaster.cpp</string>
-		<string>src/AnRdMsg.cpp</string>
-		<string>src/AnThub.cpp</string>
-		<string>src/AnThub.h</string>
+		<string>db/configs.sql</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{338, 19}, {783, 759}}</string>
+	<string>{{409, 19}, {783, 759}}</string>
 </dict>
 </plist>
