@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_eeprom2.cc,v 1.1 2007-10-12 22:42:35 jschamba Exp $";
+"$Id: xp_eeprom2.cc,v 1.2 2009-02-25 17:19:31 jschamba Exp $";
 #endif /* lint */
 
 
@@ -39,6 +39,7 @@ using namespace std;
 //#define TDIG
 #define TDIG_D
 // #define LOCAL_DEBUG
+#define LINE_UP "[1A[80D[0J"
 
 //****************************************************************************
 // GLOBALS
@@ -226,8 +227,8 @@ int eeprom2(const char *filename,
     if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Target:", 4000000, 2, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
-    if(page<11) cout << "Page " << dec << page << "...\n";
-    else if((page%100) == 0) cout << "Page " << dec << page << "...\n";
+    if(page<11) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
+    else if((page%100) == 0) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
   } // for (int page=0 ...
 
 

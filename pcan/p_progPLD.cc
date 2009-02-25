@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.8 2008-10-28 13:32:29 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.9 2009-02-25 17:19:31 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -34,6 +34,7 @@ using namespace std;
 //****************************************************************************
 // DEFINES
 #define TDIG
+#define LINE_UP "[1A[80D[0J"
 
 //****************************************************************************
 // GLOBALS
@@ -234,8 +235,8 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
     }
     
     //#ifdef LOCAL_DEBUG
-    if(page<11) cout << "Page " << dec << page << "...\n";
-    else if((page%100) == 0) cout << "Page " << dec << page << "...\n";
+    if(page<11) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
+    else if((page%100) == 0) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
     //#endif
 
 
