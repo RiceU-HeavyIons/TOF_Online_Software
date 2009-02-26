@@ -50,7 +50,8 @@ public:
 		TASK_INIT   = 0x01,
 		TASK_CONFIG = 0x02,
 		TASK_RESET  = 0x04,
-		TASK_SYNC   = 0x08
+		TASK_SYNC   = 0x08,
+		TASK_RESYNC = 0x10
 	};
 
 //  Own functions
@@ -69,6 +70,7 @@ public:
 
 	void doUserCmd(int i);
 
+	void resync(int level, const QList<AnBoard*>& blist);	
 	void init  (int level, const QList<AnBoard*>& blist);	
 	void config(int level, const QList<AnBoard*>& blist);
 	void reset (int level, const QList<AnBoard*>& blist);

@@ -139,7 +139,7 @@ void KMainWindow::setExpertMode(bool em)
 void KMainWindow::createActions()
 {
 #ifdef CMD_RESYNC
-	m_ResyncAction = new QAction( QIcon("images/user1.png"), tr("Resync"), this);
+	m_ResyncAction = new QAction( QIcon(":images/user1.png"), tr("Resync"), this);
 	m_ResyncAction->setEnabled(true);
 	m_ResyncAction->setStatusTip(tr("Resynchronize TCPU"));
 	m_ResyncAction->setToolTip(tr("Resync"));
@@ -324,11 +324,9 @@ QList<AnBoard*> KMainWindow::selectedBoards()
 void KMainWindow::doResync()
 {
 	setBusy(true);
-
 	QList<AnBoard*> blist = selectedBoards();
-	foreach(AnBoard *bd, blist) {
-		AnTcpu *tcpu = dynamic_cast<AnTcpu*>(bd);
-		if (tcpu) tcpu->resync(1);
+	if (blist.count() > 0) {
+		m_root->resync(1, blist);
 	}
 }
 

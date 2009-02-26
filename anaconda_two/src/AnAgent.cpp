@@ -376,6 +376,14 @@ void AnAgent::run()
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
+	
+	if (m_mode & AnRoot::TASK_RESYNC) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->sync(m_level);
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
 
 	// make sure send out finish
 	emit progress(m_id, 100);
