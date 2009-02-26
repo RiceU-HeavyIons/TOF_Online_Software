@@ -128,16 +128,16 @@ Qt::ItemFlags KLevel1Model::flags(const QModelIndex &index) const
 
 //-----------------------------------------------------------------------------
 void KLevel1Model::toggleMode(int i) {
-  qDebug() << "got " << i;
+//  qDebug() << "got " << i;
 
-  if(i == 0) {
-    m_rows = 2;
-    m_columns = 2;
-  } else {
-    m_rows = 10;
-    m_columns = 10;
-  }
-  reset();
+	if (i == 0) {
+		m_rows = 2;
+		m_columns = 2;
+	} else {
+		m_rows = 10;
+		m_columns = 10;
+	}
+	reset();
 }
 
 //-----------------------------------------------------------------------------
