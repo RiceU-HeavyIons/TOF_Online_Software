@@ -142,7 +142,6 @@ insert into configs values (null,   3, 52, 102,   1, 255, 255,   0,      1);
 insert into configs values (null,   3, 62, 211,   2, 255,   0,   0,      1);
 insert into configs values (null,   3, 64, 211,   2, 255,   0,   0,      1);
 
-
 -- 7. Bunch Reset
 insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
 
@@ -175,7 +174,7 @@ insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
 -- insert into configs values (null,   3, 64, 211,   2, 255,   0,   0,      1);
 
 -- 7. Bunch Reset
-insert into configs values (null,   4, 71, 201,   1,   1,   0,   0,      1);
+-- insert into configs values (null,   4, 71, 201,   1,   1,   0,   0,      1);
 	
 -- ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);
