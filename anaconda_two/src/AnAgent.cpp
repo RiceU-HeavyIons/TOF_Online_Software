@@ -10,9 +10,11 @@
 #include "AnExceptions.h"
 
 int AnAgent::TCAN_DEBUG = 0;
-//const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
+#ifndef FAKEPCAN
 const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcan*";
-
+#else
+const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
+#endif
 //-----------------------------------------------------------------------------
 AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0)
 {

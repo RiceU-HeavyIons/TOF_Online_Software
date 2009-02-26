@@ -20,6 +20,7 @@ CONFIG += debug
 message(PCAN: $$PCAN)
 contains(PCAN, fake) {
   LIBS += -L../fakepcan -lpcan
+  DEFINES += FAKEPCAN
 } else {
   LIBS += -lpcan
 }
