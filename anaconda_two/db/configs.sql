@@ -139,8 +139,7 @@ insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
 insert into configs values (null,   3, 52, 102,   1, 255, 255,   0,      1);
 
 -- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
-insert into configs values (null,   3, 62, 211,   2, 255,   0,   0,      1);
-insert into configs values (null,   3, 64, 211,   2, 255,   0,   0,      1);
+insert into configs values (null,   3, 61, 211,   2,  46,   0,   0,      1);
 
 -- 7. Bunch Reset
 insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
