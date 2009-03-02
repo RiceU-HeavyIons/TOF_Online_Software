@@ -2,9 +2,12 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-01-06
+Updated: 2009-03-01
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-03-01:
+  - (X) auto sync after change mode
+
   2009-02-27:
   - (X) database path -- environmental and default
   - (X) TDIG reset for user command 2
@@ -15,14 +18,14 @@ Entry:
   - (X) fiber port setting criteria
   - error popup
   - powerup popup / unconfigured icon
-  - CANbus / global error counter
+  - (X) CANbus / global error counter
 
   2009-02-24:
   - (X) remove socket notifier debug from init action
   - (X) implement bunch reset
 
   2009-02-23:
-  - terminate actions if you got too much network errors
+  - (X) terminate actions if you got too much network errors
   - (X) release monitor part first
   - (X) how to reset TCPU for fiber sync?
   - have to capture alerm messages from board in future
@@ -51,7 +54,7 @@ Entry:
   2008-12-15:
   - fast debug output
   - fix console update problem
-  - static/dynamic option in bootstrap
+  - (X) static/dynamic option in bootstrap
   - parallelized console
   - (X) user command 1-4
   - (X) disable propergation to serdes

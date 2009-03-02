@@ -114,6 +114,9 @@ insert into configs values (null,   2, 44, 102,   2, 255,   0,   0,      2);
 insert into configs values (null,   2, 51,  12,   1, 255, 255,   0,      0);
 insert into configs values (null,   2, 52, 102,   1, 255, 255,   0,      1);
 
+-- 3. Sync All
+insert into configs values (null,   2, 61, 105,   1, 255,   0,   0,      3);
+insert into configs values (null,   2, 62, 105,   2, 255,   0,   0,      3);
 
 -- Set 3
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
@@ -145,6 +148,10 @@ insert into configs values (null,   3, 61, 211,   2,  46,   0,   0,      1);
 -- 7. Bunch Reset
 insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
 
+-- 8. Sync All
+insert into configs values (null,   3, 81, 105,   1, 255,   0,   0,      3);
+insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      3);
+
 -- Set 4
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- 1. Load TCPU FPGA from Eeprom 2
@@ -175,7 +182,11 @@ insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
 
 -- 7. Bunch Reset
 -- insert into configs values (null,   4, 71, 201,   1,   1,   0,   0,      1);
-	
+
+-- 8. Sync All
+insert into configs values (null,   4, 81, 105,   1, 255,   0,   0,      3);
+insert into configs values (null,   4, 82, 105,   2, 255,   0,   0,      3);
+
 -- ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);
 -- insert into configs values (null,   4,  2,  12,   1, 255, 255,   0,     16);

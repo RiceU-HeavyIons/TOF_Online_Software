@@ -143,6 +143,7 @@ void AnTdig::reset(int level)
 {
 //	qDebug() << "AnTdig::reset" << laddr();
 	if (active() && level >= 1) {
+		clearCommError();
 		try {
 		// do nothing here
 		// TPCANMsg    msg;
@@ -156,7 +157,6 @@ void AnTdig::reset(int level)
 			// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 			}
 
-			clearCommError();
 		} catch (AnExCanError ex) {
 			incCommError();
 			qDebug() << "Communication Error Occurred: " << ex.status();

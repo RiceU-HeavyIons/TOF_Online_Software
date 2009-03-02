@@ -360,7 +360,7 @@ void AnAgent::run()
 		}
 	}
 
-	if (m_mode & AnRoot::TASK_QRESET) {
+	if (m_mode & AnRoot::TASK_QRESET) { // Quick Reset
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->qreset(m_level);

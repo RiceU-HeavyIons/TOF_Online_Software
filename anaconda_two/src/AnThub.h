@@ -22,7 +22,7 @@ public:
 	virtual void init  (int level) { /* placeholder */ }
 	virtual void config(int level) { /* placeholder */ }
 	virtual void reset (int level);
-	virtual void qreset(int level) { /* placeholder */ };
+	virtual void qreset(int level);
 	virtual void sync  (int level);
 	void bunchReset(int level);
 

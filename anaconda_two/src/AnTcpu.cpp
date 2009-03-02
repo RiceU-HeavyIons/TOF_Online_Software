@@ -120,6 +120,7 @@ void AnTcpu::reset(int level)
 {
 
 	if (active() && level >= 1) {
+		clearCommError();
 
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
@@ -133,7 +134,6 @@ void AnTcpu::reset(int level)
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
 
-			clearCommError();
 		} catch (AnExCanError ex) {
 			qDebug() << "CAN error occurred: " << ex.status();
 			incCommError();
@@ -146,6 +146,8 @@ void AnTcpu::qreset(int level)
 {
 
 	if (active() && level >= 1) {
+		clearCommError();
+		agent()->clearCommError();
 
 	    TPCANMsg    msg;
 	    TPCANRdMsg  rmsg;
@@ -154,7 +156,6 @@ void AnTcpu::qreset(int level)
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->qreset(level);
 
-			clearCommError();
 		} catch (AnExCanError ex) {
 			qDebug() << "CAN error occurred: " << ex.status();
 			incCommError();

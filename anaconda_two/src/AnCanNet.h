@@ -14,6 +14,7 @@
 #include "AnBoard.h"
 
 class AnCanNet;
+class AnAgent;
 
 class AnCanNet : public AnCanObject {
 public:

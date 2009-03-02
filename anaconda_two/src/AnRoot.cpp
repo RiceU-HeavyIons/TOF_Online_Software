@@ -35,6 +35,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		m_db.setDatabaseName(dbpath);
 	} else {
 #ifdef __APPLE__
+// With Darwin environment, binary image is under .app/Contents/MacOS/ directory...
 		QDir default_path( QString("%1/../../..")
 			.arg(QApplication::applicationDirPath()) );
 #else
@@ -74,7 +75,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		bool installed = qry.value(3).toBool();
 		int devid      = m_hnet[device_id].devid();
 		AnThub *th     = new AnThub(AnAddress(1, id, 0, 0),
-		                           AnAddress(devid, canbus_id, 0, 0), this);
+		                            AnAddress(devid, canbus_id, 0, 0), this);
 //		if(!active) continue;
 		th->setInstalled(installed);
 		th->setActive(installed);
@@ -214,7 +215,7 @@ void AnRoot::resync(int level, const QList<AnBoard*>& blist)
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_RESYNC, level, bmap[id]);
 		ag->start();
-	}	
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -295,7 +296,10 @@ void AnRoot::sync(int level, const QList<AnBoard*>& blist)
 	emit aboutStart();
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
+		if (ag->isRunning()) {
+			qDebug() << "agent is running and can't issue next task";
+			continue; // forget if agent is busy
+		}
 		ag->init(TASK_SYNC, level, bmap[id]);
 		ag->start();
 	}
@@ -329,12 +333,14 @@ bool AnRoot::isRunning() const
 	return ret;
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::stop() const {
 	foreach(AnAgent *ag, m_agents)
 		if (ag->isRunning()) ag->stop();
 	foreach(AnAgent *ag, m_agents) ag->wait();
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::terminate() const {
 	qDebug() << "AnRoot::terminate";
 	foreach(AnAgent *ag, m_agents) ag->stop();
@@ -344,10 +350,12 @@ void AnRoot::terminate() const {
 	m_master->wait();
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::wait() const {
 	foreach(AnAgent *ag, m_agents) ag->wait();
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::agentFinished(int id)
 {
 	if(!isRunning()) {
@@ -375,6 +383,7 @@ void AnRoot::setMode(int i)
 	m_master->setMode(m_mode);
 }
 
+//-----------------------------------------------------------------------------
 void AnRoot::doUserCmd(int i)
 {
 //	disableWatch();
@@ -465,6 +474,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 	return lst2;
 }
 
+//-----------------------------------------------------------------------------
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
 	qDebug () << "AnRoot::hfind" << had;
@@ -482,6 +492,7 @@ AnCanObject *AnRoot::hfind(const AnAddress &had)
 // 	return m_hnet[id].list();
 // }
 
+//-----------------------------------------------------------------------------
 QStringList AnRoot::deviceNames() const
 {
 	QStringList st;
@@ -506,7 +517,6 @@ void AnRoot::stopAutoSync()
  */
 void AnRoot::autosync()
 {
-
 	if (!isRunning()) {
 		disableWatch();
 		(*m_autoSyncIter)->sync(2);
@@ -584,7 +594,7 @@ void AnRoot::watcher(int sock)
 	}
 }
 
-
+//-----------------------------------------------------------------------------
 void AnRoot::received(AnRdMsg rmsg)
 {
 	qDebug() << "AnRoot::received" << rmsg;
@@ -602,6 +612,11 @@ void AnRoot::received(AnRdMsg rmsg)
 				}
 			} else {
 				qDebug() << "Received error message: " << rmsg;
+			}
+		} else if (rmsg.payload() == 0x4) {
+			if(!isRunning()) {
+				brd->sync(1);
+				emit updated(brd);
 			}
 		}
 	} else {
@@ -626,7 +641,7 @@ void AnRoot::readModeList()
 		m_mode_list << md;
 	}
 }
-
+//-----------------------------------------------------------------------------
 void AnRoot::readTdcConfig()
 {
 	m_tcnfs.clear();

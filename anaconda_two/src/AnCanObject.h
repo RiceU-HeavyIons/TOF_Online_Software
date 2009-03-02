@@ -13,6 +13,7 @@
 
 #include "AnAddress.h"
 
+class AnAgent;
 class AnCanObject;
 
 class AnCanObject : public QObject {
@@ -34,6 +35,7 @@ public:
 	QString setName(const QString& name);
 
 	virtual QString dump() const = 0;
+
 
 	virtual void init  (int level) = 0;
 	virtual void config(int level) = 0;
@@ -58,7 +60,7 @@ public:
 	int setCommError(int ce) { return (m_comm_err = ce); }
 	int incCommError() { return ++m_comm_err; }
 	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }
-	void clearCommError() { m_comm_err = 0; }
+	virtual void clearCommError() { m_comm_err = 0; }
 
 private:
 	bool            m_active;
@@ -69,7 +71,7 @@ private:
 	AnAddress       m_haddr;
 
 	QString         m_name;
-	
+
 	int             m_comm_err;
 
 };

@@ -196,31 +196,39 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 	switch(pMsgBuff->DATA[0]) {
 
 	case 0x01: // MCU Firmware ID
-		pMsgBuff->LEN = 3;
+		pMsgBuff->LEN = 8;
 		pMsgBuff->DATA[1] = 0x54;
 		pMsgBuff->DATA[2] = 0x10;
+		pMsgBuff->DATA[3] = 0x10;
+		pMsgBuff->DATA[4] = 0x10;
+		pMsgBuff->DATA[5] = 0x10;
+		pMsgBuff->DATA[6] = 0x10;
+		pMsgBuff->DATA[7] = 0x10;
+
 		usleep(2000);
 		break;
 	case 0x02: // FPGA Firmware ID
-		pMsgBuff->LEN = 3;
+		pMsgBuff->LEN = 4;
 		if (pMsgBuff->DATA[1] == 0) {
 			pMsgBuff->DATA[2] = 0x84;
+			pMsgBuff->DATA[3] = 0x84;
 		} else {
 			pMsgBuff->DATA[2] = 0x74;
+			pMsgBuff->DATA[3] = 0x84;
 		}
 		usleep(2000);
 		break;
 
 	case 0x03: // Get Temperature
 	    temp = 30.0 + 10.0*rand()/RAND_MAX;
-		pMsgBuff->LEN = 3;
-		pMsgBuff->DATA[1] = 0xFF & (int)(temp*100.0); // temperature xx.16
-		pMsgBuff->DATA[2] = 0xFF & (int)(temp); // temperature 32.xx
-		pMsgBuff->DATA[3] = 0xbb; // ESCR
-		pMsgBuff->DATA[4] = 0; // AD 1L
-		pMsgBuff->DATA[5] = 0; // AD 1H
-		pMsgBuff->DATA[6] = 0; // AD 2L
-		pMsgBuff->DATA[7] = 0; // AD 2H
+		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[0] = 0xFF & (int)(temp*100.0); // temperature xx.16
+		pMsgBuff->DATA[1] = 0xFF & (int)(temp); // temperature 32.xx
+		pMsgBuff->DATA[2] = 0xbb; // ESCR
+		pMsgBuff->DATA[3] = 0; // AD 1L
+		pMsgBuff->DATA[4] = 0; // AD 1H
+		pMsgBuff->DATA[5] = 0; // AD 2L
+		pMsgBuff->DATA[6] = 0; // AD 2H
 		usleep(2000);
 		break;
 
@@ -229,13 +237,22 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 		pMsgBuff->DATA[1] = 0xab;
 		usleep(2000);
 		break;
+	case 0x99:
+		pMsgBuff->LEN = 1;
+		pMsgBuff->DATA[0] = 0;
+		break;
 	default:
 		pMsgBuff->LEN = 2;
 		pMsgBuff->DATA[1] = 0;
 	}
 	if (pMsgBuff->DATA[0] >= 0x91 && pMsgBuff->DATA[0] <= 0x98) {
-		pMsgBuff->LEN = 2;
-		pMsgBuff->DATA[1] = 0x1f;
+		if( (pMsgBuff->ID & 0xF) == 0x5) {
+			pMsgBuff->LEN = 1;
+			pMsgBuff->DATA[1] = 0x1f;
+		} else {
+			pMsgBuff->LEN = 2;
+			pMsgBuff->DATA[1] = 0x1f;
+		}
 		usleep(2000);
 	}
 
@@ -264,12 +281,20 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		pMsgBuff->ID |= 0x1;
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
-			pMsgBuff->LEN = 3;
+			if( (pMsgBuff->ID & 0xF) == 5)
+				pMsgBuff->LEN = 3;
+			else
+				pMsgBuff->LEN = 2;
 			if (pMsgBuff->DATA[1] == 0x2) pMsgBuff->DATA[2] = 0x0f;
-			if (pMsgBuff->DATA[1] == 0x3) pMsgBuff->DATA[2] = 0x03;
+			if (pMsgBuff->DATA[1] == 0x3) pMsgBuff->DATA[2] = 0x02;
 			if (pMsgBuff->DATA[1] == 0xe) pMsgBuff->DATA[2] = 0x00;
 			break;
 
+		case 0x8a:
+			pMsgBuff->LEN = 3;
+			pMsgBuff->DATA[1] = 0x00;
+			pMsgBuff->DATA[2] = 0x87;
+			break;
 		case 0xb0:
 			pMsgBuff->LEN = 8;
 			pMsgBuff->DATA[1] = 16; // temperature xx.16
