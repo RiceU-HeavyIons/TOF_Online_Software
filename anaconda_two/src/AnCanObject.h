@@ -38,6 +38,7 @@ public:
 	virtual void init  (int level) = 0;
 	virtual void config(int level) = 0;
 	virtual void reset (int level) = 0;
+	virtual void qreset(int level) = 0;
 	virtual void sync  (int level) = 0;
 
 	virtual AnCanObject *at(int i) = 0;
@@ -52,9 +53,8 @@ public:
 	AnAddress& laddr() { return m_laddr; }
 	AnAddress haddr() const { return m_haddr; }
 	AnAddress& haddr() { return m_haddr; }
-	
+
 	int commError() const { return m_comm_err; }
-//	int commError() const { return 0; }
 	int setCommError(int ce) { return (m_comm_err = ce); }
 	int incCommError() { return ++m_comm_err; }
 	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }

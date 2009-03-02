@@ -170,10 +170,10 @@ void KMainWindow::createActions()
 	m_ResetAction->setToolTip(tr("Reset"));
 	QObject::connect(m_ResetAction, SIGNAL(triggered()), this, SLOT(doReset()));
 
-	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Sync"), this);
+	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Refresh"), this);
 	m_SyncAction->setShortcut(tr("Ctrl+S"));
-	m_SyncAction->setStatusTip(tr("Synchronize System Information"));
-	m_SyncAction->setToolTip(tr("Sync"));
+	m_SyncAction->setStatusTip(tr("Refresh System Information"));
+	m_SyncAction->setToolTip(tr("Refresh"));
 	QObject::connect(m_SyncAction, SIGNAL(triggered()),
 						this, SLOT(doSync()));
 
@@ -323,9 +323,9 @@ QList<AnBoard*> KMainWindow::selectedBoards()
 //-----------------------------------------------------------------------------
 void KMainWindow::doResync()
 {
-	setBusy(true);
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {
+		setBusy(true);
 		m_root->resync(1, blist);
 	}
 }
@@ -368,9 +368,9 @@ void KMainWindow::doReset()
 
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {
-		m_root->reset(3, blist);
+		m_root->qreset(3, blist);
 	} else {
-		m_root->reset(3);
+		m_root->qreset(3);
 	}
 }
 

@@ -32,6 +32,7 @@ public:
 	virtual void init  (int level) { /* do nothing */ }	
 	virtual void config(int level) { /* do nothing */ }
 	virtual void reset (int level) { /* do nothing */ }
+	virtual void qreset(int level) { /* placeholder */ };
 	virtual void sync  (int level) { /* do nothing */ }
 
 //  own functions

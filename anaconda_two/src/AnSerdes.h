@@ -23,9 +23,10 @@ public:
 
 	virtual QString dump() const;
 
-	virtual void init (int level) { /* place holder */}
+	virtual void init (int level) { /* placeholder */}
 	virtual void config(int level);
-	virtual void reset (int level) { /* place holder */}
+	virtual void reset (int level) { /* placeholder */}
+	virtual void qreset(int level) { /* placeholder */ };
 	virtual void sync  (int level);
 
 

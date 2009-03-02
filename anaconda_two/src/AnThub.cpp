@@ -45,6 +45,13 @@ AnCanObject *AnThub::hat(int i)
 		this;
 }
 
+QString AnThub::firmwareString() const
+{
+  char buf[32];
+  sprintf(buf, "%x/%x", m_thubFirmware, fpgaFirmwareId());
+  return QString(buf);
+}
+
 QString AnThub::dump() const
 {
 	QStringList sl;
@@ -106,7 +113,8 @@ void AnThub::sync(int level)
 			if (level >= 1) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
 				rdata = agent()->write_read(msg, rmsg, 8);
-				setMcuFirmwareId(rdata);
+				//setMcuFirmwareId(rdata);
+				m_thubFirmware = rdata;
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
 				agent()->write_read(msg, rmsg, 4);
 				setFpgaFirmwareId(rmsg.Msg.DATA[2]);

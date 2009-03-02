@@ -300,7 +300,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		}
 		break;
 	case MSGTYPE_EXTENDED:
-		pMsgBuff->ID |= 0x400000;
+		pMsgBuff->ID |= 0x40000;
 		switch(pMsgBuff->DATA[0]) {
 		case 0x04: // Control TDC
 			pMsgBuff->LEN = 2;

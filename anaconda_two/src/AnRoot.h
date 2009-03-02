@@ -25,6 +25,9 @@
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
 
+#define DB_PATH_ENV         "ANA_DB_PATH"           // absolute path or relative to working dir
+#define DB_PATH_DEFAULT     "db/configurations.db"  // relative to binary image
+
 class AnMaster;
 
 class AnRoot : public AnCanObject {
@@ -40,6 +43,7 @@ public:
 	virtual void init  (int level);
 	virtual void config(int level);
 	virtual void reset (int level);
+	virtual void qreset(int level);
 	virtual void sync  (int level);
 
 
@@ -50,8 +54,9 @@ public:
 		TASK_INIT   = 0x01,
 		TASK_CONFIG = 0x02,
 		TASK_RESET  = 0x04,
-		TASK_SYNC   = 0x08,
-		TASK_RESYNC = 0x10
+		TASK_QRESET = 0x08,
+		TASK_SYNC   = 0x10,
+		TASK_RESYNC = 0x20
 	};
 
 //  Own functions
@@ -74,6 +79,7 @@ public:
 	void init  (int level, const QList<AnBoard*>& blist);	
 	void config(int level, const QList<AnBoard*>& blist);
 	void reset (int level, const QList<AnBoard*>& blist);
+	void qreset(int level, const QList<AnBoard*>& blist);
 	void sync  (int level, const QList<AnBoard*>& blist);
 	
 	int status();

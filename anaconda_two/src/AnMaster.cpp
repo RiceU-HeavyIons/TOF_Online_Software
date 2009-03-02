@@ -195,6 +195,10 @@ void AnMaster::p_setMode(int mode)
 			m_root->reset(val, m_root->find( m_root->expand(addr) ) );
 			m_root->wait();
 		}
+		if (ct == "QRESET") {
+			m_root->qreset(val, m_root->find( m_root->expand(addr) ) );
+			m_root->wait();
+		}
 		if (ct == "SYNC") {
 			m_root->sync(val,  m_root->find( m_root->expand(addr) ) );
 			m_root->wait();

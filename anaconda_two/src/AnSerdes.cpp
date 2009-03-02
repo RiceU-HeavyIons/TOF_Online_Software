@@ -23,7 +23,7 @@ AnSerdes::~AnSerdes()
 QString AnSerdes::firmwareString() const
 {
   char buf[32];
-  sprintf(buf, "%x", fpgaFirmwareId());
+  sprintf(buf, "%x", mcuFirmwareId());
   return QString(buf);
 }
 
@@ -86,7 +86,7 @@ void AnSerdes::sync(int level)
     if (level >= 1) {
       AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, srdid);
       rdata = agent()->write_read(msg, rmsg, 4);
-      setFpgaFirmwareId(rmsg.Msg.DATA[2]);
+      setMcuFirmwareId(rdata);
     }
 
     AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid);

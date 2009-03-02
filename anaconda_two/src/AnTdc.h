@@ -24,6 +24,7 @@ public:
 	virtual void init  (int level);
 	virtual void config(int level);
 	virtual void reset (int level);
+	virtual void qreset(int level) { /* placeholder */ };
 	virtual void sync  (int level);
 
 	quint16 configId() const { return m_config; }

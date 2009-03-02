@@ -8,10 +8,12 @@
 #include "AnRoot.h"
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
-
+#include <QtCore/QDir>
+#include <QtGui/QApplication>
 #include <QtSql/QSqlQuery>
 #include "AnMaster.h"
 #include "AnExceptions.h"
+
 
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
@@ -27,9 +29,24 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	}
 
 	m_db = QSqlDatabase::addDatabase("QSQLITE");
-	m_db.setDatabaseName("db/configurations.db");
-	if (!m_db.open() )
+
+	char *dbpath = getenv(DB_PATH_ENV);
+	if (dbpath != NULL && *dbpath != '\0') {
+		m_db.setDatabaseName(dbpath);
+	} else {
+#ifdef __APPLE__
+		QDir default_path( QString("%1/../../..")
+			.arg(QApplication::applicationDirPath()) );
+#else
+		QDir default_path( QString("%1")
+			.arg(QApplication::applicationDirPath()) );
+#endif
+		m_db.setDatabaseName(default_path.filePath(DB_PATH_DEFAULT));
+	}
+
+	if (!m_db.open())
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
+
 	QSqlQuery qry;
 	qry.exec("SELECT id, devid, name, installed FROM devices");
 	while(qry.next()) {
@@ -174,6 +191,12 @@ void AnRoot::reset(int level)
 }
 
 //-----------------------------------------------------------------------------
+void AnRoot::qreset(int level)
+{
+	if(level >= 1) qreset(level, list()); // reset all
+}
+
+//-----------------------------------------------------------------------------
 void AnRoot::sync(int level)
 {
 	if(level >= 1) sync(level, list()); // sync all
@@ -239,6 +262,23 @@ void AnRoot::reset(int level, const QList<AnBoard*>& blist)
 //		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
 		if (ag->isRunning()) continue; // forget if agent is busy
 		ag->init(TASK_RESET, level, bmap[id]);
+		ag->start();
+	}
+}
+
+//-----------------------------------------------------------------------------
+void AnRoot::qreset(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
+	foreach (int id, bmap.keys()) {
+		AnAgent *ag = agentById(id);
+//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_QRESET, level, bmap[id]);
 		ag->start();
 	}
 }

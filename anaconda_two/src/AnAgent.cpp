@@ -16,7 +16,7 @@ const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcan*";
 const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
 #endif
 //-----------------------------------------------------------------------------
-AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0)
+AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0), m_comm_err(0)
 {
 }
 
@@ -83,11 +83,7 @@ void AnAgent::print_recv(const TPCANMsg &msg)
 quint64 AnAgent::read(TPCANRdMsg &rmsg,
     int return_length, unsigned int time_out)
 {
-
-	if(m_handle == NULL) {
-		qDebug() << "device is not open";
-		return -1;
-	}
+	pre_check();
 
 	quint64 data = 0;
 	unsigned int length = 0;
@@ -112,16 +108,13 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 		throw AnExCanError(0);
 	}
 
-		return data;
-	}
+	return data;
+}
 
 //-----------------------------------------------------------------------------
 void AnAgent::raw_write(TPCANMsg &msg, int time_out)
 {
-	if(m_handle == NULL) {
-		qDebug() << "device is not open";
-		return;
-	}
+	pre_check();
 
 	int er;
 
@@ -138,11 +131,7 @@ void AnAgent::raw_write(TPCANMsg &msg, int time_out)
 quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     unsigned int return_length, unsigned int time_out)
 {
-
-	if(m_handle == NULL) {
-		qDebug() << "device is not open";
-		return -1;
-	}
+	pre_check();
 
 	quint64 data = 0;
 	unsigned int length = 0;
@@ -371,6 +360,14 @@ void AnAgent::run()
 		}
 	}
 
+	if (m_mode & AnRoot::TASK_QRESET) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			brd->qreset(m_level);
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
+
 	if (m_mode & AnRoot::TASK_SYNC) {
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
@@ -382,7 +379,8 @@ void AnAgent::run()
 	if (m_mode & AnRoot::TASK_RESYNC) {
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
-			brd->sync(m_level);
+			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
+			if (tcpu) tcpu->resync(m_level);
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
@@ -418,6 +416,7 @@ bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 void AnAgent::error_handle(int er)
 {
 	if (er != 0) {
+		incCommError();
 		int status = CAN_Status(m_handle);
 		if (status == CAN_ERR_QRCVEMPTY) {
 			fprintf(stderr, "CANbus error: 0x%x\n", status);
@@ -433,3 +432,14 @@ void AnAgent::error_handle(int er)
 	}
 }
 
+void AnAgent::pre_check()
+{
+	if(m_handle == NULL) {
+		qDebug() << "device is not open";
+		throw AnExCanError(0);
+	}
+
+	if (commError() > AGENT_COMM_ERROR_THRESHOLD) {
+		throw AnExCanError(0);
+	}
+}

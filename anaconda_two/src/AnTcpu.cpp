@@ -142,6 +142,27 @@ void AnTcpu::reset(int level)
 }
 
 //-----------------------------------------------------------------------------
+void AnTcpu::qreset(int level)
+{
+
+	if (active() && level >= 1) {
+
+	    TPCANMsg    msg;
+	    TPCANRdMsg  rmsg;
+
+		try {
+			if (--level >= 1)
+				for (int i = 0; i < 8; ++i) m_tdig[i]->qreset(level);
+
+			clearCommError();
+		} catch (AnExCanError ex) {
+			qDebug() << "CAN error occurred: " << ex.status();
+			incCommError();
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 void AnTcpu::sync(int level)
 {
 	if (active() && level >= 1 && commError() == 0) {

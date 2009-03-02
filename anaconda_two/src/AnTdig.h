@@ -31,6 +31,7 @@ public:
 	virtual void init  (int level);
 	virtual void config(int level);
 	virtual void reset (int level);
+	virtual void qreset(int level);
 	virtual void sync  (int level);
 
 // Inherited from AnBoard

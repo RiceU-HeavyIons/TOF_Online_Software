@@ -5,6 +5,12 @@ Created: 2008-11-24
 Updated: 2009-01-06
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-02-27:
+  - (X) database path -- environmental and default
+  - (X) TDIG reset for user command 2
+  - (X) THUB and Serdes firmware version
+  - (X) debug resync
+
   2009-02-25:
   - (X) fiber port setting criteria
   - error popup
@@ -23,7 +29,7 @@ Entry:
 
   2009-02-14:
   - (X) AnRoot::received work around
-  - re-activate thub firmware check (they not repeat payload)
+  - (X) re-activate thub firmware check (they not repeat payload)
   - (X) re-activate watch
   - (X) init and config button?
   - user commands?

@@ -144,16 +144,16 @@ void AnTdig::reset(int level)
 //	qDebug() << "AnTdig::reset" << laddr();
 	if (active() && level >= 1) {
 		try {
-			// do nothing here
+		// do nothing here
 		// TPCANMsg    msg;
 		// TPCANRdMsg  rmsg;
-		// 
+
 		// AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, 0x90);
 		// agent()->write_read(msg, rmsg, 2);
 
 			if (--level >= 1) {
 				m_tdc[0]->reset(level);
-		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+			// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 			}
 
 			clearCommError();
@@ -163,6 +163,34 @@ void AnTdig::reset(int level)
 		}
 	}
 }
+/**
+ * Quick Rest TDIG
+**/
+void AnTdig::qreset(int level)
+{
+//	qDebug() << "AnTdig::reset" << laddr();
+	if (active() && level >= 1) {
+		try {
+			// do nothing here
+			TPCANMsg    msg;
+			TPCANRdMsg  rmsg;
+
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0xe, 0x2, 0x1, 0x2, 0x0);
+			agent()->write_read(msg, rmsg, 2);
+
+			// if (--level >= 1) {
+			// 	m_tdc[0]->reset(level);
+			// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
+			// }
+
+			clearCommError();
+		} catch (AnExCanError ex) {
+			incCommError();
+			qDebug() << "Communication Error Occurred: " << ex.status();
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 quint32 AnTdig::canidr() const

@@ -19,9 +19,10 @@ public:
 //  inherited from AnCanbusObject
 	virtual QString dump() const;
 
-	virtual void init  (int level) { /* place holder */ }
-	virtual void config(int level) { /* place holder */ }
+	virtual void init  (int level) { /* placeholder */ }
+	virtual void config(int level) { /* placeholder */ }
 	virtual void reset (int level);
+	virtual void qreset(int level) { /* placeholder */ };
 	virtual void sync  (int level);
 	void bunchReset(int level);
 
@@ -32,6 +33,7 @@ public:
 	virtual bool setActive(bool b);
 
 // from AnBoard
+	virtual QString firmwareString() const;
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }
 	virtual int status() const;
 
@@ -46,6 +48,7 @@ public:
 
 private:
 	AnSerdes *m_serdes[8];
+	quint64   m_thubFirmware;
 };
 
 #endif /* ANTHUB_H_ */

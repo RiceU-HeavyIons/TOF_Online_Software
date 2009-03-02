@@ -21,10 +21,10 @@ create table config_sets (
     name                char(32) not null,
     description         vchar(128)
 );
-insert into config_sets values (1, "Default",     "default mode uploaded when frontend starts");
-insert into config_sets values (2, "Standby",     "Stanby");
-insert into config_sets values (3, "Phys Mode",   "Physics mode");
-insert into config_sets values (4, "Phys Mode (dry run)",   "Physics Mode (dry run)");
+insert into config_sets values (1, "Default",               "default mode uploaded when frontend starts");
+insert into config_sets values (2, "Standby",               "Stanby");
+insert into config_sets values (3, "Phys Mode",             "Physics mode");
+insert into config_sets values (4, "Phys Mode (monitor)",   "Physics Mode (monitor)");
 
 drop table if exists config_types;
 create table config_types (
@@ -53,7 +53,8 @@ insert into config_types values ( 43, "TDC_CH_MASK"      );
 insert into config_types values (101, "INIT"  );
 insert into config_types values (102, "CONFIG");
 insert into config_types values (103, "RESET" );
-insert into config_types values (104, "SYNC"  );
+insert into config_types values (104, "QRESET" );
+insert into config_types values (105, "SYNC"  );
 
 insert into config_types values (201, "THUB_BUNCH_RESET");
 insert into config_types values (211, "TCPU_RESYNC");
@@ -186,14 +187,13 @@ insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
 -- insert into configs values (null,   4,  8,  43,   2, 255, 255,   1,      7);
 -- insert into configs values (null,   4,  9, 103,   2, 255,   0,   0,      3);
 
-
 ---- User Command 1 -------   id  set  ord, typ ad1  ad2  ad3  ad4   value
-insert into configs values (null,   101,  1, 201,   1,   1,   0,   0,      1);
+insert into configs values (null, 101,  1, 201,   1,   1,   0,   0,      1);
 -- insert into configs values (null, 101,  1,  101,  1, 255,   0,   0,     2);
 -- insert into configs values (null, 101,  2,  101,  2, 255,   0,   0,     4);
 
 ---- User Command 2 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
--- insert into configs values (null, 102,  1,  102,  2, 255,   0,   0,     4);
+insert into configs values (null, 102,  1,  104,  2, 255,   0,   0,     2);
 
 ---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 -- insert into configs values (null, 103,  1,  103,  1, 255,   0,   0,     2);

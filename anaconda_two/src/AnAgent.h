@@ -20,6 +20,8 @@
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
 
+#define AGENT_COMM_ERROR_THRESHOLD 5
+
 class AnBoard;
 class AnRoot;
 
@@ -62,6 +64,11 @@ public:
 	
 	AnRoot *setRoot(AnRoot *root) { return (m_root = root); }
 
+	int commError() const { return m_comm_err; }
+	int setCommError(int ce) { return (m_comm_err = ce); }
+	int incCommError() { return ++m_comm_err; }
+	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }
+	void clearCommError() { m_comm_err = 0; }
 
 public slots:
 	void stop() { m_cancel = true; }
@@ -83,6 +90,8 @@ private:
 	void print_recv(const TPCANMsg &msg);
 	bool match(TPCANMsg &snd, TPCANMsg &rcv);
 	void error_handle(int er);
+	
+	void pre_check();
 
 	int                      m_mode;
 	int                      m_level;
@@ -99,6 +108,7 @@ private:
 	QString                  m_deviceName;
 	AnRoot                  *m_root;
 
+	int                      m_comm_err;
 
 };
 #endif
