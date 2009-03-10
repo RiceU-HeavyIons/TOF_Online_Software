@@ -155,7 +155,10 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 				print_recv(rmsg.Msg);
 				emit debug_recv(AnRdMsg(devid(), rmsg));
 			}
-			if (match(msg, rmsg.Msg)) {
+			if (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS) {
+				int status = CAN_Status(m_handle);
+				qDebug() << "CAN_Status" << status;
+			} else if (match(msg, rmsg.Msg)) {
 				break;
 			} else {
 //				emit received(AnRdMsg(devid(), rmsg));
@@ -437,7 +440,7 @@ void AnAgent::error_handle(int er)
 
 void AnAgent::pre_check()
 {
-	qDebug() << "AnAgent::pre_check(): commError()" << commError();
+//	qDebug() << "AnAgent::pre_check(): commError()" << commError();
 
 	if(m_handle == NULL) {
 		qDebug() << "device is not open";
