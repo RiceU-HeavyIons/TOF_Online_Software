@@ -154,6 +154,16 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 			if (TCAN_DEBUG) {
 				print_recv(rmsg.Msg);
 				emit debug_recv(AnRdMsg(devid(), rmsg));
+			}
+			if (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS) {
+				int status = CAN_Status(m_handle);
+				if (status & CAN_ERR_ANYBUSERR) {
+					WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+					int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
+					incCommError();
+					er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
+					throw AnExCanError(er);
+				}
 			} else if (match(msg, rmsg.Msg)) {
 				break;
 			} else {
