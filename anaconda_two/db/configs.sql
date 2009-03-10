@@ -177,6 +177,10 @@ insert into configs values (null,   4, 43,  24,   2, 255,   0,   0,      2);
 
 -- 5. Trun on THUB serdes channels
 insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
+insert into configs values (null,   4, 52,  12,   1,   3,   5,   0,      0);
+insert into configs values (null,   4, 53,  12,   1,   3,   6,   0,      0);
+insert into configs values (null,   4, 54,  12,   1,   3,   7,   0,      0);
+insert into configs values (null,   4, 55, 102,   1, 255, 255,   0,      1);
 -- insert into configs values (null,   4, 52, 102,   1, 255, 255,   0,      1);
 
 -- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
