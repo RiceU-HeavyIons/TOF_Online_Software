@@ -461,7 +461,7 @@ void AnAgent::pre_check()
 	TPCANRdMsg rmsg;
 	int er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, 0);
 
-	if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS))
+	if (er == 0 && (rmsg.MSGTYPE & MSGTYPE_STATUS))
 	{
 		int status = CAN_Status(m_handle);
 		if (status & CAN_ERR_ANYBUSERR) {
