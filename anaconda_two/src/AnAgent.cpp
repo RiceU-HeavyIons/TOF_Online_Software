@@ -92,12 +92,13 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 
 	for (unsigned int i = 0; i < niter && !er; ++i) {
 		er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-		error_handle(er);
+		error_handle(er, rmsg.Msg);
 
 		if (TCAN_DEBUG) {
 			print_recv(rmsg.Msg);
 			emit debug_recv(AnRdMsg(devid(), rmsg));
 		}
+
 		length += rmsg.Msg.LEN;
 		for (int j = 1; j < rmsg.Msg.LEN; ++j)
 			data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
@@ -124,7 +125,7 @@ void AnAgent::raw_write(TPCANMsg &msg, int time_out)
 	}
 
 	er = LINUX_CAN_Write_Timeout(m_handle, &msg, time_out);
-	error_handle(er);
+	error_handle(er, msg);
 }
 
 //-----------------------------------------------------------------------------
@@ -144,27 +145,20 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
 
 	er = CAN_Write(m_handle, &msg);
-	error_handle(er);
+	error_handle(er, msg);
 
 	for (unsigned int i = 0; i < niter && !er; ++i) {
 		int ntry = 10; // tra 10 times
 		for (; ntry > 0; --ntry) {
 			er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-			error_handle(er);
+			error_handle(er, rmsg.Msg);
+
 			if (TCAN_DEBUG) {
 				print_recv(rmsg.Msg);
 				emit debug_recv(AnRdMsg(devid(), rmsg));
 			}
-			if (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS) {
-				int status = CAN_Status(m_handle);
-				if (status & CAN_ERR_ANYBUSERR) {
-					WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-					int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
-					incCommError();
-					er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
-					throw AnExCanError(er);
-				}
-			} else if (match(msg, rmsg.Msg)) {
+
+			if (match(msg, rmsg.Msg)) {
 				break;
 			} else {
 //				emit received(AnRdMsg(devid(), rmsg));
@@ -425,9 +419,18 @@ bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::error_handle(int er)
+void AnAgent::error_handle(int er, TPCANMsg &msg)
 {
-	if (er != 0) {
+	if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS)) {
+		int status = CAN_Status(m_handle);
+		if (status & CAN_ERR_ANYBUSERR) {
+			WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+			int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
+			incCommError();
+			er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
+			throw AnExCanError(status);
+		}
+	} else if (er != 0) {
 		incCommError();
 		int status = CAN_Status(m_handle);
 		if (status == CAN_ERR_QRCVEMPTY) {
@@ -458,7 +461,7 @@ void AnAgent::pre_check()
 	TPCANRdMsg rmsg;
 	int er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, 0);
 
-	if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS))
+	if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS))
 	{
 		int status = CAN_Status(m_handle);
 		if (status & CAN_ERR_ANYBUSERR) {
