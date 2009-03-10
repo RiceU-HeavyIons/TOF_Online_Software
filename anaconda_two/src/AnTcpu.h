@@ -78,6 +78,8 @@ public:
 	quint8 setTrayId(quint8 id) { return (m_tray_id = id); }
 	QString trayIdString() const { return QString::number(m_tray_id); }
 
+	QString ecsrToolTipString() const;
+
 	QString traySn() const { return m_tray_sn; }
 	QString setTraySn(QString sn) { return (m_tray_sn = sn); }
 

@@ -307,6 +307,17 @@ QString AnTcpu::dump() const
 //-----------------------------------------------------------------------------
 QString AnTcpu::ecsrString() const
 {
+	QString ret = "0x" + QString::number(ecsr(), 16);
+
+	if (ecsr() & 0x4)
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
+}
+
+//-----------------------------------------------------------------------------
+QString AnTcpu::ecsrToolTipString() const
+{
   static const char* msg_list[] = {
       "PLD_CONFIG_DONE",
       "PLD_INIT_DONE",
