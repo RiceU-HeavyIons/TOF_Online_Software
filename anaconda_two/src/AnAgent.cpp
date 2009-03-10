@@ -430,14 +430,14 @@ void AnAgent::error_handle(int er, TPCANMsg &msg)
 	} else if (er != 0) {
 		int status = CAN_Status(m_handle);
 		if (status == CAN_ERR_QRCVEMPTY) {
-			fprintf(stderr, "CANbus[%d] error: 0x%x\n", addr, status);
+			fprintf(stderr, "AnAgent::error_handle: CANbus[%d] error: 0x%x\n", addr, status);
 			throw AnExCanError(status);
 //			throw AnExCanTimeOut(status);
 		} else if (status > 0) {
-			fprintf(stderr, "CANbus[%d] error: 0x%x\n", addr, status);
+			fprintf(stderr, "AnAgent::error_handle: CANbus[%d] error: 0x%x\n", addr, status);
 			throw AnExCanError(status);
 		} else {
-			fprintf(stderr, "CANBus[%d] System error: 0x%x\n", addr, status);
+			fprintf(stderr, "AnAgent::error_handle: CANBus[%d] System error: 0x%x\n", addr, status);
 			throw AnExCanError(status);
 		}
 	}

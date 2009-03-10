@@ -81,7 +81,7 @@ void KThubView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 {
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   if(AnThub *thub = dynamic_cast<AnThub*>(cobj)) {
-    thub->sync(1);
+    thub->sync(3);
 
     setTitle(thub->objectName());
     m_laddr->setText(thub->lAddress().toString());

@@ -99,7 +99,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if (tcpu) {
-    tcpu->sync(1);
+    tcpu->sync(3);
     m_tcpu = tcpu;
     setTitle(tcpu->objectName());
     if (tcpu->traySn() != "") {
