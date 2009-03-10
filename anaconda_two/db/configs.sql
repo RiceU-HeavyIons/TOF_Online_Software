@@ -58,6 +58,7 @@ insert into config_types values (105, "SYNC"  );
 
 insert into config_types values (201, "THUB_BUNCH_RESET");
 insert into config_types values (211, "TCPU_RESYNC");
+insert into config_types values (212, "TCPU_RECOVERY");
 
 drop table if exists configs;
 create table configs (
@@ -214,8 +215,8 @@ insert into configs values (null, 101,  1, 201,   1,   1,   0,   0,      1);
 insert into configs values (null, 102,  1,  104,  2, 255,   0,   0,     2);
 
 ---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
--- insert into configs values (null, 103,  1,  103,  1, 255,   0,   0,     2);
--- insert into configs values (null, 103,  2,  103,  2, 255,   0,   0,     4);
+insert into configs values (null, 103,  1,  212,   2, 255,   0,   0,      1);
+insert into configs values (null, 103,  2,  201,   1,   1,   0,   0,      1);
 
 ---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 -- insert into configs values (null, 104,  1,  104,  1, 255,   0,   0,     2);
