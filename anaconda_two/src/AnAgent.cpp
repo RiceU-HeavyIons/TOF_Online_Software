@@ -434,7 +434,7 @@ void AnAgent::error_handle(int er, TPCANMsg &msg)
 			throw AnExCanError(status);
 //			throw AnExCanTimeOut(status);
 		} else if (status > 0) {
-			fprintf(stderr, "CANbus[%d] error: 0x%x\n", add,r status);
+			fprintf(stderr, "CANbus[%d] error: 0x%x\n", addr, status);
 			throw AnExCanError(status);
 		} else {
 			fprintf(stderr, "CANBus[%d] System error: 0x%x\n", addr, status);
