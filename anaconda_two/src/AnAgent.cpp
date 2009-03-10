@@ -421,7 +421,7 @@ bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 //-----------------------------------------------------------------------------
 void AnAgent::error_handle(int er, TPCANMsg &msg)
 {
-	if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS)) {
+	if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS)) {
 		int status = CAN_Status(m_handle);
 		if (status & CAN_ERR_ANYBUSERR) {
 			WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */

@@ -89,7 +89,7 @@ private:
 	void print_send(const TPCANMsg &msg);
 	void print_recv(const TPCANMsg &msg);
 	bool match(TPCANMsg &snd, TPCANMsg &rcv);
-	void error_handle(int er);
+	void error_handle(int er, TPCANMsg &msg);
 	
 	void pre_check();
 
