@@ -451,8 +451,9 @@ void AnAgent::pre_check()
 	if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS))
 	{
 		int status = CAN_Status(m_handle);
-		if (status & CAN_ERR_ANYBUSERR)
+		if (status & CAN_ERR_ANYBUSERR) {
 			er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
+		}
 	}
 
 	if (commError() >= AGENT_COMM_ERROR_THRESHOLD) {
