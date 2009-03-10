@@ -434,7 +434,7 @@ void AnAgent::error_handle(int er)
 
 void AnAgent::pre_check()
 {
-	qDebug() "AnAgent::pre_check(): commError()" << commError();
+	qDebug() << "AnAgent::pre_check(): commError()" << commError();
 
 	if(m_handle == NULL) {
 		qDebug() << "device is not open";
