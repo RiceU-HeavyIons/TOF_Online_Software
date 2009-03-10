@@ -9,8 +9,6 @@
 			<string>TODO</string>
 			<key>lastUsed</key>
 			<date>2009-03-10T16:46:38Z</date>
-			<key>selected</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -37,7 +35,9 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-10T16:42:50Z</date>
+					<date>2009-03-10T17:08:37Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -298,7 +298,7 @@
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-10T16:41:53Z</date>
+					<date>2009-03-10T17:08:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -310,7 +310,7 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-10T16:41:53Z</date>
+					<date>2009-03-10T17:08:35Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
