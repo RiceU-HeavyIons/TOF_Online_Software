@@ -200,7 +200,7 @@ void KMainWindow::createActions()
 	QObject::connect(m_ToggleConsoleAction, SIGNAL(triggered()),
 	                 this, SLOT(toggleConsole()));
 
-	m_ToggleAutoSyncAction = new QAction(tr("Auto Sync"), this);
+	m_ToggleAutoSyncAction = new QAction(tr("Auto Refresh"), this);
 	m_ToggleAutoSyncAction->setCheckable(true);
 	m_ToggleAutoSyncAction->setChecked(false);
 	QObject::connect(m_ToggleAutoSyncAction, SIGNAL(triggered()),

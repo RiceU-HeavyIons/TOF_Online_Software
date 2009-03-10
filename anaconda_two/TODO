@@ -5,6 +5,12 @@ Created: 2008-11-24
 Updated: 2009-03-01
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-03-10:
+  - icon for resync
+  - icon for reset
+  - debug address expansion error in console
+  - maybe logical address 3 for upVPD TCPUs.
+
   2009-03-01:
   - (X) auto sync after change mode
 
