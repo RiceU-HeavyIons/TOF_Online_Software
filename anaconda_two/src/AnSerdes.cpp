@@ -147,6 +147,8 @@ AnAgent *AnSerdes::agent() const
 int AnSerdes::status() const
 {
 // TO-DO implement real logic
+	if (agent()->commError() || commError()) return STATUS_COMM_ERR;
+
 	int err = 0;
 	if (ecsr() != pld9xSet()) err++;
 

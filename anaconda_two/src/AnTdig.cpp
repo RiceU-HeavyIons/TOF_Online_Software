@@ -290,12 +290,12 @@ int AnTdig::status() const
 	if (temp() > tempAlarm()) ++err;
 	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
 
-	if (err)
+	if (agent()->commError() != 0 || commError() != 0)
+		stat = STATUS_COMM_ERR;
+	else if (err)
 		stat = STATUS_ERROR;
 	else if (!active())
 		stat = STATUS_UNKNOWN;
-	else if (commError() != 0)
-		stat = STATUS_COMM_ERR;
 	else if (ecsr() & 0x10)
 		stat = STATUS_ON;
 	else

@@ -56,8 +56,6 @@ public:
 	virtual QString hvString()   const { return QString(); }
 	virtual int lvOrder() const { return 0; }
 	virtual int hvOrder() const { return 0; }
-	
-	virtual int commError() const;
 
 	enum {
 		STATUS_UNKNOWN  = 0,

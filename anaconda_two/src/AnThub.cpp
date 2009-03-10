@@ -227,7 +227,7 @@ int AnThub::status() const
 {
 // TO-DO implement real logic
 	if (active()) {
-		if (commError()) return STATUS_COMM_ERR;
+		if (agent()->commError() || commError()) return STATUS_COMM_ERR;
 
 		int err = 0;
 		if (maxTemp() > tempAlarm()) err++;

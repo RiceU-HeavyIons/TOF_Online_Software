@@ -20,7 +20,7 @@
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
 
-#define AGENT_COMM_ERROR_THRESHOLD 5
+#define AGENT_COMM_ERROR_THRESHOLD     4
 
 class AnBoard;
 class AnRoot;

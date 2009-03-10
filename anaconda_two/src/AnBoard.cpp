@@ -87,12 +87,3 @@ void AnBoard::msgw(const QList<quint8>& dary)
 	    agent()->write_read(msg, rmsg, 2);
 	}
 }
-
-int AnBoard::commError() const
-{
-	int ret = 0;
-
-	if (agent()->commError() > 5) ret = 1;
-
-	return ret + AnCanObject::commError();
-}

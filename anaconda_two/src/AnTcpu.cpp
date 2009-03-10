@@ -352,10 +352,10 @@ int AnTcpu::status() const
 	for (int i = 0; i < 8; ++i)
 		if (m_tdig[i]->status() == STATUS_ERROR) ++err;
 
-	if (err)
-		stat = STATUS_ERROR;
-	else if (commError() != 0)
+	if (agent()->commError() != 0 || commError() != 0)
 		stat = STATUS_COMM_ERR;
+	else if (err)
+		stat = STATUS_ERROR;
 	else
 		stat = (m_pld02 & 0x1) ? STATUS_ON : STATUS_STANBY;
 
