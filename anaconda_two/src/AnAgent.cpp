@@ -163,10 +163,12 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 		}
 		if (ntry == 0) {
 			fprintf(stderr, "Didn't receive reply message.\n");
+			incCommError();
 			throw AnExCanError(0);
 		}  else {
 			if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
 				fprintf(stderr, "Return payload doesn't match.\n");
+				incCommError();
 				throw AnExCanError(0);
 			}
 			length += rmsg.Msg.LEN;
@@ -177,6 +179,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 
 	if (return_length != length) {
 		fprintf(stderr, "Return length doesn't match: %d != %d\n", return_length, length);
+		incCommError();
 		throw AnExCanError(0);
 	}
 
