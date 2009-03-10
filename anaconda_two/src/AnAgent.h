@@ -20,8 +20,9 @@
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
 
-#define AGENT_COMM_ERROR_THRESHOLD     4
-
+#define AGENT_COMM_ERROR_THRESHOLD     1
+#define AGENT_PCAN_INIT_BAUD           CAN_BAUD_1M
+#define AGENT_PCAN_INIT_TYPE           CAN_INIT_TYPE_EX
 class AnBoard;
 class AnRoot;
 

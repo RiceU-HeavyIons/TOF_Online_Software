@@ -200,9 +200,6 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
 	char txt_buff[VERSIONSTRING_LEN];
 	unsigned int i;
 
-	WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-	int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
-
 	glob_t globb;
 
 	globb.gl_offs = 0;
@@ -228,7 +225,7 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
 		int dev_id = tpdiag.wIrqLevel;
 
 		if (devid_map.contains(dev_id)) {
-			CAN_Init(h, wBTR0BTR1, nExtended);
+			CAN_Init(h, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
 			AnAgent *sock = new AnAgent();
 			sock->m_handle = h;
 			sock->addr = dev_id;
@@ -450,8 +447,6 @@ void AnAgent::error_handle(int er, TPCANMsg &msg)
 void AnAgent::pre_check()
 {
 //	qDebug() << "AnAgent::pre_check(): commError()" << commError();
-	WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-	int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
 
 	if(m_handle == NULL) {
 		qDebug() << "device is not open";
@@ -466,7 +461,8 @@ void AnAgent::pre_check()
 		int status = CAN_Status(m_handle);
 		if (status & CAN_ERR_ANYBUSERR) {
 			incCommError();
-			er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
+			er = CAN_Init(m_handle, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
+			
 		}
 	}
 
