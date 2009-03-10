@@ -210,8 +210,7 @@ void AnTcpu::sync(int level)
 
 			setSynced();
 		} catch (AnExCanError ex) {
-			qDebug() << this
-			         << "::sync: CAN error occurred: " << ex.status();
+			qDebug() << "AnTcpu" << laddr() << "::sync: CAN error occurred: " << ex.status();
 			incCommError();
 		}
 	}
