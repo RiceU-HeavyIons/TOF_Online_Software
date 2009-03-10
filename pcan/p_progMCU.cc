@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.9 2008-07-02 15:03:29 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.10 2009-03-10 14:21:59 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -436,6 +436,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   my_private_exit(errno);
 #endif
   
+  cout << "MCU programmed successfully!\n";
   return 0;
 }
 
