@@ -220,10 +220,12 @@ void AnMaster::p_setMode(int mode)
 		if (ct == "TCPU_RECOVERY") {
 			foreach(AnAddress ad, m_root->expand(addr)) {
 				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
-				if (tcpu && (tcpu->status() == AnBoard::STATUS_ERROR)) {
-					tcpu->init(2);
-					tcpu->qreset(2);
-					tcpu->config(2);
+				if (tcpu) {
+					if (tcpu->status() == AnBoard::STATUS_ERROR) {
+						tcpu->init(2);
+						tcpu->qreset(2);
+						tcpu->config(2);
+					}
 				}
 				else qDebug() << "invalid address: " << ad.toString();
 			}

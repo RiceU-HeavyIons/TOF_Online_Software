@@ -620,7 +620,7 @@ void AnRoot::received(AnRdMsg rmsg)
 			}
 		}
 	} else {
-		qFatal("Received message from unknown source");
+		qDebug() << "Received message from unknown source";
 	}
 }
 

@@ -42,7 +42,7 @@ AnCanObject *AnCanNet::hat(int i)
 	foreach(AnBoard *brd, m_map) {
 		if (brd->haddr().at(1) == i) return brd;
 	}
-	return NULL;
+	return this;
 }
 
 /**

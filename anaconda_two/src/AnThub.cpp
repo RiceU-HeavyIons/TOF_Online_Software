@@ -179,7 +179,7 @@ void AnThub::bunchReset(int level)
 		TPCANRdMsg  rmsg;
 
 		try {
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x99, 0x1);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x99, 0x1);
 			agent()->write_read(msg, rmsg, 1);
 
 		} catch (AnExCanError ex) {
