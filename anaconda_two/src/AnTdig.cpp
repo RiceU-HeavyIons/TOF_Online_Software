@@ -94,7 +94,7 @@ void AnTdig::init(int level)
 			// this might not be implemented yet
 //			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x89, 0x69, 0x96, 0xa5, 0x5a);
-			agent()->write_read(msg, rmsg, 2);
+			agent()->write_read(msg, rmsg, 3);
 
 			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();

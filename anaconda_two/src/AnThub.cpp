@@ -86,7 +86,7 @@ void AnThub::reset(int level)
 		try {
 			clearCommError();
 
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
 			agent()->write_read(msg, rmsg, 1);
 
 			if (--level >= 1)
@@ -112,7 +112,7 @@ void AnThub::qreset(int level)
 		TPCANRdMsg  rmsg;
 
 		try {
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
 //			agent()->write_read(msg, rmsg, 1);
 
 			// if (--level >= 1)
@@ -180,7 +180,7 @@ void AnThub::bunchReset(int level)
 
 		try {
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x99, 0x1);
-			agent()->write_read(msg, rmsg, 1);
+			agent()->write_read(msg, rmsg, 2);
 
 		} catch (AnExCanError ex) {
 			qDebug() << "CAN error occurred: " << ex.status();
