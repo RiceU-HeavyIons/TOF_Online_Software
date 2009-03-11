@@ -93,7 +93,7 @@ void AnTcpu::config(int level)
 void AnTcpu::init(int level)
 {
 	// don't want to init TCPUs for upVPD
-	if (haddr().at(1) == 0x20) return;
+	//	if (haddr().at(1) == 0x20) return;
 
 	if (active() && level >= 1 && commError() == 0) {
 
