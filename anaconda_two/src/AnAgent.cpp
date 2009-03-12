@@ -394,7 +394,7 @@ void AnAgent::run()
 			if (tcpu && (tcpu->status() == AnBoard::STATUS_ERROR)) {
 					tcpu->init(2);
 					tcpu->qreset(2);
-					tcpu->config(2);
+					tcpu->config(1);
 			}
 			emit progress(m_id, 100*(++step)/total);
 		}
