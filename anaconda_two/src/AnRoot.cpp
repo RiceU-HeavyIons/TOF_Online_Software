@@ -284,6 +284,24 @@ void AnRoot::qreset(int level, const QList<AnBoard*>& blist)
 	}
 }
 
+//-----------------------------------------------------------------------------
+void AnRoot::recovery(int level, const QList<AnBoard*>& blist)
+{
+	QMap<int, QList<AnBoard*> > bmap;
+	foreach (AnBoard* bd, blist)
+		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+
+	emit aboutStart();
+	foreach (int id, bmap.keys()) {
+		AnAgent *ag = agentById(id);
+//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+		if (ag->isRunning()) continue; // forget if agent is busy
+		ag->init(TASK_RECOVERY, level, bmap[id]);
+		ag->start();
+	}
+}
+
+
 /**
  * Sync all boards in the list
  */

@@ -51,12 +51,13 @@ public:
 	virtual AnCanObject* hat(int i) { return &m_hnet[m_devid_map[i]]; }
 
 	enum {
-		TASK_INIT   = 0x01,
-		TASK_CONFIG = 0x02,
-		TASK_RESET  = 0x04,
-		TASK_QRESET = 0x08,
-		TASK_SYNC   = 0x10,
-		TASK_RESYNC = 0x20
+		TASK_INIT     = 0x01,
+		TASK_CONFIG   = 0x02,
+		TASK_RESET    = 0x04,
+		TASK_QRESET   = 0x08,
+		TASK_SYNC     = 0x10,
+		TASK_RESYNC   = 0x20,
+		TASK_RECOVERY = 0x40
 	};
 
 //  Own functions
@@ -75,12 +76,13 @@ public:
 
 	void doUserCmd(int i);
 
-	void resync(int level, const QList<AnBoard*>& blist);	
-	void init  (int level, const QList<AnBoard*>& blist);	
-	void config(int level, const QList<AnBoard*>& blist);
-	void reset (int level, const QList<AnBoard*>& blist);
-	void qreset(int level, const QList<AnBoard*>& blist);
-	void sync  (int level, const QList<AnBoard*>& blist);
+	void resync (int level, const QList<AnBoard*>& blist);	
+	void init   (int level, const QList<AnBoard*>& blist);	
+	void config (int level, const QList<AnBoard*>& blist);
+	void reset  (int level, const QList<AnBoard*>& blist);
+	void qreset (int level, const QList<AnBoard*>& blist);
+	void sync   (int level, const QList<AnBoard*>& blist);
+	void recovery(int level, const QList<AnBoard*>& blist);
 	
 	int status();
 

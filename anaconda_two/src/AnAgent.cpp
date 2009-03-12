@@ -387,6 +387,18 @@ void AnAgent::run()
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
+	if (m_mode & AnRoot::TASK_RECOVERY) {
+		foreach(AnBoard *brd, m_list) {
+			if (m_cancel) return;
+			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
+			if (tcpu && (tcpu->status() == AnBoard::STATUS_ERROR)) {
+					tcpu->init(2);
+					tcpu->qreset(2);
+					tcpu->config(2);
+			}
+			emit progress(m_id, 100*(++step)/total);
+		}
+	}
 
 	// make sure send out finish
 	emit progress(m_id, 100);
