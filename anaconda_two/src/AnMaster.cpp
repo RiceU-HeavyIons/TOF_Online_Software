@@ -206,15 +206,22 @@ void AnMaster::p_setMode(int mode)
 		if (ct == "THUB_BUNCH_RESET") {
 			foreach(AnAddress ad, m_root->expand(addr)) {
 				AnThub *thub = dynamic_cast<AnThub*>( m_root->find(ad) );
-				if (thub) thub->bunchReset(val);
+				if (thub) {
+					m_root->disableWatch(thub->agent()->id());
+					thub->bunchReset(val);
+					m_root->enableWatch(thub->agent()->id());
+				}
 				else qDebug() << "invalid address: " << ad.toString();
 			}
 		}
 		if (ct == "TCPU_RESYNC") {
 			foreach(AnAddress ad, m_root->expand(addr)) {
 				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
-				if (tcpu) tcpu->resync(val);
-				else qDebug() << "invalid address: " << ad.toString();
+				if (tcpu) {
+					m_root->disableWatch(tcpu->agent()->id());
+					tcpu->resync(val);
+					m_root->enableWatch(tcpu->agent()->id());
+				} else qDebug() << "invalid address: " << ad.toString();
 			}
 		}
 		if (ct == "TCPU_RECOVERY") {
