@@ -156,7 +156,8 @@ insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
 insert into configs values (null,   3, 81, 105,   1, 255,   0,   0,      3);
 insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      3);
 
--- Set 4
+-------------------------------------------------------------------------------
+-- Set 4 
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- 1. Load TCPU FPGA from Eeprom 2
 -- insert into configs values (null,   4, 11, 101,   2, 255,   0,   0,      1);
@@ -181,7 +182,7 @@ insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
 insert into configs values (null,   4, 52,  12,   1,   3,   5,   0,      0);
 insert into configs values (null,   4, 53,  12,   1,   3,   6,   0,      0);
 insert into configs values (null,   4, 54,  12,   1,   3,   7,   0,      0);
-insert into configs values (null,   4, 55, 102,   1, 255, 255,   0,      1);
+-- insert into configs values (null,   4, 55, 102,   1, 255, 255,   0,      1);
 -- insert into configs values (null,   4, 52, 102,   1, 255, 255,   0,      1);
 
 -- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
