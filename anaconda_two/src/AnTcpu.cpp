@@ -79,7 +79,7 @@ void AnTcpu::config(int level)
 		try {
 			TPCANMsg    msg;
 			TPCANRdMsg  rmsg;
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x02, m_pld02Set);
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
 			qDebug() << "CAN error occurred: " << ex.status();
@@ -197,13 +197,10 @@ void AnTcpu::sync(int level)
 			// sock->write_read(msg, rmsg, 5);
 			// m_pld02 = rmsg.Msg.DATA[2];
 			// m_pld0e = rmsg.Msg.DATA[4];
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x2);
-			agent()->write_read(msg, rmsg, 3);
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x3);
+			agent()->write_read(msg, rmsg, 5);
 			m_pld02 = rmsg.Msg.DATA[2];
-
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
-			agent()->write_read(msg, rmsg, 3);
-			m_pld03 = rmsg.Msg.DATA[2];
+			m_pld03 = rmsg.Msg.DATA[4];
 
 			if (--level >= 1)
 				for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
@@ -224,9 +221,9 @@ void AnTcpu::resync(int level)
 		try {
 			TPCANMsg    msg;
 			TPCANRdMsg  rmsg;
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x0);
-			agent()->write_read(msg, rmsg, 2);
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
+			AnAgent::set_msg(msg, canidw(),
+								MSGTYPE_STANDARD,
+								6, 0xe, 0x2, 0x0, 0xe, 0x2, m_pld02Set);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
 			qDebug() << "CAN error occurred: " << ex.status();

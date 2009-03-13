@@ -95,7 +95,7 @@ public:
 private:
 	AnTdig     *m_tdig[8];
 	quint8      m_pld02, m_pld02Set;
-	quint8      m_pld03, m_pld03Set; // read-only register	
+	quint8      m_pld03, m_pld03Set; // read-only register
 	quint8      m_pld0e, m_pld0eSet;
 	quint64     m_chipid;
 

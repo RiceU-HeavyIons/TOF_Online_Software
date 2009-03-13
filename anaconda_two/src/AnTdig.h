@@ -50,15 +50,21 @@ public:
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
 	QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
 
+	quint8  pldReg03() const { return m_pld03; }
+	quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
+	quint8  pldReg03Set() const { return m_pld03Set; }
+	quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
+
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;
 	virtual quint32 cantyp() const;
 	virtual AnAgent* agent() const;
 
 private:
-	AnTdc    *m_tdc[4];
-	int      m_threshold;
-	quint64  m_chipid;
+	AnTdc      *m_tdc[4];
+	int         m_threshold;
+	quint64     m_chipid;
+	quint8      m_pld03, m_pld03Set; // read-only register
 };
 
 #endif /* ANTDIG_H_ */

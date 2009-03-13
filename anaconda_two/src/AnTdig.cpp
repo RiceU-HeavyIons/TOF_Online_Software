@@ -10,7 +10,7 @@
 #include "AnExceptions.h"
 
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
-  : AnBoard(laddr, haddr, parent), m_threshold(0), m_chipid(0)
+  : AnBoard(laddr, haddr, parent), m_threshold(0), m_chipid(0), m_pld03(0), m_pld03Set(0)
 {
 	setObjectName(QString("TDIG ") + lAddress().toString());
 
@@ -56,6 +56,10 @@ void AnTdig::sync(int level)
 			rdata = agent()->write_read(msg, rmsg, 8);
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
+
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
+			agent()->write_read(msg, rmsg, 3);
+			m_pld03 = rmsg.Msg.DATA[2];
 
 			if (level >= 3) {
 			// get firmware version
@@ -290,6 +294,8 @@ int AnTdig::status() const
 
 	if (temp() > tempAlarm()) ++err;
 	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
+
+	if (m_pld03 != m_pld03Set) ++err; // TDC 1-3 Error
 
 	if (agent()->commError() != 0 || commError() != 0)
 		stat = STATUS_COMM_ERR;

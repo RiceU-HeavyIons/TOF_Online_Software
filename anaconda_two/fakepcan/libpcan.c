@@ -285,6 +285,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->LEN = 3;
 			else
 				pMsgBuff->LEN = 2;
+
 			if (pMsgBuff->DATA[1] == 0x2) pMsgBuff->DATA[2] = 0x0f;
 			if (pMsgBuff->DATA[1] == 0x3) pMsgBuff->DATA[2] = 0x02;
 			if (pMsgBuff->DATA[1] == 0xe) pMsgBuff->DATA[2] = 0x00;
@@ -377,6 +378,17 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 				pMsgBuff->DATA[6] = 0;
 				pMsgBuff->DATA[7] = 0;
 				ptr->msg.LEN = 8;
+			} else { // second round
+				pMsgBuff->LEN = 2;
+				pMsgBuff->DATA[1] = 0;
+			}
+			usleep(2000);
+			break;
+		case 0x0e:
+			if (ptr->msg.LEN == 2) { /* first round */
+				pMsgBuff->LEN = 3;
+				pMsgBuff->DATA[1] = 0x3;
+				pMsgBuff->DATA[2] = 0x0;
 			} else { // second round
 				pMsgBuff->LEN = 2;
 				pMsgBuff->DATA[1] = 0;
