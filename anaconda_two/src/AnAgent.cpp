@@ -395,6 +395,7 @@ void AnAgent::run()
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);
+					tcpu->sync(2);
 			}
 			emit progress(m_id, 100*(++step)/total);
 		}
