@@ -381,9 +381,9 @@ void KMainWindow::doSync()
 
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {
-		m_root->sync(3, blist);
+		m_root->sync(2, blist);
 	} else {
-		m_root->sync(3);
+		m_root->sync(2);
 	}
 }
 
