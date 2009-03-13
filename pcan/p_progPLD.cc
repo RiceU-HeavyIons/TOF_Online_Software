@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.9 2009-02-25 17:19:31 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.10 2009-03-13 21:03:45 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -130,7 +130,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   ms.DATA[0] = 0x20;
   ms.DATA[1] = pldNum;
 
-  cout << "Starting Bulk Erase...\n";
+  cout << LINE_UP << "Starting Bulk Erase...\n"; cout.flush();
 #ifdef LOCAL_DEBUG
   printCANMsg(ms, "p_progPLD: Sending progPLD:Start command:");
 #endif
@@ -138,7 +138,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Start", 60000000) != 0) // timeout = 60 sec
     my_private_exit(errno);
 
-  cout << "Bulk Erase finished...\nStarting page programming...\n";
+  cout << LINE_UP << "Bulk Erase finished...\nStarting page programming...\n";
   cout.flush();
   sleep(2);
   for (int page=0; page<noPages/2; page++) {
