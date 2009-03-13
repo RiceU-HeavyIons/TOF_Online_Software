@@ -71,6 +71,7 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent)
 	m_view->setColumnWidth(1, 60);
 	m_view->setColumnWidth(2, 60);
 	m_view->setColumnWidth(3, 60);
+	m_view->setColumnWidth(4, 60);	
 	m_view->setMinimumWidth(30+60+60+60+8);
 
 //	grid->addWidget(view, ++row, 0, 1, 2);

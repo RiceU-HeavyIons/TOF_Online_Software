@@ -45,6 +45,7 @@ private:
 	QLabel    *m_chip,  *l_chip;
 	QLabel    *m_temp,  *l_temp;
 	QLabel    *m_ecsr,  *l_ecsr;
+	QLabel    *m_pld03, *l_pld03;
 	QLabel    *m_thrs,  *l_thrs;
 	QLabel    *m_status[3], *l_status[3];
 };

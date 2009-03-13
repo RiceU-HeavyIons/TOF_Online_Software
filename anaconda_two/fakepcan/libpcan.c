@@ -248,10 +248,10 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 	if (pMsgBuff->DATA[0] >= 0x91 && pMsgBuff->DATA[0] <= 0x98) {
 		if( (pMsgBuff->ID & 0xF) == 0x5) {
 			pMsgBuff->LEN = 1;
-			pMsgBuff->DATA[1] = 0x1f;
+			pMsgBuff->DATA[0] = 0x1f;
 		} else {
 			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0x1f;
+			pMsgBuff->DATA[0] = 0x1f;
 		}
 		usleep(2000);
 	}
@@ -281,14 +281,28 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 		pMsgBuff->ID |= 0x1;
 		switch(pMsgBuff->DATA[0]) {
 		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
-			if( (pMsgBuff->ID & 0xF) == 5)
-				pMsgBuff->LEN = 3;
-			else
+			if( (pMsgBuff->ID & 0xF) == 5) {
+				int i, j;
+				int len = pMsgBuff->LEN;
+				pMsgBuff->LEN = 1 + 2*(len - 1);
+				for (i = 1; i < len; ++i) {
+					j = 2*i - 1;
+					if (ptr->msg.DATA[i] == 0x2) {
+						pMsgBuff->DATA[j]     = 0x02;
+						pMsgBuff->DATA[j + 1] = 0x0f;
+					}
+					if (ptr->msg.DATA[i] == 0x3) {
+						pMsgBuff->DATA[j]     = 0x03;
+						pMsgBuff->DATA[j + 1] = 0x02;
+					}
+					if (ptr->msg.DATA[i] == 0xe) {
+						pMsgBuff->DATA[j]     = 0x00;
+						pMsgBuff->DATA[j + 1] = 0x02;
+					}
+				}
+			} else
 				pMsgBuff->LEN = 2;
 
-			if (pMsgBuff->DATA[1] == 0x2) pMsgBuff->DATA[2] = 0x0f;
-			if (pMsgBuff->DATA[1] == 0x3) pMsgBuff->DATA[2] = 0x02;
-			if (pMsgBuff->DATA[1] == 0xe) pMsgBuff->DATA[2] = 0x00;
 			break;
 
 		case 0x8a:
@@ -384,17 +398,27 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			}
 			usleep(2000);
 			break;
+
 		case 0x0e:
-			if (ptr->msg.LEN == 2) { /* first round */
-				pMsgBuff->LEN = 3;
-				pMsgBuff->DATA[1] = 0x3;
-				pMsgBuff->DATA[2] = 0x0;
-			} else { // second round
+			if( (pMsgBuff->ID & 0x40000) == 0x40000) {
+				int i, j;
+				int len = pMsgBuff->LEN;
+				pMsgBuff->LEN = 1 + 2*(len - 1);
+				for (i = 1; i < len; ++i) {
+					j = 2*i - 1;
+					if (ptr->msg.DATA[i] == 0x2) {
+						pMsgBuff->DATA[j]     = 0x2;
+						pMsgBuff->DATA[j + 1] = 0xf;
+					}
+					if (ptr->msg.DATA[i] == 0x3) {
+						pMsgBuff->DATA[j]     = 0x3;
+						pMsgBuff->DATA[j + 1] = 0x0;
+					}
+				}
+			} else
 				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[1] = 0;
-			}
-			usleep(2000);
 			break;
+
 		case 0x08: // Threshold Set
 			pMsgBuff->LEN = 2;
 			pMsgBuff->DATA[1] = 0;

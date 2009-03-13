@@ -57,7 +57,7 @@ void AnTdig::sync(int level)
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
 
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0xe, 0x3);
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
 			agent()->write_read(msg, rmsg, 3);
 			m_pld03 = rmsg.Msg.DATA[2];
 
@@ -285,6 +285,18 @@ QString AnTdig::ecsrString() const
   ret += "</table>\n";
 
   return ret;
+}
+
+//-----------------------------------------------------------------------------
+QString AnTdig::pldReg03String(bool hlite) const
+{
+	QString ret = "0x" + QString::number(m_pld03, 16);
+//	ret += " (0x" + QString::number(m_pld03Set, 16) + ")";
+	
+	if (hlite && m_pld03 != m_pld03Set)
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
 }
 
 //-----------------------------------------------------------------------------

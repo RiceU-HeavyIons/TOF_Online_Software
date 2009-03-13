@@ -26,6 +26,7 @@ QVariant KTdigModel::data(const QModelIndex &index, int role) const
 			case 1: return QString(tr("TDIG %1")).arg(index.row() + 1);
 			case 2: return m_tcpu == NULL ? QString("") : QString::number(m_tcpu->tdig(r+1)->temp(), 'f', 2);
 			case 3: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->ecsr(), 16);
+			case 4: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->pldReg03(), 16);
 		}
 	} else if (role == Qt::DecorationRole) {
 		switch (index.column()) {
@@ -37,6 +38,8 @@ QVariant KTdigModel::data(const QModelIndex &index, int role) const
 		switch (index.column()) {
 			case 1: return Qt::AlignCenter;
 			case 2: return Qt::AlignCenter;
+			case 3: return Qt::AlignCenter;
+			case 4: return Qt::AlignCenter;
 		}
 	}
   return QVariant();
@@ -54,6 +57,7 @@ QVariant KTdigModel::headerData(int section, Qt::Orientation orientaion, int rol
   case 1: return QString("Name");
   case 2: return QString("Temp");
   case 3: return QString("ECSR");
+  case 4: return QString("PLD[03]");
   default:
     return QVariant();
   }

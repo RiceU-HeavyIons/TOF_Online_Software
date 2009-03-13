@@ -25,7 +25,7 @@ public:
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
   int rowCount(const QModelIndex &parent = QModelIndex()) const { return 8; }
-  int columnCount(const QModelIndex &parent = QModelIndex()) const { return 4; }
+  int columnCount(const QModelIndex &parent = QModelIndex()) const { return 5; }
   QModelIndex index(int row, int column, const QModelIndex &parent) const;
   void setTcpu(AnTcpu *tcpu);
 

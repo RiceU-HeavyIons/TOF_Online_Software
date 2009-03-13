@@ -33,6 +33,9 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
   grid->addWidget(l_ecsr = new QLabel("ECSR:"), ++row, 0);
   grid->addWidget(m_ecsr = new QLabel("--"),    row, 1);
 
+  grid->addWidget(l_pld03 = new QLabel("PLD Reg[03]:"), ++row, 0);
+  grid->addWidget(m_pld03 = new QLabel("--"),    row, 1);
+
   grid->addWidget(l_thrs = new QLabel("Threhosld:"), ++row, 0);
   grid->addWidget(m_thrs = new QLabel("--"),    row, 1);
 
@@ -48,6 +51,7 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
 	l_chip->setFont(ft);  m_chip->setFont(ft);
 	l_temp->setFont(ft);  m_temp->setFont(ft);
 	l_ecsr->setFont(ft);  m_ecsr->setFont(ft);
+	l_pld03->setFont(ft); m_pld03->setFont(ft);	
 	l_thrs->setFont(ft);  m_thrs->setFont(ft);
 	for (int i = 0; i < 3; ++i) {
 		l_status[i]->setFont(ft);
@@ -91,6 +95,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 		m_thrs->setText(tdig->thresholdString());
 		m_ecsr->setText("0x" + QString::number(tdig->ecsr(), 16));
 		m_ecsr->setToolTip(tdig->ecsrString());
+		m_pld03->setText( tdig->pldReg03String(true) );
 
 		for(int i = 0; i < 3; i++) {
 			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));
