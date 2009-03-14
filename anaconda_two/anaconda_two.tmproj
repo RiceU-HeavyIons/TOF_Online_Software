@@ -213,8 +213,6 @@
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
 					<date>2009-03-13T19:01:05Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -298,7 +296,7 @@
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T18:59:44Z</date>
+					<date>2009-03-13T19:24:23Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -316,7 +314,9 @@
 					<key>filename</key>
 					<string>src/AnTdc.h</string>
 					<key>lastUsed</key>
-					<date>2009-03-01T23:28:10Z</date>
+					<date>2009-03-13T19:25:03Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
