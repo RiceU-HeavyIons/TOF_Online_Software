@@ -100,7 +100,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   AnTcpu *tcpu = dynamic_cast<AnTcpu*>(cobj);
   if (tcpu) {
-    tcpu->sync(2);
+    tcpu->sync(3);
     m_tcpu = tcpu;
     setTitle(tcpu->objectName());
     if (tcpu->traySn() != "") {
@@ -112,9 +112,9 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
       m_tray->setText("");
       m_tray->setStatusTip("");
     }
-//    m_tray->setEnabled(tcpu->traySn() != "");
+    // m_tray->setEnabled(tcpu->traySn() != "");
     // m_laddr->setText(tcpu->lAddress().toString());
-    m_haddr->setText(tcpu->hAddress().toString());
+	m_haddr->setText(tcpu->haddrString());
     m_firm->setText(tcpu->firmwareString());
 	m_chip->setText(tcpu->chipIdString());
     m_temp->setText(tcpu->tempString());

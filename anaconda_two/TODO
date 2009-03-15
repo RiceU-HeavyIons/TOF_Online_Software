@@ -5,6 +5,13 @@ Created: 2008-11-24
 Updated: 2009-03-13
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-03-14:
+  - (X) Hex canbus id for TCPU
+  - Clear only CRC Errors
+  - In selector: TCPUs -> Trays
+  - Show only TCPUs info not Trays
+  - Tips for TCPU PLDs
+
   2009-03-12:
   - (X) obtain TDIG PLD 0x3 instead of JTAG
 

@@ -419,6 +419,15 @@ void AnTcpu::setLvHv(int lb, int lc, int hb, int hc)
 	m_hv_ch  = hc;
 }
 
+QString AnTcpu::haddrString() const
+{
+	QString ret = QString("%1 (%2.%3)")
+			.arg(haddr().toString())
+			.arg(QString::number(haddr().at(0), 16))
+			.arg(QString::number(haddr().at(1), 16));
+	return ret;
+}
+
 /**
  * Return LV / HV String
 **/
