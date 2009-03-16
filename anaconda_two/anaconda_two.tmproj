@@ -2,13 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>src/AnTcpu.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-03-13T18:59:43Z</date>
+			<date>2009-03-15T06:31:12Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -83,13 +85,13 @@
 					<key>filename</key>
 					<string>app/KTcpuView.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-13T04:02:43Z</date>
+					<date>2009-03-15T06:13:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KTcpuView.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T18:59:44Z</date>
+					<date>2009-03-15T06:25:32Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -290,13 +292,15 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T15:58:04Z</date>
+					<date>2009-03-15T06:24:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T19:24:23Z</date>
+					<date>2009-03-15T06:31:12Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -315,8 +319,6 @@
 					<string>src/AnTdc.h</string>
 					<key>lastUsed</key>
 					<date>2009-03-13T19:25:03Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -932,7 +934,71 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>270</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>TODO</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>app/KTcpuView.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>39</integer>
+				<key>line</key>
+				<integer>116</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>92</integer>
+		</dict>
+		<key>src/AnTcpu.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/AnTcpu.h</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>93</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>66</integer>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>TODO</string>
+		<string>app/KTcpuView.cpp</string>
+		<string>src/AnTcpu.cpp</string>
+		<string>src/AnTcpu.h</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

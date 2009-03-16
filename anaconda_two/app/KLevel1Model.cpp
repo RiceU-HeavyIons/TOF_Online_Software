@@ -25,19 +25,21 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon << QIcon(":icons/black16.png");
 	m_statusIcon << QIcon(":icons/blue16.png");
 	m_statusIcon << QIcon(":icons/green16.png");
+	m_statusIcon << QIcon(":icons/greenred16.png");
 	m_statusIcon << QIcon(":icons/red16.png");
 	m_statusIcon << QIcon(":icons/gray16.png");	
 
 	m_selectionList << new QListWidgetItem(tr("All"));
 	m_selectionList << new QListWidgetItem(tr("THUBs"));
-	m_selectionList << new QListWidgetItem(tr("TCPUs"));
+	m_selectionList << new QListWidgetItem(tr("Trays"));
 	foreach(QString name, m_root->deviceNames())
 		m_selectionList << new QListWidgetItem(name);
 	m_selectionList << new QListWidgetItem(m_statusIcon[0], "Disabled"   );
 	m_selectionList << new QListWidgetItem(m_statusIcon[1], "Standby"    );
 	m_selectionList << new QListWidgetItem(m_statusIcon[2], "Healty"     );
-	m_selectionList << new QListWidgetItem(m_statusIcon[3], "Error"      );
-	m_selectionList << new QListWidgetItem(m_statusIcon[4], "Comm. Error");
+	m_selectionList << new QListWidgetItem(m_statusIcon[3], "Warning"    );
+	m_selectionList << new QListWidgetItem(m_statusIcon[4], "Error"      );
+	m_selectionList << new QListWidgetItem(m_statusIcon[5], "Comm. Error");
 
 	connect(m_root, SIGNAL(updated(AnBoard*)), this, SLOT(updated(AnBoard*)));
 	connect(m_root, SIGNAL(updated()),         this, SLOT(updated()));

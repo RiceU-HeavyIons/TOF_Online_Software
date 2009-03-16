@@ -302,10 +302,12 @@ QString AnTdig::pldReg03String(bool hlite) const
 //-----------------------------------------------------------------------------
 int AnTdig::status() const
 {
-	int stat, err = 0;
+	int stat;
+	int err = 0;
+	int warn = 0;
 
 	if (temp() > tempAlarm()) ++err;
-	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
+	if (ecsr() & 0x4) ++warn; // PLD_CRC_ERROR
 
 	if (m_pld03 != m_pld03Set) ++err; // TDC 1-3 Error
 
@@ -313,12 +315,14 @@ int AnTdig::status() const
 		stat = STATUS_COMM_ERR;
 	else if (err)
 		stat = STATUS_ERROR;
+	else if (warn)
+		stat = STATUS_WARNING;
 	else if (!active())
 		stat = STATUS_UNKNOWN;
 	else if (ecsr() & 0x10)
 		stat = STATUS_ON;
 	else
-		stat = STATUS_STANBY;
+		stat = STATUS_STANDBY;
 
 	return stat;
 }

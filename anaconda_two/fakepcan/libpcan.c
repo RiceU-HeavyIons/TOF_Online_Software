@@ -479,7 +479,7 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 			pMsgBuff->LEN = 8;
 			pMsgBuff->DATA[1] = 0xFF & (int)(temp*100.0); // temperature xx.16
 			pMsgBuff->DATA[2] = 0xFF & (int)(temp); // temperature 32.xx
-			pMsgBuff->DATA[3] = 0xbb; // ESCR
+			pMsgBuff->DATA[3] = 0xbf; // ESCR
 			pMsgBuff->DATA[4] = 0; // AD 1L
 			pMsgBuff->DATA[5] = 0; // AD 1H
 			pMsgBuff->DATA[6] = 0; // AD 2L

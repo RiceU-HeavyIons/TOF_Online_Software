@@ -59,10 +59,11 @@ public:
 
 	enum {
 		STATUS_UNKNOWN  = 0,
-		STATUS_STANBY   = 1,
+		STATUS_STANDBY  = 1,
 		STATUS_ON       = 2,
-		STATUS_ERROR    = 3,
-		STATUS_COMM_ERR = 4
+		STATUS_WARNING  = 3,
+		STATUS_ERROR    = 4,
+		STATUS_COMM_ERR = 5
 	};
 
 protected:

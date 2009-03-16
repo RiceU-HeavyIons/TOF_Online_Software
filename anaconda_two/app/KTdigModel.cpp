@@ -7,15 +7,17 @@
 #include <QtCore/QDebug>
 
 #include "KTdigModel.h"
+#include "AnBoard.h"
 
 KTdigModel::KTdigModel(QObject *parent)
  : QAbstractTableModel(parent), m_tcpu(0)
 {
-	m_statusIcon[0] = QIcon(":icons/black.png");
-	m_statusIcon[1] = QIcon(":icons/blue.png");
-	m_statusIcon[2] = QIcon(":icons/green.png");
-	m_statusIcon[3] = QIcon(":icons/red.png");
-	m_statusIcon[4] = QIcon(":icons/gray.png");
+	m_statusIcon[AnBoard::STATUS_UNKNOWN]  = QIcon(":icons/black.png");
+	m_statusIcon[AnBoard::STATUS_STANDBY]  = QIcon(":icons/blue.png");
+	m_statusIcon[AnBoard::STATUS_ON]       = QIcon(":icons/green.png");	
+	m_statusIcon[AnBoard::STATUS_WARNING]  = QIcon(":icons/greenred.png");	
+	m_statusIcon[AnBoard::STATUS_ERROR]    = QIcon(":icons/red.png");
+	m_statusIcon[AnBoard::STATUS_COMM_ERR] = QIcon(":icons/gray.png");
 }
 
 QVariant KTdigModel::data(const QModelIndex &index, int role) const

@@ -391,11 +391,17 @@ void AnAgent::run()
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
-			if (tcpu && (tcpu->status() == AnBoard::STATUS_ERROR)) {
+			if (tcpu) {
+				bool cond = false;
+				cond |= (m_level >= 1 && tcpu->status() == AnBoard::STATUS_ERROR);
+				cond |= (m_level >= 2 && tcpu->status() == AnBoard::STATUS_WARNING);
+				cond |= (m_level >= 3);
+				if (cond) {
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);
 					tcpu->sync(2);
+				}
 			}
 			emit progress(m_id, 100*(++step)/total);
 		}

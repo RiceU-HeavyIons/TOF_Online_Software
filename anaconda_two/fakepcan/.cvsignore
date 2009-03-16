@@ -1,5 +1,6 @@
 libpcan.a
 libpcan.so
 libpcan.*.dylib
+libpcan.dylib.*
 Makefile
 libpcan.so.*
