@@ -31,7 +31,7 @@ public:
 
 private:
 	AnTcpu *m_tcpu;
-	QIcon  m_statusIcon[5];
+	QIcon  m_statusIcon[6];
 };
 
 #endif /* KTdigModel_H_ */
