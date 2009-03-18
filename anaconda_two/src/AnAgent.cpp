@@ -340,6 +340,7 @@ void AnAgent::run()
 	emit init(m_id);
 
 	if (m_mode & AnRoot::TASK_INIT) {
+		log( QString("TASK_INIT: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->init(m_level);
@@ -348,6 +349,7 @@ void AnAgent::run()
 	}
 
 	if (m_mode & AnRoot::TASK_CONFIG) {
+		log( QString("TASK_CONFIG: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->config(m_level);
@@ -356,6 +358,7 @@ void AnAgent::run()
 	}
 
 	if (m_mode & AnRoot::TASK_RESET) {
+		log( QString("TASK_RESET: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->reset(m_level);
@@ -364,6 +367,7 @@ void AnAgent::run()
 	}
 
 	if (m_mode & AnRoot::TASK_QRESET) { // Quick Reset
+		log( QString("TASK_QRESET: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->qreset(m_level);
@@ -372,22 +376,28 @@ void AnAgent::run()
 	}
 
 	if (m_mode & AnRoot::TASK_SYNC) {
+		log( QString("TASK_SYNC: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			brd->sync(m_level);
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
-	
+
 	if (m_mode & AnRoot::TASK_RESYNC) {
+		log( QString("TASK_RESYNC: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
-			if (tcpu) tcpu->resync(m_level);
+			if (tcpu) {
+				log( QString("TASK_RESYNC: %1").arg(tcpu->name()) );
+				tcpu->resync(m_level);
+			}
 			emit progress(m_id, 100*(++step)/total);
 		}
 	}
 	if (m_mode & AnRoot::TASK_RECOVERY) {
+		log( QString("TASK_RECOVERY: level=%1").arg(m_level));
 		foreach(AnBoard *brd, m_list) {
 			if (m_cancel) return;
 			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
@@ -397,6 +407,7 @@ void AnAgent::run()
 				cond |= (m_level >= 2 && tcpu->status() == AnBoard::STATUS_WARNING);
 				cond |= (m_level >= 3);
 				if (cond) {
+					log( QString("TASK_RECOVERY: %1").arg(tcpu->name()) );
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);
@@ -487,4 +498,9 @@ void AnAgent::pre_check()
 	if (commError() >= AGENT_COMM_ERROR_THRESHOLD) {
 		throw AnExCanError(0);
 	}
+}
+
+void AnAgent::log(QString str)
+{
+	m_root->log(QString("AnAgent[%1]: " + str).arg(m_id));
 }

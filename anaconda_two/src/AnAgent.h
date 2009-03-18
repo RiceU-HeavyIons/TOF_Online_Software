@@ -83,6 +83,7 @@ signals:
 	void debug_recv(AnRdMsg);
 	void debug_send(AnRdMsg);
 
+
 protected:
 	virtual void run();
 
@@ -91,8 +92,10 @@ private:
 	void print_recv(const TPCANMsg &msg);
 	bool match(TPCANMsg &snd, TPCANMsg &rcv);
 	void error_handle(int er, TPCANMsg &msg);
-	
+
 	void pre_check();
+
+	void log(QString str);
 
 	int                      m_mode;
 	int                      m_level;

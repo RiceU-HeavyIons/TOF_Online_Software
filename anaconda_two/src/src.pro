@@ -39,11 +39,11 @@ HEADERS += AnExceptions.h \
            AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \
            AnRoot.h AnAgent.h AnMaster.h \
-           AnRdMsg.h
+           AnRdMsg.h AnLog.h
 
 SOURCES += AnAddress.cpp \
            AnCanObject.cpp AnCanNet.cpp AnBoard.cpp \
            AnTcpu.cpp AnTdig.cpp AnTdc.cpp AnTdcConfig.cpp \
            AnThub.cpp AnSerdes.cpp \
            AnRoot.cpp AnAgent.cpp AnMaster.cpp \
-           AnRdMsg.cpp
+           AnRdMsg.cpp AnLog.cpp

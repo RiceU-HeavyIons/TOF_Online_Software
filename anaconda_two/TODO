@@ -2,9 +2,12 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-03-15
+Updated: 2009-03-18
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-03-18:
+  - Log of all issued commands
+
   2009-03-14:
   - (X) Hex canbus id for TCPU
   - (X) Clear only CRC Errors

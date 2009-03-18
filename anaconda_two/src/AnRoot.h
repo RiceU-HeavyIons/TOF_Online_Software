@@ -24,6 +24,7 @@
 #include "AnTdig.h"
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"
+#include "AnLog.h"
 
 #define DB_PATH_ENV         "ANA_DB_PATH"           // absolute path or relative to working dir
 #define DB_PATH_DEFAULT     "db/configurations.db"  // relative to binary image
@@ -115,7 +116,9 @@ public:
 	void watchStatus();
 
 	void emit_updated()  { emit updated(); }
-	void emit_finished() { emit finished(); }	
+	void emit_finished() { emit finished(); }
+	
+	void log(QString str);
 
 signals:
 	void updated(AnBoard*);
@@ -153,6 +156,8 @@ private:
 	int                     m_mode;
 	int                     m_mode_idx;
 	QList<mode>             m_mode_list;
+
+	AnLog                  *m_log;
 
 	// AutoSync timer and coursor
 	QTimer                         *m_timer;

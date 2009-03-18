@@ -9,6 +9,9 @@
 #include <QtCore/QVariant>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
+#include <QtCore/QDateTime>
+#include <QtCore/QMutex>
+
 #include <QtGui/QApplication>
 #include <QtSql/QSqlQuery>
 #include "AnMaster.h"
@@ -30,23 +33,24 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 
 	m_db = QSqlDatabase::addDatabase("QSQLITE");
 
+#ifdef __APPLE__
+// With Darwin environment, binary image is under .app/Contents/MacOS/ directory...
+	QDir default_path( QString("%1/../../..").arg(QApplication::applicationDirPath()) );
+#else
+	QDir default_path( QString("%1").arg(QApplication::applicationDirPath()) );
+#endif
 	char *dbpath = getenv(DB_PATH_ENV);
 	if (dbpath != NULL && *dbpath != '\0') {
 		m_db.setDatabaseName(dbpath);
 	} else {
-#ifdef __APPLE__
-// With Darwin environment, binary image is under .app/Contents/MacOS/ directory...
-		QDir default_path( QString("%1/../../..")
-			.arg(QApplication::applicationDirPath()) );
-#else
-		QDir default_path( QString("%1")
-			.arg(QApplication::applicationDirPath()) );
-#endif
 		m_db.setDatabaseName(default_path.filePath(DB_PATH_DEFAULT));
 	}
 
 	if (!m_db.open())
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
+
+	QDateTime now = QDateTime::currentDateTime();
+	m_log = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
 
 	QSqlQuery qry;
 	qry.exec("SELECT id, devid, name, installed FROM devices");
@@ -152,6 +156,8 @@ AnRoot::~AnRoot()
 	terminate();
 	m_db.close();
 	foreach(AnAgent *ag, m_agents) delete ag;
+	
+	delete m_log;
 }
 
 //-----------------------------------------------------------------------------
@@ -393,7 +399,7 @@ QStringList AnRoot::modeList() const
 //-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
-	qDebug() << "AnRoot::setMode" << i;
+	log(QString("AnRoot::setMode: %1").arg(i));
 //	disableWatch();
 	m_mode_idx = i;
 	m_mode = m_mode_list[i].id;
@@ -706,4 +712,12 @@ void AnRoot::initAutoSync() {
 void AnRoot::startAutoSync()
 {
 	if (!m_timer->isActive()) m_timer->start();
+}
+
+QMutex mtex_log;
+void AnRoot::log(QString str)
+{
+	mtex_log.lock();
+	m_log->log(str);
+	mtex_log.unlock();
 }
