@@ -119,7 +119,7 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 	m_chip->setText(tcpu->chipIdString());
     m_temp->setText(tcpu->tempString());
 
-    m_ecsr->setText(tcpu->ecsrString());
+    m_ecsr->setText(tcpu->ecsrString(true));
     m_ecsr->setToolTip(tcpu->ecsrToolTipString());
 
     m_pld02->setText(tcpu->pldReg02String(true));
