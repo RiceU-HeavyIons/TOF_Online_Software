@@ -302,11 +302,11 @@ QString AnTcpu::dump() const
 }
 
 //-----------------------------------------------------------------------------
-QString AnTcpu::ecsrString() const
+QString AnTcpu::ecsrString(bool hilit) const
 {
 	QString ret = "0x" + QString::number(ecsr(), 16);
 
-	if (ecsr() & 0x4)
+	if (hilit && (ecsr() & 0x4))
 		ret = QString("<font color='red'>%1</font>").arg(ret);
 
 	return ret;

@@ -93,9 +93,9 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 		m_chip->setText(tdig->chipIdString());
 		m_temp->setText(tdig->tempString());
 		m_thrs->setText(tdig->thresholdString());
-		m_ecsr->setText("0x" + QString::number(tdig->ecsr(), 16));
-		m_ecsr->setToolTip(tdig->ecsrString());
-		m_pld03->setText( tdig->pldReg03String(true) );
+		m_ecsr->setText(tdig->ecsrString(true));
+		m_ecsr->setToolTip(tdig->ecsrToolTipString());
+		m_pld03->setText(tdig->pldReg03String(true));
 
 		for(int i = 0; i < 3; i++) {
 			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));

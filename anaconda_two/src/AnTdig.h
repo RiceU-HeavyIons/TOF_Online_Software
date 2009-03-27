@@ -37,7 +37,8 @@ public:
 // Inherited from AnBoard
 	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
 	virtual bool isWest() const { return dynamic_cast<AnBoard*>(parent())->isWest(); }
-	virtual QString ecsrString() const;
+	virtual QString ecsrString(bool hilit = false) const;
+	virtual QString ecsrToolTipString() const;
 	virtual int status() const;
 
 // Own Functions

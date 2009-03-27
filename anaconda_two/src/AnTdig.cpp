@@ -263,7 +263,7 @@ QString AnTdig::dump() const
 	return sl.join("\n");
 }
 
-QString AnTdig::ecsrString() const
+QString AnTdig::ecsrToolTipString() const
 {
   static const char* msg_list[] = {
       "PLD_CONFIG_DONE",
@@ -284,7 +284,17 @@ QString AnTdig::ecsrString() const
          arg(i).arg(msg_list[i]).arg((bts >> i) & 0x1);
   ret += "</table>\n";
 
-  return ret;
+  return ret;	
+}
+
+QString AnTdig::ecsrString(bool hilit) const
+{
+	QString ret = "0x" + QString::number(ecsr(), 16);
+
+	if (hilit && (ecsr() & 0x4))
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
 }
 
 //-----------------------------------------------------------------------------

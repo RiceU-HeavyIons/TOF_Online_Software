@@ -23,4 +23,5 @@ void AnLog::log(QString str)
 	fprintf(m_fp, "[%s] ", now.toString("yyyy-MM-dd hh:mm:ss").toStdString().c_str());
 	fprintf(m_fp, "%s", str.toStdString().c_str());
 	fprintf(m_fp, "\n");
+	fflush(m_fp);
 }

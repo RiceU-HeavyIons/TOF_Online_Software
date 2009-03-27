@@ -27,7 +27,7 @@ QVariant KTdigModel::data(const QModelIndex &index, int role) const
 		switch (index.column()) {
 			case 1: return QString(tr("TDIG %1")).arg(index.row() + 1);
 			case 2: return m_tcpu == NULL ? QString("") : QString::number(m_tcpu->tdig(r+1)->temp(), 'f', 2);
-			case 3: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->ecsr(), 16);
+			case 3: return m_tcpu == NULL ? QString("") : m_tcpu->tdig(r+1)->ecsrString(false);
 			case 4: return m_tcpu == NULL ? QString("") : "0x" + QString::number(m_tcpu->tdig(r+1)->pldReg03(), 16);
 		}
 	} else if (role == Qt::DecorationRole) {

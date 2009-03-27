@@ -2,11 +2,22 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-03-18
+Updated: 2009-03-27
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-03-27:
+  - (X) fflush log writing
+  - orange color for warning
+
+  2009-03-25:
+  - red highlight for HPTDC errors
+  - (X) red hilight for TDIG CRC errors
+
+  2009-03-19:
+  - commuication error in log file
+
   2009-03-18:
-  - Log of all issued commands
+  - (X) Log of all issued commands
 
   2009-03-14:
   - (X) Hex canbus id for TCPU

@@ -48,7 +48,7 @@ AnCanObject *AnThub::hat(int i)
 QString AnThub::firmwareString() const
 {
   char buf[32];
-  sprintf(buf, "%x/%x", m_thubFirmware, fpgaFirmwareId());
+  sprintf(buf, "%lx/%x", m_thubFirmware, fpgaFirmwareId());
   return QString(buf);
 }
 

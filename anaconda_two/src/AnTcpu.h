@@ -37,7 +37,8 @@ public:
 // Inherited from AnBoard
 
 	virtual double maxTemp() const;
-	virtual QString ecsrString() const;
+	virtual QString ecsrString(bool hilit = false) const;
+	virtual QString ecsrToolTipString() const;
 
 	virtual bool isEast() const { return (lAddress().at(1) >  60); }
 	virtual bool isWest() const { return (lAddress().at(1) <= 60); }
@@ -77,8 +78,6 @@ public:
 	quint8 trayId() const { return m_tray_id; }
 	quint8 setTrayId(quint8 id) { return (m_tray_id = id); }
 	QString trayIdString() const { return QString::number(m_tray_id); }
-
-	QString ecsrToolTipString() const;
 
 	QString traySn() const { return m_tray_sn; }
 	QString setTraySn(QString sn) { return (m_tray_sn = sn); }
