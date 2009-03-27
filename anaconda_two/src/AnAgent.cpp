@@ -105,7 +105,8 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 	}
 
 	if (return_length >= 0 && return_length != (int)length) {
-		fprintf(stderr, "Return length doesn't match.\n");
+		log( QString("Return length doesn't match: expected %1, received %2")
+		      .arg(return_length).arg(length) );
 		throw AnExCanError(0);
 	}
 
@@ -165,12 +166,13 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 			}
 		}
 		if (ntry == 0) {
-			fprintf(stderr, "Didn't receive reply message.\n");
+			log( QString("Didn't receive reply message for %1").arg(msg.ID) );
 //			incCommError();
 			throw AnExCanError(0);
 		}  else {
 			if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
-				fprintf(stderr, "Return payload doesn't match.\n");
+				log( QString("Return payload doesn't match: expected %1, received %2")
+			         .arg(msg.DATA[0]).arg(rmsg.Msg.DATA[0]) );
 //				incCommError();
 				throw AnExCanError(0);
 			}
@@ -181,7 +183,8 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
 
 	if (return_length != length) {
-		fprintf(stderr, "Return length doesn't match: %d != %d\n", return_length, length);
+		log( QString("Return length doesn't match: expected %1, received %2")
+		      .arg(return_length).arg(length) );
 //		incCommError();
 		throw AnExCanError(0);
 	}
@@ -213,12 +216,15 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
 	HANDLE h = NULL;
 	for(i = 0; i < globb.gl_pathc; i++) {
 		if (TCAN_DEBUG) {
-			printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
+			fprintf(stderr, "glob[%d] %s\n", i, globb.gl_pathv[i]);
 		}
 		dev_path = globb.gl_pathv[i];
 		h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
 		if (h == NULL) {
-			if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
+			if (TCAN_DEBUG) {
+				fprintf(stderr, "cannot open: %s\n", dev_path);
+//				log( QString("cannot open: %1").arg(dev_path) );
+			}
 			continue;
 		}
 		LINUX_CAN_Statistics(h, &tpdiag);
@@ -408,6 +414,7 @@ void AnAgent::run()
 				cond |= (m_level >= 3);
 				if (cond) {
 					log( QString("TASK_RECOVERY: %1").arg(tcpu->name()) );
+					log( tcpu->dump() );
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);
@@ -460,14 +467,17 @@ void AnAgent::error_handle(int er, TPCANMsg &msg)
 	} else if (er != 0) {
 		int status = CAN_Status(m_handle);
 		if (status == CAN_ERR_QRCVEMPTY) {
-			fprintf(stderr, "AnAgent::error_handle: CANbus[%d] error: 0x%x\n", addr, status);
+			log( QString("error_handle: CANBus[%1] Error: 0x%2")
+			       .arg(addr).arg(QString::number(status, 16)) );
 			throw AnExCanError(status);
 //			throw AnExCanTimeOut(status);
 		} else if (status > 0) {
-			fprintf(stderr, "AnAgent::error_handle: CANbus[%d] error: 0x%x\n", addr, status);
+			log( QString("error_handle: CANBus[%1] Error: 0x%2")
+			       .arg(addr).arg(QString::number(status, 16)) );
 			throw AnExCanError(status);
 		} else {
-			fprintf(stderr, "AnAgent::error_handle: CANBus[%d] System error: 0x%x\n", addr, status);
+			log( QString("error_handle: CANBus[%1] System Error: 0x%2")
+			       .arg(addr).arg(QString::number(status, 16)) );
 			throw AnExCanError(status);
 		}
 	}
@@ -502,5 +512,7 @@ void AnAgent::pre_check()
 
 void AnAgent::log(QString str)
 {
-	m_root->log(QString("AnAgent[%1]: " + str).arg(m_id));
+	foreach(QString s, str.split("\n")) {
+		m_root->log(QString("AnAgent[%1]: " + s).arg(m_id));
+	}
 }
