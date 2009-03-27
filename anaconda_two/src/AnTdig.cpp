@@ -308,6 +308,27 @@ QString AnTdig::pldReg03String(bool hlite) const
 
 	return ret;
 }
+//-----------------------------------------------------------------------------
+QString AnTdig::pldReg03ToolTipString() const
+{
+  static const char* msg_list[] = {
+      "TDC 1 Error",
+      "TDC 2 Error",
+      "TDC 3 Error",
+       NULL
+  };
+
+  quint8 bts = pldReg03();
+  QString ret = "<h4>TDC ERROR BITS</h4>\n";
+
+  ret += "<table>\n";
+  for (int i = 0; i < 3; ++i)
+   ret += QString("<tr><td>[%1]</td><td>%2</td><td>= %3</td></tr>\n").
+         arg(i).arg(msg_list[i]).arg((bts >> i) & 0x1);
+  ret += "</table>\n";
+
+  return ret;
+}
 
 //-----------------------------------------------------------------------------
 int AnTdig::status() const

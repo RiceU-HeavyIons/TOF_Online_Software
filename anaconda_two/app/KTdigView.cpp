@@ -96,6 +96,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 		m_ecsr->setText(tdig->ecsrString(true));
 		m_ecsr->setToolTip(tdig->ecsrToolTipString());
 		m_pld03->setText(tdig->pldReg03String(true));
+		m_pld03->setToolTip(tdig->pldReg03ToolTipString());
 
 		for(int i = 0; i < 3; i++) {
 			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));

@@ -10,7 +10,7 @@ Entry:
   - orange color for warning
 
   2009-03-25:
-  - red highlight for HPTDC errors
+  - (X) red highlight for HPTDC errors
   - (X) red hilight for TDIG CRC errors
 
   2009-03-19:

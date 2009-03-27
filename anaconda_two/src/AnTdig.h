@@ -57,6 +57,7 @@ public:
 	quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
 
 	QString AnTdig::pldReg03String(bool hlite) const;
+	QString AnTdig::pldReg03ToolTipString() const;
 
 	virtual quint32 canidr() const;
 	virtual quint32 canidw() const;

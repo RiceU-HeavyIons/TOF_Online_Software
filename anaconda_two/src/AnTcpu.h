@@ -56,11 +56,13 @@ public:
 	quint8  setPldReg02(quint8 v) { return (m_pld02 = v); }
 	quint8  pldReg02Set() const { return m_pld02Set; }
 	quint8  setPldReg02Set(quint8 v) { return (m_pld02Set = v); }
+	QString pldReg02ToolTipString() const;
 
 	quint8  pldReg03() const { return m_pld03; }
 	quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
 	quint8  pldReg03Set() const { return m_pld03Set; }
 	quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
+	QString pldReg03ToolTipString() const;
 
 	quint8  pldReg0e() const { return m_pld0e; }
 	quint8  setPldReg0e(quint8 v) { return (m_pld0e = v); }

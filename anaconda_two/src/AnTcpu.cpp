@@ -391,6 +391,29 @@ QString AnTcpu::pldReg02String(bool hlite) const
 	return ret;
 }
 
+
+//-----------------------------------------------------------------------------
+QString AnTcpu::pldReg02ToolTipString() const
+{
+  static const char* msg_list[] = {
+      "Readout Enable",
+      "Test Pulse (0) / Serdes Trigger (1)",
+      "CANBus Message Off (1)",
+      "Serdes Sync (1)", NULL };
+
+  quint8 bts = pldReg02();
+  QString ret = "<h4>PLD Reg[02] BITS</h4>\n";
+
+  ret += "<table>\n";
+  for (int i = 0; i < 4; ++i)
+   ret += QString("<tr><td>[%1]</td><td>%2</td><td>= %3</td></tr>\n").
+         arg(i).arg(msg_list[i]).arg((bts >> i) & 0x1);
+  ret += "</table>\n";
+
+  return ret;
+}
+
+
 //-----------------------------------------------------------------------------
 QString AnTcpu::pldReg03String(bool hlite) const
 {
@@ -401,6 +424,25 @@ QString AnTcpu::pldReg03String(bool hlite) const
 		ret = QString("<font color='red'>%1</font>").arg(ret);
 
 	return ret;
+}
+
+//-----------------------------------------------------------------------------
+QString AnTcpu::pldReg03ToolTipString() const
+{
+  static const char* msg_list[] = {
+      "Serdes Lock_n",
+      "Serdes Ready", NULL };
+
+  quint8 bts = pldReg03();
+  QString ret = "<h4>PLD Reg[03] BITS</h4>\n";
+
+  ret += "<table>\n";
+  for (int i = 0; i < 2; ++i)
+   ret += QString("<tr><td>[%1]</td><td>%2</td><td>= %3</td></tr>\n").
+         arg(i).arg(msg_list[i]).arg((bts >> i) & 0x1);
+  ret += "</table>\n";
+
+  return ret;
 }
 
 //-----------------------------------------------------------------------------
