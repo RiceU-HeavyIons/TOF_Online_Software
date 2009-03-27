@@ -139,7 +139,7 @@ void KMainWindow::setExpertMode(bool em)
 void KMainWindow::createActions()
 {
 #ifdef CMD_RESYNC
-	m_ResyncAction = new QAction( QIcon(":images/user1.png"), tr("Resync"), this);
+	m_ResyncAction = new QAction( QIcon(":images/resync.png"), tr("Resync"), this);
 	m_ResyncAction->setEnabled(true);
 	m_ResyncAction->setStatusTip(tr("Resynchronize TCPU"));
 	m_ResyncAction->setToolTip(tr("Resync"));
