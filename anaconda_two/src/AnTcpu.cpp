@@ -301,6 +301,31 @@ QString AnTcpu::dump() const
 	return sl.join("\n");
 }
 
+
+//-----------------------------------------------------------------------------
+QString AnTcpu::errorDump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnTcpu(%p):", this);
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Active            : ") + (active() ? "yes" : "no");
+	sl << QString("  Temperature       : ") + tempString();
+	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD Reg[02]       : 0x") + QString::number(m_pld02, 16);
+	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
+	sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
+	sl << QString("  Status            : ") + QString::number(status());
+
+	for (int i = 0; i < 8; i++) {
+		int st = m_tdig[i]->status();
+		if (st == AnBoard::STATUS_ERROR || st == AnBoard::STATUS_WARNING)
+			sl << m_tdig[i]->errorDump();
+	}
+
+	return sl.join("\n");
+}
+
 //-----------------------------------------------------------------------------
 QString AnTcpu::ecsrString(bool hilit) const
 {

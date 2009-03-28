@@ -91,9 +91,11 @@ public:
 	virtual int lvOrder() const { return 100*m_lv_box + m_lv_ch; }
 	virtual int hvOrder() const { return 100*m_hv_box + m_hv_ch; }
 
-	QString AnTcpu::haddrString() const;
+	QString haddrString() const;
 
 	bool fibermode() const;
+	
+	QString errorDump() const;
 
 private:
 	AnTdig     *m_tdig[8];

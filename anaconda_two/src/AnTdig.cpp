@@ -255,10 +255,29 @@ QString AnTdig::dump() const
 	sl << QString("  Temperature       : ") + tempString();
 	sl << QString("  Temperature Alarm : ") + tempAlarmString();
 	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
+	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
 	sl << QString("  Threshold         : ") + thresholdString();
 	sl << QString("  Status            : ") + QString::number(status());
 	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 
+
+	return sl.join("\n");
+}
+
+
+QString AnTdig::errorDump() const
+{
+	QStringList sl;
+
+	sl << QString().sprintf("AnTdig(%p):", this);
+	sl << QString("  Name              : ") + name();
+	sl << QString("  Temperature       : ") + tempString();
+	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
+	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
+	sl << QString("  Threshold         : ") + thresholdString();
+	sl << QString("  Status            : ") + QString::number(status());
 
 	return sl.join("\n");
 }

@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>qttest/iconfactory/Canvas.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -29,13 +31,13 @@
 					<key>filename</key>
 					<string>app/toolbar.qrc</string>
 					<key>lastUsed</key>
-					<date>2009-03-16T02:32:38Z</date>
+					<date>2009-03-27T20:00:03Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T18:59:42Z</date>
+					<date>2009-03-27T20:01:51Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -186,8 +188,6 @@
 					<string>app/KSimpleWindow.h</string>
 					<key>lastUsed</key>
 					<date>2009-03-27T16:53:52Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -214,7 +214,7 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-27T16:53:51Z</date>
+					<date>2009-03-27T19:57:23Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -298,7 +298,7 @@
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-27T14:43:21Z</date>
+					<date>2009-03-27T18:34:24Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -382,7 +382,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-25T15:12:22Z</date>
+					<date>2009-03-27T18:24:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -685,7 +685,9 @@
 							<key>filename</key>
 							<string>qttest/iconfactory/Canvas.cpp</string>
 							<key>lastUsed</key>
-							<date>2009-03-16T01:15:34Z</date>
+							<date>2009-03-27T20:01:51Z</date>
+							<key>selected</key>
+							<true/>
 						</dict>
 						<dict>
 							<key>filename</key>
@@ -700,6 +702,8 @@
 							<date>2008-12-13T18:44:32Z</date>
 						</dict>
 					</array>
+					<key>expanded</key>
+					<true/>
 					<key>name</key>
 					<string>iconfactory</string>
 				</dict>
@@ -892,6 +896,8 @@
 					<string>error_handling</string>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>qttest</string>
 		</dict>
@@ -944,7 +950,86 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>248</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>app/KMainWindow.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>140</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>123</integer>
+		</dict>
+		<key>app/toolbar.qrc</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>10</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>qttest/iconfactory/Canvas.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>25</integer>
+				<key>line</key>
+				<integer>229</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>198</integer>
+		</dict>
+		<key>src/AnAgent.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/AnMaster.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>225</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>196</integer>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>src/AnMaster.cpp</string>
+		<string>src/AnAgent.cpp</string>
+		<string>app/KMainWindow.cpp</string>
+		<string>qttest/iconfactory/Canvas.cpp</string>
+		<string>app/toolbar.qrc</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

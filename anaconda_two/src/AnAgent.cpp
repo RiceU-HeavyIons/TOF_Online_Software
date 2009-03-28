@@ -414,7 +414,7 @@ void AnAgent::run()
 				cond |= (m_level >= 3);
 				if (cond) {
 					log( QString("TASK_RECOVERY: %1").arg(tcpu->name()) );
-					log( tcpu->dump() );
+					log( tcpu->errorDump() );
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);

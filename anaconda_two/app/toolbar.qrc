@@ -19,7 +19,7 @@
  <file>icons/blue.png</file>
  <file>icons/black.png</file>
  <file>icons/white.png</file>
- <file>icons/greenred.png</file>
+ <file>icons/orange.png</file>
  <file>icons/gray.png</file>
 
  <file>icons/red16.png</file>
@@ -27,7 +27,7 @@
  <file>icons/blue16.png</file>
  <file>icons/black16.png</file>
  <file>icons/white16.png</file>
- <file>icons/greenred16.png</file>
+ <file>icons/orange16.png</file>
  <file>icons/gray16.png</file>
 </qresource>
 </RCC>
