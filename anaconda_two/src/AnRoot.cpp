@@ -610,8 +610,8 @@ void AnRoot::watcher(int sock)
 			ag->read(rmsg, -1);
 			received(AnRdMsg(ag->devid(), rmsg));
 		} catch (AnExCanError ex) {
-			m_root->log(QString("AnRoot::watcher[%1]: Communication Error Occurred: %1")
-			            .arg(sock).arg(ex.status()));
+			log(QString("AnRoot::watcher[%1]: Communication Error Occurred: %1")
+			    .arg(sock).arg(ex.status()));
 		}
 		// enable watch again
 		m_watch[sock]->setEnabled(true);
