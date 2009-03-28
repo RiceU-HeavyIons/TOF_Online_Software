@@ -276,7 +276,6 @@ QString AnTdig::errorDump() const
 	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
 	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
 	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
-	sl << QString("  Threshold         : ") + thresholdString();
 	sl << QString("  Status            : ") + QString::number(status());
 
 	return sl.join("\n");

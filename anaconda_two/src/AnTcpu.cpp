@@ -309,7 +309,6 @@ QString AnTcpu::errorDump() const
 
 	sl << QString().sprintf("AnTcpu(%p):", this);
 	sl << QString("  Name              : ") + name();
-	sl << QString("  Active            : ") + (active() ? "yes" : "no");
 	sl << QString("  Temperature       : ") + tempString();
 	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
 	sl << QString("  PLD Reg[02]       : 0x") + QString::number(m_pld02, 16);
