@@ -33,7 +33,7 @@ Entry:
   - EEPROM selection
 
   2009-03-10:
-  - icon for resync
+  - (X) icon for resync
   - icon for reset
   - debug address expansion error in console
   - maybe logical address 3 for upVPD TCPUs.
@@ -245,4 +245,4 @@ Entry:
   - (X) Simplify message send / receive handling
   - TDC data handling with QSocketNotifier
   - (X) Greeting message handling with QSocketNotifier
-  - Icons for Rest and Configuration
+  - (X) Icons for Rest and Configuration
