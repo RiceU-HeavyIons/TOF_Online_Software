@@ -7,14 +7,14 @@ Description: TODO file for Anaconda 2 development.
 Entry:
   2009-03-27:
   - (X) fflush log writing
-  - orange color for warning
+  - (X) orange color for warning
 
   2009-03-25:
   - (X) red highlight for HPTDC errors
   - (X) red hilight for TDIG CRC errors
 
   2009-03-19:
-  - commuication error in log file
+  - (X) commuication error in log file
 
   2009-03-18:
   - (X) Log of all issued commands
@@ -24,7 +24,7 @@ Entry:
   - (X) Clear only CRC Errors
   - (X) In selector: TCPUs -> Trays
   - (X) Show only TCPUs info not Trays
-  - Tips for TCPU PLDs
+  - (X) Tips for TCPU PLDs
 
   2009-03-12:
   - (X) obtain TDIG PLD 0x3 instead of JTAG
