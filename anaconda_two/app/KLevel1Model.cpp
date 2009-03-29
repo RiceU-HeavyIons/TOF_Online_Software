@@ -25,7 +25,7 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 	m_statusIcon << QIcon(":icons/black16.png");
 	m_statusIcon << QIcon(":icons/blue16.png");
 	m_statusIcon << QIcon(":icons/green16.png");
-	m_statusIcon << QIcon(":icons/orange16.png");
+	m_statusIcon << QIcon(":icons/yellow16.png");
 	m_statusIcon << QIcon(":icons/red16.png");
 	m_statusIcon << QIcon(":icons/gray16.png");	
 

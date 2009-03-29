@@ -15,7 +15,7 @@ KTdigModel::KTdigModel(QObject *parent)
 	m_statusIcon[AnBoard::STATUS_UNKNOWN]  = QIcon(":icons/black.png");
 	m_statusIcon[AnBoard::STATUS_STANDBY]  = QIcon(":icons/blue.png");
 	m_statusIcon[AnBoard::STATUS_ON]       = QIcon(":icons/green.png");	
-	m_statusIcon[AnBoard::STATUS_WARNING]  = QIcon(":icons/orange.png");	
+	m_statusIcon[AnBoard::STATUS_WARNING]  = QIcon(":icons/yellow.png");	
 	m_statusIcon[AnBoard::STATUS_ERROR]    = QIcon(":icons/red.png");
 	m_statusIcon[AnBoard::STATUS_COMM_ERR] = QIcon(":icons/gray.png");
 }
