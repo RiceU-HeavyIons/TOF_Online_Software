@@ -243,10 +243,15 @@ AnTdc::field_t AnTdc::field[26] = {
 };
 
 QString AnTdc::fkey(int i)  const { return QString(field[i].name); }
+//------------------------------------------------------------------------------
 quint8 AnTdc::fvalue(int i) const {
 	return (m_status >> field[i].start) & (0xFF >> (8 - field[i].length));
 }
-
+//------------------------------------------------------------------------------
+QString AnTdc::statusString() const
+{
+	return QString("0x") + QString::number(m_status, 16);
+}
 //------------------------------------------------------------------------------
 QString AnTdc::statusTipString() const
 {

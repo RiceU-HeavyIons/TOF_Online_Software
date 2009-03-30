@@ -32,6 +32,7 @@ public:
 
 	quint64 status() const { return m_status; }
 	quint64 setStatus(quint64 sw);
+	QString statusString() const;
 	QString statusTipString() const;
 
 	virtual quint32 canidr() const;

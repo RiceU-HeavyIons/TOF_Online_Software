@@ -271,11 +271,14 @@ QString AnTdig::errorDump() const
 	QStringList sl;
 
 	sl << QString().sprintf("AnTdig(%p):", this);
-	sl << QString("  Name              : ") + name();
-	sl << QString("  Temperature       : ") + tempString();
-	sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
-	sl << QString("  Status            : ") + QString::number(status());
+	sl << QString("  Name               : ") + name();
+	sl << QString("  Temperature        : ") + tempString();
+	sl << QString("  ECSR               : 0x") + QString::number(ecsr(), 16);
+	sl << QString("  TDIG PLD Reg[03]   : 0x") + QString::number(m_pld03, 16);
+	sl << QString("  Status             : ") + QString::number(status());
+	for (int i = 1; i <= 3; ++i) {
+		sl << QString("  TDIG %1 Status Word: %2").arg(i).arg(m_tdc[i]->statusString());
+	}
 
 	return sl.join("\n");
 }
