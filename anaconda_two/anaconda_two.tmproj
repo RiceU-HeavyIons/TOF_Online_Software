@@ -54,8 +54,6 @@
 					<string>app/KLevel1Model.cpp</string>
 					<key>lastUsed</key>
 					<date>2009-03-30T13:22:08Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -190,8 +188,6 @@
 					<date>2009-03-27T16:53:52Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -298,7 +294,7 @@
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T18:29:09Z</date>
+					<date>2009-03-30T16:55:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -310,19 +306,19 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T18:13:41Z</date>
+					<date>2009-03-30T17:20:21Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdc.h</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T19:25:03Z</date>
+					<date>2009-03-30T16:55:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTdc.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-13T15:57:52Z</date>
+					<date>2009-03-30T17:20:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
