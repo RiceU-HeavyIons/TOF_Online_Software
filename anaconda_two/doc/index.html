@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>TOF Electronics Status Monitor</title>
+</head>
+<body>
+<h1>TOF Electronics Status Monitor</h1>
+<h2>Introduction</h2>
+<p>
+The TOF subsystem consists of 120 trays placed along the TCP outer shell, 2 upVPD detectors, and 4 DAQ and slow control interface electronics called THUB. Each tray covers one unit in pseudo-rapidity and 6 degrees in azimuthal angle. Trays 1-60 are installed at the west side and 61-120 are at the east side. Electronics for the upVPD west is labeled as tray 121 and the east as tray 122 for the sake of convenience. This GUI provides an easy way to access to status of the electronics of the sub components and provides simple control functions.
+</p>
+
+<h2>Getting Started</h2>
+<p>
+If the GUI is not running on the desktop 1, you need to remotely login to tofcontrol, and launch the software.
+<div style="margin-left: 60px; margin-right: 60px; padding: 10; border: 4px solid black;">
+<tt>
+[tof@tofp ~]$ ssh -Y tof@tofcontrol <br />
+(...)<br />
+tof@tofcontrol's password: (please ask to shift leader if you don't know the password) <br />
+(...)<br />
+[tof@tofcontrol ~]$ TOF_Mon
+</tt>
+</div>
+</p>
+
+<div style="text-align: center"><a href="figs/top.png"><img width="400" src="figs/top.png" /></a></div>
+
+<h2>Mode</h2>
+Select "Phys Mode (monitor)" from the pulldown-menu at top left.
+
+<h2>Auto/Manual Refresh</h2>
+<p>
+By enabling "Auto Refresh" feature (Command &rarr; Auto Refresh), it starts polling each electronics board and obtaining status information every two seconds. There are 126 top level boards in total and it takes about 4 minutes to refresh all information. You can always employ "Refresh" on the toolbar (the third button from left) for immideate update. Note that the refresh action is selection sensible and won't update all boards if some boards are selected in the center panel.
+</p>
+
+<h2>Clearing Errors</h2>
+<p>An easy way to find errors (warnings) is selecting "Error" ("Warning") in the selector panel at left. You could clear all errors between runs with "user command 3" on the toolbar. This can be done during lasers, ZDC runs, or pedestals for TPC when TOF is not in the run. You can also sneak it in between two runs but you would need to coordinate with the run control operator to make sure the next run is not started until the reset process finishes. If it doesn't clear errors and warnings, please report to TOF experts.</p>
+
+<div style="text-align: center">
+  <a href="figs/top_error.png"><img width="400" src="figs/top_error.png" /></a>
+</div>
+<!--
+<div style="text-align: center"><a href="figs/top_warning.png">
+  <img width="400" src="figs/top_warning.png" /></a>
+</div>
+-->
+<h2>Alarms</h2>
+The electonics status monitor does not provide any audible or alarms, or send  alarm infromation to slow controls.
+
+</body>
+
+<hr />
+<address>
+Kohei Kajimoto (koheik@physics.utexas.edu, 512-471-0695)
+</address>
+<html>
+
