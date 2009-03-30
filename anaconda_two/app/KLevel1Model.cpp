@@ -102,21 +102,22 @@ QVariant KLevel1Model::data(const QModelIndex &index, int role) const
 QVariant KLevel1Model::headerData(int section,
 								Qt::Orientation orientation, int role) const
 {
-  if(role != Qt::DisplayRole)
-    return QVariant();
+	if(role != Qt::DisplayRole) return QVariant();
 
-  if (orientation == Qt::Vertical) {
-    return QString("%1").arg(section+1);
-  } else
-    switch (section) {
-	case 0: return QVariant();
-    case 1: return QString(tr("Name"));
-    case 2: return QString(tr("CANBus Name"));
-    case 3: return QString(tr("LV"));
-    case 4: return QString(tr("HV"));
-    case 5: return QString(tr("Max Temp"));
-    }
-    return QString("Field %1").arg(section + 1);
+	if (orientation == Qt::Vertical) {
+//	eturn QString("%1").arg(section+1);
+		return QVariant();
+	} else {
+		switch (section) {
+			case 0: return QVariant();
+			case 1: return QString(tr("Name"));
+			case 2: return QString(tr("CANBus Name"));
+			case 3: return QString(tr("LV"));
+			case 4: return QString(tr("HV"));
+			case 5: return QString(tr("Max Temp"));
+		}
+	}
+	return QString("Field %1").arg(section + 1);
 }
 
 //-----------------------------------------------------------------------------

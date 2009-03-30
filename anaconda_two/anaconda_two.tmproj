@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-03-28T18:29:09Z</date>
+			<date>2009-03-29T13:14:39Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -33,13 +33,13 @@
 					<key>filename</key>
 					<string>app/toolbar.qrc</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:30:50Z</date>
+					<date>2009-03-29T12:58:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:30:37Z</date>
+					<date>2009-03-29T12:58:14Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -57,7 +57,7 @@
 					<key>filename</key>
 					<string>app/KLevel1Model.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:30:48Z</date>
+					<date>2009-03-29T12:58:13Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -117,7 +117,7 @@
 					<key>filename</key>
 					<string>app/KTdigModel.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:31:23Z</date>
+					<date>2009-03-29T12:58:10Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -141,7 +141,7 @@
 					<key>filename</key>
 					<string>app/KSerdesView.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:37:29Z</date>
+					<date>2009-03-29T12:37:38Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -153,7 +153,7 @@
 					<key>filename</key>
 					<string>app/KSerdesModel.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:33:29Z</date>
+					<date>2009-03-29T12:58:11Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -192,8 +192,6 @@
 					<date>2009-03-27T16:53:52Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -405,8 +403,6 @@
 					<date>2009-03-27T05:45:00Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -469,8 +465,6 @@
 					<date>2009-03-27T05:43:12Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>fakepcan</string>
 		</dict>
@@ -681,19 +675,19 @@
 							<key>filename</key>
 							<string>qttest/iconfactory/Canvas.h</string>
 							<key>lastUsed</key>
-							<date>2009-03-28T17:33:32Z</date>
+							<date>2009-03-29T12:34:23Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/iconfactory/Canvas.cpp</string>
 							<key>lastUsed</key>
-							<date>2009-03-28T17:33:34Z</date>
+							<date>2009-03-29T12:58:11Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
 							<string>qttest/iconfactory/MWin.cpp</string>
 							<key>lastUsed</key>
-							<date>2009-03-28T17:33:32Z</date>
+							<date>2009-03-29T12:34:22Z</date>
 						</dict>
 						<dict>
 							<key>filename</key>
@@ -702,8 +696,6 @@
 							<date>2008-12-13T18:44:32Z</date>
 						</dict>
 					</array>
-					<key>expanded</key>
-					<true/>
 					<key>name</key>
 					<string>iconfactory</string>
 				</dict>
@@ -896,8 +888,6 @@
 					<string>error_handling</string>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>qttest</string>
 		</dict>
@@ -956,9 +946,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>4</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>37</integer>
+				<integer>215</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
