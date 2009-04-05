@@ -130,7 +130,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 	readTdcConfig();
 
 	m_master = new AnMaster(this);
-	setMode(0);
+//	setMode(0);
 
 	initAutoSync();
 

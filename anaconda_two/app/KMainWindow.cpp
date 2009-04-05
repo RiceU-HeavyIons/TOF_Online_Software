@@ -62,6 +62,10 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	m_combo->addItems(m_root->modeList());
 	QObject::connect(m_combo, SIGNAL(activated(int)), this, SLOT(setMode(int)));
 
+	// set default mode
+	m_root->setMode(3);
+	m_combo->setCurrentIndex(3);
+
 	// hboxl->addWidget(label);
 	// hboxl->addWidget(m_combo);
 	// hboxl->addStretch(0);

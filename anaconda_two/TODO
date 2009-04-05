@@ -2,7 +2,7 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-03-27
+Updated: 2009-03-30
 Description: TODO file for Anaconda 2 development.
 Entry:
   2009-03-27:
@@ -83,7 +83,7 @@ Entry:
   - (X) separate icon column for TDIG selector table view
  
   2008-12-16:
-  - Serdes info at TCPU side
+  - (X) Serdes info at TCPU side
 
   2008-12-15:
   - fast debug output
