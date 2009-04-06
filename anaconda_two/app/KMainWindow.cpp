@@ -114,8 +114,8 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	setExpertMode(true); // defalt mode
 
 	// set default mode
-	m_root->setMode(3);
 	m_combo->setCurrentIndex(3);
+	setMode(3);
 }
 
 KMainWindow::~KMainWindow()
