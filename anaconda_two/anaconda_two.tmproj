@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>app/KMainWindow.cpp</string>
+	<string>TODO</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-04-05T00:03:23Z</date>
+			<date>2009-04-06T18:36:43Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -37,9 +39,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-04-05T00:05:43Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2009-04-06T16:53:26Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -192,8 +192,6 @@
 					<date>2009-03-27T16:53:52Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -276,7 +274,7 @@
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-04-05T00:05:43Z</date>
+					<date>2009-04-06T16:38:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -312,7 +310,7 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-30T17:20:21Z</date>
+					<date>2009-04-06T16:53:27Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -405,8 +403,6 @@
 					<date>2009-03-27T05:45:00Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -929,9 +925,11 @@
 					<key>filename</key>
 					<string>doc/index.html</string>
 					<key>lastUsed</key>
-					<date>2009-03-30T17:59:26Z</date>
+					<date>2009-04-06T18:36:40Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>doc</string>
 		</dict>
@@ -951,7 +949,7 @@
 			<key>filename</key>
 			<string>env.sh</string>
 			<key>lastUsed</key>
-			<date>2009-02-13T22:34:26Z</date>
+			<date>2009-04-06T18:36:43Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
@@ -963,53 +961,23 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>74</integer>
+				<integer>6</integer>
 				<key>line</key>
-				<integer>97</integer>
+				<integer>6</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>app/KMainWindow.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>src/AnRoot.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>132</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>113</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>TODO</string>
-		<string>src/AnRoot.cpp</string>
-		<string>app/KMainWindow.cpp</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{366, 22}, {855, 756}}</string>
+	<string>{{331, 22}, {855, 756}}</string>
 </dict>
 </plist>

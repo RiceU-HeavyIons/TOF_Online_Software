@@ -37,6 +37,7 @@ By enabling "Auto Refresh" feature (Command &rarr; Auto Refresh), it starts poll
 
 <h2>Clearing Errors</h2>
 <p>An easy way to find errors (warnings) is selecting "Error" ("Warning") in the selector panel at left. You could clear all errors between runs with "user command 3" on the toolbar. This can be done during lasers, ZDC runs, or pedestals for TPC when <span style="color: red">TOF is not in the run</span>. You can also sneak it in between two runs but you would need to coordinate with the run control operator to make sure the next run is not started until the reset process finishes. If it doesn't clear errors and warnings, please report to TOF experts.</p>
+<p style="color: red;">When the program crashed (by segmentation faults etc.) during the recovery process, please restart the gui and issue the user command 3 again.</p>
 
 <div style="text-align: center">
   <a href="figs/top_error.png"><img width="400" src="figs/top_error.png" /></a>
