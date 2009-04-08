@@ -183,6 +183,8 @@ void AnThub::sync(int level)
  */
 void AnThub::bunchReset(int level)
 {
+	log(QString("bunchReset: level=%1").arg(level));
+
 	if (active() && level >= 1 && commError() == 0) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
