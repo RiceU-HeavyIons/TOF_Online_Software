@@ -257,6 +257,6 @@ int AnThub::status() const
 void AnThub::log(QString str)
 {
 	foreach(QString s, str.split("\n")) {
-		agent()->root()->log(QString("AnThub[%s]: " + s).arg(laddr().at(1)));
+		agent()->root()->log(QString("AnThub[%1]: " + s).arg(laddr().at(1)));
 	}
 }

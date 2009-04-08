@@ -551,6 +551,6 @@ bool AnTcpu::fibermode() const
 void AnTcpu::log(QString str)
 {
 	foreach(QString s, str.split("\n")) {
-		agent()->root()->log(QString("AnTcpu[%s]: " + s).arg(laddr().at(1)));
+		agent()->root()->log(QString("AnTcpu[%1]: " + s).arg(laddr().at(1)));
 	}
 }

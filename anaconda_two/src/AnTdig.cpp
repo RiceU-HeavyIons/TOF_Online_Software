@@ -381,6 +381,6 @@ int AnTdig::status() const
 void AnTdig::log(QString str)
 {
 	foreach(QString s, str.split("\n")) {
-		agent()->root()->log(QString("AnTdig[%s.%s]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));
+		agent()->root()->log(QString("AnTdig[%1.%2]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));
 	}
 }
