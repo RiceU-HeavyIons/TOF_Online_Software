@@ -93,9 +93,12 @@ void AnThub::reset(int level)
 				for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("reset: CANBus error occcured: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("reset: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -119,9 +122,12 @@ void AnThub::qreset(int level)
 			// 	for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("qreset: CANBus error occcured: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("qreset: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -164,9 +170,12 @@ void AnThub::sync(int level)
 
 			setSynced();
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("sync: CANBus error occcured: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 /**
@@ -183,9 +192,12 @@ void AnThub::bunchReset(int level)
 			agent()->write_read(msg, rmsg, 2);
 
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("bunchReset: CANBus error occcured: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("bunchReset: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -237,6 +249,14 @@ int AnThub::status() const
 
 		if (err) return STATUS_ERROR;
 		return STATUS_ON;
-	} else
+	} else {
 		return STATUS_UNKNOWN;
+	}
+}
+
+void AnThub::log(QString str)
+{
+	foreach(QString s, str.split("\n")) {
+		agent()->root()->log(QString("AnThub[%s]: " + s).arg(laddr().at(1)));
+	}
 }

@@ -70,6 +70,8 @@ public:
 	int incCommError() { return ++m_comm_err; }
 	int decCommError() { return (m_comm_err > 0) ? --m_comm_err : 0; }
 	void clearCommError() { m_comm_err = 0; }
+	
+	AnRoot *root() const { return m_root; }
 
 public slots:
 	void stop() { m_cancel = true; }

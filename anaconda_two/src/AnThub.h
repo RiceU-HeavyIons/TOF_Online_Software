@@ -47,6 +47,8 @@ public:
 	virtual AnAgent* agent() const;
 
 private:
+	void log(QString str);
+
 	AnSerdes *m_serdes[8];
 	quint64   m_thubFirmware;
 };

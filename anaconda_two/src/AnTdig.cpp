@@ -79,7 +79,7 @@ void AnTdig::sync(int level)
 			setSynced();
 
 		} catch (AnExCanError ex) {
-			qDebug() << "Can Communication Error Occurred: " << ex.status();
+			log(QString("Communication Error Occurred: %s").arg(ex.status()));
 			incCommError();
 		}
 	}
@@ -103,8 +103,8 @@ void AnTdig::init(int level)
 			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 		} catch (AnExCanError ex) {
+			log(QString("Communication Error Occurred: %s").arg(ex.status()));
 			incCommError();
-			qDebug() << "Communication Error Occurred: " << ex.status();
 		}
 	}
 }
@@ -136,8 +136,8 @@ void AnTdig::config(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
+			log(QString("Communication Error Occurred: %s").arg(ex.status()));
 			incCommError();
-			qDebug() << "Communication Error Occurred: " << ex.status();
 		}
 	}
 }
@@ -163,8 +163,8 @@ void AnTdig::reset(int level)
 			}
 
 		} catch (AnExCanError ex) {
+			log(QString("Communication Error Occurred: %s").arg(ex.status()));
 			incCommError();
-			qDebug() << "Communication Error Occurred: " << ex.status();
 		}
 	}
 }
@@ -190,8 +190,8 @@ void AnTdig::qreset(int level)
 
 			clearCommError();
 		} catch (AnExCanError ex) {
+			log(QString("Communication Error Occurred: %s").arg(ex.status()));
 			incCommError();
-			qDebug() << "Communication Error Occurred: " << ex.status();
 		}
 	}
 }
@@ -376,4 +376,11 @@ int AnTdig::status() const
 		stat = STATUS_STANDBY;
 
 	return stat;
+}
+
+void AnTdig::log(QString str)
+{
+	foreach(QString s, str.split("\n")) {
+		agent()->root()->log(QString("AnTdig[%s.%s]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));
+	}
 }

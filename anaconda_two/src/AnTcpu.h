@@ -98,6 +98,9 @@ public:
 	QString errorDump() const;
 
 private:
+	
+	void log(QString str);
+
 	AnTdig     *m_tdig[8];
 	quint8      m_pld02, m_pld02Set;
 	quint8      m_pld03, m_pld03Set; // read-only register

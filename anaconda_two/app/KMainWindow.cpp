@@ -55,7 +55,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 
 	createSelector();
 
-	QHBoxLayout *hboxl = new QHBoxLayout();
+//	QHBoxLayout *hboxl = new QHBoxLayout();
 	QLabel *label = new QLabel(tr("Mode:"));
 	//  label->setAlignment(Qt::AlignLeft);
 	m_combo = new QComboBox(this);

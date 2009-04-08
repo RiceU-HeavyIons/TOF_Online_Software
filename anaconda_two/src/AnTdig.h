@@ -67,6 +67,9 @@ public:
 	virtual AnAgent* agent() const;
 
 private:
+	
+	void log(QString str);
+
 	AnTdc      *m_tdc[4];
 	int         m_threshold;
 	quint64     m_chipid;

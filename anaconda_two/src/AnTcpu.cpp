@@ -82,10 +82,13 @@ void AnTcpu::config(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("config: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 
+	} else {
+		log(QString("config: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -109,9 +112,12 @@ void AnTcpu::init(int level)
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("init: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("init: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -135,7 +141,7 @@ void AnTcpu::reset(int level)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("reset: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	}
@@ -149,17 +155,17 @@ void AnTcpu::qreset(int level)
 		clearCommError();
 		agent()->clearCommError();
 
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-
 		try {
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->qreset(level);
 
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("qreset: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("qreset: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -207,9 +213,12 @@ void AnTcpu::sync(int level)
 
 			setSynced();
 		} catch (AnExCanError ex) {
-			qDebug() << "AnTcpu" << laddr() << "::sync: CAN error occurred: " << ex.status();
+			log(QString("sync: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
@@ -226,12 +235,14 @@ void AnTcpu::resync(int level)
 								6, 0xe, 0x2, 0x0, 0xe, 0x2, m_pld02Set);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+			log(QString("resync: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
+	} else {
+		log(QString("resync: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
 	}
 }
-
 
 /**
  * Return CANBus id for read
@@ -535,4 +546,11 @@ QString AnTcpu::hvString() const
 bool AnTcpu::fibermode() const
 {
 	return active() && (m_pld02Set & 0x8);
+}
+
+void AnTcpu::log(QString str)
+{
+	foreach(QString s, str.split("\n")) {
+		agent()->root()->log(QString("AnTcpu[%s]: " + s).arg(laddr().at(1)));
+	}
 }

@@ -10,7 +10,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QDateTime>
-#include <QtCore/QMutex>
 
 #include <QtGui/QApplication>
 #include <QtSql/QSqlQuery>
@@ -557,16 +556,20 @@ void AnRoot::autosync()
  */
 void AnRoot::enableWatch()
 {
+	mtex_watch.lock();
 //	qDebug() << "AnRoot::enableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(true);
 	}
+	mtex_watch.unlock();
 }
 
 void AnRoot::enableWatch(int id)
 {
+	mtex_watch.lock();
 //	qDebug() << "AnRoot::enableWatch" << id;
 	m_watch[agentById(id)->socket()]->setEnabled(true);	
+	mtex_watch.unlock();
 }
 
 /**
@@ -574,16 +577,20 @@ void AnRoot::enableWatch(int id)
  */
 void AnRoot::disableWatch()
 {
+	mtex_watch.lock();
 //	qDebug() << "AnRoot::disableWatch";
 	foreach (QSocketNotifier *sn, m_watch) {
 		sn->setEnabled(false);
 	}
+	mtex_watch.unlock();
 }
 
 void AnRoot::disableWatch(int id)
 {
+	mtex_watch.lock();
 //	qDebug() << "AnRoot::disableWatch" << id;
 	m_watch[agentById(id)->socket()]->setEnabled(false);	
+	mtex_watch.unlock();
 }
 
 void AnRoot::watchStatus()
@@ -714,7 +721,6 @@ void AnRoot::startAutoSync()
 	if (!m_timer->isActive()) m_timer->start();
 }
 
-QMutex mtex_log;
 void AnRoot::log(QString str)
 {
 	mtex_log.lock();

@@ -12,6 +12,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTimer>
 #include <QtCore/QSocketNotifier>
+#include <QtCore/QMutex>
 
 #include <QtSql/QSqlDatabase>
 
@@ -170,5 +171,8 @@ private:
 	void readModeList();
 
 	void initAutoSync();
+	
+	QMutex mtex_log;
+	QMutex mtex_watch;
 };
 #endif /* ANROOT_H_ */
