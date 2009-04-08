@@ -103,7 +103,7 @@ void AnTdig::init(int level)
 			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 		} catch (AnExCanError ex) {
-			log(QString("Communication Error Occurred: %s").arg(ex.status()));
+			log(QString("init: Communication Error Occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	}
@@ -136,7 +136,7 @@ void AnTdig::config(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			log(QString("Communication Error Occurred: %s").arg(ex.status()));
+			log(QString("config: Communication Error Occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	}
@@ -163,7 +163,7 @@ void AnTdig::reset(int level)
 			}
 
 		} catch (AnExCanError ex) {
-			log(QString("Communication Error Occurred: %s").arg(ex.status()));
+			log(QString("Communication Error Occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	}
@@ -190,7 +190,7 @@ void AnTdig::qreset(int level)
 
 			clearCommError();
 		} catch (AnExCanError ex) {
-			log(QString("Communication Error Occurred: %s").arg(ex.status()));
+			log(QString("qreset: Communication Error Occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	}
