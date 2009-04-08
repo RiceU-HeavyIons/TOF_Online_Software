@@ -172,53 +172,55 @@ void AnTcpu::qreset(int level)
 //-----------------------------------------------------------------------------
 void AnTcpu::sync(int level)
 {
-	if (active() && level >= 1 && commError() == 0) {
+	if (active()) {
+		if (level >= 1 && commError() == 0) {
 
-		TPCANMsg    msg;
-		TPCANRdMsg  rmsg;
-		quint64     rdata;
+			TPCANMsg    msg;
+			TPCANRdMsg  rmsg;
+			quint64     rdata;
 
-		try {
-			// get temperature and ecsr
-			// HLP 3f says "ECSR Temp Temp AD1L AD1H AD2L AD2H"...
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
-			agent()->write_read(msg, rmsg, 8);
-			setEcsr(rmsg.Msg.DATA[3]);
-			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+			try {
+				// get temperature and ecsr
+				// HLP 3f says "ECSR Temp Temp AD1L AD1H AD2L AD2H"...
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
+				agent()->write_read(msg, rmsg, 8);
+				setEcsr(rmsg.Msg.DATA[3]);
+				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 
-			if (level >= 3) {
-				// get firmware versions
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
-				rdata = agent()->write_read(msg, rmsg, 4);
-				setFirmwareId(0xFFFFFF & rdata);
+				if (level >= 3) {
+					// get firmware versions
+					AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
+					rdata = agent()->write_read(msg, rmsg, 4);
+					setFirmwareId(0xFFFFFF & rdata);
 
-				// get chip id
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
-				rdata = agent()->write_read(msg, rmsg, 8);
-				setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+					// get chip id
+					AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
+					rdata = agent()->write_read(msg, rmsg, 8);
+					setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
+				}
+
+				// get PLD 0x02 and 0x0e
+				// AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
+				// sock->write_read(msg, rmsg, 5);
+				// m_pld02 = rmsg.Msg.DATA[2];
+				// m_pld0e = rmsg.Msg.DATA[4];
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x3);
+				agent()->write_read(msg, rmsg, 5);
+				m_pld02 = rmsg.Msg.DATA[2];
+				m_pld03 = rmsg.Msg.DATA[4];
+
+				if (--level >= 1)
+					for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
+
+				setSynced();
+			} catch (AnExCanError ex) {
+				log(QString("sync: CAN error occurred: %1").arg(ex.status()));
+				incCommError();
 			}
-
-			// get PLD 0x02 and 0x0e
-			// AnAgent::set_msg(msg, ctcpu << 4 | 0x4, MSGTYPE_STANDARD, 3, 0xe, 0x2, 0xe);
-			// sock->write_read(msg, rmsg, 5);
-			// m_pld02 = rmsg.Msg.DATA[2];
-			// m_pld0e = rmsg.Msg.DATA[4];
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x3);
-			agent()->write_read(msg, rmsg, 5);
-			m_pld02 = rmsg.Msg.DATA[2];
-			m_pld03 = rmsg.Msg.DATA[4];
-
-			if (--level >= 1)
-				for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
-
-			setSynced();
-		} catch (AnExCanError ex) {
-			log(QString("sync: CAN error occurred: %1").arg(ex.status()));
-			incCommError();
+		} else {
+			log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
+				.arg(active()).arg(level).arg(commError()));
 		}
-	} else {
-		log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
-			.arg(active()).arg(level).arg(commError()));
 	}
 }
 
