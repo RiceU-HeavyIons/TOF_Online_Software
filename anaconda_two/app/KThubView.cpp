@@ -89,9 +89,8 @@ void KThubView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_firm->setText(thub->firmwareString());
     m_temp1->setText(QString::number(thub->temp(0)));
     m_temp2->setText(QString::number(thub->temp(1)));
-
-    m_ecsr->setText("0x" + QString::number(thub->ecsr(), 16));
-    m_ecsr->setToolTip(thub->ecsrString());
+    m_ecsr->setText(thub->ecsrString(true));
+//    m_ecsr->setToolTip(thub->ecsrString());
 
     m_model->setThub(thub);
   }

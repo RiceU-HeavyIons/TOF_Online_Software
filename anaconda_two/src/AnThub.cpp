@@ -9,6 +9,7 @@
 #include "AnThub.h"
 #include "AnExceptions.h"
 
+//-----------------------------------------------------------------------------
 AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent)
  : AnBoard(laddr, haddr, parent)
 {
@@ -24,11 +25,13 @@ AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *pare
 	}
 }
 
+//-----------------------------------------------------------------------------
 AnThub::~AnThub()
 {
 	// do nothing
 }
 
+//-----------------------------------------------------------------------------
 AnCanObject *AnThub::at(int i)
 {
 	if (i >= 1 && i <= 8)
@@ -37,6 +40,7 @@ AnCanObject *AnThub::at(int i)
 		this;
 }
 
+//-----------------------------------------------------------------------------
 AnCanObject *AnThub::hat(int i)
 {
 	if (i >= 1 && i <= 8)
@@ -45,6 +49,7 @@ AnCanObject *AnThub::hat(int i)
 		this;
 }
 
+//-----------------------------------------------------------------------------
 QString AnThub::firmwareString() const
 {
   char buf[32];
@@ -52,6 +57,17 @@ QString AnThub::firmwareString() const
   return QString(buf);
 }
 
+//-----------------------------------------------------------------------------
+QString AnThub::ecsrString(bool hilit) const
+{
+	QString ret = "0x" + QString::number(ecsr(), 16);
+	if (hilit && (ecsr() != 0))
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
+}
+
+//-----------------------------------------------------------------------------
 QString AnThub::dump() const
 {
 	QStringList sl;
@@ -74,6 +90,7 @@ QString AnThub::dump() const
 	return sl.join("\n");
 }
 
+//-----------------------------------------------------------------------------
 /**
  * Reset THUB
  */
@@ -102,6 +119,7 @@ void AnThub::reset(int level)
 	}
 }
 
+//-----------------------------------------------------------------------------
 /**
  * Quick Reset THUB
  */
@@ -131,6 +149,7 @@ void AnThub::qreset(int level)
 	}
 }
 
+//-----------------------------------------------------------------------------
 /**
  * Sync THUB
  */
@@ -161,8 +180,9 @@ void AnThub::sync(int level)
 
 			// readout crc error bits
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
-			agent()->write_read(msg, rmsg, 2);
-			setEcsr(rmsg.Msg.DATA[1]);
+			rdata = agent()->write_read(msg, rmsg, 2);
+			rdata = (rdata << 8) + rmsg.Msg.DATA[0];
+			setEcsr(rdata);
 
 			// readout serdes infomation
 			if (--level >= 1)
@@ -178,6 +198,8 @@ void AnThub::sync(int level)
 			.arg(active()).arg(level).arg(commError()));
 	}
 }
+
+//-----------------------------------------------------------------------------
 /**
  * THUB Bunch Reset
  */
@@ -203,22 +225,25 @@ void AnThub::bunchReset(int level)
 	}
 }
 
-
+//-----------------------------------------------------------------------------
 quint32 AnThub::canidr() const
 {
 	return haddr().at(1) << 4 | 0x4;
 }
 
+//-----------------------------------------------------------------------------
 quint32 AnThub::canidw() const
 {
 	return haddr().at(1) << 4 | 0x2;
 }
 
+//-----------------------------------------------------------------------------
 AnAgent *AnThub::agent() const
 {
 	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
 }
 
+//-----------------------------------------------------------------------------
 bool AnThub::setInstalled(bool b) {
 
 	AnCanObject::setInstalled(b);
@@ -228,6 +253,7 @@ bool AnThub::setInstalled(bool b) {
 	return installed();
 }
 
+//-----------------------------------------------------------------------------
 bool AnThub::setActive(bool b) {
 
 	AnCanObject::setActive(b);
@@ -237,6 +263,7 @@ bool AnThub::setActive(bool b) {
 	return active();
 }
 
+//-----------------------------------------------------------------------------
 int AnThub::status() const
 {
 // TO-DO implement real logic
@@ -244,18 +271,24 @@ int AnThub::status() const
 		if (agent()->commError() || commError()) return STATUS_COMM_ERR;
 
 		int err = 0;
-		if (maxTemp() > tempAlarm()) err++;
+		if (maxTemp() > tempAlarm()) ++err;
+
+		int warn = 0;
+		if (ecsr() != 0x0) ++warn;
 
 		for (int i = 0; i < 8; ++i)
 			if (m_serdes[i]->status() == STATUS_ERROR) ++err;
 
 		if (err) return STATUS_ERROR;
+		if (warn) return STATUS_WARNING;
+
 		return STATUS_ON;
 	} else {
 		return STATUS_UNKNOWN;
 	}
 }
 
+//-----------------------------------------------------------------------------
 void AnThub::log(QString str)
 {
 	foreach(QString s, str.split("\n")) {

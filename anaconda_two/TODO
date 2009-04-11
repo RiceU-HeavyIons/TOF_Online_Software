@@ -2,11 +2,21 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-04-08
+Updated: 2009-04-09
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-04-10:
+  - (X) Two bytes Thub CRC error
+
+  2009-04-09:
+  - (X) TDIG communicaton error -> TCPU level warning
+  - reset command = user command 3
+  - (X) TDIG chip id and firmware id?
+
   2009-04-08:
   - debug segmentation faults
+  - (X) auto-sync in default
+  - (X) mutex for enable / disable watch
 
   2009-03-27:
   - (X) fflush log writing

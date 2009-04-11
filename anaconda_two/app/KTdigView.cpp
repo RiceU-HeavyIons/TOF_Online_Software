@@ -85,7 +85,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
 {
 	AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
 	if (AnTdig *tdig = dynamic_cast<AnTdig*>(brd)) {
-		tdig->sync(2);
+		tdig->sync(3);
 		setTitle(tdig->name());
 		// m_laddr->setText(tdig->lAddress().toString());
 		m_haddr->setText(tdig->hAddress().toString());

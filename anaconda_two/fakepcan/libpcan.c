@@ -234,6 +234,7 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 
 	case 0x05: // CRC Error bits
 		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[0] = 0xcd;
 		pMsgBuff->DATA[1] = 0xab;
 		usleep(2000);
 		break;

@@ -21,6 +21,7 @@
 #include "KLevel2View.h"
 #include "KTcpuView.h"
 
+#define AUTOSYNC_ON_DEFAULT 1
 //-----------------------------------------------------------------------------
 // Constructors
 
@@ -205,7 +206,11 @@ void KMainWindow::createActions()
 
 	m_ToggleAutoSyncAction = new QAction(tr("Auto Refresh"), this);
 	m_ToggleAutoSyncAction->setCheckable(true);
+#ifdef AUTOSYNC_ON_DEFAULT
+	m_ToggleAutoSyncAction->setChecked(true);
+#else
 	m_ToggleAutoSyncAction->setChecked(false);
+#endif
 	QObject::connect(m_ToggleAutoSyncAction, SIGNAL(triggered()),
 	                 this, SLOT(toggleAutoSync()));
 
@@ -439,6 +444,9 @@ void KMainWindow::toggleAutoSync()
 		m_root->startAutoSync();
 	else
 		m_root->stopAutoSync();
+		
+	m_root->log( QString("KMainWindow:toggleAutoSync: %1")
+	               .arg(m_ToggleAutoSyncAction->isChecked()) );
 }
 
 //-----------------------------------------------------------------------------

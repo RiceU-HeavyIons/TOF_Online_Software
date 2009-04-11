@@ -28,12 +28,13 @@ public:
 
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);
-	
+
 	virtual bool setInstalled(bool b);
 	virtual bool setActive(bool b);
 
 // from AnBoard
 	virtual QString firmwareString() const;
+	virtual QString ecsrString(bool hilit = false) const;
 	virtual double maxTemp() const { return (temp(0) > temp(1)) ? temp(0) : temp(1); }
 	virtual int status() const;
 

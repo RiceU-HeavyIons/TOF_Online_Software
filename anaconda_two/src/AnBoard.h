@@ -27,7 +27,7 @@ public:
 	virtual int setTempAlarm(int ta) { return (m_temp_alarm = ta); }
 	virtual QString tempAlarmString() const;
 
-	quint8 ecsr() const { return m_ecsr; }
+	quint16 ecsr() const { return m_ecsr; }
 	virtual QString ecsrString(bool hilight = false) const { return QString(); }
 	virtual QString ecsrToolTipString() const { return QString(); }
 
@@ -68,7 +68,7 @@ public:
 	};
 
 protected:
-	quint8 setEcsr(quint8 ecsr) { return (m_ecsr = ecsr); }
+	quint16 setEcsr(quint16 ecsr) { return (m_ecsr = ecsr); }
 	double setTemp(double temp, int i = 0) { return (m_temp[i] = temp); }
 	quint32 setFirmwareId(quint32 firmware);
 	quint16 setMcuFirmwareId(quint16 firmware) { return (m_firmware_mcu  = firmware); }
@@ -76,7 +76,7 @@ protected:
 	double setChipId(quint64 chipid) { return (m_chipid = chipid); }
 
 private:
-	quint8  m_ecsr;
+	quint16 m_ecsr;
 	double  m_temp[2];
 	quint16 m_firmware_mcu;
 	quint8  m_firmware_fpga;

@@ -94,6 +94,7 @@ void AnTdig::init(int level)
 	if (active() && level >= 1) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
+		clearCommError();
 		try {
 			// this might not be implemented yet
 //			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
@@ -175,6 +176,7 @@ void AnTdig::qreset(int level)
 {
 //	qDebug() << "AnTdig::reset" << laddr();
 	if (active() && level >= 1) {
+		clearCommError();
 		try {
 			// do nothing here
 			TPCANMsg    msg;
@@ -187,8 +189,6 @@ void AnTdig::qreset(int level)
 			// 	m_tdc[0]->reset(level);
 			// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 			// }
-
-			clearCommError();
 		} catch (AnExCanError ex) {
 			log(QString("qreset: CAN Error Occurred: %1").arg(ex.status()));
 			incCommError();
@@ -307,6 +307,7 @@ QString AnTdig::ecsrToolTipString() const
   return ret;	
 }
 
+//-----------------------------------------------------------------------------
 QString AnTdig::ecsrString(bool hilit) const
 {
 	QString ret = "0x" + QString::number(ecsr(), 16);

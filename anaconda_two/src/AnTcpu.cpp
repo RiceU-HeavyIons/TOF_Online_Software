@@ -98,10 +98,12 @@ void AnTcpu::init(int level)
 	// don't want to init TCPUs for upVPD
 	//	if (haddr().at(1) == 0x20) return;
 
-	if (active() && level >= 1 && commError() == 0) {
+	if (active() && level >= 1) {
 
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
+
+		clearCommError();
 
 		try {
 			AnAgent::set_msg(msg, canidw(),
@@ -398,6 +400,7 @@ int AnTcpu::status() const
 	for (int i = 0; i < 8; ++i) {
 		if (m_tdig[i]->status() == STATUS_ERROR) ++err;
 		if (m_tdig[i]->status() == STATUS_WARNING) ++warn;
+		if (m_tdig[i]->status() == STATUS_COMM_ERR) ++warn;
 	}
 
 	if (agent()->commError() != 0 || commError() != 0)
