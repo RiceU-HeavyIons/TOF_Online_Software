@@ -628,8 +628,8 @@ void AnRoot::watcher(int sock)
 //-----------------------------------------------------------------------------
 void AnRoot::received(AnRdMsg rmsg)
 {
-	qDebug() << "AnRoot::received" << rmsg;
-	
+	log( QString("receved: %1").arg(rmsg.toString()) );
+
 	if (rmsg.type() == 0x80) return; // work around segmentation fault
 
 	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
@@ -642,10 +642,10 @@ void AnRoot::received(AnRdMsg rmsg)
 //					emit updated(brd);
 //				}
 			} else if (rmsg.data() == 0xff550000) { // end of run
-				log("AnRoot::received: got end of run message");
+				log("received: got end of run message");
 				doUserCmd(3);
 			} else {
-				qDebug() << "Received error message: " << rmsg;
+				log( QString("receved: error message: %1").arg(rmsg.toString()) );
 			}
 		} else if (rmsg.payload() == 0x4) {
 			if(!isRunning()) {
@@ -654,7 +654,7 @@ void AnRoot::received(AnRdMsg rmsg)
 			}
 		}
 	} else {
-		qDebug() << "Received message from unknown source";
+		log("received: unknown source");
 	}
 }
 
