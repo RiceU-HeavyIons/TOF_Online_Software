@@ -174,13 +174,21 @@ void AnTdc::reset(int level) {
 void AnTdc::sync(int level)
 {
 	if (active() and level >= 1) {
-		quint8  data0 = 0x04 | hAddress().at(3);
-
-	    TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-        AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
-        m_status = agent()->write_read(msg, rmsg, 10);
-        setSynced();
+		QStringList btrace;
+		try {
+			quint8  data0 = 0x04 | hAddress().at(3);
+			TPCANMsg    msg;
+			TPCANRdMsg  rmsg;
+			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
+			btrace << AnRdMsg(haddr().at(0), msg).toString();
+			m_status = agent()->write_read(msg, rmsg, 10);
+			btrace << AnRdMsg(haddr().at(0), rmsg).toString();
+			setSynced();
+		} catch (AnExCanError ex) {
+			log(QString("sync:  CAN error occurred: %1").arg(ex.status()));
+			log(btrace.join("\n"));
+			incCommError();
+		}
 	}
 }
 
@@ -275,5 +283,13 @@ QString AnTdc::statusTipString() const
 	ret += "</table>";
 
 	return ret;
+}
+//------------------------------------------------------------------------------
+void AnTdc::log(QString str) const
+{
+	foreach(QString s, str.split("\n")) {
+		agent()->root()->log(QString("AnTdc[%1.%2.%3]: " + s)
+		  .arg(laddr().at(1)).arg(laddr().at(2)).arg(laddr().at(3)));
+	}
 }
 

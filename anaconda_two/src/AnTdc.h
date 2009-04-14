@@ -46,6 +46,7 @@ public:
 
 private:
 	void set_mask_msg(TPCANMsg &msg) const;
+	void log(QString str) const;
 
 	quint16 m_config;
 	quint64 m_status;

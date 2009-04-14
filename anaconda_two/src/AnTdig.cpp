@@ -50,10 +50,13 @@ void AnTdig::sync(int level)
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		quint64     rdata;
+		QStringList btrace;
 
 		try {
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
+			btrace << AnRdMsg(haddr().at(0), msg).toString();
 			rdata = agent()->write_read(msg, rmsg, 8);
+			btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
 
@@ -64,12 +67,16 @@ void AnTdig::sync(int level)
 			if (level >= 3) {
 			// get firmware version
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
+				btrace << AnRdMsg(haddr().at(0), msg).toString();
 				rdata = agent()->write_read(msg, rmsg, 4);
+				btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 				setFirmwareId(0xFFFFFF & rdata);
 
 			// get chip id
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
+				btrace << AnRdMsg(haddr().at(0), msg).toString();
 				rdata = agent()->write_read(msg, rmsg, 8);
+				btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 				setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
 			}
 
@@ -80,6 +87,7 @@ void AnTdig::sync(int level)
 
 		} catch (AnExCanError ex) {
 			log(QString("sync:  CAN error occurred: %1").arg(ex.status()));
+			log(btrace.join("\n"));
 			incCommError();
 		}
 	}
@@ -99,6 +107,9 @@ void AnTdig::init(int level)
 			// this might not be implemented yet
 //			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x89, 0x69, 0x96, 0xa5, 0x5a);
+			agent()->write_read(msg, rmsg, 3);
+
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0xe, 0xc, laddr().at(2) - 1);
 			agent()->write_read(msg, rmsg, 3);
 
 			if(--level >= 1) m_tdc[0]->init(level);
@@ -379,7 +390,7 @@ int AnTdig::status() const
 	return stat;
 }
 
-void AnTdig::log(QString str)
+void AnTdig::log(QString str) const
 {
 	foreach(QString s, str.split("\n")) {
 		agent()->root()->log(QString("AnTdig[%1.%2]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));

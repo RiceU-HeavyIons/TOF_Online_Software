@@ -102,7 +102,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	// 		this, SLOT(agentFinished()));
 	// }
 
-	// QObject::connect(m_root, SIGNAL(aboutStart()), this, SLOT(task_start()));
+	QObject::connect(m_root, SIGNAL(aboutStart()), this, SLOT(agentStart()));
 	QObject::connect(m_root, SIGNAL(finished()),  this, SLOT(agentFinished()));
 
 	setCentralWidget(center);
@@ -450,8 +450,8 @@ void KMainWindow::toggleAutoSync()
 }
 
 //-----------------------------------------------------------------------------
-void KMainWindow::setMode(int i) {
-
+void KMainWindow::setMode(int i)
+{
 	setBusy(true);
 	m_root->setMode(i);
 }
@@ -491,6 +491,11 @@ void KMainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 //-----------------------------------------------------------------------------
 // TODO It may be good idea get this kind of signal from AnRoot instead of agents
+void KMainWindow::agentStart()
+{
+	setBusy(true);
+}
+
 void KMainWindow::agentFinished()
 {
 	if (!m_root->isRunning()) setBusy(false);

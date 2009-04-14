@@ -636,11 +636,14 @@ void AnRoot::received(AnRdMsg rmsg)
 
 	if (brd != NULL) {
 		if (rmsg.payload() == 0x7) {
-			if (rmsg.data() == 0xff000000) {
-				if(!isRunning()) {
+			if (rmsg.data() == 0xff000000) { // greeting message
+//				if(!isRunning()) {
 //					brd->sync(1);
 //					emit updated(brd);
-				}
+//				}
+			} else if (rmsg.data() == 0xff550000) { // end of run
+				log("AnRoot::received: got end of run message");
+				doUserCmd(3);
 			} else {
 				qDebug() << "Received error message: " << rmsg;
 			}

@@ -414,11 +414,12 @@ void AnAgent::run()
 				cond |= (m_level >= 3);
 				if (cond) {
 					log( QString("TASK_RECOVERY: %1").arg(tcpu->name()) );
+					tcpu->sync(3);
 					log( tcpu->errorDump() );
 					tcpu->init(2);
 					tcpu->qreset(2);
 					tcpu->config(1);
-					tcpu->sync(2);
+					tcpu->sync(3);
 				}
 			}
 			emit progress(m_id, 100*(++step)/total);

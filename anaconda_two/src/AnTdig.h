@@ -68,7 +68,7 @@ public:
 
 private:
 	
-	void log(QString str);
+	void log(QString str) const;
 
 	AnTdc      *m_tdc[4];
 	int         m_threshold;

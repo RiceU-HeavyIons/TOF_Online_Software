@@ -154,7 +154,7 @@ insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
 
 -- 8. Sync All
 insert into configs values (null,   3, 81, 105,   1, 255,   0,   0,      3);
-insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      3);
+insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      2);
 
 -------------------------------------------------------------------------------
 -- Set 4 
@@ -194,7 +194,7 @@ insert into configs values (null,   4, 54,  12,   1,   3,   7,   0,      0);
 
 -- 8. Sync All
 insert into configs values (null,   4, 81, 105,   1, 255,   0,   0,      3);
-insert into configs values (null,   4, 82, 105,   2, 255,   0,   0,      3);
+insert into configs values (null,   4, 82, 105,   2, 255,   0,   0,      2);
 
 -- ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
 -- insert into configs values (null,   4,  1,   1,   1, 255,   0,   0,      0);

@@ -84,6 +84,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 
 protected slots:
+	void agentStart();
 	void agentFinished();
 	void setSelection(int select);
 
