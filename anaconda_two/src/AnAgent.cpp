@@ -83,7 +83,7 @@ void AnAgent::print_recv(const TPCANMsg &msg)
 quint64 AnAgent::read(TPCANRdMsg &rmsg,
     int return_length, unsigned int time_out)
 {
-	pre_check();
+//	pre_check();
 
 	quint64 data = 0;
 	unsigned int length = 0;
