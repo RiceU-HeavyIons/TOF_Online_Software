@@ -607,6 +607,8 @@ void AnRoot::watchStatus()
  */
 void AnRoot::watcher(int sock)
 {
+	log(QString("AnRoot::watcher: sock=%1").arg(sock));
+
 	if (m_watch.contains(sock)) {
 		// disable watch again
 		m_watch[sock]->setEnabled(false);
@@ -628,7 +630,7 @@ void AnRoot::watcher(int sock)
 //-----------------------------------------------------------------------------
 void AnRoot::received(AnRdMsg rmsg)
 {
-	log( QString("receved: %1").arg(rmsg.toString()) );
+	log( QString("received: %1").arg(rmsg.toString()) );
 
 	if (rmsg.type() == 0x80) return; // work around segmentation fault
 
