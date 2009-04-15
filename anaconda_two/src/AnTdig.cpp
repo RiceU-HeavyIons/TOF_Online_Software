@@ -194,7 +194,7 @@ void AnTdig::qreset(int level)
 			agent()->write_read(msg, rmsg, 2);
 
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0xe, 0xc, laddr().at(2) - 1);
-			agent()->write_read(msg, rmsg, 3);
+			agent()->write_read(msg, rmsg, 2);
 
 			// if (--level >= 1) {
 			// 	m_tdc[0]->reset(level);
