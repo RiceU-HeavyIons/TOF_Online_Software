@@ -109,9 +109,6 @@ void AnTdig::init(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x89, 0x69, 0x96, 0xa5, 0x5a);
 			agent()->write_read(msg, rmsg, 3);
 
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0xe, 0xc, laddr().at(2) - 1);
-			agent()->write_read(msg, rmsg, 3);
-
 			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 		} catch (AnExCanError ex) {
@@ -195,6 +192,9 @@ void AnTdig::qreset(int level)
 
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0xe, 0x2, 0x1, 0x2, 0x0);
 			agent()->write_read(msg, rmsg, 2);
+
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0xe, 0xc, laddr().at(2) - 1);
+			agent()->write_read(msg, rmsg, 3);
 
 			// if (--level >= 1) {
 			// 	m_tdc[0]->reset(level);

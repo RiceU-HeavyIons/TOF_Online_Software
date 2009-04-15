@@ -9,6 +9,7 @@ Entry:
   - (X) Set TDIG number after load FPGA code
   - (X) Auto TCPU recovery after each run
   - (X) Backtrace for communication error
+  - Refine Backtrace... probably in AnAgent
 
   2009-04-10:
   - (X) Two bytes Thub CRC error
