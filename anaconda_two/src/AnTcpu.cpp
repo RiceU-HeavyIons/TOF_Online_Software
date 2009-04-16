@@ -107,7 +107,7 @@ void AnTcpu::init(int level)
 
 		try {
 			AnAgent::set_msg(msg, canidw(),
-			                 MSGTYPE_STANDARD, 5, 0x8a, 0x69, 0x96, 0xa5, 0x5a);
+			                 MSGTYPE_STANDARD, 5, 0x8a, 0x69, 0x96, 0xa5, 0x5a); // EEPROM 2
 //			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			agent()->write_read(msg, rmsg, 3);
 
