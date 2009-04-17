@@ -34,6 +34,7 @@ AnTcpu::AnTcpu(
 	m_pld03Set = 1;
 	m_pld0e    = 0;
 	m_pld0eSet = 0;
+	m_eeprom   = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -106,8 +107,10 @@ void AnTcpu::init(int level)
 		clearCommError();
 
 		try {
+			quint8 d0 = 0x89;                      // EEPROM 1
+			if (m_eeprom == 2) d0 = 0x8a;          // EEPROM 2
 			AnAgent::set_msg(msg, canidw(),
-			                 MSGTYPE_STANDARD, 5, 0x8a, 0x69, 0x96, 0xa5, 0x5a); // EEPROM 2
+			                 MSGTYPE_STANDARD, 5, d0, 0x69, 0x96, 0xa5, 0x5a);
 //			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			agent()->write_read(msg, rmsg, 3);
 
@@ -309,6 +312,7 @@ QString AnTcpu::dump() const
 	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
 	sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
 	sl << QString("  PLD Reg[0E] Set   : 0x") + QString::number(m_pld0eSet, 16);
+	sl << QString("  EEPROM Selector   : %1").arg(m_eeprom);
 	sl << QString("  Status            : ") + QString::number(status());
 	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 	sl << QString("  LV / HV           : ") + lvHvString();

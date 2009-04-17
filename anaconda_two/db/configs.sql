@@ -42,9 +42,11 @@ insert into config_types values ( 22, "TCPU_TEMP_ALARM"  );
 insert into config_types values ( 23, "TCPU_PLDREG02"    );
 insert into config_types values ( 24, "TCPU_PLDREG03"    );
 insert into config_types values ( 25, "TCPU_PLDREG0E"    );
+insert into config_types values ( 26, "TCPU_EEPROM"      );
 insert into config_types values ( 31, "TDIG_ENABLE"      );
 insert into config_types values ( 32, "TDIG_TEMP_ALARM"  );
 insert into config_types values ( 33, "TDIG_THRESHOLD"   );
+insert into config_types values ( 34, "TDIG_EEPROM"      );
 insert into config_types values ( 41, "TDC_ENABLE"       );
 insert into config_types values ( 42, "TDC_CONFIG_ID"    );
 insert into config_types values ( 43, "TDC_CH_MASK"      );
@@ -73,21 +75,24 @@ create table configs (
     val                 integer
 );
 
----------- ----------------   id  set ord  typ  ad1  ad2  ad3  ad4  value
+---------- ----------------   id  set ord  typ  ad1  ad2  ad3  ad4   value
 insert into configs values (null,   1,  1,   2,   1, 255,   0,   0,     45);
 insert into configs values (null,   1,  2,  12,   1, 255, 255,   0,      0);
 -- TCPU
-insert into configs values (null,   1,  3,  22,   2, 255,   0,   0,     45);
-insert into configs values (null,   1,  4,  23,   2, 255,   0,   0,      0);
-insert into configs values (null,   1,  5,  24,   2, 255,   0,   0,      1);
-insert into configs values (null,   1,  6,  25,   2, 255,   0,   0,      0);
+insert into configs values (null,   1, 11,  22,   2, 255,   0,   0,     45);
+insert into configs values (null,   1, 12,  23,   2, 255,   0,   0,      0);
+insert into configs values (null,   1, 13,  24,   2, 255,   0,   0,      1);
+insert into configs values (null,   1, 14,  25,   2, 255,   0,   0,      0);
+insert into configs values (null,   1, 15,  26,   2, 255,   0,   0,      2);
 -- TDIG
-insert into configs values (null,   1,  7,  32,   2, 255, 255,   0,     45);
-insert into configs values (null,   1,  8,  33,   2, 255, 255,   0,   2500);
+insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
+insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   2500);
+insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      2);
+insert into configs values (null,   1, 24,  34,   2,  58,   2,   0,      1);
 -- TDC
-insert into configs values (null,   1,  9,  42,   2, 255, 255, 255,     13);
-insert into configs values (null,   1, 10,  42,   2, 255,   1,   1,     14);
-insert into configs values (null,   1, 11,  42,   2, 255,   5,   1,     14);
+insert into configs values (null,   1, 31,  42,   2, 255, 255, 255,     13);
+insert into configs values (null,   1, 32,  42,   2, 255,   1,   1,     14);
+insert into configs values (null,   1, 33,  42,   2, 255,   5,   1,     14);
 
 -- Disable Tray 38, 39, 52, 75
 insert into configs values (null,   1, 81,  21,   2,  38,   0,   0,      0);

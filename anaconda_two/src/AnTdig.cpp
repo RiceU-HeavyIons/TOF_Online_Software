@@ -10,7 +10,8 @@
 #include "AnExceptions.h"
 
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
-  : AnBoard(laddr, haddr, parent), m_threshold(0), m_chipid(0), m_pld03(0), m_pld03Set(0)
+  : AnBoard(laddr, haddr, parent),
+    m_threshold(0), m_chipid(0), m_pld03(0), m_pld03Set(0), m_eeprom(1)
 {
 	setObjectName(QString("TDIG ") + lAddress().toString());
 
@@ -104,10 +105,9 @@ void AnTdig::init(int level)
 		TPCANRdMsg  rmsg;
 		clearCommError();
 		try {
-			// this might not be implemented yet
-//			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
-//			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x8a, 0x69, 0x96, 0xa5, 0x5a); // EEPROM 2
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0x89, 0x69, 0x96, 0xa5, 0x5a); // EEPROM 1
+			quint8 d0 = 0x89;                  // EEPROM 1
+			if (m_eeprom == 2) d0 = 0x8a;   // EEPROM 2
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, d0, 0x69, 0x96, 0xa5, 0x5a); // EEPROM 1
 			agent()->write_read(msg, rmsg, 3);
 
 			if(--level >= 1) m_tdc[0]->init(level);
@@ -271,6 +271,7 @@ QString AnTdig::dump() const
 	sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
 	sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
 	sl << QString("  Threshold         : ") + thresholdString();
+	sl << QString("  EEPROM Selector   : %1").arg(m_eeprom);
 	sl << QString("  Status            : ") + QString::number(status());
 	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 

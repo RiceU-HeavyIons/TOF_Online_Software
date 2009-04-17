@@ -48,6 +48,7 @@ private:
 	QLabel    *m_pld03, *l_pld03;
 	QLabel    *m_thrs,  *l_thrs;
 	QLabel    *m_status[3], *l_status[3];
+	QLabel    *m_eeprom, *l_eeprom;
 };
 
 #endif /* KTCPUVIEW_H_ */

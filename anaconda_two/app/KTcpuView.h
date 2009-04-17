@@ -48,6 +48,7 @@ private:
 	QLabel      *m_ecsr;
 	QLabel      *m_pld02;
 	QLabel      *m_pld03;
+	QLabel      *m_eeprom;
 
 
 	KTdigModel  *m_model;

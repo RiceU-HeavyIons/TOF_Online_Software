@@ -58,6 +58,10 @@ public:
 
 	QString pldReg03String(bool hlite) const;
 	QString pldReg03ToolTipString() const;
+	
+	quint8 eeprom() const { return m_eeprom; }
+	quint8 setEeprom(quint8 v) { return (m_eeprom = v); }
+	QString eepromString() const { return QString::number(m_eeprom); }
 
 	QString errorDump() const;
 
@@ -74,6 +78,7 @@ private:
 	int         m_threshold;
 	quint64     m_chipid;
 	quint8      m_pld03, m_pld03Set; // read-only register
+	quint8      m_eeprom;
 };
 
 #endif /* ANTDIG_H_ */

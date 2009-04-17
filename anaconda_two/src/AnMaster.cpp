@@ -134,6 +134,13 @@ void AnMaster::p_setMode(int mode)
 				else qDebug() << "invalid address: " << ad.toString();
 			}
 		}
+		if (ct == "TCPU_EEPROM") {
+			foreach(AnAddress ad, m_root->expand(addr)) {
+				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
+				if (tcpu) tcpu->setEeprom(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
 
 		// TDIG
 		if (ct == "TDIG_ENABLE") {
@@ -154,6 +161,13 @@ void AnMaster::p_setMode(int mode)
 			foreach(AnAddress ad, m_root->expand(addr)) {
 				AnTdig *tdig = dynamic_cast<AnTdig*>( m_root->find(ad) );
 				if (tdig) tdig->setThreshold(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
+		if (ct == "TDIG_EEPROM") {
+			foreach(AnAddress ad, m_root->expand(addr)) {
+				AnTdig *tdig = dynamic_cast<AnTdig*>( m_root->find(ad) );
+				if (tdig) tdig->setEeprom(val);
 				else qDebug() << "invalid address: " << ad.toString();
 			}
 		}

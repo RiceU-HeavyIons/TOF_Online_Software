@@ -53,6 +53,9 @@ KTcpuView::KTcpuView(QWidget *parent) : QGroupBox("TCPU", parent)
 	grid->addWidget(new QLabel("PLD Reg[03]:"), ++row, 0);
 	grid->addWidget(m_pld03 = new QLabel("----"),  row, 1);
 
+	grid->addWidget(new QLabel("EEPROM:"), ++row, 0);
+	grid->addWidget(m_eeprom = new QLabel("----"),  row, 1);
+
 	vbox->addWidget(winfo);
 // TDIG
 	m_view = new QTableView();
@@ -126,6 +129,8 @@ void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_pld02->setToolTip(tcpu->pldReg02ToolTipString());
     m_pld03->setText(tcpu->pldReg03String(true));
     m_pld03->setToolTip(tcpu->pldReg03ToolTipString());
+
+	m_eeprom->setText(tcpu->eepromString());
 
     m_model->setTcpu(tcpu);
   }

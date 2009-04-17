@@ -8,7 +8,7 @@ Entry:
   2009-04-15:
   - pre-check for AnAgent::read
   - sync after TCPU recovery, THUB and TCPU
-  - EEPROM selector for TDIG
+  - (X) EEPROM selector for TDIG
 
   2009-04-14:
   - (X) Set TDIG number after load FPGA code
@@ -54,7 +54,7 @@ Entry:
   - (X) obtain TDIG PLD 0x3 instead of JTAG
 
   2009-03-11:
-  - EEPROM selection
+  - (X) EEPROM selection
 
   2009-03-10:
   - (X) icon for resync

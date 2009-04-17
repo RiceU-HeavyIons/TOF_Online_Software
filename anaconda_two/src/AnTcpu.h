@@ -73,6 +73,10 @@ public:
 	QString pldReg03String(bool hlite = false) const;	
 	QString pldReg0eString(bool hlite = false) const;	
 
+	quint8 eeprom() const { return m_eeprom; }
+	quint8 setEeprom(quint8 v) { return (m_eeprom = v); }
+	QString eepromString() const { return QString::number(m_eeprom); }
+
 	quint64 chipId() const { return m_chipid; }
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
 	QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
@@ -106,6 +110,7 @@ private:
 	quint8      m_pld03, m_pld03Set; // read-only register
 	quint8      m_pld0e, m_pld0eSet;
 	quint64     m_chipid;
+	quint8      m_eeprom;
 
 	quint8      m_tray_id;
 	QString     m_tray_sn;
