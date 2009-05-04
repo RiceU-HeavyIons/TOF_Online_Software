@@ -150,7 +150,14 @@ int AnSerdes::status() const
 	if (agent()->commError() || commError()) return STATUS_COMM_ERR;
 
 	int err = 0;
-	if (ecsr() != pld9xSet()) err++;
+	quint8 pld9x = ecsr();
+
+// MTD patch
+	if (laddr().at(1) == 4 && laddr().at(2) == 8) {
+		if (m_pld9xBase) pld9x |= 0x4;
+	}
+
+	if (pld9x != pld9xSet()) err++;
 
 	if (active()) {
 		if (err) return STATUS_ERROR;
@@ -163,7 +170,11 @@ quint8 AnSerdes::pld9xSet() const {
 	quint8 bts = m_pld9xBase;
 	if (bts != 0) {
 		for (int i = 0; i < 4; ++i)
-			if(m_tcpu[i] && m_tcpu[i]->fibermode()) bts |= (1 << i);
+			if (m_tcpu[i] && m_tcpu[i]->fibermode()) bts |= (1 << i);
+// MTD patch
+		if (laddr().at(1) == 4 && laddr().at(2) == 8) {
+			bts |= 0x4;
+		}
 	}
 	return bts;
 }
