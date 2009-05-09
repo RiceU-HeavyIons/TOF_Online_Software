@@ -111,8 +111,8 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	m_console = new KConsole(m_root, this);
 	QObject::connect(m_console, SIGNAL(changeExpertMode(bool)), this, SLOT(setExpertMode(bool)));
 
-	m_simple = new KSimpleWindow(this);
-	setExpertMode(true); // defalt mode
+//	m_simple = new KSimpleWindow(this);
+	setExpertMode(false); // defalt mode
 
 	// set default mode
 	m_combo->setCurrentIndex(3);
@@ -126,15 +126,25 @@ KMainWindow::~KMainWindow()
 
 void KMainWindow::setExpertMode(bool em)
 {
-	if ( (m_expertMode = em) ) {
-		m_combo->setCurrentIndex(m_root->modeIdx());
-		show();
-		m_simple->hide();
+	// if ( (m_expertMode = em) ) {
+	// 	m_combo->setCurrentIndex(m_root->modeIdx());
+	// show();
+	// 	m_simple->hide();
+	// } else {
+	// 	hide();
+	// 	m_simple->selectMode(m_root->modeIdx());
+	// 	m_simple->show();
+	// }
+	if (em) {
+		m_expertMode = em;
+		setBusy(false);
 	} else {
-		hide();
-		m_simple->selectMode(m_root->modeIdx());
-		m_simple->show();
+		m_expertMode = true;
+		setBusy(true);
+		m_expertMode = false;
+		setBusy(false);
 	}
+	show();
 }
 
 //------------------------------------------------------------------------------
@@ -466,19 +476,25 @@ void KMainWindow::setMode(int i)
 void KMainWindow::setBusy(bool sw)
 {
 	m_busy = sw;
+
+	if (m_expertMode) {
 #ifdef CMD_RESYNC
-	m_ResyncAction->setEnabled(!sw);
+		m_ResyncAction->setEnabled(!sw);
 #endif
 #ifdef CMD_INIT
-	m_InitAction->setEnabled(!sw);
+		m_InitAction->setEnabled(!sw);
 #endif
 #ifdef CMD_CONFIG
-	m_ConfigAction->setEnabled(!sw);
+		m_ConfigAction->setEnabled(!sw);
 #endif
-	m_ResetAction->setEnabled(!sw);
-	m_SyncAction->setEnabled(!sw);
-	for (int i = 0; i < 4; ++i) m_UserAction[i]->setEnabled(!sw);
-	m_combo->setEnabled(!sw);
+		m_ResetAction->setEnabled(!sw);
+		m_SyncAction->setEnabled(!sw);
+		for (int i = 0; i < 4; ++i) m_UserAction[i]->setEnabled(!sw);
+		m_combo->setEnabled(!sw);
+	} else {
+		m_SyncAction->setEnabled(!sw);
+		m_UserAction[2]->setEnabled(!sw);
+	}
 }
 
 /**
