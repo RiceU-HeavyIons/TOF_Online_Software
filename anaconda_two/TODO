@@ -8,7 +8,7 @@ Entry:
   2009-05-08:
   - Missing BunchRest
   - correct THUB temperature format
-  - raise communication error threshold
+  - (X) raise communication error threshold
 
   2009-04-15:
   - pre-check for AnAgent::read
