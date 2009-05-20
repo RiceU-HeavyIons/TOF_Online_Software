@@ -45,7 +45,7 @@ void AnMaster::run()
 	m_mutex.lock();
 	while(m_q.count() > 0) p_setMode(m_q.dequeue());
 	m_mutex.unlock();
-	m_root->log(QString("AnMaster::run finish (%1)").arg(count));
+	m_root->log(QString("AnMaster::run: finish (%1)").arg(count));
 	++count;
 }
 

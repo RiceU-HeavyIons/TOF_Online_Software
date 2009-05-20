@@ -647,7 +647,7 @@ void AnRoot::received(AnRdMsg rmsg)
 				log("received: got end of run message");
 				doUserCmd(3);
 			} else {
-				log( QString("receved: error message: %1").arg(rmsg.toString()) );
+				log( QString("received: error message: %1").arg(rmsg.toString()) );
 			}
 		} else if (rmsg.payload() == 0x4) {
 			if(!isRunning()) {
