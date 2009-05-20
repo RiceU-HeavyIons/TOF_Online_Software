@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_eeprom2.cc,v 1.5 2009-02-25 17:19:31 jschamba Exp $";
+"$Id: p_eeprom2.cc,v 1.6 2009-05-20 18:57:45 jschamba Exp $";
 #endif /* lint */
 
 
@@ -127,7 +127,25 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
   // swallow any packets that might be present first
   errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
   
+  // ************** CONFIGURE_TDC:Write FPGA_CONFIG0 ****************************************
+  ms.MSGTYPE = MSGTYPE_STANDARD;
+  ms.ID = 0x002 | (nodeID<<4);
+  ms.LEN = 1;
+  
+  // "FPGA_CONFIG0"
+  ms.DATA[0] = 0x11;
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_eeprom2: Sending Write FPGA_CONFIG0 command:");
+#endif
+  
+  if ( sendCAN_and_Compare(ms, "p_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) // timeout = 0.5 sec
+    printf("Old MCU Code?\n");
+  
 
+
+  // NOW START; Attempt to continue, even if error in previous CANbus message, since it
+  // could be old MCU code
   for (int page=0; page<noPages; page++) {
   
     int eeprom_addrs = page*256;
@@ -232,7 +250,27 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
   // ********************************************************************************
 
 
+
+  // ************** CONFIGURE_TDC:Write FPGA_CONFIG1 ****************************************
+  ms.MSGTYPE = MSGTYPE_STANDARD;
+  ms.ID = 0x002 | (nodeID<<4);
+  ms.LEN = 1;
+  
+  // "FPGA_CONFIG0"
+  ms.DATA[0] = 0x12;
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "p_eeprom2: Sending Write FPGA_CONFIG0 command:");
+#endif
+  
+  if ( sendCAN_and_Compare(ms, "p_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) { // timeout = 0.5 sec
+    printf("Old MCU code?\n");
+  }
+
+
   cout << "... Configuration finished successfully.\n";
+  fprintf(stderr, "successfully configured EEPROM2 TCPU 0x%x devID %d\n",
+	  nodeID, devID); fflush(stderr);
 
 
   my_private_exit(errno);
