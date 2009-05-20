@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_eeprom2.cc,v 1.2 2009-02-25 17:19:31 jschamba Exp $";
+"$Id: xp_eeprom2.cc,v 1.3 2009-05-20 18:58:44 jschamba Exp $";
 #endif /* lint */
 
 
@@ -40,6 +40,7 @@ using namespace std;
 #define TDIG_D
 // #define LOCAL_DEBUG
 #define LINE_UP "[1A[80D[0J"
+//#define LINE_UP ""
 
 //****************************************************************************
 // GLOBALS
@@ -132,6 +133,25 @@ int eeprom2(const char *filename,
   errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
   
 
+  // ************** CONFIGURE_TDC:Write FPGA_CONFIG0 ****************************************
+  ms.MSGTYPE = MSGTYPE_EXTENDED;
+  ms.ID = (0x002 | (tdigNodeID<<4)) <<18 | tcpuNodeID;
+  ms.LEN = 1;
+  
+  // "FPGA_CONFIG0"
+  ms.DATA[0] = 0x11;
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "xp_eeprom2: Sending Write FPGA_CONFIG0 command:");
+#endif
+  
+  if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) // timeout = 0.5 sec
+    printf("Old MCU Code?\n");
+  
+
+
+  // NOW START; Attempt to continue, even if error in previous CANbus message, since it
+  // could be old MCU code
   for (int page=0; page<noPages; page++) {
   
     int eeprom_addrs = page*256;
@@ -148,10 +168,10 @@ int eeprom2(const char *filename,
     ms.DATA[0] = 0x10;
     
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_eeprom2: Sending Write Block Start command:");
+    printCANMsg(ms, "xp_eeprom2: Sending Write Block Start command:");
 #endif
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Start", 4000000, 2, true) != 0) // timeout = 4 sec
+    if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write Block Start", 4000000, 2, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     
@@ -171,7 +191,7 @@ int eeprom2(const char *filename,
 #endif
       
       
-      if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Data", 4000000, 2, true) != 0) // timeout = 4 sec
+      if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write Block Data", 4000000, 2, true) != 0) // timeout = 4 sec
 	my_private_exit(errno);
       
     } // end "for(i=1, ... " loop
@@ -186,7 +206,7 @@ int eeprom2(const char *filename,
     }
     
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_eeprom2: Sending Write Block Data packet 37:");
+    printCANMsg(ms, "xp_eeprom2: Sending Write Block Data packet 37:");
 #endif
     
     
@@ -198,11 +218,11 @@ int eeprom2(const char *filename,
     ms.DATA[0] = 0x30;
     
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_eeprom2: Sending Write Block End packet:");
+    printCANMsg(ms, "xp_eeprom2: Sending Write Block End packet:");
 #endif
     
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block End:", 4000000, 8, true) != 0) // timeout = 4 sec
+    if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write Block End:", 4000000, 8, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     
@@ -221,10 +241,10 @@ int eeprom2(const char *filename,
     }
     
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_eeprom2: Sending Write Block Target packet:");
+    printCANMsg(ms, "xp_eeprom2: Sending Write Block Target packet:");
 #endif
     
-    if ( sendCAN_and_Compare(ms, "p_eeprom2: Write Block Target:", 4000000, 2, true) != 0) // timeout = 4 sec
+    if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write Block Target:", 4000000, 2, true) != 0) // timeout = 4 sec
       my_private_exit(errno);
     
     if(page<11) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
@@ -236,7 +256,27 @@ int eeprom2(const char *filename,
   // ********************************************************************************
 
 
+
+
+  // ************** CONFIGURE_TDC:Write FPGA_CONFIG1 ****************************************
+  ms.MSGTYPE = MSGTYPE_EXTENDED;
+  ms.ID = (0x002 | (tdigNodeID<<4)) <<18 | tcpuNodeID;
+  ms.LEN = 1;
+  
+  // "FPGA_CONFIG0"
+  ms.DATA[0] = 0x12;
+  
+#ifdef LOCAL_DEBUG
+  printCANMsg(ms, "xp_eeprom2: Sending Write FPGA_CONFIG0 command:");
+#endif
+  
+  if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) { // timeout = 0.5 sec
+    printf("Old MCU code?\n");
+  }
+
   cout << "... Configuration finished successfully.\n";
+  fprintf(stderr, "successfully configured EEPROM2 TDIG 0x%x through TCPU 0x%x devID %d\n",
+	  tdigNodeID, tcpuNodeID, devID); fflush(stderr);
 
 
   my_private_exit(errno);
