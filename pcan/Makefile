@@ -123,6 +123,9 @@ getTHUBFWIDs:		getTHUBFWIDs.o can_utils.o
 getFWIDs:		getFWIDs.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
+sendcmd:	sendcmd.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
 clean:
 	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
 		p_config_run5 analyze_noise clientpc MCU2 xp_config_scripted \
