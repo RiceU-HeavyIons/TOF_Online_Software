@@ -39,11 +39,14 @@ void AnMaster::setMode(int mode)
 
 void AnMaster::run()
 {
-	m_root->log("AnMaster::run begin");
+	static int count = 0;
+
+	m_root->log(QString("AnMaster::run: begin (%1)").arg(count));
 	m_mutex.lock();
 	while(m_q.count() > 0) p_setMode(m_q.dequeue());
 	m_mutex.unlock();
-	m_root->log("AnMaster::run finish");
+	m_root->log(QString("AnMaster::run finish (%1)").arg(count));
+	++count;
 }
 
 void AnMaster::p_setMode(int mode)

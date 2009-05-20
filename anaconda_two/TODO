@@ -5,9 +5,13 @@ Created: 2008-11-24
 Updated: 2009-05-08
 Description: TODO file for Anaconda 2 development.
 Entry:
+  2009-05-20:
+  - Jo reported initialization doesn't happen sometime. It have to be fixed.
+  - (X) Change THUB numbering NW=1, NE=2, SW=3, SE=4 now.
+
   2009-05-08:
   - Missing BunchRest
-  - correct THUB temperature format
+  - (X) correct THUB temperature format -- by Jo
   - (X) raise communication error threshold
 
   2009-04-15:
