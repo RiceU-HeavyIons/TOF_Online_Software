@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/AnMaster.cpp</string>
+	<string>src/AnRoot.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-05-15T23:16:57Z</date>
+			<date>2009-05-20T18:41:02Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -43,7 +43,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-16T23:40:32Z</date>
+					<date>2009-05-20T18:26:13Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -190,8 +190,6 @@
 					<date>2009-03-27T16:53:52Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -274,7 +272,7 @@
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-16T23:42:00Z</date>
+					<date>2009-05-20T18:41:02Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -382,9 +380,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T02:32:11Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2009-05-20T17:57:44Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -405,8 +401,6 @@
 					<date>2009-03-27T05:45:00Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 		</dict>
@@ -423,7 +417,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-09T02:07:12Z</date>
+					<date>2009-05-20T17:57:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -441,23 +435,21 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-25T22:41:39Z</date>
+					<date>2009-05-20T16:26:41Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/thubs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-03-01T14:49:16Z</date>
+					<date>2009-05-20T16:26:45Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/tcpus.sql</string>
 					<key>lastUsed</key>
-					<date>2009-02-13T22:59:51Z</date>
+					<date>2009-05-20T17:55:27Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -960,6 +952,20 @@
 	<integer>246</integer>
 	<key>metaData</key>
 	<dict>
+		<key>TODO</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>10</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>app/KMainWindow.cpp</key>
 		<dict>
 			<key>caret</key>
@@ -974,60 +980,30 @@
 			<key>firstVisibleLine</key>
 			<integer>71</integer>
 		</dict>
-		<key>src/AnMaster.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>33</integer>
-				<key>line</key>
-				<integer>43</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>31</integer>
-		</dict>
 		<key>src/AnRoot.cpp</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>20</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>398</integer>
+				<integer>0</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>380</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>398</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>20</integer>
-				<key>line</key>
-				<integer>398</integer>
-			</dict>
+			<integer>631</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>src/AnMaster.cpp</string>
-		<string>src/AnRoot.cpp</string>
 		<string>app/KMainWindow.cpp</string>
+		<string>src/AnRoot.cpp</string>
+		<string>TODO</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{311, 51}, {889, 695}}</string>
+	<string>{{324, 47}, {889, 695}}</string>
 </dict>
 </plist>

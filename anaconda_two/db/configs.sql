@@ -95,11 +95,12 @@ insert into configs values (null,   1, 31,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   1, 32,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   1, 33,  42,   2, 255,   5,   1,     14);
 
--- Disable Tray 38, 39, 52, 75
+-- Disable Tray 38, 39, 52, 75, 64
 insert into configs values (null,   1, 81,  21,   2,  38,   0,   0,      0);
 insert into configs values (null,   1, 82,  21,   2,  39,   0,   0,      0);
 insert into configs values (null,   1, 83,  21,   2,  52,   0,   0,      0);
 insert into configs values (null,   1, 84,  21,   2,  75,   0,   0,      0);
+insert into configs values (null,   1, 85,  21,   2,  64,   0,   0,      0);
 
 -- Disable TDIG 4, 7, 8 for upVPD
 insert into configs values (null,   1, 91,  31,   2, 121,   4,   0,      0);
@@ -147,9 +148,9 @@ insert into configs values (null,   3, 44, 102,   2, 255,   0,   0,      2);
 
 -- 5. Trun on THUB serdes channels
 insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
-insert into configs values (null,   3, 52,  12,   1,   3,   5,   0,      0);
-insert into configs values (null,   3, 53,  12,   1,   3,   6,   0,      0);
-insert into configs values (null,   3, 54,  12,   1,   3,   7,   0,      0);
+insert into configs values (null,   3, 52,  12,   1,   2,   5,   0,      0);
+insert into configs values (null,   3, 53,  12,   1,   2,   6,   0,      0);
+insert into configs values (null,   3, 54,  12,   1,   2,   7,   0,      0);
 insert into configs values (null,   3, 55, 102,   1, 255, 255,   0,      1);
 
 -- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
@@ -185,9 +186,9 @@ insert into configs values (null,   4, 43,  24,   2, 255,   0,   0,      2);
 
 -- 5. Trun on THUB serdes channels
 insert into configs values (null,   4, 51,  12,   1, 255, 255,   0,     16);
-insert into configs values (null,   4, 52,  12,   1,   3,   5,   0,      0);
-insert into configs values (null,   4, 53,  12,   1,   3,   6,   0,      0);
-insert into configs values (null,   4, 54,  12,   1,   3,   7,   0,      0);
+insert into configs values (null,   4, 52,  12,   1,   2,   5,   0,      0);
+insert into configs values (null,   4, 53,  12,   1,   2,   6,   0,      0);
+insert into configs values (null,   4, 54,  12,   1,   2,   7,   0,      0);
 -- insert into configs values (null,   4, 55, 102,   1, 255, 255,   0,      1);
 -- insert into configs values (null,   4, 52, 102,   1, 255, 255,   0,      1);
 
