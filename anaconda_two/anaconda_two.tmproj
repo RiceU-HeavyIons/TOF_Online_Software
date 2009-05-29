@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>src/AnRoot.cpp</string>
+	<string>TODO</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-05-20T18:41:02Z</date>
+			<date>2009-05-21T01:14:37Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -43,7 +45,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T18:26:13Z</date>
+					<date>2009-05-21T01:14:37Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -272,7 +274,7 @@
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T18:41:02Z</date>
+					<date>2009-05-21T01:14:35Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -417,7 +419,7 @@
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T17:57:45Z</date>
+					<date>2009-05-21T01:14:32Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -441,15 +443,17 @@
 					<key>filename</key>
 					<string>db/thubs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T16:26:45Z</date>
+					<date>2009-05-21T01:14:33Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/tcpus.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T17:55:27Z</date>
+					<date>2009-05-21T01:14:30Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>db</string>
 		</dict>
@@ -966,39 +970,9 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>app/KMainWindow.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>71</integer>
-		</dict>
-		<key>src/AnRoot.cpp</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>0</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>631</integer>
-		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>app/KMainWindow.cpp</string>
-		<string>src/AnRoot.cpp</string>
 		<string>TODO</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
