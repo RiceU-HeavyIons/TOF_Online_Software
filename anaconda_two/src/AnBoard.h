@@ -19,7 +19,7 @@ public:
 	AnBoard(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
 	double temp(int i = 0) const { return m_temp[i]; }
-	virtual QString tempString(int i = 0) const;
+	virtual QString tempString(int i = 0, bool hilit = false) const;
 	virtual double maxTemp() const { return m_temp[0]; };
 	virtual QString maxTempString() const;
 

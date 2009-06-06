@@ -26,9 +26,14 @@ AnBoard::AnBoard(const AnBoard &rhs) : AnCanObject(rhs),
 {
 }
 
-QString AnBoard::tempString(int i) const
+QString AnBoard::tempString(int i, bool hilit) const
 {
-	return QString::number(m_temp[i], 'f', 2) + " C";
+	QString ret = QString::number(m_temp[i], 'f', 2) + " C";
+
+	if (hilit && (temp(i) > tempAlarm()))
+		ret = QString("<font color='red'>%1</font>").arg(ret);
+
+	return ret;
 }
 
 QString AnBoard::maxTempString() const

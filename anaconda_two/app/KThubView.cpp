@@ -68,8 +68,6 @@ KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent)
 	vbox->addWidget(m_view);
 
 	vbox->addStretch();
-
-
 }
 
 KThubView::~KThubView()
@@ -87,8 +85,8 @@ void KThubView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_laddr->setText(thub->lAddress().toString());
     m_haddr->setText(thub->hAddress().toString());
     m_firm->setText(thub->firmwareString());
-    m_temp1->setText(QString::number(thub->temp(0)));
-    m_temp2->setText(QString::number(thub->temp(1)));
+    m_temp1->setText(thub->tempString(0, true));
+    m_temp2->setText(thub->tempString(1, true));
     m_ecsr->setText(thub->ecsrString(true));
 //    m_ecsr->setToolTip(thub->ecsrString());
 

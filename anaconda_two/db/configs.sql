@@ -76,7 +76,7 @@ create table configs (
 );
 
 ---------- ----------------   id  set ord  typ  ad1  ad2  ad3  ad4   value
-insert into configs values (null,   1,  1,   2,   1, 255,   0,   0,     45);
+insert into configs values (null,   1,  1,   2,   1, 255,   0,   0,     50);
 insert into configs values (null,   1,  2,  12,   1, 255, 255,   0,      0);
 -- TCPU
 insert into configs values (null,   1, 11,  22,   2, 255,   0,   0,     45);
@@ -139,7 +139,7 @@ insert into configs values (null,   3, 22, 102,   1, 255, 255,   0,      1);
 insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
 
 -- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1500);
+insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   2500);
 insert into configs values (null,   3, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   3, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   3, 42,  23,   2, 255,   0,   0,     15);
@@ -177,7 +177,7 @@ insert into configs values (null,   4, 21,  12,   1, 255, 255,   0,      0);
 -- insert into configs values (null,   4, 31, 103,   2, 255, 255,   0,      2);
 
 -- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   1500);
+insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   2500);
 insert into configs values (null,   4, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   4, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   4, 42,  23,   2, 255,   0,   0,     15);

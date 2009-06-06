@@ -3,16 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>TODO</string>
+	<string>db/configs.sql</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>TODO</string>
 			<key>lastUsed</key>
-			<date>2009-05-21T01:14:37Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2009-06-06T23:33:20Z</date>
 		</dict>
 		<dict>
 			<key>children</key>
@@ -27,7 +25,7 @@
 					<key>filename</key>
 					<string>app/main.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-01T21:19:44Z</date>
+					<date>2009-06-04T19:17:22Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -45,7 +43,7 @@
 					<key>filename</key>
 					<string>app/KMainWindow.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-21T01:14:37Z</date>
+					<date>2009-06-04T19:17:24Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -57,7 +55,7 @@
 					<key>filename</key>
 					<string>app/KLevel1Model.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-30T13:22:08Z</date>
+					<date>2009-06-04T18:30:29Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -69,7 +67,7 @@
 					<key>filename</key>
 					<string>app/KLevel2View.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-28T17:31:00Z</date>
+					<date>2009-06-04T18:30:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -129,7 +127,7 @@
 					<key>filename</key>
 					<string>app/KThubView.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-04-10T20:07:31Z</date>
+					<date>2009-06-04T19:18:26Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -141,7 +139,7 @@
 					<key>filename</key>
 					<string>app/KSerdesView.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-29T12:37:38Z</date>
+					<date>2009-06-04T19:17:18Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -165,13 +163,13 @@
 					<key>filename</key>
 					<string>app/KProgressIndicator.h</string>
 					<key>lastUsed</key>
-					<date>2008-12-16T03:14:54Z</date>
+					<date>2009-06-04T19:17:20Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>app/KConsole.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-03-10T14:16:02Z</date>
+					<date>2009-06-04T19:17:23Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -192,6 +190,8 @@
 					<date>2009-03-27T16:53:52Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>app</string>
 		</dict>
@@ -202,7 +202,7 @@
 					<key>filename</key>
 					<string>src/src.pro</string>
 					<key>lastUsed</key>
-					<date>2009-03-18T21:38:46Z</date>
+					<date>2009-06-04T19:52:52Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -214,25 +214,25 @@
 					<key>filename</key>
 					<string>src/AnAgent.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-09T02:07:17Z</date>
+					<date>2009-06-04T19:52:58Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.h</string>
 					<key>lastUsed</key>
-					<date>2009-04-14T22:56:08Z</date>
+					<date>2009-06-04T19:52:57Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnBoard.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-04-14T22:58:06Z</date>
+					<date>2009-06-04T15:00:40Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnCanObject.h</string>
 					<key>lastUsed</key>
-					<date>2009-04-14T23:36:55Z</date>
+					<date>2009-06-04T19:52:57Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -268,13 +268,13 @@
 					<key>filename</key>
 					<string>src/AnRoot.h</string>
 					<key>lastUsed</key>
-					<date>2009-04-08T19:03:07Z</date>
+					<date>2009-06-04T19:52:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnRoot.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-21T01:14:35Z</date>
+					<date>2009-06-04T19:52:57Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -292,13 +292,13 @@
 					<key>filename</key>
 					<string>src/AnTcpu.h</string>
 					<key>lastUsed</key>
-					<date>2009-04-17T17:26:03Z</date>
+					<date>2009-06-04T14:08:47Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnTcpu.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-09T02:07:14Z</date>
+					<date>2009-06-04T19:52:56Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -310,7 +310,7 @@
 					<key>filename</key>
 					<string>src/AnTdig.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-09T02:07:14Z</date>
+					<date>2009-06-04T19:16:09Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -328,13 +328,13 @@
 					<key>filename</key>
 					<string>src/AnThub.h</string>
 					<key>lastUsed</key>
-					<date>2009-04-14T23:36:51Z</date>
+					<date>2009-06-04T14:36:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>src/AnThub.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-09T02:07:07Z</date>
+					<date>2009-06-04T14:36:48Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -382,7 +382,7 @@
 					<key>filename</key>
 					<string>src/AnMaster.cpp</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T17:57:44Z</date>
+					<date>2009-06-04T19:52:58Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -413,13 +413,15 @@
 					<key>filename</key>
 					<string>db/initialize.rb</string>
 					<key>lastUsed</key>
-					<date>2009-03-18T17:15:52Z</date>
+					<date>2009-05-29T18:53:31Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/configs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-21T01:14:32Z</date>
+					<date>2009-06-06T23:33:20Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -437,19 +439,19 @@
 					<key>filename</key>
 					<string>db/devices.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-20T16:26:41Z</date>
+					<date>2009-06-04T18:52:49Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/thubs.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-21T01:14:33Z</date>
+					<date>2009-06-04T18:53:08Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>db/tcpus.sql</string>
 					<key>lastUsed</key>
-					<date>2009-05-21T01:14:30Z</date>
+					<date>2009-06-04T18:56:05Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -937,13 +939,13 @@
 			<key>filename</key>
 			<string>anaconda_two.pro</string>
 			<key>lastUsed</key>
-			<date>2009-02-26T18:24:57Z</date>
+			<date>2009-06-04T19:52:53Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>bootstrap.sh</string>
 			<key>lastUsed</key>
-			<date>2009-02-26T19:20:01Z</date>
+			<date>2009-06-04T19:52:59Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -970,14 +972,29 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>db/configs.sql</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>74</integer>
+				<key>line</key>
+				<integer>78</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>66</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>TODO</string>
+		<string>db/configs.sql</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{324, 47}, {889, 695}}</string>
+	<string>{{305, 68}, {889, 695}}</string>
 </dict>
 </plist>
