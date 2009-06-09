@@ -95,12 +95,13 @@ insert into configs values (null,   1, 31,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   1, 32,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   1, 33,  42,   2, 255,   5,   1,     14);
 
--- Disable Tray 38, 39, 52, 75, 64
-insert into configs values (null,   1, 81,  21,   2,  38,   0,   0,      0);
-insert into configs values (null,   1, 82,  21,   2,  39,   0,   0,      0);
-insert into configs values (null,   1, 83,  21,   2,  52,   0,   0,      0);
-insert into configs values (null,   1, 84,  21,   2,  75,   0,   0,      0);
-insert into configs values (null,   1, 85,  21,   2,  64,   0,   0,      0);
+-- Disable Tray 4, 38, 39, 52, 75, 64
+insert into configs values (null,   1, 81,  21,   2,   4,   0,   0,      0);
+insert into configs values (null,   1, 82,  21,   2,  38,   0,   0,      0);
+insert into configs values (null,   1, 83,  21,   2,  39,   0,   0,      0);
+insert into configs values (null,   1, 84,  21,   2,  52,   0,   0,      0);
+insert into configs values (null,   1, 85,  21,   2,  75,   0,   0,      0);
+insert into configs values (null,   1, 86,  21,   2,  64,   0,   0,      0);
 
 -- Disable TDIG 4, 7, 8 for upVPD
 insert into configs values (null,   1, 91,  31,   2, 121,   4,   0,      0);
