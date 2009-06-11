@@ -191,6 +191,7 @@ void AnTcpu::sync(int level)
 				agent()->write_read(msg, rmsg, 8);
 				setEcsr(rmsg.Msg.DATA[3]);
 				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+				agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()));
 
 				if (level >= 3) {
 					// get firmware versions

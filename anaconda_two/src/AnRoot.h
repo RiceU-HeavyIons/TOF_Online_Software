@@ -120,6 +120,7 @@ public:
 	void emit_finished() { emit finished(); }
 	
 	void log(QString str);
+	void tlog(QString str);	
 
 signals:
 	void updated(AnBoard*);
@@ -159,6 +160,7 @@ private:
 	QList<mode>             m_mode_list;
 
 	AnLog                  *m_log;
+	AnLog                  *m_tlog;
 
 	// AutoSync timer and coursor
 	QTimer                         *m_timer;
@@ -173,6 +175,7 @@ private:
 	void initAutoSync();
 	
 	QMutex mtex_log;
+	QMutex mtex_tlog;
 	QMutex mtex_watch;
 };
 #endif /* ANROOT_H_ */

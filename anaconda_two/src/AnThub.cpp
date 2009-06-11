@@ -176,6 +176,9 @@ void AnThub::sync(int level)
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
 				rdata = agent()->write_read(msg, rmsg, 2);
 				setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
+				for(int j = 0; j < 2; ++j)
+					agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
+				
 			}
 
 			// readout crc error bits

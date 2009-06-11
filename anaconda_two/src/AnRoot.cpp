@@ -49,7 +49,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
 
 	QDateTime now = QDateTime::currentDateTime();
-	m_log = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
+	m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
+	m_tlog = new AnLog(default_path.filePath(now.toString("log/tempyyyyMMdd.log")));
 
 	QSqlQuery qry;
 	qry.exec("SELECT id, devid, name, installed FROM devices");
@@ -157,6 +158,7 @@ AnRoot::~AnRoot()
 	foreach(AnAgent *ag, m_agents) delete ag;
 	
 	delete m_log;
+	delete m_tlog;
 }
 
 //-----------------------------------------------------------------------------
@@ -648,6 +650,7 @@ void AnRoot::received(AnRdMsg rmsg)
 				doUserCmd(3);
 			} else {
 				log( QString("received: error message: %1").arg(rmsg.toString()) );
+				brd->sync(3);
 			}
 		} else if (rmsg.payload() == 0x4) {
 			if(!isRunning()) {
@@ -731,4 +734,11 @@ void AnRoot::log(QString str)
 	mtex_log.lock();
 	m_log->log(str);
 	mtex_log.unlock();
+}
+
+void AnRoot::tlog(QString str)
+{
+	mtex_tlog.lock();
+	m_tlog->log(str);
+	mtex_tlog.unlock();
 }

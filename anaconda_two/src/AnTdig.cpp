@@ -60,7 +60,7 @@ void AnTdig::sync(int level)
 			btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
-
+			agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()));
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
 			agent()->write_read(msg, rmsg, 3);
 			m_pld03 = rmsg.Msg.DATA[2];
