@@ -11,7 +11,7 @@ Entry:
 
   2009-06-04:
   - (X) Highlight THUB temperature error
-  - log temperature readout to a file
+  - (X) log temperature readout to a file
 
   2009-06-01:
   - No global error for timeout

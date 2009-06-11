@@ -50,7 +50,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 
 	QDateTime now = QDateTime::currentDateTime();
 	m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
-	m_tlog = new AnLog(default_path.filePath(now.toString("log/tempyyyyMMdd.log")));
+	m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
 
 	QSqlQuery qry;
 	qry.exec("SELECT id, devid, name, installed FROM devices");
