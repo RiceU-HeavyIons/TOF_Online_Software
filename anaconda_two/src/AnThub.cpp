@@ -173,7 +173,7 @@ void AnThub::sync(int level)
 			}
 			// readout temperature
 			for (int i = 0; i < 2; ++i) {
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i);
+				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i + 1);
 				rdata = agent()->write_read(msg, rmsg, 2);
 				setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
 				for(int j = 0; j < 2; ++j)
