@@ -7,6 +7,7 @@ Description: TODO file for Anaconda 2 development.
 Entry:
   2009-06-23:
   - (X) Fix Thub temperature readout bug
+  - (X) add moving the multiplisity gate stuff in AnTcpu init
 
   2009-06-10:
   - log AutoSync to make sure it's working

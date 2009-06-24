@@ -116,7 +116,7 @@ void AnTcpu::init(int level)
 
 			// moving the multiplisity gate
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x8, 0xe0);
-			agent()->write_read(msg, rmsg, 3);
+			agent()->write_read(msg, rmsg, 2);
 
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
