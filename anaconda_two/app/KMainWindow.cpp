@@ -221,6 +221,7 @@ void KMainWindow::createActions()
 #else
 	m_ToggleAutoSyncAction->setChecked(false);
 #endif
+	toggleAutoSync();
 	QObject::connect(m_ToggleAutoSyncAction, SIGNAL(triggered()),
 	                 this, SLOT(toggleAutoSync()));
 

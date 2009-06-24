@@ -2,15 +2,16 @@
 ---
 Author: Kohei Kajimoto
 Created: 2008-11-24
-Updated: 2009-06-10
+Updated: 2009-06-24
 Description: TODO file for Anaconda 2 development.
 Entry:
+
   2009-06-23:
   - (X) Fix Thub temperature readout bug
   - (X) add moving the multiplisity gate stuff in AnTcpu init
 
   2009-06-10:
-  - log AutoSync to make sure it's working
+  - (X) log AutoSync to make sure it's working
   - (X) sync automatically when you get error message from boards
 
   2009-06-04:
