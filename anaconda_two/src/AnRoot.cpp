@@ -502,7 +502,7 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 //-----------------------------------------------------------------------------
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
-	qDebug () << "AnRoot::hfind" << had;
+//	qDebug () << "AnRoot::hfind" << had;
 	return dynamic_cast<AnCanObject*>
 				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }

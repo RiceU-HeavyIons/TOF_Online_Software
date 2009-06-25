@@ -224,8 +224,10 @@ insert into configs values (null, 101,  1, 201,   1,   1,   0,   0,      1);
 insert into configs values (null, 102,  1,  104,  2, 255,   0,   0,     2);
 
 ---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
-insert into configs values (null, 103,  1,  212,   2, 255,   0,   0,      2);
-insert into configs values (null, 103,  2,  201,   1,   1,   0,   0,      2);
+insert into configs values (null, 103,  1,  105,   1, 255,   0,   0,      3);
+insert into configs values (null, 103,  2,  105,   2, 255,   0,   0,      2);
+insert into configs values (null, 103,  3,  212,   2, 255,   0,   0,      2);
+insert into configs values (null, 103,  4,  201,   1,   1,   0,   0,      2);
 
 ---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 insert into configs values (null, 104,  1,  212,   2, 255,   0,   0,      1);
