@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcan_find.cc,v 1.2 2004-10-29 17:47:23 jschamba Exp $";
+"$Id: pcan_find.cc,v 1.3 2009-06-25 20:36:49 jschamba Exp $";
 #endif /* lint */
 
 
@@ -96,7 +96,8 @@ int main(int argc, char *argv[])
   //__u32 dwPort = 0;
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
-  __u16 wBTR0BTR1 = CAN_BAUD_1M;
+  //__u16 wBTR0BTR1 = CAN_BAUD_1M;
+  __u16 wBTR0BTR1 = CAN_BAUD_500K;
   int   nExtended = CAN_INIT_TYPE_ST;
   char txt[255]; // temporary string storage
   char devName[255];

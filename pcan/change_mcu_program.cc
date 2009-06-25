@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: change_mcu_program.cc,v 1.3 2007-10-11 19:03:18 jschamba Exp $";
+"$Id: change_mcu_program.cc,v 1.4 2009-06-25 20:36:49 jschamba Exp $";
 #endif /* lint */
 
 #define LOCAL_DEBUG
@@ -335,7 +335,9 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   }
 
   //  CAN Port for TDIG at 1Mb/s, init PCAN-USB
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
+  //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
+  //  CAN Port for TDIG at 500kb/s, init PCAN-USB
+  errno = CAN_Init(h, CAN_BAUD_500K,  CAN_INIT_TYPE_ST);
   if (errno) {
     perror("change_mcu_program: CAN_Init()");
     my_private_exit(errno);

@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.7 2008-12-01 15:44:19 jschamba Exp $";
+"$Id: can_utils.cc,v 1.8 2009-06-25 20:36:49 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -108,7 +108,8 @@ int openCAN(WORD devID)
 
   // open CAN Port, init PCAN-USB
   //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
-  errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_EX); // open for Extended messages
+  //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_EX); // open for Extended messages
+  errno = CAN_Init(h, CAN_BAUD_500K,  CAN_INIT_TYPE_EX); // open for Extended messages
   if (errno) {
     perror("CAN_Init()");
     return(errno);

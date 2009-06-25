@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.23 2008-11-04 21:01:44 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.24 2009-06-25 20:36:49 jschamba Exp $";
 #endif /* lint */
 
 
@@ -129,8 +129,8 @@ int main(int argc, char *argv[])
   //__u32 dwPort = 0;
   //__u16 wIrq = 0;
   //__u16 wBTR0BTR1 = CAN_BAUD_250K;
-  __u16 wBTR0BTR1 = CAN_BAUD_1M;
-  // __u16 wBTR0BTR1 = CAN_BAUD_500K;
+  //__u16 wBTR0BTR1 = CAN_BAUD_1M;
+   __u16 wBTR0BTR1 = CAN_BAUD_500K;
   //int   nExtended = CAN_INIT_TYPE_ST;
   int  nExtended = CAN_INIT_TYPE_EX; // open for "extended" message IDs
   int  iteration = 0;
