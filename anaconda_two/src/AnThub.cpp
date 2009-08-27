@@ -130,7 +130,7 @@ void AnThub::qreset(int level)
 		clearCommError();
 
 		TPCANMsg    msg;
-		TPCANRdMsg  rmsg;
+		// TPCANRdMsg  rmsg;
 
 		try {
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 4, 0x81, 0x3, 0x81, 0x0);
