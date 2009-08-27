@@ -90,7 +90,7 @@ void AnTdc::config(int level)
 			agent()->write_read(msg, rmsg, 2);
 
 			// blocks //
-			for (int l = 0; l < tc->blockLength(); ++l) {
+			for (unsigned int l = 0; l < tc->blockLength(); ++l) {
 				tc->setBlockMsg(&msg, l);
 				agent()->write_read(msg, rmsg, 2);
 			}

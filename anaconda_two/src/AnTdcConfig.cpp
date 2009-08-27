@@ -32,7 +32,7 @@ AnTdcConfig& AnTdcConfig::operator=(const AnTdcConfig &rhs) {
 	m_length = rhs.m_length;
 	m_check_sum = rhs.m_check_sum;
 	m_block_length = rhs.m_block_length;
-	for(int i = 0; i < rhs.m_length; ++i) m_data[i] = rhs.m_data[i];
+	for(unsigned int i = 0; i < rhs.m_length; ++i) m_data[i] = rhs.m_data[i];
 	return *this;
 }
 
@@ -93,9 +93,9 @@ void AnTdcConfig::setBlockMsg(TPCANMsg *msg, int line) {
 
 	int len;
 
-	if (0 <= line && line < m_block_length - 1)
+	if (0 <= line && line < (int)m_block_length - 1)
 		len = 8;
-	else if ((line == m_block_length - 1) && ((m_length % 7) != 0))
+	else if ((line == (int)m_block_length - 1) && ((m_length % 7) != 0))
 		len = 1 + (m_length % 7);
 	else
 		len = 0;
