@@ -381,7 +381,7 @@ void AnRoot::wait() const {
 }
 
 //-----------------------------------------------------------------------------
-void AnRoot::agentFinished(int id)
+void AnRoot::agentFinished(int __attribute__((unused)) id)
 {
 	if(!isRunning()) {
 		emit finished();
