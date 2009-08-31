@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.2 2007-10-16 21:57:04 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.3 2009-08-31 20:45:16 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -253,6 +253,7 @@ int xwrite_mcu_block(unsigned char *bytes,
     printCANMsg(ms, "MCU2: Sending BlockTargetMCU2 command:");
 #endif
     if ( sendCAN_and_Compare(ms, "MCU2:BlockTargetMCU2", 4000000, 2, true) != 0) { // timeout = 4 sec
+      cout << "startAddr = 0x" << hex << startAddr << endl;
       my_private_exit(errno);
     }
 
