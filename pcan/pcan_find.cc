@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcan_find.cc,v 1.3 2009-06-25 20:36:49 jschamba Exp $";
+"$Id: pcan_find.cc,v 1.4 2009-08-31 20:45:47 jschamba Exp $";
 #endif /* lint */
 
 
@@ -127,7 +127,8 @@ int main(int argc, char *argv[])
 
 
   for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
+    //sprintf(devName, "/dev/pcan%d", 32+i);
+    sprintf(devName, "/dev/pcanusb%d", i);
     //h = CAN_Open(HW_USB, dwPort, wIrq);
     h = LINUX_CAN_Open(devName, O_RDWR);
     if (h == NULL) {

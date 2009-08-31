@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.24 2009-06-25 20:36:49 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.25 2009-08-31 20:45:47 jschamba Exp $";
 #endif /* lint */
 
 
@@ -183,7 +183,8 @@ int main(int argc, char *argv[])
   
   // open the CAN port
   for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
+    //sprintf(devName, "/dev/pcan%d", 32+i);
+    sprintf(devName, "/dev/pcanusb%d", i);
     h = LINUX_CAN_Open(devName, O_RDWR|O_NONBLOCK);
     if (h == NULL) {
       continue;
@@ -477,7 +478,9 @@ int main(int argc, char *argv[])
 	if (writeResponse) {
 	  write(respFifoFd, &(mr.Msg), sizeof(m));
 	}
-	if (((mr.Msg.ID &  0x0000000F) == 0x1) && saveit) { // a DATA_TO_PC packet
+	if ((((mr.Msg.ID & 0x0000000F) == 0x1) || // a DATA_TO_PC packet
+	     ((mr.Msg.ID & 0x0000000F) == 0x7) || // alert packet
+	     ((mr.Msg.ID & 0x003C0000) == 0x001C0000) ) && saveit) { // extended alert packet
 	  numEvents++;
 	  // save start time
 	  if (numEvents == 1) {
@@ -489,30 +492,32 @@ int main(int argc, char *argv[])
 	  for (i=0; i<4; i++)
 	    uc_ptr[i] = mr.Msg.DATA[i];
 	  if(filterit) {
-	    if ( (buffer[0]&0xf0000000) != 0xe0000000)
-	      if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
+	    if ( (buffer[0]&0xf0000000) != 0xe0000000) {
+	      if (doWriteId) fprintf(fp, "%03d 0x%08x ", openHandles[currentIndex], mr.Msg.ID);
 	      fprintf(fp, "0x%08x\n", buffer[0]);
+	    }
 	  }
 	  else {
 	    if (addTime)
 	      if ( (buffer[0]&0xff000000) == 0xea000000)
 		buffer[0] |= (curr_time & 0x00ffffff);
-	    if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
+	    if (doWriteId) fprintf(fp, "%03d 0x%08x ", openHandles[currentIndex], mr.Msg.ID);
 	    fprintf(fp, "0x%08x\n", buffer[0]);
 	  }
 	  if (mr.Msg.LEN == 8) {
 	    for (i=4; i<8; i++)
 	      uc_ptr[i] = mr.Msg.DATA[i];
 	    if(filterit) {
-	      if ( (buffer[1]&0xf0000000) != 0xe0000000)
-		if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
+	      if ( (buffer[1]&0xf0000000) != 0xe0000000) {
+		if (doWriteId) fprintf(fp, "%03d 0x%08x ", openHandles[currentIndex], mr.Msg.ID);
 		fprintf(fp, "0x%08x\n", buffer[1]);
+	      }
 	    }
 	    else {
 	      if (addTime)
 		if ( (buffer[1]&0xff000000) == 0xea000000)
 		  buffer[1] |= (curr_time & 0x00ffffff);
-	      if (doWriteId) fprintf(fp, "0x%08x ", mr.Msg.ID);
+	      if (doWriteId) fprintf(fp, "%03d 0x%08x ", openHandles[currentIndex], mr.Msg.ID);
 	      fprintf(fp, "0x%08x\n", buffer[1]);
 	    }
 	  }

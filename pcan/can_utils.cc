@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.8 2009-06-25 20:36:49 jschamba Exp $";
+"$Id: can_utils.cc,v 1.9 2009-08-31 20:45:47 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -71,7 +71,8 @@ int openCAN(WORD devID)
 
   // search for correct device ID:
   for (int i=0; i<8; i++) {
-    sprintf(devName, "/dev/pcan%d", 32+i);
+    //sprintf(devName, "/dev/pcan%d", 32+i);
+    sprintf(devName, "/dev/pcanusb%d", i);
     h = LINUX_CAN_Open(devName, O_RDWR);
     if (h == NULL) {
       //printf("Failed to open device %s\n", devName);
