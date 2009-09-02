@@ -7,13 +7,16 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.9 2009-08-31 20:45:47 jschamba Exp $";
+"$Id: can_utils.cc,v 1.10 2009-09-02 14:08:48 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
+#define PRINT_COLOR
 
 #define FIFO_FILE       "/tmp/pcanfifo"
 #define FIFO_RESPONSE "/tmp/pcanfifoRsp"
+const char *RED_ON_WHITE = "\033[47m\033[1;31m";
+const char *NORMAL_COLORS = "\033[0m";
 
 //****************************************************************************
 // INCLUDES
@@ -133,7 +136,13 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
 
   // send the message
   if ( (errno = CAN_Write(h, &ms)) ) {
+#ifdef PRINT_COLOR
+    cerr << RED_ON_WHITE;
+#endif
     perror("CAN_Write()");
+#ifdef PRINT_COLOR
+    cerr << NORMAL_COLORS;
+#endif
     return(errno);
   }
   
@@ -148,12 +157,24 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       status = CAN_Status(h);
       if ((int)status < 0) {
 	errno = nGetLastError();
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
 	perror("CAN_Status()");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return(errno);
       }
       else {
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
 	cout << "ERROR: " << errorMsg 
 	     << ": pending CAN status " << showbase << hex << status << " read.\n";
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-7);
       }
     } 
@@ -162,28 +183,46 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       // check if it's a proper response
       expectedID = ms.ID + 1;
       if ( mr.Msg.ID != expectedID ) {
-	cout << "ERROR: " << errorMsg 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << "ERROR: " << errorMsg 
 	     << " request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
 	     << ", expected response to " << (unsigned int)ms.ID << endl;	
 	printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-2);
       }
       if (expectedReceiveLen == 0xffffffff) expectedReceiveLen = ms.LEN;
       if (mr.Msg.LEN != expectedReceiveLen) { // check for correct length
-	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
 	     << dec << (int)mr.Msg.LEN << ", expected " << expectedReceiveLen << endl;
-	cout << errorMsg << " response: first byte: " 
+	cerr << errorMsg << " response: first byte: " 
 	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
 	     << " expected " << (unsigned int)ms.DATA[0] << endl;
 	printCANMsg(mr.Msg, "response");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-3);
       }
       if (mr.Msg.DATA[0] != ms.DATA[0]) {
-	cout << errorMsg << " response: first byte: " 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << errorMsg << " response: first byte: " 
 	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
 	     << " expected " << (unsigned int)ms.DATA[0] << endl;
 	printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-4);
       }
       // CAN HLP version 3:
@@ -204,9 +243,15 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       // 8 = C_STATUS_BADEE2 == eeprom2 readback error (mismatched data readback)
       if (checkStatus) {
 	if (mr.Msg.DATA[1] != 0) {
-	  cout << errorMsg << " response: second (status) byte: " 
+#ifdef PRINT_COLOR
+	  cerr << RED_ON_WHITE;
+#endif
+	  cerr << errorMsg << " response: second (status) byte: " 
 	       << showbase << hex << (unsigned int)mr.Msg.DATA[1] << endl; 
 	  printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	  cerr << NORMAL_COLORS;
+#endif
 	  return (-8);
 	}
       }
@@ -221,28 +266,46 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       //   of the extended Msg ID, i.e. 18 bits up
       expectedID = ms.ID + (1<<18); 
       if ( mr.Msg.ID != expectedID ) {
-	cout << "ERROR: " << errorMsg 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << "ERROR: " << errorMsg 
 	     << " request: Got something other than writeResponse: ID " 
 	     << showbase << hex << (unsigned int)mr.Msg.ID 
 	     << ", expected response to " << (unsigned int)ms.ID << endl;	
 	printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-2);
       }
       if (expectedReceiveLen == 0xffffffff) expectedReceiveLen = ms.LEN;
       if (mr.Msg.LEN != expectedReceiveLen) { // check for correct length
-	cout << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << "ERROR: " << errorMsg << " request: Got msg with incorrect data length " 
 	     << dec << (int)mr.Msg.LEN << ", expected " << expectedReceiveLen << endl;
-	cout << errorMsg << " response: first byte: " 
+	cerr << errorMsg << " response: first byte: " 
 	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
 	     << " expected " << (unsigned int)ms.DATA[0] << endl;
 	printCANMsg(mr.Msg, "response");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-3);
       }
       if (mr.Msg.DATA[0] != ms.DATA[0]) {
-	cout << errorMsg << " response: first byte: " 
+#ifdef PRINT_COLOR
+	cerr << RED_ON_WHITE;
+#endif
+	cerr << errorMsg << " response: first byte: " 
 	     << showbase << hex << (unsigned int)mr.Msg.DATA[0] 
 	     << " expected " << (unsigned int)ms.DATA[0] << endl;
 	printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
 	return (-4);
       }
       // CAN HLP version 3:
@@ -263,9 +326,15 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
       // 8 = C_STATUS_BADEE2 == eeprom2 readback error (mismatched data readback)
       if (checkStatus) {
 	if (mr.Msg.DATA[1] != 0) {
-	  cout << errorMsg << " response: second (status) byte: " 
+#ifdef PRINT_COLOR
+	  cerr << RED_ON_WHITE;
+#endif
+	  cerr << errorMsg << " response: second (status) byte: " 
 	       << showbase << hex << (unsigned int)mr.Msg.DATA[1] << endl; 
 	  printCANMsg(mr.Msg, "response:");
+#ifdef PRINT_COLOR
+	  cerr << NORMAL_COLORS;
+#endif
 	  return (-8);
 	}
       }
@@ -275,13 +344,25 @@ int sendCAN_and_Compare(TPCANMsg &ms, const char *errorMsg,
     } // data read
   } // data received
   else if (errno == CAN_ERR_QRCVEMPTY) {	
-    cout << "ERROR: Sent " << errorMsg << " packet, but did not receive response within "
+#ifdef PRINT_COLOR
+    cerr << RED_ON_WHITE;
+#endif
+    cerr << "ERROR: Sent " << errorMsg << " packet, but did not receive response within "
 	 << dec << timeout/1000000 << " sec" << endl;
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
     return (-5);
   }
   else {// other read error
-    cout << "ERROR: " << errorMsg 
+#ifdef PRINT_COLOR
+    cerr << RED_ON_WHITE;
+#endif
+    cerr << "ERROR: " << errorMsg 
 	 << ": LINUX_CAN_Read_Timeout returned " << errno << endl;
+#ifdef PRINT_COLOR
+	cerr << NORMAL_COLORS;
+#endif
     return (-6);
   }
 
