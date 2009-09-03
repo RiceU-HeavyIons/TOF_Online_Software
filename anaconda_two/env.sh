@@ -19,3 +19,7 @@ if [ `hostname` = 'scorpio.rhip.utexas.edu' ]; then
   export LD_LIBRARY_PATH=`pwd`/lib:`pwd`/fakepcan:/home/tof/c/qt/lib
 fi
 
+if [ `hostname` = 'cancer.rhip.utexas.edu' ]; then
+  export PATH=/usr/local/Trolltech/Qt-4.4.3/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.4.3/lib:$LD_LIBRARY_PATH
+fi
