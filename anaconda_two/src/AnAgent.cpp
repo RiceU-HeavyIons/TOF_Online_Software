@@ -11,7 +11,7 @@
 
 int AnAgent::TCAN_DEBUG = 0;
 #ifndef FAKEPCAN
-const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcan*";
+const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcanusb*";
 #else
 const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
 #endif
