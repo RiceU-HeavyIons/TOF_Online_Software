@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_eeprom2.cc,v 1.3 2009-05-20 18:58:44 jschamba Exp $";
+"$Id: xp_eeprom2.cc,v 1.4 2009-09-30 20:38:21 jschamba Exp $";
 #endif /* lint */
 
 
@@ -146,7 +146,7 @@ int eeprom2(const char *filename,
 #endif
   
   if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) // timeout = 0.5 sec
-    printf("Old MCU Code?\n");
+    cout << "Old MCU Code?\n\n";
   
 
 
@@ -271,7 +271,7 @@ int eeprom2(const char *filename,
 #endif
   
   if ( sendCAN_and_Compare(ms, "xp_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) { // timeout = 0.5 sec
-    printf("Old MCU code?\n");
+    cout << "Old MCU code?\n";
   }
 
   cout << "... Configuration finished successfully.\n";
