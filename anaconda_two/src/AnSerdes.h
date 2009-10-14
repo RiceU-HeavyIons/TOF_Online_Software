@@ -18,15 +18,15 @@ public:
 	virtual ~AnSerdes();
 
 // from AnCanObject
-	virtual AnCanObject *at(int i)  { return this; } // no child objs
-	virtual AnCanObject *hat(int i) { return this; } // no child objs	
+	virtual AnCanObject *at(int i)  { Q_UNUSED(i); return this; } // no child objs
+	virtual AnCanObject *hat(int i) { Q_UNUSED(i); return this; } // no child objs	
 
 	virtual QString dump() const;
 
-	virtual void init (int level) { /* placeholder */}
+	virtual void init (int level) { Q_UNUSED(level); /* placeholder */}
 	virtual void config(int level);
-	virtual void reset (int level) { /* placeholder */}
-	virtual void qreset(int level) { /* placeholder */ };
+	virtual void reset (int level) { Q_UNUSED(level); /* placeholder */}
+	virtual void qreset(int level) { Q_UNUSED(level); /* placeholder */ };
 	virtual void sync  (int level);
 
 

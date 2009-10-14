@@ -51,28 +51,31 @@ void KLevel2View::setSelectionModel(QItemSelectionModel *md)
 }
 void KLevel2View::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
-	AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
-
-	if (AnTcpu *tcpu  = dynamic_cast<AnTcpu*>(cobj)) {
-//		tcpu->sync(1);
-		m_tcpuView->currentRowChanged(current, parent);
-		m_thubView->setVisible(false);
-		m_tcpuView->setVisible(true);
-
-	} else if (AnThub *thub  = dynamic_cast<AnThub*>(cobj)) {
-//		thub->sync(1);
-		m_thubView->currentRowChanged(current, parent);
-		m_tcpuView->setVisible(false);
-		m_thubView->setVisible(true);
-	}
-
+  AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
+  
+  if (AnTcpu *tcpu  = dynamic_cast<AnTcpu*>(cobj)) {
+    //		tcpu->sync(1);
+    Q_UNUSED(tcpu);
+    m_tcpuView->currentRowChanged(current, parent);
+    m_thubView->setVisible(false);
+    m_tcpuView->setVisible(true);
+    
+  } else if (AnThub *thub  = dynamic_cast<AnThub*>(cobj)) {
+    //		thub->sync(1);
+    Q_UNUSED(thub);
+    m_thubView->currentRowChanged(current, parent);
+    m_tcpuView->setVisible(false);
+    m_thubView->setVisible(true);
+  }
+  
 }
 void KLevel2View::selectionChanged(
 	const QItemSelection &selected,
 	const QItemSelection &deselected)
 {
-	if (m_selectionModel->selection().indexes().count() == 0) {
-		m_tcpuView->setVisible(false);
-		m_thubView->setVisible(false);
-	}
+  Q_UNUSED(selected); Q_UNUSED(deselected);
+  if (m_selectionModel->selection().indexes().count() == 0) {
+    m_tcpuView->setVisible(false);
+    m_thubView->setVisible(false);
+  }
 }

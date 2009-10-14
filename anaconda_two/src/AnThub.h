@@ -19,8 +19,8 @@ public:
 //  inherited from AnCanbusObject
 	virtual QString dump() const;
 
-	virtual void init  (int level) { /* placeholder */ }
-	virtual void config(int level) { /* placeholder */ }
+	virtual void init  (int level) { Q_UNUSED(level);/* placeholder */ }
+	virtual void config(int level) { Q_UNUSED(level);/* placeholder */ }
 	virtual void reset (int level);
 	virtual void qreset(int level);
 	virtual void sync  (int level);

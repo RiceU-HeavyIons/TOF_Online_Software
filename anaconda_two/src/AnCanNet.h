@@ -30,11 +30,11 @@ public:
 
 	virtual QString dump() const;
 
-	virtual void init  (int level) { /* do nothing */ }	
-	virtual void config(int level) { /* do nothing */ }
-	virtual void reset (int level) { /* do nothing */ }
-	virtual void qreset(int level) { /* placeholder */ };
-	virtual void sync  (int level) { /* do nothing */ }
+	virtual void init  (int level) { Q_UNUSED(level); /* do nothing */ }	
+	virtual void config(int level) { Q_UNUSED(level); /* do nothing */ }
+	virtual void reset (int level) { Q_UNUSED(level); /* do nothing */ }
+	virtual void qreset(int level) { Q_UNUSED(level); /* placeholder */ };
+	virtual void sync  (int level) { Q_UNUSED(level); /* do nothing */ }
 
 //  own functions
 	QList<AnBoard*> list() const { return m_map.values(); }

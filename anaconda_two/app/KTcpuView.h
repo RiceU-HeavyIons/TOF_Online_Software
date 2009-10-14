@@ -32,7 +32,7 @@ public slots:
   void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
 
 protected:
-	void mouseReleaseEvent(QMouseEvent *event) { m_view->clearSelection(); }
+  void mouseReleaseEvent(QMouseEvent *event) { Q_UNUSED(event); m_view->clearSelection(); }
 
 private:
 

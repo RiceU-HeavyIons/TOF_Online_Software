@@ -41,7 +41,7 @@ KThubView::KThubView(QWidget *parent) : QGroupBox("THUB", parent)
 
 // TDIG / SERDES Selector
 	m_tblview = new QTableView();
-	int fonth = QFontMetrics(m_tblview->font()).height();
+	// int fonth = QFontMetrics(m_tblview->font()).height();
 	m_model = new KSerdesModel;
 	m_tblview->setModel(m_model);
 	m_tblview->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -77,6 +77,7 @@ KThubView::~KThubView()
 
 void KThubView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
+  Q_UNUSED(parent);
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());
   if(AnThub *thub = dynamic_cast<AnThub*>(cobj)) {
     thub->sync(3);

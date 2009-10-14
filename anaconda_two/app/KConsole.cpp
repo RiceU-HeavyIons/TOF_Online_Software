@@ -87,54 +87,55 @@ void KConsole::textChanged(const QString &text)
 //-----------------------------------------------------------------------------
 void KConsole::clicked(bool b)
 {
-	QStringList cmdl = m_text.split(QRegExp("\\s+"));
-	while(cmdl.removeOne("")) { } // effectively trimming
-	QString cmd = cmdl[0].toUpper();
-
-	if (cmd == "HELP") {
-		QString str;
-		str += "HELP                               show this help message\n";
-		str += "CLEAR                              clear console\n";
-
-		str += "EXPAND  <addr>                     expand wild card address\n";
-		str += "SHOW    <addr>                     show device information\n";
-		str += "SYNC    <addr> <level=3>           synchronize devices at address\n";
-		str += "RESET   <addr>                     reset device at address\n";
-		str += "CONFIG  <addr>                     configure device at address\n";
-
-		str += "READ    <addr> <par1> <par2> ...   read from hardware address\n";
-		str += "WRITE   <addr> <par1> <par2> ...   write to hardware address \n";
-
-		str += "MSG     <arg1> <arg2> ...          lazy replacement of pc's command\n";
-		str += "---";
-		m_tedit->setText(str);
-		m_ledit->clear();
-
-	} else if (cmd == "CLEAR") {
-		m_tedit->clear();
-		m_ledit->clear();
-		m_nmsgs = 0;
-	}
-	else if (cmd == "DEBUG")               { cmd_debug (cmdl); }
-	else if (cmd == "EXPERT")              { cmd_expert (cmdl); }
-	else if (cmd == "EXPAND"|| cmd == "E") { cmd_expand(cmdl); }
-	else if (cmd == "SHOW"  || cmd == "S") { cmd_show  (cmdl); }
-	else if (cmd == "SYNC")                { cmd_sync  (cmdl); }
-	else if (cmd == "RESET")               { cmd_reset (cmdl); }
-	else if (cmd == "CONFIG")              { cmd_config(cmdl); }
-
-	else if (cmd == "READ"  || cmd == "R") { cmd_read  (cmdl); }
-	else if (cmd == "WRITE" || cmd == "W") { cmd_write (cmdl); }
-
-	else if (cmd == "MSG" || cmd == "M") { cmd_msg (cmdl); }
-	
-	else if (cmd == "SELECT" || cmd == "INSERT" || cmd == "UPDATE") {
-		cmd_sql(cmdl);
-	}
-	else if (cmd == "ABOUT")               { cmd_about (cmdl); }
-	else {
-		m_tedit->append(QString(tr("Syntax Error: %1: command unknown")).arg(cmd));
-	}
+  Q_UNUSED(b);
+  QStringList cmdl = m_text.split(QRegExp("\\s+"));
+  while(cmdl.removeOne("")) { } // effectively trimming
+  QString cmd = cmdl[0].toUpper();
+  
+  if (cmd == "HELP") {
+    QString str;
+    str += "HELP                               show this help message\n";
+    str += "CLEAR                              clear console\n";
+    
+    str += "EXPAND  <addr>                     expand wild card address\n";
+    str += "SHOW    <addr>                     show device information\n";
+    str += "SYNC    <addr> <level=3>           synchronize devices at address\n";
+    str += "RESET   <addr>                     reset device at address\n";
+    str += "CONFIG  <addr>                     configure device at address\n";
+    
+    str += "READ    <addr> <par1> <par2> ...   read from hardware address\n";
+    str += "WRITE   <addr> <par1> <par2> ...   write to hardware address \n";
+    
+    str += "MSG     <arg1> <arg2> ...          lazy replacement of pc's command\n";
+    str += "---";
+    m_tedit->setText(str);
+    m_ledit->clear();
+    
+  } else if (cmd == "CLEAR") {
+    m_tedit->clear();
+    m_ledit->clear();
+    m_nmsgs = 0;
+  }
+  else if (cmd == "DEBUG")               { cmd_debug (cmdl); }
+  else if (cmd == "EXPERT")              { cmd_expert (cmdl); }
+  else if (cmd == "EXPAND"|| cmd == "E") { cmd_expand(cmdl); }
+  else if (cmd == "SHOW"  || cmd == "S") { cmd_show  (cmdl); }
+  else if (cmd == "SYNC")                { cmd_sync  (cmdl); }
+  else if (cmd == "RESET")               { cmd_reset (cmdl); }
+  else if (cmd == "CONFIG")              { cmd_config(cmdl); }
+  
+  else if (cmd == "READ"  || cmd == "R") { cmd_read  (cmdl); }
+  else if (cmd == "WRITE" || cmd == "W") { cmd_write (cmdl); }
+  
+  else if (cmd == "MSG" || cmd == "M") { cmd_msg (cmdl); }
+  
+  else if (cmd == "SELECT" || cmd == "INSERT" || cmd == "UPDATE") {
+    cmd_sql(cmdl);
+  }
+  else if (cmd == "ABOUT")               { cmd_about (cmdl); }
+  else {
+    m_tedit->append(QString(tr("Syntax Error: %1: command unknown")).arg(cmd));
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -477,20 +478,21 @@ void KConsole::cmd_sql(const QStringList& cmdl)
  */
 void KConsole::cmd_about(const QStringList& cmdl)
 {
-	QStringList sl;
-	sl << QString("%1 version %2")
-		.arg(QApplication::applicationName())
-		.arg(QApplication::applicationVersion());
-	sl << QString(" - Copyright (C) 2008 Kohei Kajimoto. All rights reserved.");
-	sl << QString(" - 'M' command syntax was originally designed by Dr. Schambach");
-	sl << QString("   for his 'pcanloop' and 'pc' commands.");
-	sl << QString(" - TCPU and TDIG information was obtained from 'TCPU Engineering");
-	sl << QString("   User Manual', 'TDIG Engineering User Manual', 'HLP 3f Message");
-	sl << QString("   Contents', and real devices by Blue Sky Electronics.");
-	sl << QString(" - THUB information was obtained from 'HLP Messages for THUB' and");
-	sl << QString("   private communication to Dr. Schambach.");
-
-	m_tedit->setText(sl.join("\n"));
+  Q_UNUSED(cmdl);
+  QStringList sl;
+  sl << QString("%1 version %2")
+    .arg(QApplication::applicationName())
+    .arg(QApplication::applicationVersion());
+  sl << QString(" - Copyright (C) 2008 Kohei Kajimoto. All rights reserved.");
+  sl << QString(" - 'M' command syntax was originally designed by Dr. Schambach");
+  sl << QString("   for his 'pcanloop' and 'pc' commands.");
+  sl << QString(" - TCPU and TDIG information was obtained from 'TCPU Engineering");
+  sl << QString("   User Manual', 'TDIG Engineering User Manual', 'HLP 3f Message");
+  sl << QString("   Contents', and real devices by Blue Sky Electronics.");
+  sl << QString(" - THUB information was obtained from 'HLP Messages for THUB' and");
+  sl << QString("   private communication to Dr. Schambach.");
+  
+  m_tedit->setText(sl.join("\n"));
 }
 /**
  *

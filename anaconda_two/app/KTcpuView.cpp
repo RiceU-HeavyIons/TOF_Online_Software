@@ -98,6 +98,7 @@ KTcpuView::~KTcpuView()
 
 void KTcpuView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
+  Q_UNUSED(parent);
   m_view->clearSelection();
 
   AnCanObject *cobj = static_cast<AnCanObject*>(current.internalPointer());

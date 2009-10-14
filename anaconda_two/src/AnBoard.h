@@ -28,7 +28,7 @@ public:
 	virtual QString tempAlarmString() const;
 
 	quint16 ecsr() const { return m_ecsr; }
-	virtual QString ecsrString(bool hilight = false) const { return QString(); }
+	virtual QString ecsrString(bool hilight = false) const { Q_UNUSED(hilight); return QString(); }
 	virtual QString ecsrToolTipString() const { return QString(); }
 
 	quint32 firmwareId() const { return (m_firmware_mcu | (m_firmware_fpga << 16)); }

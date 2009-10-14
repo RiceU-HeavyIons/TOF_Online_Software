@@ -24,8 +24,8 @@ public:
   Qt::ItemFlags flags(const QModelIndex &index) const;
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-  int rowCount(const QModelIndex &parent = QModelIndex()) const { return 8; }
-  int columnCount(const QModelIndex &parent = QModelIndex()) const { return 3; }
+  int rowCount(const QModelIndex &parent = QModelIndex()) const { Q_UNUSED(parent); return 8; }
+  int columnCount(const QModelIndex &parent = QModelIndex()) const { Q_UNUSED(parent); return 3; }
   QModelIndex index(int row, int column, const QModelIndex &parent) const;
 
   void setThub(AnThub *thub);

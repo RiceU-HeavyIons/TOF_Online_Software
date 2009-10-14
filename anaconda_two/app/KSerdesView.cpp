@@ -60,24 +60,26 @@ void KSerdesView::setSelectionModel(QItemSelectionModel *md)
 
 void KSerdesView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
-	AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
-	if(AnSerdes *srd = dynamic_cast<AnSerdes*>(brd)) {
-		srd->sync(1);
-		setTitle(srd->name());
-		m_laddr->setText(srd->lAddress().toString());
-		m_haddr->setText(srd->hAddress().toString());
-		m_firm->setText(srd->firmwareString());
-		m_ecsr->setText(srd->pld9xString());
-		m_ecsr->setToolTip(srd->ecsrString());
-		setVisible(true);
-	}
+  Q_UNUSED(parent);
+  AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
+  if(AnSerdes *srd = dynamic_cast<AnSerdes*>(brd)) {
+    srd->sync(1);
+    setTitle(srd->name());
+    m_laddr->setText(srd->lAddress().toString());
+    m_haddr->setText(srd->hAddress().toString());
+    m_firm->setText(srd->firmwareString());
+    m_ecsr->setText(srd->pld9xString());
+    m_ecsr->setToolTip(srd->ecsrString());
+    setVisible(true);
+  }
 }
 
 void KSerdesView::selectionChanged(
-	const QItemSelection& selected,
-	const QItemSelection& deselected)
+				   const QItemSelection& selected,
+				   const QItemSelection& deselected)
 {
-	if (m_selectionModel->selection().indexes().count() == 0) {
-		setVisible(false);
-	}
+  Q_UNUSED(selected); Q_UNUSED(deselected);
+  if (m_selectionModel->selection().indexes().count() == 0) {
+    setVisible(false);
+  }
 }

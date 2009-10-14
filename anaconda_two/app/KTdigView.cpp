@@ -87,35 +87,37 @@ void KTdigView::setSelectionModel(QItemSelectionModel *md)
 
 void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
 {
-	AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
-	if (AnTdig *tdig = dynamic_cast<AnTdig*>(brd)) {
-		tdig->sync(3);
-		setTitle(tdig->name());
-		// m_laddr->setText(tdig->lAddress().toString());
-		m_haddr->setText(tdig->hAddress().toString());
-		m_firm->setText(tdig->firmwareString());
-		m_chip->setText(tdig->chipIdString());
-		m_temp->setText(tdig->tempString());
-		m_thrs->setText(tdig->thresholdString());
-		m_ecsr->setText(tdig->ecsrString(true));
-		m_ecsr->setToolTip(tdig->ecsrToolTipString());
-		m_pld03->setText(tdig->pldReg03String(true));
-		m_pld03->setToolTip(tdig->pldReg03ToolTipString());
-		m_eeprom->setText(tdig->eepromString());
-
-		for(int i = 0; i < 3; i++) {
-			m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));
-			m_status[i]->setToolTip(tdig->tdc(i+1)->statusTipString());
-		}
-		setVisible(true);
-	}
+  Q_UNUSED(parent);
+  AnBoard *brd = static_cast<AnBoard*>(current.internalPointer());
+  if (AnTdig *tdig = dynamic_cast<AnTdig*>(brd)) {
+    tdig->sync(3);
+    setTitle(tdig->name());
+    // m_laddr->setText(tdig->lAddress().toString());
+    m_haddr->setText(tdig->hAddress().toString());
+    m_firm->setText(tdig->firmwareString());
+    m_chip->setText(tdig->chipIdString());
+    m_temp->setText(tdig->tempString());
+    m_thrs->setText(tdig->thresholdString());
+    m_ecsr->setText(tdig->ecsrString(true));
+    m_ecsr->setToolTip(tdig->ecsrToolTipString());
+    m_pld03->setText(tdig->pldReg03String(true));
+    m_pld03->setToolTip(tdig->pldReg03ToolTipString());
+    m_eeprom->setText(tdig->eepromString());
+    
+    for(int i = 0; i < 3; i++) {
+      m_status[i]->setText("0x" + QString::number(tdig->tdc(i+1)->status(), 16));
+      m_status[i]->setToolTip(tdig->tdc(i+1)->statusTipString());
+    }
+    setVisible(true);
+  }
 }
 
 void KTdigView::selectionChanged(
-	const QItemSelection& selected,
-	const QItemSelection& deselected)
+				 const QItemSelection& selected,
+				 const QItemSelection& deselected)
 {
-	if (m_selectionModel->selection().indexes().count() == 0) {
-		setVisible(false);
-	}
+  Q_UNUSED(selected); Q_UNUSED(deselected);
+  if (m_selectionModel->selection().indexes().count() == 0) {
+    setVisible(false);
+  }
 }

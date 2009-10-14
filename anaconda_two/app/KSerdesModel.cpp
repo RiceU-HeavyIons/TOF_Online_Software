@@ -80,6 +80,7 @@ void KSerdesModel::setThub(AnThub *thub)
 
 QModelIndex KSerdesModel::index(int row, int column, const QModelIndex &parent) const
 {
+  Q_UNUSED(parent);
   if (m_thub == NULL)
     return createIndex(row, column, NULL);
   else

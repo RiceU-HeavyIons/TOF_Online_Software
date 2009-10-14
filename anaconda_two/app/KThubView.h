@@ -31,7 +31,7 @@ public slots:
 	void currentRowChanged(const QModelIndex &current, const QModelIndex &parent);
 
 protected:
-	void mouseReleaseEvent(QMouseEvent *event) { m_tblview->clearSelection(); }
+	void mouseReleaseEvent(QMouseEvent *event) { Q_UNUSED(event); m_tblview->clearSelection(); }
 
 private:
 	QGroupBox *m_box;

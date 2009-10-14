@@ -30,7 +30,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 
 	setWindowTitle(QApplication::applicationName());
 	resize(960, 700);
-	QStatusBar *statusbar = statusBar();
+	//QStatusBar *statusbar = statusBar();
 
 	m_root = new AnRoot(0);
 
@@ -57,7 +57,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
 	createSelector();
 
 //	QHBoxLayout *hboxl = new QHBoxLayout();
-	QLabel *label = new QLabel(tr("Mode:"));
+	//QLabel *label = new QLabel(tr("Mode:"));
 	//  label->setAlignment(Qt::AlignLeft);
 	m_combo = new QComboBox(this);
 	m_combo->addItems(m_root->modeList());
@@ -503,7 +503,8 @@ void KMainWindow::setBusy(bool sw)
  */
 void KMainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-	m_l1view->clearSelection();
+  Q_UNUSED(event);
+  m_l1view->clearSelection();
 }
 
 //-----------------------------------------------------------------------------

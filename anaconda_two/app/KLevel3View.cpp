@@ -39,11 +39,13 @@ KLevel3View::KLevel3View(QWidget *parent) : QAbstractItemView(parent) {
 
 QModelIndex KLevel3View::indexAt(const QPoint &point) const
 {
+  Q_UNUSED(point);
   return QModelIndex();
 }
 
 void KLevel3View::scrollTo(const QModelIndex &index, ScrollHint hint)
 {
+  Q_UNUSED(index); Q_UNUSED(hint);
 }
 
 
@@ -70,35 +72,40 @@ int KLevel3View::verticalOffset() const
 
 bool KLevel3View::isIndexHidden(const QModelIndex &index) const
 {
+  Q_UNUSED(index);
   return false;
 }
 
 QModelIndex KLevel3View::moveCursor(CursorAction cursorAction,
                       Qt::KeyboardModifiers modifiers)
 {
+  Q_UNUSED(cursorAction); Q_UNUSED(modifiers);
   return currentIndex();
 }
 
 void KLevel3View::setSelection(const QRect &rect,
                                QItemSelectionModel::SelectionFlags flags)
 {
-
+  Q_UNUSED(rect); Q_UNUSED(flags);
 }
 
 QRegion KLevel3View::visualRegionForSelection(const QItemSelection &selection) const
 {
+  Q_UNUSED(selection);
   return QRegion();
 }
 
 void KLevel3View::dataChanged(const QModelIndex &tofLeft,
                               const QModelIndex &bottomRight)
 {
+  Q_UNUSED(tofLeft); Q_UNUSED(bottomRight);
   updateAll();
 }
 
 void KLevel3View::selectionChanged(const QItemSelection &selected,
                                    const QItemSelection &deselected)
 {
+  Q_UNUSED(selected); Q_UNUSED(deselected);
   updateAll();
 }
 

@@ -81,6 +81,7 @@ void KTdigModel::setTcpu(AnTcpu *tcpu)
 
 QModelIndex KTdigModel::index(int row, int column, const QModelIndex &parent) const
 {
+  Q_UNUSED(parent);
   if (m_tcpu == NULL)
     return createIndex(row, column, NULL);
   else

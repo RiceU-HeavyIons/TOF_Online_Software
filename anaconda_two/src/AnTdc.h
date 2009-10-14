@@ -16,15 +16,15 @@ public:
 	AnTdc(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
 
 //  AnCanObject
-	virtual AnCanObject *at(int i) { return this; }
-	virtual AnCanObject *hat(int i) { return this; }
+	virtual AnCanObject *at(int i) { Q_UNUSED(i); return this; }
+	virtual AnCanObject *hat(int i) { Q_UNUSED(i); return this; }
 
 	virtual QString dump() const;
 
 	virtual void init  (int level);
 	virtual void config(int level);
 	virtual void reset (int level);
-	virtual void qreset(int level) { /* placeholder */ };
+	virtual void qreset(int level) { Q_UNUSED(level); /* placeholder */ };
 	virtual void sync  (int level);
 
 	quint16 configId() const { return m_config; }

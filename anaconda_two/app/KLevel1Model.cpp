@@ -47,12 +47,14 @@ KLevel1Model::KLevel1Model(AnRoot *root, QObject *parent) :
 //-----------------------------------------------------------------------------
 int KLevel1Model::rowCount(const QModelIndex &parent) const
 {
+  Q_UNUSED(parent);
   return m_rows;
 }
 
 //-----------------------------------------------------------------------------
 int KLevel1Model::columnCount(const QModelIndex &parent) const
 {
+  Q_UNUSED(parent);
   return m_columns;
 }
 
@@ -208,9 +210,10 @@ void KLevel1Model::sort(int column, Qt::SortOrder order)
 
 //-----------------------------------------------------------------------------
 QModelIndex KLevel1Model::index(int row, int column,
-	const QModelIndex &parent) const
+				const QModelIndex &parent) const
 {
-	return createIndex(row, column, m_list.at(row));
+  Q_UNUSED(parent);
+  return createIndex(row, column, m_list.at(row));
 }
 
 //-----------------------------------------------------------------------------
