@@ -267,7 +267,8 @@ int AnAgent::open(quint8 dev_id) {
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
 
-  WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+  //WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+  WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
   int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
 
   glob_t globb;
@@ -456,33 +457,34 @@ bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
 //-----------------------------------------------------------------------------
 void AnAgent::error_handle(int er, TPCANMsg &msg)
 {
-	if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS)) {
-		int status = CAN_Status(m_handle);
-		if (status & CAN_ERR_ANYBUSERR) {
-			WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-			int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
-			incCommError();
-			er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
-			throw AnExCanError(status);
-		}
-	} else if (er != 0) {
-		incCommError();
-		int status = CAN_Status(m_handle);
-		if (status == CAN_ERR_QRCVEMPTY) {
-			log( QString("error_handle: CANBus[%1] Error: 0x%2")
-			       .arg(addr).arg(QString::number(status, 16)) );
-			throw AnExCanError(status);
-//			throw AnExCanTimeOut(status);
-		} else if (status > 0) {
-			log( QString("error_handle: CANBus[%1] Error: 0x%2")
-			       .arg(addr).arg(QString::number(status, 16)) );
-			throw AnExCanError(status);
-		} else {
-			log( QString("error_handle: CANBus[%1] System Error: 0x%2")
-			       .arg(addr).arg(QString::number(status, 16)) );
-			throw AnExCanError(status);
-		}
-	}
+  if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS)) {
+    int status = CAN_Status(m_handle);
+    if (status & CAN_ERR_ANYBUSERR) {
+      //WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+      WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
+      int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
+      incCommError();
+      er = CAN_Init(m_handle, wBTR0BTR1, nExtended);
+      throw AnExCanError(status);
+    }
+  } else if (er != 0) {
+    incCommError();
+    int status = CAN_Status(m_handle);
+    if (status == CAN_ERR_QRCVEMPTY) {
+      log( QString("error_handle: CANBus[%1] Error: 0x%2")
+	   .arg(addr).arg(QString::number(status, 16)) );
+      throw AnExCanError(status);
+      //			throw AnExCanTimeOut(status);
+    } else if (status > 0) {
+      log( QString("error_handle: CANBus[%1] Error: 0x%2")
+	   .arg(addr).arg(QString::number(status, 16)) );
+      throw AnExCanError(status);
+    } else {
+      log( QString("error_handle: CANBus[%1] System Error: 0x%2")
+	   .arg(addr).arg(QString::number(status, 16)) );
+      throw AnExCanError(status);
+    }
+  }
 }
 
 void AnAgent::pre_check()

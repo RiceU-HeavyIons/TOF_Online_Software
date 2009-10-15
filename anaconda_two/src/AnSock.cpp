@@ -48,7 +48,8 @@ QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list) {
 	char txt_buff[VERSIONSTRING_LEN];
 	unsigned int i;
 
-	WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+	//WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+	WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
 	int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
 
 	glob_t globb;
@@ -110,7 +111,8 @@ int AnSock::open(quint8 dev_id) {
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
 
-  WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+  //WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+  WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
   int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
 
   glob_t globb;
