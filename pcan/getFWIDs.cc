@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getFWIDs.cc,v 1.2 2008-11-04 21:00:42 jschamba Exp $";
+"$Id: getFWIDs.cc,v 1.3 2009-10-19 21:44:36 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -77,18 +77,23 @@ int getFWIDs(int tcpuNodeID, int devID)
 #ifdef LOCAL_DEBUG
       cout << "LINUX_CAN_Read_Timeout_l returned " << errno << endl;
 #endif
-      CAN_Close_l(h);
-      return -1;
+
+      cout << "TDIG " << showbase << hex << tdigNodeID
+	   << ": did not respond" << endl;
+      
+//       CAN_Close_l(h);
+//       return -1;
     }
+    else {
     
-    
-    // print firmware IDs
-    MCUfwID = mr.Msg.DATA[1] + (mr.Msg.DATA[2] << 8);
-    cout << "TDIG " << showbase << hex << tdigNodeID
-	 << ": MCU Firmware ID = " << MCUfwID
-	 << " (\"" << noshowbase << (unsigned short)mr.Msg.DATA[2] << (char)mr.Msg.DATA[1]
-	 << "\"); FPGA Firmware ID = "
-	 << showbase << (unsigned short)mr.Msg.DATA[3] << endl;
+      // print firmware IDs
+      MCUfwID = mr.Msg.DATA[1] + (mr.Msg.DATA[2] << 8);
+      cout << "TDIG " << showbase << hex << tdigNodeID
+	   << ": MCU Firmware ID = " << MCUfwID
+	   << " (\"" << noshowbase << (unsigned short)mr.Msg.DATA[2] << (char)mr.Msg.DATA[1]
+	   << "\"); FPGA Firmware ID = "
+	   << showbase << (unsigned short)mr.Msg.DATA[3] << endl;
+    }
   } // for (int tdignum...
 
   // --------------------------------------
