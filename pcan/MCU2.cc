@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.5 2007-10-11 19:06:32 jschamba Exp $";
+"$Id: MCU2.cc,v 1.6 2009-10-20 19:40:15 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -333,8 +333,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
     */
     
     hexfile >> buf;
-    //cout << "read line: " << buf << endl;
-    
+
     subs = buf.substr(1,2);
     len = strtol(subs.c_str(), 0, 16);
     subs = buf.substr(3,4);
@@ -344,12 +343,14 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
     address = (addr + extendAddress) / 2;
 
-
-    
 #ifdef LOCAL_DEBUG
     cout << "length = " << setw(2) << dec << len 
 	 <<" type = " << rtype
-	 << " address = " << showbase << hex << setw(6) << addr << endl;
+	 << " address = " << showbase << hex << setw(6) << addr 
+	 << " prog address = " << address
+	 << " baseAddress = " << baseAddress
+	 << " downloadbytes = " << dec << downloadbytes
+	 << endl;
 #endif
 
 
@@ -358,7 +359,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
       subs = buf.substr(9,4);
       subInt = strtol(subs.c_str(), 0, 16);
 #ifdef LOCAL_DEBUG
-      cout << " upper address = " << subInt << endl;
+      cout << "\tupper address = " << subInt << endl;
 #endif
       extendAddress = subInt << 16;
 
@@ -373,8 +374,13 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
     // **************** RECORD TYPE = 1: EOF ***************************
     else if (rtype == 0x1) { //eof record
 #ifdef LOCAL_DEBUG
-      cout << endl;
+      cout << "\tEOF record" << endl;
 #endif
+      if (downloadbytes != 0) {
+	write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+	baseAddress += downloadbytes;
+	downloadbytes = 0;
+      }
       break;
     }
 
@@ -395,9 +401,13 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 	  subs = buf.substr(9+2*i,2);
 	  dataByte[downloadbytes] = (unsigned char)strtol(subs.c_str(), 0, 16);
 	  downloadbytes++;
-	  if (downloadbytes == 256) { // if buffer is full
+	  if ((downloadbytes == 256) // if buffer is full
+	      || ((baseAddress & 0x7f) + (downloadbytes>>1) == 128)) { // cross row boundary
 	    write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
-	    baseAddress += downloadbytes;
+	    baseAddress += downloadbytes/2;
+#ifdef LOCAL_DEBUG
+	    cout << "Start new block; new baseAddress = " << showbase << hex << setw(6) << baseAddress << endl;
+#endif
 	    downloadbytes = 0;
 	  }
 	}
