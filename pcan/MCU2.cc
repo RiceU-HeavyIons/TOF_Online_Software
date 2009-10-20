@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.6 2009-10-20 19:40:15 jschamba Exp $";
+"$Id: MCU2.cc,v 1.7 2009-10-20 19:53:27 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -409,6 +409,8 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 	    cout << "Start new block; new baseAddress = " << showbase << hex << setw(6) << baseAddress << endl;
 #endif
 	    downloadbytes = 0;
+	    indexAddr = address_in_range(baseAddress, 2, validl, validh);
+	    eraseflag = erasetype[indexAddr-1];
 	  }
 	}
       }
