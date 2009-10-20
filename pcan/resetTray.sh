@@ -16,11 +16,8 @@ fi
 usleep 70000
 
 # load TDIG FPGAs from Eeprom 2
-for j in 40 44 48 4c 50 54 58 5c; do
-    #./pc "m e 0x"$j"800"$1" 5 0x8d 0x69 0x96 0xa5 0x5a $2"
-    ./pc "m e 0x"$j"800"$1" 5 0x8a 0x69 0x96 0xa5 0x5a $2"
-    usleep 70000
-done
+./pc "m e 0x1fc800"$1" 5 0x8a 0x69 0x96 0xa5 0x5a $2"
+usleep 700000
 
 
 # reset all of the TDCs on each TDIG
