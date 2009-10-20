@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.3 2009-08-31 20:45:16 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.4 2009-10-20 19:54:12 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -356,7 +356,11 @@ int change_mcu_program(const char *filename,
 #ifdef LOCAL_DEBUG
     cout << "length = " << setw(2) << dec << len 
 	 <<" type = " << rtype
-	 << " address = " << showbase << hex << setw(6) << addr << endl;
+	 << " address = " << showbase << hex << setw(6) << addr 
+	 << " prog address = " << address
+	 << " baseAddress = " << baseAddress
+	 << " downloadbytes = " << dec << downloadbytes
+	 << endl;
 #endif
 
 
@@ -365,7 +369,7 @@ int change_mcu_program(const char *filename,
       subs = buf.substr(9,4);
       subInt = strtol(subs.c_str(), 0, 16);
 #ifdef LOCAL_DEBUG
-      cout << " upper address = " << subInt << endl;
+      cout << "\tupper address = " << subInt << endl;
 #endif
       extendAddress = subInt << 16;
 
@@ -380,8 +384,13 @@ int change_mcu_program(const char *filename,
     // **************** RECORD TYPE = 1: EOF ***************************
     else if (rtype == 0x1) { //eof record
 #ifdef LOCAL_DEBUG
-      cout << endl;
+      cout << "\tEOF record" << endl;
 #endif
+      if (downloadbytes != 0) {
+	xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
+	baseAddress += downloadbytes;
+	downloadbytes = 0;
+      }
       break;
     }
 
@@ -402,10 +411,16 @@ int change_mcu_program(const char *filename,
 	  subs = buf.substr(9+2*i,2);
 	  dataByte[downloadbytes] = (unsigned char)strtol(subs.c_str(), 0, 16);
 	  downloadbytes++;
-	  if (downloadbytes == 256) { // if buffer is full
+	  if ((downloadbytes == 256) // if buffer is full
+	      || ((baseAddress & 0x7f) + (downloadbytes>>1) == 128)) { // cross row boundary
 	    xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
-	    baseAddress += downloadbytes;
+	    baseAddress += downloadbytes/2;
+#ifdef LOCAL_DEBUG
+	    cout << "Start new block; new baseAddress = " << showbase << hex << setw(6) << baseAddress << endl;
+#endif
 	    downloadbytes = 0;
+	    indexAddr = address_in_range(baseAddress, 2, validl, validh);
+	    eraseflag = erasetype[indexAddr-1];
 	  }
 	}
       }
