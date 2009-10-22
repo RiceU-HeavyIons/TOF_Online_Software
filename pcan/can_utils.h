@@ -16,6 +16,6 @@ extern DWORD LINUX_CAN_Read_Timeout_l(HANDLE hHandle, TPCANRdMsg* pMsgBuff,
 				      int nMicroSeconds);
 extern int sendCAN_and_Compare_l(int, TPCANMsg &, const char *, const int, 
 				 unsigned int = 0xffffffff, bool = false);
-
+extern void check_err(__u32,  char *);
 
 #endif // __CAN_UTILS_H__
