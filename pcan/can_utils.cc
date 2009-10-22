@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.10 2009-09-02 14:08:48 jschamba Exp $";
+"$Id: can_utils.cc,v 1.11 2009-10-22 22:11:59 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -54,15 +54,47 @@ struct pollfd _pfd;
 //****************************************************************************
 void printCANMsg(const TPCANMsg &msg, const char *msgTxt)
 {
-  printf("%s: %c %c 0x%03x %1d  ",
-	 msgTxt,
-	 (msg.MSGTYPE & MSGTYPE_RTR)      ? 'r' : 'm',
-	 (msg.MSGTYPE & MSGTYPE_EXTENDED) ? 'e' : 's',
-	 msg.ID, 
-	 msg.LEN); 
+  cerr << msgTxt << " "
+       << ((msg.MSGTYPE & MSGTYPE_RTR) ? "r " : "m ")
+       << ((msg.MSGTYPE & MSGTYPE_EXTENDED) ? "e " : "s ")
+       << showbase << hex << msg.ID << " " 
+       << dec << (int)msg.LEN << hex << noshowbase << setfill('0'); 
   for (int i = 0; i < msg.LEN; i++)
-    printf("0x%02x ", msg.DATA[i]);
-  printf("\n");
+    cerr << " 0x" << setw(2) << (unsigned int)msg.DATA[i];
+  cerr << endl;
+}
+
+void check_err(__u32  err,  char *txtbuff)
+{
+#define CAN_ERR_HWINUSE   0x0400  // Hardware ist von Netz belegt
+#define CAN_ERR_NETINUSE  0x0800  // an Netz ist Client angeschlossen
+#define CAN_ERR_ILLHW     0x1400  // Hardwarehandle war ungueltig
+#define CAN_ERR_ILLNET    0x1800  // Netzhandle war ungueltig
+#define CAN_ERR_ILLCLIENT 0x1C00  // Clienthandle war ungueltig
+
+  strcpy(txtbuff, "Error bits: ") ;
+  if ( err == CAN_ERR_OK  )		strcat(txtbuff, "OK ") ;		// 0x0000  // no error
+  if ( err & CAN_ERR_XMTFULL )		strcat(txtbuff, "XMTFULL ") ;        	// 0x0001  // transmit buffer full
+  if ( err & CAN_ERR_OVERRUN  )		strcat(txtbuff, "OVERRUN ") ;       	// 0x0002  // overrun in receive buffer
+  if ( err & CAN_ERR_BUSLIGHT )		strcat(txtbuff, " BUSLIGHT ") ;      	// 0x0004  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSHEAVY )		strcat(txtbuff, "BUSHEAVY ") ;       	// 0x0008  // bus error, errorcounter limit reached
+  if ( err & CAN_ERR_BUSOFF  )		strcat(txtbuff, "BUSOFF ") ;        	// 0x0010  // bus error, 'bus off' state entered
+  if ( err & CAN_ERR_QRCVEMPTY )	strcat(txtbuff, "QRCVEMPTY ") ;      	// 0x0020  // receive queue is empty
+  if ( err & CAN_ERR_QOVERRUN )		strcat(txtbuff, "QOVERRUN") ;    	// 0x0040  // receive queue overrun
+  if ( err & CAN_ERR_QXMTFULL )		strcat(txtbuff, "QXMTFULL ") ;       	// 0x0080  // transmit queue full 
+  if ( err & CAN_ERR_REGTEST )		strcat(txtbuff, "REGTEST ") ;        	// 0x0100  // test of controller registers failed
+  if ( err & CAN_ERR_NOVXD )        	strcat(txtbuff, "NOVXD  ") ;         	// 0x0200  // Win95/98/ME only
+  if ( err & CAN_ERR_RESOURCE )        	strcat(txtbuff, "RESOURCE  ") ;      	// 0x2000  // can't create resource
+  if ( err & CAN_ERR_ILLPARAMTYPE )	strcat(txtbuff, "ILLPARAMTYPE  ") ;  	// 0x4000  // illegal parameter
+  if ( err & CAN_ERR_ILLPARAMVAL )     	strcat(txtbuff, "ILLPARAMVAL ") ;    	// 0x8000  // value out of range
+
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_HWINUSE ) 	strcat(txtbuff, "HWINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_NETINUSE ) 	strcat(txtbuff, "NETINUSE ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLHW )		strcat(txtbuff, "ILLHW ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLCLIENT )	strcat(txtbuff, "ILLCLIENT ") ;
+  if ( (err & CAN_ERRMASK_ILLHANDLE) == CAN_ERR_ILLNET ) 	strcat(txtbuff, "ILLNET ") ;
+
+  return;
 }
 
 //****************************************************************************
