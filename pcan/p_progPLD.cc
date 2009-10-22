@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.10 2009-03-13 21:03:45 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.11 2009-10-22 22:13:35 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -76,18 +76,16 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   ifstream conf;
   unsigned char confByte[256];
   int fileSize, noPages;
-
+  
   // struct timespec timesp;
-
+  
   cout << "Configuring PLD " << pldNum 
        << " on nodeID 0x" << hex << nodeID
        << " with filename " << filename << "...\n";
-
+  
   errno = 0;
-
-  // install signal handler for manual break
-  signal(SIGINT, signal_handler);
-
+  
+  
   conf.open(filename, ios_base::binary); // "in" is default 
   if ( !conf.good() ) {
     cerr << filename << ": file error\n";
@@ -97,47 +95,44 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
   conf.seekg(0,ios::end);
   fileSize = conf.tellg();
   noPages = fileSize/256;
-
+  
   // timesp.tv_sec = 0;
   // timesp.tv_nsec = 1000;	// 1 ms
-
+  
   cout << "Filesize = " << dec << fileSize << " bytes, " << fileSize/1024 << " kbytes, "
        << noPages << " pages\n";
-
+  
   conf.seekg(0,ios::beg);    // move file pointer to beginning of file
-
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
-  }
+  
   
   cout << "Starting Configuration Procedure....\n";
-
+  
   TPCANMsg ms;
   TPCANRdMsg mr;
-
+  
   // swallow any packets that might be present first
-  errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
-
+  errno = LINUX_CAN_Read_Timeout(h, &mr, 10000); // timeout = 10 mseconds
+  
   // ***************************************************************************
-
+  
   // ************** progPLD:Start ****************************************
   // this is a write message (msgID = 0x002)
-
+  
   ms.MSGTYPE = MSGTYPE_STANDARD;
   ms.ID = 0x002 | (nodeID << 4);
   ms.LEN = 2;
-
+  
   ms.DATA[0] = 0x20;
   ms.DATA[1] = pldNum;
-
+  
   cout << LINE_UP << "Starting Bulk Erase...\n"; cout.flush();
 #ifdef LOCAL_DEBUG
   printCANMsg(ms, "p_progPLD: Sending progPLD:Start command:");
 #endif
-
+  
   if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:Start", 60000000) != 0) // timeout = 60 sec
     my_private_exit(errno);
-
+  
   cout << LINE_UP << "Bulk Erase finished...\nStarting page programming...\n";
   cout.flush();
   sleep(2);
@@ -153,11 +148,11 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 	break;
       }
     }
-
+    
     if (allFF) continue;
-
+    
     // ************** progPLD:WriteAddress ****************************************
-
+    
     ms.DATA[0] = 0x21;	// write Address, lowest to highest byte
     ms.DATA[1] = (EPCS_Address & 0x0000FF);
     ms.DATA[2] = ((EPCS_Address & 0x00FF00) >> 8);
@@ -166,7 +161,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 #ifdef LOCAL_DEBUG
     printCANMsg(ms, "p_progPLD: Sending progPLD:WriteAddress command:");
 #endif
-
+    
     // do this without response:
     if ( (errno = CAN_Write(h, &ms)) ) {
       perror("p_progPLD: CAN_Write()");
@@ -181,14 +176,14 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 	     << " during progPLD:WriteAddress page, " << page << endl;
     }
     
-
+    
     ms.DATA[0] = 0x22;
     ms.LEN = 8;
     unsigned char *tmpPtr = confByte;
     for (int i=0; i<36; i++) {
       // ************** progPLD:WriteDataBytes ************************************
-
-
+      
+      
       for (int j=1; j<8; j++) {
 	ms.DATA[j] = *tmpPtr;
 	tmpPtr++;
@@ -196,7 +191,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
 #ifdef LOCAL_DEBUG
       printCANMsg(ms, "p_progPLD: Sending progPLD:WriteDataBytes command:");
 #endif
-
+      
       // do this without response:
       if ( (errno = CAN_Write(h, &ms)) ) {
       	perror("p_progPLD: CAN_Write()");
@@ -205,7 +200,7 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
       // waste some time, so packets aren't sent too fast
       //nanosleep(&timesp, NULL);
       //for (int j=0; j<4300000; j++) ;
-
+      
       errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
       if (errno != 0) {
 	if (errno == CAN_ERR_QRCVEMPTY)
@@ -238,39 +233,36 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
     if(page<11) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
     else if((page%100) == 0) {cout << LINE_UP << "Page " << dec << page << "...\n"; flush(cout);}
     //#endif
-
-
+    
+    
   } // for (int page
   
   cout << "Page Programming finished...\nSending asDone...\n";
   ms.DATA[0] = 0x24;
   ms.LEN = 1;
 #ifdef LOCAL_DEBUG
-    printCANMsg(ms, "p_progPLD: Sending progPLD:asDone command:");
+  printCANMsg(ms, "p_progPLD: Sending progPLD:asDone command:");
 #endif
-
-    if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:asDone", 1000000) != 0) // timeout = 1 sec
-      my_private_exit(errno);
-
-
-
-    conf.close();
-
+  
+  if ( sendCAN_and_Compare(ms, "p_progPLD: progPLD:asDone", 1000000) != 0) // timeout = 1 sec
+    my_private_exit(errno);
+  
+  
   // ************************* finished !!!! ****************************************
   // ********************************************************************************
-
+  
+  conf.close();
   cout << "... Configuration finished successfully.\n";
-
-
-  my_private_exit(errno);
-
+  
   return errno;
 }
 
 
+// *********************** main function *********************************************
 int main(int argc, char *argv[])
 {
   WORD devID = 255;
+  int returnVal;
 
   cout << vcid << endl;
   cout.flush();
@@ -280,7 +272,9 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  
+  // 1 <= pldNum <= 8: Serdes FPGA <pldNum>
+  // pldNum = 0: Master FPGA
+  // pldNum = 9: all Serdes FPGAs
   int pldNum = atoi(argv[2]);
   int nodeID = strtol(argv[3], (char **)NULL, 0);
   if (argc == 5) {
@@ -291,5 +285,22 @@ int main(int argc, char *argv[])
     }
   }
 
-  return p_progPLD(argv[1], pldNum, nodeID, devID);
+  // install signal handler for manual break
+  signal(SIGINT, signal_handler);
+
+  // open CANbus device devID
+  if((errno = openCAN(devID)) != 0) {
+    my_private_exit(errno);
+  }
+
+  if ((pldNum < 9) && (pldNum >= 0))
+    returnVal = p_progPLD(argv[1], pldNum, nodeID, devID);
+  else if (pldNum == 9)
+    for (int i=1; i<9; i++)
+      returnVal = p_progPLD(argv[1], i, nodeID, devID);
+  else 
+    cerr << "Invalid pldNum " << pldNum << "; exiting ...\n";
+
+  my_private_exit(errno);
+  return 0;
 }
