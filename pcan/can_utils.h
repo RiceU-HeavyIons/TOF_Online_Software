@@ -2,6 +2,9 @@
 #ifndef __CAN_UTILS_H__
 #define __CAN_UTILS_H__
 
+#include <vector>
+using namespace std;
+
 extern void printCANMsg(const TPCANMsg &, const char *);
 extern int openCAN(WORD);
 extern int sendCAN_and_Compare(TPCANMsg &, const char *, const int, 
@@ -17,5 +20,6 @@ extern DWORD LINUX_CAN_Read_Timeout_l(HANDLE hHandle, TPCANRdMsg* pMsgBuff,
 extern int sendCAN_and_Compare_l(int, TPCANMsg &, const char *, const int, 
 				 unsigned int = 0xffffffff, bool = false);
 extern void check_err(__u32,  char *);
+extern int findAllTCPUs(vector<unsigned int> *); 
 
 #endif // __CAN_UTILS_H__
