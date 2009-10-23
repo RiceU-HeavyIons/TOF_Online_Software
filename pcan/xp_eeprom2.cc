@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_eeprom2.cc,v 1.4 2009-09-30 20:38:21 jschamba Exp $";
+"$Id: xp_eeprom2.cc,v 1.5 2009-10-23 18:45:53 jschamba Exp $";
 #endif /* lint */
 
 
@@ -95,9 +95,6 @@ int eeprom2(const char *filename,
 
   errno = 0;
   
-  // install signal handler for manual break
-  signal(SIGINT, signal_handler);
-  
   // open file "filename" and extract control bits
   conf.open(filename, ios_base::binary); // "in" is default 
   if ( !conf.good() ) {
@@ -117,11 +114,6 @@ int eeprom2(const char *filename,
        << noPages << " pages, leftover " << leftover << " bytes\n";
   
   conf.seekg(0,ios::beg);    // move file pointer to beginning of file
-
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
-  }
-
 
   cout << "Starting Configuration Procedure....\n";
 
@@ -278,16 +270,15 @@ int eeprom2(const char *filename,
   fprintf(stderr, "successfully configured EEPROM2 TDIG 0x%x through TCPU 0x%x devID %d\n",
 	  tdigNodeID, tcpuNodeID, devID); fflush(stderr);
 
-
-  my_private_exit(errno);
-  
   return errno;
 }
 
 
+//*********************************** main function **************************************
 int main(int argc, char *argv[])
 {
   WORD devID = 255;
+  int retVal;
 
   cout << vcid << endl;
   cout.flush();
@@ -308,5 +299,38 @@ int main(int argc, char *argv[])
     }
   }
   
-  return eeprom2(argv[3], tdigNodeID, tcpuNodeID, devID);
+  // install signal handler for manual break
+  signal(SIGINT, signal_handler);
+
+  if((errno = openCAN(devID)) != 0) {
+    my_private_exit(errno);
+  }
+  
+  if (tcpuNodeID != 0xff)
+    if(tdigNodeID == 0xff)
+      for (unsigned int i = 0x10; i<0x18; i++)
+	retVal = eeprom2(argv[3], i, tcpuNodeID, devID);
+    else
+      retVal = eeprom2(argv[3], tdigNodeID, tcpuNodeID, devID);
+  else {
+    // for nodeID = 0xff, do all TCPUs serially
+    vector<unsigned int> tcpuIDs;
+    vector<unsigned int>::iterator it;
+   
+    int numTCPUs = findAllTCPUs(&tcpuIDs);
+    if (numTCPUs > 0) {
+      cout << "found " << numTCPUs << " TCPUs on this network. Starting...\n";
+      for (it=tcpuIDs.begin(); it<tcpuIDs.end(); it++)
+	if(tdigNodeID == 0xff)
+	  for (unsigned int i = 0x10; i<0x18; i++)
+	    retVal = eeprom2(argv[3], i, *it, devID);
+	else
+	  retVal = eeprom2(argv[3], tdigNodeID, *it, devID);
+    }
+    else
+      cout << "findAllTCPUs returned " << numTCPUs << ". Exiting...\n";
+  }
+
+  my_private_exit(errno);
+  return 0;
 }

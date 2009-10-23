@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.4 2009-10-20 19:54:12 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.5 2009-10-23 18:45:53 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -296,14 +296,6 @@ int change_mcu_program(const char *filename,
 
   errno = 0;
 
-  // install signal handler for manual break
-  signal(SIGINT, signal_handler);
-  
-
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
-  }
-
   
   // swallow any packets that might be present first
   TPCANRdMsg mr;
@@ -437,16 +429,16 @@ int change_mcu_program(const char *filename,
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
-  my_private_exit(errno);
   
   return 0;
 }
 
-//****************************************************************************
+//******************************** main function *****************************************
 int main(int argc, char *argv[])
 {
   unsigned int tdigNodeID, tcpuNodeID;
   WORD devID = 255;
+  int retVal;
 
 
   cout << vcid << endl;
@@ -458,20 +450,20 @@ int main(int argc, char *argv[])
   }
   
   tdigNodeID = strtol(argv[1], (char **)NULL, 0);
-  if ((tdigNodeID < 1) || (tdigNodeID > 0x3F)) {
-    cerr << "TDIG nodeID = " << tdigNodeID 
-	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
-	 << endl;
-    return -1;
-  }
+//   if ((tdigNodeID < 1) || (tdigNodeID > 0x3F)) {
+//     cerr << "TDIG nodeID = " << tdigNodeID 
+// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
+// 	 << endl;
+//     return -1;
+//   }
   
   tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
-  if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3F)) {
-    cerr << "TCPU nodeID = " << tcpuNodeID 
-	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
-	 << endl;
-    return -1;
-  }
+//   if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3F)) {
+//     cerr << "TCPU nodeID = " << tcpuNodeID 
+// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
+// 	 << endl;
+//     return -1;
+//   }
   
   if (argc == 5) {
     devID = strtol(argv[4],(char **)NULL, 0);
@@ -488,5 +480,39 @@ int main(int argc, char *argv[])
        << " devID 0x" << devID << endl;
 #endif
 
-  return change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
+  // install signal handler for manual break
+  signal(SIGINT, signal_handler);
+  
+
+  if((errno = openCAN(devID)) != 0) {
+    my_private_exit(errno);
+  }
+
+  if (tcpuNodeID != 0xff)
+    if (tdigNodeID == 0xff)
+      for (unsigned int i=0x10; i<0x18; i++)
+	retVal = change_mcu_program(argv[3], i, tcpuNodeID, devID);
+    else
+      retVal = change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
+  else {
+    // for nodeID = 0xff, do all TCPUs serially
+    vector<unsigned int> tcpuIDs;
+    vector<unsigned int>::iterator it;
+   
+    int numTCPUs = findAllTCPUs(&tcpuIDs);
+    if (numTCPUs > 0) {
+      cout << "found " << numTCPUs << " TCPUs on this network. Starting...\n";
+      for (it=tcpuIDs.begin(); it<tcpuIDs.end(); it++)
+	if (tdigNodeID == 0xff)
+	  for (unsigned int i=0x10; i<0x18; i++)
+	    retVal = change_mcu_program(argv[3], i, tcpuNodeID, devID);
+	else
+	  retVal = change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
+    }
+    else
+      cout << "findAllTCPUs returned " << numTCPUs << ". Exiting...\n";
+  }
+
+  my_private_exit(errno);
+  return 0;
 }
