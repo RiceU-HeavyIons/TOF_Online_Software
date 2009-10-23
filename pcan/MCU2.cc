@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.7 2009-10-20 19:53:27 jschamba Exp $";
+"$Id: MCU2.cc,v 1.8 2009-10-23 18:44:27 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -23,6 +23,7 @@ static char  __attribute__ ((unused)) vcid[] =
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 using namespace std;
 
 // other headers
@@ -289,13 +290,6 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
   errno = 0;
 
-  // install signal handler for manual break
-  signal(SIGINT, signal_handler);
-  
-
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
-  }
 
   
   // swallow any packets that might be present first
@@ -427,16 +421,16 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
-  my_private_exit(errno);
   
   return 0;
 }
 
-//****************************************************************************
+//******************************** main function *****************************************
 int main(int argc, char *argv[])
 {
   unsigned int nodeID;
   WORD devID = 255;
+  int retVal;
 
 
   cout << vcid << endl;
@@ -448,12 +442,12 @@ int main(int argc, char *argv[])
   }
   
   nodeID = strtol(argv[1], (char **)NULL, 0);
-  if ((nodeID < 0) || (nodeID > 0x3F)) {
-    cerr << "nodeID = " << nodeID 
-	 << " is an invalid entry.  Use a value between 0 and 0x3F (63) instead."  
-	 << endl;
-    return -1;
-  }
+//   if ((nodeID < 0) || (nodeID > 0x3F)) {
+//     cerr << "nodeID = " << nodeID 
+// 	 << " is an invalid entry.  Use a value between 0 and 0x3F (63) instead."  
+// 	 << endl;
+//     return -1;
+//   }
   
   if (argc == 4) {
     devID = strtol(argv[3],(char **)NULL, 0);
@@ -465,5 +459,35 @@ int main(int argc, char *argv[])
   cout << "nodeID 0x" << hex << nodeID
        << " filename " << argv[2]
        << " devID 0x" << devID << endl;
-  return change_mcu_program(argv[2], nodeID, devID);
+
+  // install signal handler for manual break
+  signal(SIGINT, signal_handler);
+  
+
+  // open CANbus handle for deviceID <devID>
+  if((errno = openCAN(devID)) != 0) {
+    my_private_exit(errno);
+  }
+
+  if (nodeID != 0xff)
+    retVal = change_mcu_program(argv[2], nodeID, devID);
+  else {
+    // for nodeID = 0xff, do all TCPUs serially
+    vector<unsigned int> tcpuIDs;
+    vector<unsigned int>::iterator it;
+   
+    int numTCPUs = findAllTCPUs(&tcpuIDs);
+    if (numTCPUs > 0) {
+      cout << "found " << numTCPUs << " TCPUs on this network. Starting...\n";
+      for (it=tcpuIDs.begin(); it<tcpuIDs.end(); it++)
+	retVal = change_mcu_program(argv[2], *it, devID);
+    }
+    else
+      cout << "findAllTCPUs returned " << numTCPUs << ". Exiting...\n";
+  }
+
+  // close CANbus handle
+  my_private_exit(errno);
+
+  return 0;
 }

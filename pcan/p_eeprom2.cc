@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_eeprom2.cc,v 1.6 2009-05-20 18:57:45 jschamba Exp $";
+"$Id: p_eeprom2.cc,v 1.7 2009-10-23 18:44:27 jschamba Exp $";
 #endif /* lint */
 
 
@@ -90,9 +90,6 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 
   errno = 0;
   
-  // install signal handler for manual break
-  signal(SIGINT, signal_handler);
-  
   // open file "filename" and extract control bits
   conf.open(filename, ios_base::binary); // "in" is default 
   if ( !conf.good() ) {
@@ -112,10 +109,6 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
        << noPages << " pages, leftover " << leftover << " bytes\n";
   
   conf.seekg(0,ios::beg);    // move file pointer to beginning of file
-
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
-  }
 
 
   cout << "Starting Configuration Procedure....\n";
@@ -273,15 +266,16 @@ int eeprom2(const char *filename, unsigned int nodeID, WORD devID)
 	  nodeID, devID); fflush(stderr);
 
 
-  my_private_exit(errno);
   
   return errno;
 }
 
 
+//*********************************** main function **************************************
 int main(int argc, char *argv[])
 {
   WORD devID = 255;
+  int retVal;
 
   cout << vcid << endl;
   cout.flush();
@@ -301,5 +295,31 @@ int main(int argc, char *argv[])
     }
   }
   
-  return eeprom2(argv[2], nodeID, devID);
+  // install signal handler for manual break
+  signal(SIGINT, signal_handler);
+
+  if((errno = openCAN(devID)) != 0) {
+    my_private_exit(errno);
+  }
+
+  if (nodeID != 0xff)
+    retVal =  eeprom2(argv[2], nodeID, devID);
+  else {
+    // for nodeID = 0xff, do all TCPUs serially
+    vector<unsigned int> tcpuIDs;
+    vector<unsigned int>::iterator it;
+   
+    int numTCPUs = findAllTCPUs(&tcpuIDs);
+    if (numTCPUs > 0) {
+      cout << "found " << numTCPUs << " TCPUs on this network. Starting...\n";
+      for (it=tcpuIDs.begin(); it<tcpuIDs.end(); it++)
+	retVal =  eeprom2(argv[2], *it, devID);
+    }
+    else
+      cout << "findAllTCPUs returned " << numTCPUs << ". Exiting...\n";
+  }
+  
+  my_private_exit(errno);
+
+  return 0;
 }
