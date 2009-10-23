@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.11 2009-10-22 22:11:59 jschamba Exp $";
+"$Id: can_utils.cc,v 1.12 2009-10-23 18:43:14 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -26,6 +26,7 @@ const char *NORMAL_COLORS = "\033[0m";
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 using namespace std;
 
 // other headers
@@ -704,3 +705,89 @@ int sendCAN_and_Compare_l(int devID, TPCANMsg &ms, const char *errorMsg,
   return 0;
 }
 
+int findAllTCPUs(vector<unsigned int> *pTcpuIDs) 
+{
+#ifdef LOCAL_DEBUG
+  char txt[255]; // temporary string storage
+#endif
+  TPCANMsg m;
+  TPCANRdMsg mr;
+  __u32 status;
+  unsigned int tcpuID;
+  int numTCPUs;
+  
+  if (h != NULL) {
+    // swallow all existing messages first
+    while (errno == 0)
+      errno = LINUX_CAN_Read_Timeout(h, &mr, 1000); // timeout = 1ms
+  }
+  else {
+#ifdef LOCAL_DEBUG
+    cerr << "CAN handle not valid. Exiting...\n";
+#endif
+    return -1;
+  }
+    
+  // send a broadcast message to all TCPUs
+  m.MSGTYPE = MSGTYPE_STANDARD;
+  m.ID = 0x7f4;
+  m.LEN = 1;
+  m.DATA[0] = 0xb4;
+#ifdef LOCAL_DEBUG
+  printCANMsg(m, "checkCan: message assembled:");
+#endif
+  if ( (errno = CAN_Write(h, &m)) ) {
+#ifdef LOCAL_DEBUG
+    perror("pcanloop: CAN_Write()");
+#endif
+    return -2;
+  }
+
+  numTCPUs = 0;
+  // now read all received messages
+  while (errno == 0) {
+    errno = LINUX_CAN_Read_Timeout(h, &mr, 10000); // timeout = 10ms
+    
+    if (errno == 0) { // data received
+      
+      // check if a CAN status is pending	     
+      if (mr.Msg.MSGTYPE & MSGTYPE_STATUS) {
+	status = CAN_Status(h);
+#ifdef LOCAL_DEBUG
+	cout << "received status " << hex << showbase << status << endl;
+#endif
+	if ((int)status < 0) {
+	  errno = nGetLastError();
+#ifdef LOCAL_DEBUG
+	  perror("pcanloop: CAN_Status()");
+#endif
+	  return -3;
+	}
+#ifdef LOCAL_DEBUG
+	else {
+	  check_err(status, txt);
+	  cerr << txt << endl;
+	}
+	cerr << "Status message received, breaking out of loop\n";
+#endif	
+	break;
+      } 
+      else if ((mr.Msg.MSGTYPE == MSGTYPE_STANDARD) || (mr.Msg.MSGTYPE == MSGTYPE_EXTENDED)) {
+#ifdef LOCAL_DEBUG
+	printCANMsg(mr.Msg, "checkCAN: message received: ");
+#endif
+      
+	if ((mr.Msg.ID & 0x600) == 0x200) {
+	  numTCPUs++;
+	  tcpuID = (mr.Msg.ID >> 4) & 0x3f;
+#ifdef LOCAL_DEBUG
+	  cout << "TCPU ID = " << showbase << tcpuID << endl;
+#endif
+	  pTcpuIDs->push_back(tcpuID);
+	}
+      } // else if ((mr.Msg.MSGTYPE
+    } // end "data received"
+  } // while (errno = 0)
+
+  return numTCPUs;
+}
