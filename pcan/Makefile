@@ -120,6 +120,9 @@ getChecksum_l:	getChecksum_l.o can_utils.o
 getTHUBFWIDs:		getTHUBFWIDs.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
+showSerdes:		showSerdes.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
 getFWIDs:		getFWIDs.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
