@@ -4,7 +4,7 @@ CXXFLAGS += -Wall
 
 DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
 		Makefile xp_config.cc xp_config_scripted.cc \
-		pcan_find.cc xgetStatus.cc \
+		pcan_find.cc xgetStatus.cc showSerdes.cc \
 		xenableChannel.cc xsetThreshold.cc \
 		getFWIDs.cc getTHUBFWIDS.cc getChecksum*.cc x_getChecksum*.cc \
 		cfig_test014*.txt cfig_test016*.txt cfig_test018*.txt \
@@ -12,7 +12,7 @@ DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
 
 # Targets:
 
-all:		pcanloop pc pcan_find \
+all:		pcanloop pc pcan_find showSerdes \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xp_config_scripted xp_config_reset p_config \
 		x_getChecksum_l getChecksum_l xp_config_scripted_l \
