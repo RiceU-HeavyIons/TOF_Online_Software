@@ -49,8 +49,15 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
 
 	QDateTime now = QDateTime::currentDateTime();
-	m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
-	m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
+	char *logdir = getenv("AII_LOG_DIR");
+	if (logdir != NULL && *logdir != '\0') {
+	  m_log   = new AnLog(QString("%1/%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+	  m_tlog  = new AnLog(QString("%1/temp%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+	}
+	else {
+	  m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
+	  m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
+	}
 
 	QSqlQuery qry;
 	qry.exec("SELECT id, devid, name, installed FROM devices");
