@@ -10,6 +10,8 @@ QT += sql
 CONFIG += debug
 CONFIG -= release
 
+POST_TARGETDEPS += ../lib/libanaconda.a
+
 LIBS += -L../lib -lanaconda
 
 message(PCAN: $$PCAN)
