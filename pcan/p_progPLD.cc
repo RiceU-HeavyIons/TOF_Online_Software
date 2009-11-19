@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progPLD.cc,v 1.11 2009-10-22 22:13:35 jschamba Exp $";
+"$Id: p_progPLD.cc,v 1.12 2009-11-19 22:24:00 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -201,13 +201,19 @@ int p_progPLD(const char *filename, int pldNum, int nodeID, WORD devID)
       //nanosleep(&timesp, NULL);
       //for (int j=0; j<4300000; j++) ;
       
-      errno = LINUX_CAN_Read_Timeout(h, &mr, 1000000); // timeout = 1 second
+      errno = LINUX_CAN_Read_Timeout(h, &mr, 4000000); // timeout = 4 second
       if (errno != 0) {
+	const char *RED_ON_WHITE = "\033[47m\033[1;31m";
+	const char *NORMAL_COLORS = "\033[0m";
+
+	cout << RED_ON_WHITE;
 	if (errno == CAN_ERR_QRCVEMPTY)
 	  cout << "Timeout during progPLD:WriteDataBytes, page " << page << endl;
 	else
 	  cout << "CAN_Read_Timeout returned " << errno 
 	       << " during progPLD:WriteDataBytes, page " << page << endl;
+	cout << NORMAL_COLORS;
+	return (errno);
       }
       
     }
