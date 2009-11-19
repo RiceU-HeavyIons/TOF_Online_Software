@@ -11,7 +11,7 @@ usleep 1300000
 ./pc "m s 0x202 5 0x8a 0x69 0x96 0xa5 0x5a 253"
 usleep 70000
 ./pc "m e 0x1fc80020 5 0x8a 0x69 0x96 0xa5 0x5a 253"
-sleep 1
+sleep 70000
 
 # turn off all of the Serdes channels on THUB
 for ((i=91; i<99; i+=1)) do
@@ -78,15 +78,12 @@ usleep 70000
 usleep 70000
 ./pc "m s 0x402 2 0x98 0x17 254"
 
-# check that all Serdes channels sync'd
-for ((i=91; i<99; i+=1)) do
-    usleep 70000
-    ./pc "m s 0x404 1 0x"$i" 254"
-done
-
 # issue bunch reset
 usleep 70000
 ./pc "m s 0x402 2 0x99 0x1 251"
+
+usleep 70000
+./showSerdes 254
 
 exit
 

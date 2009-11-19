@@ -58,15 +58,12 @@ usleep 70000
 usleep 70000
 ./pc "m s 0x402 2 0x98 0x13 250"
 
-# check that all Serdes channels sync'd
-for ((i=91; i<99; i+=1)) do
-    usleep 70000
-    ./pc "m s 0x404 1 0x"$i" 250"
-done
-
 # issue bunch reset
 usleep 70000
 ./pc "m s 0x402 2 0x99 0x1 251"
+
+usleep 70000
+./showSerdes 250
 
 exit
 
