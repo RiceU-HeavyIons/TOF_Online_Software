@@ -11,7 +11,7 @@ usleep 1300000
 ./pc "m s 0x202 5 0x8a 0x69 0x96 0xa5 0x5a 253"
 usleep 70000
 ./pc "m e 0x1fc80020 5 0x8a 0x69 0x96 0xa5 0x5a 253"
-sleep 70000
+usleep 70000
 
 # turn off all of the Serdes channels on THUB
 for ((i=91; i<99; i+=1)) do
