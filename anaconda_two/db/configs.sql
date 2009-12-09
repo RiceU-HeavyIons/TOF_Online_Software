@@ -88,7 +88,7 @@ insert into configs values (null,   1, 14,  25,   2, 255,   0,   0,      0);
 insert into configs values (null,   1, 15,  26,   2, 255,   0,   0,      2);
 -- TDIG
 insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
-insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   2500);
+insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   1200);
 insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      2);
 insert into configs values (null,   1, 24,  34,   2,  58,   2,   0,      1);
 --insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      1);
