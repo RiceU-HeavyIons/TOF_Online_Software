@@ -468,18 +468,20 @@ void AnAgent::error_handle(int er, TPCANMsg &msg)
       throw AnExCanError(status);
     }
   } else if (er != 0) {
-    incCommError();
+    //    incCommError();
     int status = CAN_Status(m_handle);
     if (status == CAN_ERR_QRCVEMPTY) {
-      log( QString("error_handle: CANBus[%1] Error: 0x%2")
+      log( QString("error_handle: CANBus[%1] QRCVEMPTY Error: 0x%2")
 	   .arg(addr).arg(QString::number(status, 16)) );
       throw AnExCanError(status);
       //			throw AnExCanTimeOut(status);
     } else if (status > 0) {
-      log( QString("error_handle: CANBus[%1] Error: 0x%2")
+      incCommError();
+      log( QString("error_handle: CANBus[%1] other Error: 0x%2")
 	   .arg(addr).arg(QString::number(status, 16)) );
       throw AnExCanError(status);
     } else {
+      incCommError();
       log( QString("error_handle: CANBus[%1] System Error: 0x%2")
 	   .arg(addr).arg(QString::number(status, 16)) );
       throw AnExCanError(status);
