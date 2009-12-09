@@ -639,35 +639,36 @@ void AnRoot::watcher(int sock)
 //-----------------------------------------------------------------------------
 void AnRoot::received(AnRdMsg rmsg)
 {
-	log( QString("received: %1").arg(rmsg.toString()) );
-
-	if (rmsg.type() == 0x80) return; // work around segmentation fault
-
-	AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
-
-	if (brd != NULL) {
-		if (rmsg.payload() == 0x7) {
-			if (rmsg.data() == 0xff000000) { // greeting message
-//				if(!isRunning()) {
-//					brd->sync(1);
-//					emit updated(brd);
-//				}
-			} else if (rmsg.data() == 0xff550000) { // end of run
-				log("received: got end of run message");
-				doUserCmd(3);
-			} else {
-				log( QString("received: error message: %1").arg(rmsg.toString()) );
-				brd->sync(3);
-			}
-		} else if (rmsg.payload() == 0x4) {
-			if(!isRunning()) {
-				brd->sync(1);
-				emit updated(brd);
-			}
-		}
-	} else {
-		log("received: unknown source");
+  log( QString("received: %1").arg(rmsg.toString()) );
+  
+  if (rmsg.type() == 0x80) return; // work around segmentation fault
+  
+  AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
+  
+  if (brd != NULL) {
+    if (rmsg.payload() == 0x7) {
+      if (rmsg.data() == 0xff000000) { // greeting message
+	if(!isRunning()) {
+	  brd->clearCommError();
+	  brd->sync(1);
+	  emit updated(brd);
 	}
+      } else if (rmsg.data() == 0xff550000) { // end of run
+	log("received: got end of run message");
+	doUserCmd(3);
+      } else {
+	log( QString("received: error message: %1").arg(rmsg.toString()) );
+	brd->sync(3);
+      }
+    } else if (rmsg.payload() == 0x4) {
+      if(!isRunning()) {
+	brd->sync(1);
+	emit updated(brd);
+      }
+    }
+  } else {
+    log("received: unknown source");
+  }
 }
 
 //==============================================================================
