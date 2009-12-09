@@ -397,33 +397,39 @@ double AnTcpu::maxTemp() const
 
 int AnTcpu::status() const
 {
-	int stat, err = 0;
-	int warn = 0;
-
-	if (temp() > tempAlarm()) ++err;
-	if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
-	
-	if (m_pld02 != m_pld02Set) ++err;
-	if (m_pld03 != m_pld03Set) ++err;
-	
-	for (int i = 0; i < 8; ++i) {
-		if (m_tdig[i]->status() == STATUS_ERROR) ++err;
-		if (m_tdig[i]->status() == STATUS_WARNING) ++warn;
-		if (m_tdig[i]->status() == STATUS_COMM_ERR) ++warn;
-	}
-
-	if (agent()->commError() != 0 || commError() != 0)
-		stat = STATUS_COMM_ERR;
-	else if (err)
-		stat = STATUS_ERROR;
-	else if (warn)
-		stat = STATUS_WARNING;
-	else
-		stat = (m_pld02 & 0x1) ? STATUS_ON : STATUS_STANDBY;
-
-	if (!active()) stat = STATUS_UNKNOWN;
-
-	return stat;
+  int stat, err = 0;
+  int warn = 0;
+  
+  if (temp() > tempAlarm()) ++err;
+  if (ecsr() & 0x4) ++err; // PLD_CRC_ERROR
+  
+  if (m_pld02 != m_pld02Set) ++err;
+  if (m_pld03 != m_pld03Set) ++err;
+  
+  for (int i = 0; i < 8; ++i) {
+    if (m_tdig[i]->status() == STATUS_ERROR) ++err;
+    if (m_tdig[i]->status() == STATUS_WARNING) ++warn;
+    if (m_tdig[i]->status() == STATUS_COMM_ERR) ++warn;
+  }
+  
+  if (agent()->commError() != 0 || commError() != 0) {
+    stat = STATUS_COMM_ERR;
+    // since we can't communicate with the TCPU, tell the TDIGs
+    // they have communication errors as well
+    for (int i = 0; i < 8; ++i) {
+      m_tdig[i]->incCommError();
+    }
+  }
+  else if (err)
+    stat = STATUS_ERROR;
+  else if (warn)
+    stat = STATUS_WARNING;
+  else
+    stat = (m_pld02 & 0x1) ? STATUS_ON : STATUS_STANDBY;
+  
+  if (!active()) stat = STATUS_UNKNOWN;
+  
+  return stat;
 }
 
 //-----------------------------------------------------------------------------
