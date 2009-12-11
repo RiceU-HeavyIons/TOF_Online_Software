@@ -53,7 +53,7 @@ AnCanObject *AnThub::hat(int i)
 QString AnThub::firmwareString() const
 {
   char buf[32];
-  sprintf(buf, "%llx/%x", m_thubFirmware, fpgaFirmwareId());
+  sprintf(buf, "%x/%x", m_thubMCUFirmware, m_thubFPGAFirmware);
   return QString(buf);
 }
 
@@ -164,12 +164,16 @@ void AnThub::sync(int level)
 			// readout master firmware id
 			if (level >= 1) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
-				rdata = agent()->write_read(msg, rmsg, 8);
+				agent()->write_read(msg, rmsg, 8);
 				//setMcuFirmwareId(rdata);
-				m_thubFirmware = rdata;
+				m_thubMCUFirmware = static_cast<quint16>(rmsg.Msg.DATA[1]) << 8 |
+				  static_cast<quint16>(rmsg.Msg.DATA[0]);
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
 				agent()->write_read(msg, rmsg, 4);
-				setFpgaFirmwareId(rmsg.Msg.DATA[2]);
+				m_thubFPGAFirmware = 0;
+				for(int j = 0; j < rmsg.Msg.LEN; ++j)
+				  m_thubFPGAFirmware |= static_cast<quint32>(rmsg.Msg.DATA[j]) << 8 * j;
+				//setFpgaFirmwareId(rmsg.Msg.DATA[2]);
 			}
 			// readout temperature
 			for (int i = 0; i < 2; ++i) {

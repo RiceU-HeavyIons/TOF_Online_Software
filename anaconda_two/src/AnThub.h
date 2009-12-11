@@ -51,7 +51,8 @@ private:
 	void log(QString str);
 
 	AnSerdes *m_serdes[8];
-	quint64   m_thubFirmware;
+	quint16   m_thubMCUFirmware;
+	quint32   m_thubFPGAFirmware;
 };
 
 #endif /* ANTHUB_H_ */

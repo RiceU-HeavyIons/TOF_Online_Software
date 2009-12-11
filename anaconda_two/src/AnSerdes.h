@@ -59,6 +59,7 @@ private:
 	enum { NPORT = 4 };
 	AnTcpu *m_tcpu[NPORT];
 	quint8  m_pld9xBase;
+	quint32   m_serdesFPGAFirmware;
 
 };
 
