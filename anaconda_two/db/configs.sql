@@ -89,6 +89,8 @@ insert into configs values (null,   1, 15,  26,   2, 255,   0,   0,      2);
 -- TDIG
 insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
 insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   1200);
+insert into configs values (null,   1, 22,  33,   2, 121, 255,   0,    500);
+insert into configs values (null,   1, 22,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      2);
 --insert into configs values (null,   1, 24,  34,   2,  58,   2,   0,      1);
 --insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      1);
@@ -158,7 +160,7 @@ insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
 insert into configs values (null,   3, 55, 102,   1, 255, 255,   0,      1);
 
 -- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
-insert into configs values (null,   3, 61, 211,   2,  46,   0,   0,      1);
+--insert into configs values (null,   3, 61, 211,   2,  46,   0,   0,      1);
 
 -- 7. Bunch Reset
 insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
