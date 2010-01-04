@@ -22,7 +22,7 @@ create table config_sets (
     description         vchar(128)
 );
 insert into config_sets values (1, "Default",               "default mode uploaded when frontend starts");
-insert into config_sets values (2, "Standby",               "Stanby");
+insert into config_sets values (2, "Standby",               "Standby");
 insert into config_sets values (3, "Phys Mode",             "Physics mode");
 insert into config_sets values (4, "Phys Mode (monitor)",   "Physics Mode (monitor)");
 
