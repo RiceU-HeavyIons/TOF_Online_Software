@@ -1,3 +1,5 @@
+-- $Id$
+
 -- TCPUs
 drop table if exists tcpus;
 create table tcpus (
@@ -75,7 +77,7 @@ insert into tcpus values ( 54, 3, 36,  42,  38,  3, 'A3', 10,  5,  5,  6,  1);
 insert into tcpus values ( 55, 3, 37,  45,  41,  3, 'B0', 10,  6,  5,  7,  1);
 insert into tcpus values ( 56, 3, 38,  49,  45,  3, 'B1', 10,  7,  5,  8,  1);
 insert into tcpus values ( 57, 3, 39,  56,  52,  3, 'B2', 10,  8,  5,  9,  1);
-insert into tcpus values ( 58, 3, 40,  58,  54,  3, 'B3', 10,  9,  5, 10,  1);
+insert into tcpus values ( 58, 3, 40,  58,  54,  3, 'B3', 10,  9,  5, 10,  0);
 insert into tcpus values ( 59, 3, 41,  57,  53,  3, 'C0', 10, 10,  5, 11,  1);
 insert into tcpus values ( 60, 3, 42,  59,  55,  3, 'C1', 10, 11,  5, 12,  1);
 
