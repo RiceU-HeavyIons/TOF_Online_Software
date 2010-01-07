@@ -35,6 +35,8 @@ AnTcpu::AnTcpu(
 	m_pld0e    = 0;
 	m_pld0eSet = 0;
 	m_eeprom   = 1;
+
+	m_multGatePhase = 0xe0;
 }
 
 //-----------------------------------------------------------------------------
@@ -114,8 +116,8 @@ void AnTcpu::init(int level)
 //			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
 			agent()->write_read(msg, rmsg, 3);
 
-			// moving the multiplisity gate
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x8, 0xe0);
+			// moving the multiplicity gate
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x8, m_multGatePhase);
 			agent()->write_read(msg, rmsg, 2);
 
 			if (--level >= 1)
@@ -318,6 +320,7 @@ QString AnTcpu::dump() const
 	sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
 	sl << QString("  PLD Reg[0E] Set   : 0x") + QString::number(m_pld0eSet, 16);
 	sl << QString("  EEPROM Selector   : %1").arg(m_eeprom);
+	sl << QString("  Mult. Gate Phase  : ") + multGatePhaseString();
 	sl << QString("  Status            : ") + QString::number(status());
 	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 	sl << QString("  LV / HV           : ") + lvHvString();
