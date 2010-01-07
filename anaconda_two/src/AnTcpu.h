@@ -77,6 +77,10 @@ public:
 	quint8 setEeprom(quint8 v) { return (m_eeprom = v); }
 	QString eepromString() const { return QString::number(m_eeprom); }
 
+	quint8 multGatePhase() const { return m_multGatePhase; }
+	quint8 setMultGatePhase(quint8 v) { return (m_multGatePhase = v); }
+	QString multGatePhaseString() const { return "0x" + QString::number(m_multGatePhase, 16); }
+
 	quint64 chipId() const { return m_chipid; }
 	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
 	QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
@@ -111,6 +115,7 @@ private:
 	quint8      m_pld0e, m_pld0eSet;
 	quint64     m_chipid;
 	quint8      m_eeprom;
+	quint8      m_multGatePhase;
 
 	quint8      m_tray_id;
 	QString     m_tray_sn;
