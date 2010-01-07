@@ -146,6 +146,13 @@ void AnMaster::p_setMode(int mode)
 				else qDebug() << "invalid address: " << ad.toString();
 			}
 		}
+		if (ct == "TCPU_MULTGATEPHASE") {
+			foreach(AnAddress ad, m_root->expand(addr)) {
+				AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
+				if (tcpu) tcpu->setMultGatePhase(val);
+				else qDebug() << "invalid address: " << ad.toString();
+			}
+		}
 
 		// TDIG
 		if (ct == "TDIG_ENABLE") {
