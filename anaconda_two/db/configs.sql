@@ -33,23 +33,27 @@ create table config_types (
 );
 
 -- parameters
-insert into config_types values (  1, "THUB_ENABLE"      );
-insert into config_types values (  2, "THUB_TEMP_ALARM"  );
-insert into config_types values ( 11, "SRDS_ENABLE"      );
-insert into config_types values ( 12, "SRDS_PLDREG9XBASE");
-insert into config_types values ( 21, "TCPU_ENABLE"      );
-insert into config_types values ( 22, "TCPU_TEMP_ALARM"  );
-insert into config_types values ( 23, "TCPU_PLDREG02"    );
-insert into config_types values ( 24, "TCPU_PLDREG03"    );
-insert into config_types values ( 25, "TCPU_PLDREG0E"    );
-insert into config_types values ( 26, "TCPU_EEPROM"      );
-insert into config_types values ( 31, "TDIG_ENABLE"      );
-insert into config_types values ( 32, "TDIG_TEMP_ALARM"  );
-insert into config_types values ( 33, "TDIG_THRESHOLD"   );
-insert into config_types values ( 34, "TDIG_EEPROM"      );
-insert into config_types values ( 41, "TDC_ENABLE"       );
-insert into config_types values ( 42, "TDC_CONFIG_ID"    );
-insert into config_types values ( 43, "TDC_CH_MASK"      );
+insert into config_types values (  1, "THUB_ENABLE"       );
+insert into config_types values (  2, "THUB_TEMP_ALARM"   );
+insert into config_types values ( 11, "SRDS_ENABLE"       );
+insert into config_types values ( 12, "SRDS_PLDREG9XBASE" );
+
+insert into config_types values ( 21, "TCPU_ENABLE"       );
+insert into config_types values ( 22, "TCPU_TEMP_ALARM"   );
+insert into config_types values ( 23, "TCPU_PLDREG02"     );
+insert into config_types values ( 24, "TCPU_PLDREG03"     );
+insert into config_types values ( 25, "TCPU_PLDREG0E"     );
+insert into config_types values ( 26, "TCPU_EEPROM"       );
+insert into config_types values ( 27, "TCPU_MULTGATEPHASE");
+
+insert into config_types values ( 31, "TDIG_ENABLE"       );
+insert into config_types values ( 32, "TDIG_TEMP_ALARM"   );
+insert into config_types values ( 33, "TDIG_THRESHOLD"    );
+insert into config_types values ( 34, "TDIG_EEPROM"       );
+
+insert into config_types values ( 41, "TDC_ENABLE"        );
+insert into config_types values ( 42, "TDC_CONFIG_ID"     );
+insert into config_types values ( 43, "TDC_CH_MASK"       );
 
 -- action items
 insert into config_types values (101, "INIT"  );
@@ -86,6 +90,7 @@ insert into configs values (null,   1, 12,  23,   2, 255,   0,   0,      0);
 insert into configs values (null,   1, 13,  24,   2, 255,   0,   0,      1);
 insert into configs values (null,   1, 14,  25,   2, 255,   0,   0,      0);
 insert into configs values (null,   1, 15,  26,   2, 255,   0,   0,      2);
+insert into configs values (null,   1, 15,  27,   2, 255,   0,   0,    224); -- 0xe0
 -- TDIG
 insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
 insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   1200);
