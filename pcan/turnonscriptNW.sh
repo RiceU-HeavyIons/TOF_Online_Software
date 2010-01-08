@@ -50,8 +50,8 @@ usleep 1500000
 ./pc "m s 0x7f2 3 0xe 0x2 0xf 251"
 usleep 800000
 # set mult gate delay
-./pc "m s 0x7f2 3 0xe 0x8 0xe0 251"
-usleep 700000
+#./pc "m s 0x7f2 3 0xe 0x8 0xe0 251"
+#usleep 700000
 
 
 # start detector West: set threshold on each TDIG to 500mV

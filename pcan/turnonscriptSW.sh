@@ -37,8 +37,8 @@ usleep 1500000
 ./pc "m s 0x7f2 3 0xe 0x2 0xf 255"
 usleep 800000
 # set mult gate delay
-./pc "m s 0x7f2 3 0xe 0x8 0xe0 255"
-usleep 700000
+#./pc "m s 0x7f2 3 0xe 0x8 0xe0 255"
+#usleep 700000
 
 
 # turn on THUB serdes channels and put into regular trigger mode
