@@ -53,13 +53,14 @@ public:
 	virtual AnCanObject* hat(int i) { return &m_hnet[m_devid_map[i]]; }
 
 	enum {
-		TASK_INIT     = 0x01,
-		TASK_CONFIG   = 0x02,
-		TASK_RESET    = 0x04,
-		TASK_QRESET   = 0x08,
-		TASK_SYNC     = 0x10,
-		TASK_RESYNC   = 0x20,
-		TASK_RECOVERY = 0x40
+		TASK_INIT         = 0x01,
+		TASK_CONFIG       = 0x02,
+		TASK_RESET        = 0x04,
+		TASK_QRESET       = 0x08,
+		TASK_SYNC         = 0x10,
+		TASK_RESYNC       = 0x20,
+		TASK_TCPURECOVERY = 0x40,
+		TASK_THUBRECOVERY = 0x80
 	};
 
 //  Own functions
@@ -84,7 +85,8 @@ public:
 	void reset  (int level, const QList<AnBoard*>& blist);
 	void qreset (int level, const QList<AnBoard*>& blist);
 	void sync   (int level, const QList<AnBoard*>& blist);
-	void recovery(int level, const QList<AnBoard*>& blist);
+	void tcpurecovery(int level, const QList<AnBoard*>& blist);
+	void thubrecovery(int level, const QList<AnBoard*>& blist);
 	
 	int status();
 
