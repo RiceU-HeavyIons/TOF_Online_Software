@@ -338,99 +338,126 @@ void AnAgent::init(int mode, int level, QList<AnBoard*> list)
 //-----------------------------------------------------------------------------
 void AnAgent::run()
 {
-	m_root->disableWatch(m_id);
-	m_cancel = false;
+  m_root->disableWatch(m_id);
+  m_cancel = false;
+  
+  int total = m_list.count();
+  int step  = 0;
+  
+  emit init(m_id);
+  
+  switch (m_mode) {
 
-	int total = m_list.count();
-	int step  = 0;
-
-	emit init(m_id);
-
-	if (m_mode & AnRoot::TASK_INIT) {
-		log( QString("TASK_INIT: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->init(m_level);
-			emit progress(m_id, 100*(++step)/total);
-		}
+  case AnRoot::TASK_INIT :
+    log( QString("TASK_INIT: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      brd->init(m_level);
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_CONFIG :
+    log( QString("TASK_CONFIG: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      brd->config(m_level);
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+    
+  case  AnRoot::TASK_RESET :
+    log( QString("TASK_RESET: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      brd->reset(m_level);
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_QRESET :  // Quick Reset
+    log( QString("TASK_QRESET: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      brd->qreset(m_level);
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_SYNC :
+    log( QString("TASK_SYNC: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      brd->sync(m_level);
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_RESYNC :
+    log( QString("TASK_RESYNC: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
+      if (tcpu) {
+	log( QString("TASK_RESYNC: %1").arg(tcpu->name()) );
+	tcpu->resync(m_level);
+      }
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_TCPURECOVERY :
+    log( QString("TASK_TCPURECOVERY: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
+      if (tcpu) {
+	bool cond = false;
+	cond |= (m_level >= 1 && tcpu->status() == AnBoard::STATUS_ERROR);
+	cond |= (m_level >= 2 && tcpu->status() == AnBoard::STATUS_WARNING);
+	cond |= (m_level >= 3);
+	if (cond) {
+	  log( QString("TASK_TCPURECOVERY: %1").arg(tcpu->name()) );
+	  tcpu->sync(3);
+	  log( tcpu->errorDump() );
+	  tcpu->init(2);
+	  tcpu->qreset(2);
+	  tcpu->config(1);
+	  tcpu->sync(3);
 	}
-
-	if (m_mode & AnRoot::TASK_CONFIG) {
-		log( QString("TASK_CONFIG: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->config(m_level);
-			emit progress(m_id, 100*(++step)/total);
-		}
+      }
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
+  
+  case AnRoot::TASK_THUBRECOVERY :
+    log( QString("TASK_THUBRECOVERY: level=%1").arg(m_level));
+    foreach(AnBoard *brd, m_list) {
+      if (m_cancel) return;
+      AnThub *thub = dynamic_cast<AnThub*>( brd );
+      if (thub) {
+	thub->sync(1);
+	// log( QString("TASK_THUBRECOVERY: %1 CRC = %2").arg(thub->name()).arg(thub->ecsrString()) );
+	if (thub->ecsr() != 0) {
+	  log( QString("TASK_THUBRECOVERY: %1 CRC Error, CRC = %2").arg(thub->name()).arg(thub->ecsrString()) );
+	  thub->reloadFPGAs(1);
+	  for (int i=1; i<=8; i++)
+	    (thub->serdes(i))->config(1);
+	  usleep(200000); // sleep a little to make sure the sync happened properly
+	  thub->sync(3);
 	}
+	
+      }
+      emit progress(m_id, 100*(++step)/total);
+    }
+    break;
 
-	if (m_mode & AnRoot::TASK_RESET) {
-		log( QString("TASK_RESET: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->reset(m_level);
-			emit progress(m_id, 100*(++step)/total);
-		}
-	}
-
-	if (m_mode & AnRoot::TASK_QRESET) { // Quick Reset
-		log( QString("TASK_QRESET: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->qreset(m_level);
-			emit progress(m_id, 100*(++step)/total);
-		}
-	}
-
-	if (m_mode & AnRoot::TASK_SYNC) {
-		log( QString("TASK_SYNC: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			brd->sync(m_level);
-			emit progress(m_id, 100*(++step)/total);
-		}
-	}
-
-	if (m_mode & AnRoot::TASK_RESYNC) {
-		log( QString("TASK_RESYNC: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
-			if (tcpu) {
-				log( QString("TASK_RESYNC: %1").arg(tcpu->name()) );
-				tcpu->resync(m_level);
-			}
-			emit progress(m_id, 100*(++step)/total);
-		}
-	}
-	if (m_mode & AnRoot::TASK_RECOVERY) {
-		log( QString("TASK_RECOVERY: level=%1").arg(m_level));
-		foreach(AnBoard *brd, m_list) {
-			if (m_cancel) return;
-			AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
-			if (tcpu) {
-				bool cond = false;
-				cond |= (m_level >= 1 && tcpu->status() == AnBoard::STATUS_ERROR);
-				cond |= (m_level >= 2 && tcpu->status() == AnBoard::STATUS_WARNING);
-				cond |= (m_level >= 3);
-				if (cond) {
-					log( QString("TASK_RECOVERY: %1").arg(tcpu->name()) );
-					tcpu->sync(3);
-					log( tcpu->errorDump() );
-					tcpu->init(2);
-					tcpu->qreset(2);
-					tcpu->config(1);
-					tcpu->sync(3);
-				}
-			}
-			emit progress(m_id, 100*(++step)/total);
-		}
-	}
-
-	// make sure send out finish
-	emit progress(m_id, 100);
-	emit finished(m_id);
-	m_root->enableWatch(m_id);
+  } // end "switch ("
+  
+  // make sure send out finish
+  emit progress(m_id, 100);
+  emit finished(m_id);
+  m_root->enableWatch(m_id);
 }
 
 //-----------------------------------------------------------------------------
