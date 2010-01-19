@@ -180,10 +180,10 @@ void AnThub::sync(int level)
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i + 1);
 				rdata = agent()->write_read(msg, rmsg, 2);
 				setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
-				for(int j = 0; j < 2; ++j)
-					agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
 				
 			}
+			for(int j = 0; j < 2; ++j)
+			  agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
 
 			// readout crc error bits
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
@@ -228,6 +228,32 @@ void AnThub::bunchReset(int level)
 		}
 	} else {
 		log(QString("bunchReset: wasn't issued, active=%1, level=%2, commError=%3")
+			.arg(active()).arg(level).arg(commError()));
+	}
+}
+
+//-----------------------------------------------------------------------------
+/**
+ * THUB Reload FPGAs
+ */
+void AnThub::reloadFPGAs(int level)
+{
+	log(QString("reloadFPGAs: level=%1").arg(level));
+
+	if (active() && level >= 1 && commError() == 0) {
+		TPCANMsg    msg;
+		TPCANRdMsg  rmsg;
+
+		try {
+			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 1, 0xd);
+			agent()->write_read(msg, rmsg, 2);
+
+		} catch (AnExCanError ex) {
+			log(QString("reloadFPGAs: CANBus error occcured: %1").arg(ex.status()));
+			incCommError();
+		}
+	} else {
+		log(QString("reloadFPGAs: wasn't issued, active=%1, level=%2, commError=%3")
 			.arg(active()).arg(level).arg(commError()));
 	}
 }

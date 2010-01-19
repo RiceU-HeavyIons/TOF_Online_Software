@@ -25,6 +25,7 @@ public:
 	virtual void qreset(int level);
 	virtual void sync  (int level);
 	void bunchReset(int level);
+	void reloadFPGAs(int level);
 
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);
