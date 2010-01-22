@@ -159,12 +159,15 @@ void AnThub::sync(int level)
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		quint64 rdata;
+		QStringList btrace;
 
 		try {
 			// readout master firmware id
 			if (level >= 1) {
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
+				btrace << AnRdMsg(haddr().at(0), msg).toString();
 				agent()->write_read(msg, rmsg, 8);
+				btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 				//setMcuFirmwareId(rdata);
 				m_thubMCUFirmware = static_cast<quint16>(rmsg.Msg.DATA[1]) << 8 |
 				  static_cast<quint16>(rmsg.Msg.DATA[0]);
@@ -198,6 +201,7 @@ void AnThub::sync(int level)
 			setSynced();
 		} catch (AnExCanError ex) {
 			log(QString("sync: CANBus error occcured: %1").arg(ex.status()));
+			log(btrace.join("\n"));
 			incCommError();
 		}
 	} else {

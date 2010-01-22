@@ -189,12 +189,15 @@ void AnTcpu::sync(int level)
 			TPCANMsg    msg;
 			TPCANRdMsg  rmsg;
 			quint64     rdata;
+			QStringList btrace;
 
 			try {
 				// get temperature and ecsr
 				// HLP 3f says "ECSR Temp Temp AD1L AD1H AD2L AD2H"...
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
+				btrace << AnRdMsg(haddr().at(0), msg).toString();
 				agent()->write_read(msg, rmsg, 8);
+				btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 				setEcsr(rmsg.Msg.DATA[3]);
 				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 				agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()));
@@ -227,6 +230,7 @@ void AnTcpu::sync(int level)
 				setSynced();
 			} catch (AnExCanError ex) {
 				log(QString("sync: CAN error occurred: %1").arg(ex.status()));
+				log(btrace.join("\n"));
 				incCommError();
 			}
 		} else {
