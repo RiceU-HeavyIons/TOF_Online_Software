@@ -670,8 +670,8 @@ void AnRoot::received(AnRdMsg rmsg)
 	  brd->sync(1);
 	  emit updated(brd);
 	}
-      } else if (rmsg.data() == 0xff550000) { // end of run
-	log("received: got end of run message");
+      } else if (rmsg.data() == 0xff550000) { // recovery message
+	log("received: got recovery message");
 	doUserCmd(3);
       } else {
 	log( QString("received: error message: %1").arg(rmsg.toString()) );
