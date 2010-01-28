@@ -667,6 +667,10 @@ void AnRoot::received(AnRdMsg rmsg)
       if (rmsg.data() == 0xff000000) { // greeting message
 	if(!isRunning()) {
 	  brd->clearCommError();
+	  AnTdig *tdig = dynamic_cast<AnTdig*>( brd );
+	  if (tdig) {
+	    tdig->config(1); // just writes the threshold
+	  }
 	  brd->sync(1);
 	  emit updated(brd);
 	}
