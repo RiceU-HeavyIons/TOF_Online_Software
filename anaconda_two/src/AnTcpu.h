@@ -105,6 +105,8 @@ public:
 	
 	QString errorDump() const;
 
+	quint32 canidbw() const; // broadcast write to this tray's TDIGs
+
 private:
 	
 	void log(QString str);
