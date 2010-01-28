@@ -275,6 +275,11 @@ quint32 AnTcpu::canidw() const
 	return haddr().at(1) << 4 | 0x2;
 }
 
+quint32 AnTcpu::canidbw() const
+{
+  return (0x7f << 4 | 0x2) << 18 | haddr().at(1); // broadcast address for this board's TDIGs
+}
+
 AnAgent *AnTcpu::agent() const
 {
 	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
