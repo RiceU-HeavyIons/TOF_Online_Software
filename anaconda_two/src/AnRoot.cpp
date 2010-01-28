@@ -669,6 +669,7 @@ void AnRoot::received(AnRdMsg rmsg)
 	  brd->clearCommError();
 	  AnTdig *tdig = dynamic_cast<AnTdig*>( brd );
 	  if (tdig) {
+	    log( QString("%1: Running config(1)").arg(tdig->name()));
 	    tdig->config(1); // just writes the threshold
 	  }
 	  brd->sync(1);
