@@ -155,7 +155,7 @@ void AnThub::qreset(int level)
  */
 void AnThub::sync(int level)
 {
-	if (active() && level >= 1 && commError() == 0) {
+	if (active() && level >= 1 && commError() < 2) {
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
 		quint64 rdata;
@@ -185,6 +185,8 @@ void AnThub::sync(int level)
 				setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
 				
 			}
+			// since communication succeeded, make sure commError is cleared
+			clearCommError();
 			for(int j = 0; j < 2; ++j)
 			  agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
 

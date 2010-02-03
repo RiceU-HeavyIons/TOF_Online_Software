@@ -184,7 +184,7 @@ void AnTcpu::qreset(int level)
 void AnTcpu::sync(int level)
 {
 	if (active()) {
-		if (level >= 1 && commError() == 0) {
+		if (level >= 1 && commError() < 2) {
 
 			TPCANMsg    msg;
 			TPCANRdMsg  rmsg;
@@ -197,6 +197,8 @@ void AnTcpu::sync(int level)
 				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb0);
 				btrace << AnRdMsg(haddr().at(0), msg).toString();
 				agent()->write_read(msg, rmsg, 8);
+				// since communication succeeded, make sure commError is cleared
+				clearCommError();
 				btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 				setEcsr(rmsg.Msg.DATA[3]);
 				setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);

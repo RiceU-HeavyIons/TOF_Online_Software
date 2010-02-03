@@ -46,7 +46,7 @@ AnCanObject *AnTdig::hat(int i)
 
 void AnTdig::sync(int level)
 {
-	if (active() && level >= 1 && commError() == 0) {
+	if (active() && level >= 1 && commError() < 2) {
 
 		TPCANMsg    msg;
 		TPCANRdMsg  rmsg;
@@ -58,6 +58,8 @@ void AnTdig::sync(int level)
 			btrace << AnRdMsg(haddr().at(0), msg).toString();
 			rdata = agent()->write_read(msg, rmsg, 8);
 			btrace << AnRdMsg(haddr().at(0), rmsg).toString();
+			// since communication succeeded, make sure commError is cleared
+			clearCommError();
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
 			agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()));
