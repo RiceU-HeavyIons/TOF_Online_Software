@@ -421,13 +421,16 @@ void AnAgent::run()
 	  tcpu->sync(3);
 	  log( tcpu->errorDump() );
 	  tcpu->init(2);
-	  tcpu->qreset(2);
+	  // this just resets the TDCs on all TDIGs, not necessary when doing bunch reset
+	  // tcpu->qreset(2);
 	  tcpu->config(1);
 	  tcpu->sync(3);
 	}
       }
       emit progress(m_id, 100*(++step)/total);
     }
+    // after all is done, sleep a little to make sure serdes sync happened properly
+    usleep(700000); 
     break;
   
   case AnRoot::TASK_THUBRECOVERY :
