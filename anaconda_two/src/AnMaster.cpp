@@ -150,7 +150,7 @@ void AnMaster::p_setMode(int mode)
       foreach(AnAddress ad, m_root->expand(addr)) {
 	AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
 	if (tcpu) tcpu->setMultGatePhase(val);
-				else qDebug() << "invalid address: " << ad.toString();
+	else qDebug() << "invalid address: " << ad.toString();
       }
     }
     
