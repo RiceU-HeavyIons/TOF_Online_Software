@@ -164,6 +164,7 @@ AnRoot::~AnRoot()
 	m_db.close();
 	foreach(AnAgent *ag, m_agents) delete ag;
 	
+	log("AnacondaII terminating");
 	delete m_log;
 	delete m_tlog;
 }
@@ -679,7 +680,7 @@ void AnRoot::received(AnRdMsg rmsg)
 	log("received: got recovery message");
 	doUserCmd(3);
       } else {
-	log( QString("received: error message: %1").arg(rmsg.toString()) );
+	log( QString("received: error message from %1").arg(brd->name()) );
 	brd->sync(3);
       }
     } else if (rmsg.payload() == 0x4) {
