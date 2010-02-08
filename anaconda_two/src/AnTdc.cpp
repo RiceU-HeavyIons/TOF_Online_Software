@@ -222,7 +222,7 @@ quint64 AnTdc::setStatus(quint64 sw)
 }
 
 AnTdc::field_t AnTdc::field[26] = {
-	{"NOT USERD",                   62,  2},
+	{"NOT USED",                    62,  2},
 	{"Parity",                      61,  1},
 	{"DLL lock",                    60,  1},
 	{"Trigger FIFO Empty",          59,  1},
