@@ -205,7 +205,7 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 		pMsgBuff->DATA[6] = 0x10;
 		pMsgBuff->DATA[7] = 0x10;
 
-		usleep(2000);
+		usleep(20000);
 		break;
 	case 0x02: // FPGA Firmware ID
 		pMsgBuff->LEN = 4;
@@ -216,7 +216,7 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 			pMsgBuff->DATA[2] = 0x74;
 			pMsgBuff->DATA[3] = 0x84;
 		}
-		usleep(2000);
+		usleep(20000);
 		break;
 
 	case 0x03: // Get Temperature
@@ -229,18 +229,18 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 		pMsgBuff->DATA[4] = 0; // AD 1H
 		pMsgBuff->DATA[5] = 0; // AD 2L
 		pMsgBuff->DATA[6] = 0; // AD 2H
-		usleep(2000);
+		usleep(20000);
 		break;
 
 	case 0x05: // CRC Error bits
 		pMsgBuff->LEN = 2;
 		pMsgBuff->DATA[0] = 0xcd;
 		pMsgBuff->DATA[1] = 0xab;
-		usleep(2000);
+		usleep(20000);
 		break;
-	case 0x99:
-		pMsgBuff->LEN = 1;
-		pMsgBuff->DATA[0] = 0;
+	case 0x99: // bunch reset
+		pMsgBuff->LEN = 2;
+		pMsgBuff->DATA[1] = 0;
 		break;
 	default:
 		pMsgBuff->LEN = 2;
@@ -252,9 +252,9 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 			pMsgBuff->DATA[0] = 0x1f;
 		} else {
 			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[0] = 0x1f;
+			pMsgBuff->DATA[1] = 0;
 		}
-		usleep(2000);
+		usleep(20000);
 	}
 
 	return CAN_ERR_OK;
