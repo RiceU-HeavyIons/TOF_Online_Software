@@ -59,8 +59,9 @@ insert into config_types values ( 43, "TDC_CH_MASK"       );
 insert into config_types values (101, "INIT"  );
 insert into config_types values (102, "CONFIG");
 insert into config_types values (103, "RESET" );
-insert into config_types values (104, "QRESET" );
+insert into config_types values (104, "QRESET");
 insert into config_types values (105, "SYNC"  );
+insert into config_types values (106, "USLEEP");
 
 insert into config_types values (201, "THUB_BUNCH_RESET");
 insert into config_types values (211, "TCPU_RESYNC");
@@ -241,7 +242,8 @@ insert into configs values (null, 103,  1,  105,   1, 255,   0,   0,      3);
 insert into configs values (null, 103,  2,  213,   1, 255,   0,   0,      2);
 insert into configs values (null, 103,  3,  105,   2, 255,   0,   0,      2);
 insert into configs values (null, 103,  4,  212,   2, 255,   0,   0,      2);
-insert into configs values (null, 103,  5,  201,   1,   1,   0,   0,      2);
+insert into configs values (null, 103,  5,  106,   0,   0,   0,   0, 700000);
+insert into configs values (null, 103,  6,  201,   1,   1,   0,   0,      2);
 
 ---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 insert into configs values (null, 104,  1,  212,   2, 255,   0,   0,      1);
