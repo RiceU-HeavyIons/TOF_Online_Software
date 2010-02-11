@@ -229,6 +229,10 @@ void AnMaster::p_setMode(int mode)
       m_root->sync(val,  m_root->find( m_root->expand(addr) ) );
       m_root->wait();
     }
+    else if (ct == "USLEEP") {
+      usleep(val);
+    }
+
     else if (ct == "THUB_BUNCH_RESET") {
       foreach(AnAddress ad, m_root->expand(addr)) {
 	AnThub *thub = dynamic_cast<AnThub*>( m_root->find(ad) );
@@ -250,6 +254,8 @@ void AnMaster::p_setMode(int mode)
 	} else qDebug() << "invalid address: " << ad.toString();
       }
     }
+
+    // Resets for TCPU and THUB
     else if (ct == "TCPU_RECOVERY") {
       m_root->tcpurecovery(val, m_root->find( m_root->expand(addr) ) );
       m_root->wait();
