@@ -430,7 +430,7 @@ void AnAgent::run()
       emit progress(m_id, 100*(++step)/total);
     }
     // after all is done, sleep a little to make sure serdes sync happened properly
-    usleep(700000); 
+    // usleep(700000); // done now via database action item "USLEEP" (106)
     break;
   
   case AnRoot::TASK_THUBRECOVERY :
