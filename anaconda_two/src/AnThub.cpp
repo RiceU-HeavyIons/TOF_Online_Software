@@ -265,6 +265,32 @@ void AnThub::reloadFPGAs(int level)
 }
 
 //-----------------------------------------------------------------------------
+/**
+ * THUB Turn on (= 0) or off (= 1) the recover alert message
+ */
+void AnThub::recoverAlertMsg(int val)
+{
+  log(QString("recoverAlertMsg: val=%1").arg(val));
+  
+  if (active() && commError() == 0) {
+    TPCANMsg    msg;
+    TPCANRdMsg  rmsg;
+    
+    try {
+      AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0xc, val);
+      agent()->write_read(msg, rmsg, 2);
+      
+    } catch (AnExCanError ex) {
+      log(QString("recoverAlertMsg: CANBus error occcured: %1").arg(ex.status()));
+      incCommError();
+    }
+  } else {
+    log(QString("recoverAlertMsg: wasn't issued, active=%1, val=%2, commError=%3")
+	.arg(active()).arg(val).arg(commError()));
+  }
+}
+
+//-----------------------------------------------------------------------------
 quint32 AnThub::canidr() const
 {
 	return haddr().at(1) << 4 | 0x4;

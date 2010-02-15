@@ -26,6 +26,7 @@ public:
 	virtual void sync  (int level);
 	void bunchReset(int level);
 	void reloadFPGAs(int level);
+	void recoverAlertMsg(int val);
 
 	virtual AnCanObject *at(int i);
 	virtual AnCanObject *hat(int i);
