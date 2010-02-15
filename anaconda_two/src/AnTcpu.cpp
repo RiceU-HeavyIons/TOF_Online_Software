@@ -126,6 +126,7 @@ void AnTcpu::init(int level)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
 		} catch (AnExCanError ex) {
 			log(QString("init: CAN error occurred: %1").arg(ex.status()));
+			log(QString("init: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
 			incCommError();
 		}
 	} else {
@@ -236,6 +237,7 @@ void AnTcpu::sync(int level)
 				log(QString("sync: CAN error occurred: %1").arg(ex.status()));
 				log(btrace.join("\n"));
 				incCommError();
+				log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
 			}
 		} else {
 			log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
