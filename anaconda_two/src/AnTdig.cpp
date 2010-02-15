@@ -91,6 +91,7 @@ void AnTdig::sync(int level)
 		} catch (AnExCanError ex) {
 			log(QString("sync:  CAN error occurred: %1").arg(ex.status()));
 			log(btrace.join("\n"));
+			log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
 			incCommError();
 		}
 	}
