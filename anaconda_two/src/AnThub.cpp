@@ -155,62 +155,57 @@ void AnThub::qreset(int level)
  */
 void AnThub::sync(int level)
 {
-	if (active() && level >= 1 && commError() < 2) {
-		TPCANMsg    msg;
-		TPCANRdMsg  rmsg;
-		quint64 rdata;
-		QStringList btrace;
-
-		try {
-			// readout master firmware id
-			if (level >= 3) {
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
-				//btrace << AnRdMsg(haddr().at(0), msg).toString();
-				agent()->write_read(msg, rmsg, 8);
-				//btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-				//setMcuFirmwareId(rdata);
-				m_thubMCUFirmware = static_cast<quint16>(rmsg.Msg.DATA[1]) << 8 |
-				  static_cast<quint16>(rmsg.Msg.DATA[0]);
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
-				agent()->write_read(msg, rmsg, 4);
-				m_thubFPGAFirmware = 0;
-				for(int j = 0; j < rmsg.Msg.LEN; ++j)
-				  m_thubFPGAFirmware |= static_cast<quint32>(rmsg.Msg.DATA[j]) << 8 * j;
+  if (active() && level >= 1 && commError() < 10) { // only fail after 10 attempts
+    TPCANMsg    msg;
+    TPCANRdMsg  rmsg;
+    quint64 rdata;
+    
+    try {
+      // readout master firmware id
+      if (level >= 3) {
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x01);
+	agent()->write_read(msg, rmsg, 8);
+	m_thubMCUFirmware = static_cast<quint16>(rmsg.Msg.DATA[1]) << 8 |
+	  static_cast<quint16>(rmsg.Msg.DATA[0]);
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, 0x00);
+	agent()->write_read(msg, rmsg, 4);
+	m_thubFPGAFirmware = 0;
+	for(int j = 0; j < rmsg.Msg.LEN; ++j)
+	  m_thubFPGAFirmware |= static_cast<quint32>(rmsg.Msg.DATA[j]) << 8 * j;
 				//setFpgaFirmwareId(rmsg.Msg.DATA[2]);
-			}
-			// readout temperature
-			for (int i = 0; i < 2; ++i) {
-				AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i + 1);
-				rdata = agent()->write_read(msg, rmsg, 2);
-				setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
-				
-			}
-			// since communication succeeded, make sure commError is cleared
-			clearCommError();
-			for(int j = 0; j < 2; ++j)
-			  agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
-
-			// readout crc error bits
-			AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
-			rdata = agent()->write_read(msg, rmsg, 2);
-			rdata = (rdata << 8) + rmsg.Msg.DATA[0];
-			setEcsr(rdata);
-
-			// readout serdes infomation
-			if (--level >= 1)
-				for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
-
-			setSynced();
-		} catch (AnExCanError ex) {
-			log(QString("sync: CANBus error occcured: %1").arg(ex.status()));
-			//log(btrace.join("\n"));
-			log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
-			incCommError();
-		}
-	} else {
-		log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
-			.arg(active()).arg(level).arg(commError()));
-	}
+      }
+      // readout temperature
+      for (int i = 0; i < 2; ++i) {
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x03, i + 1);
+	rdata = agent()->write_read(msg, rmsg, 2);
+	setTemp(((double)rmsg.Msg.DATA[1] + (double)(rmsg.Msg.DATA[0])/100.0)*2.0, i);
+	
+      }
+      // since communication succeeded, make sure commError is cleared
+      clearCommError();
+      for(int j = 0; j < 2; ++j)
+	agent()->root()->tlog(QString("THUB %1 %2: %3").arg(laddr().at(1)).arg(j+1).arg(temp(j)));
+      
+      // readout crc error bits
+      AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x05);
+      rdata = agent()->write_read(msg, rmsg, 2);
+      rdata = (rdata << 8) + rmsg.Msg.DATA[0];
+      setEcsr(rdata);
+      
+      // readout serdes infomation
+      if (--level >= 1)
+	for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
+      
+      setSynced();
+    } catch (AnExCanError ex) {
+      log(QString("sync: CANBus error occcured: %1").arg(ex.status()));
+      log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
+      incCommError();
+    }
+  } else {
+    log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
+	.arg(active()).arg(level).arg(commError()));
+  }
 }
 
 //-----------------------------------------------------------------------------
