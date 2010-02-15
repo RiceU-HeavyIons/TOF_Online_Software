@@ -151,6 +151,9 @@ insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      2);
 insert into configs values (null,   3, 21,  12,   1, 255, 255,   0,      0);
 insert into configs values (null,   3, 22, 102,   1, 255, 255,   0,      1);
 
+-- clear communication errors in THUB
+insert into configs values (null,   3, 23, 102,   1, 255,   0,   0,      1);
+
 -- 3. Reset all TDCs on TDIG
 --insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
 
