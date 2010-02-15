@@ -55,20 +55,23 @@ QString AnSerdes::dump() const
  */
 void AnSerdes::config(int level)
 {
-	if (active() && level >= 1) {
-		quint8  srdid = hAddress().at(2);
+  if (active() && level >= 1) {
+    quint8  srdid = hAddress().at(2);
+    
+    TPCANMsg    msg;
+    TPCANRdMsg  rmsg;
+    
+    // make sure no communication errors are present
+    clearCommError();
 
-		TPCANMsg    msg;
-		TPCANRdMsg  rmsg;
-
-		try {
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
-			agent()->write_read(msg, rmsg, 2);
-		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
-			incCommError();
-		}
-	}	
+    try {
+      AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
+      agent()->write_read(msg, rmsg, 2);
+    } catch (AnExCanError ex) {
+      qDebug() << "CAN error occurred: " << ex.status();
+      incCommError();
+    }
+  }	
 }
 
 /**
