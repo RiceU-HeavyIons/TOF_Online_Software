@@ -244,6 +244,17 @@ void AnMaster::p_setMode(int mode)
 	else qDebug() << "invalid address: " << ad.toString();
       }
     }
+    else if (ct == "THUB_RECOVERY_MSG") {
+      foreach(AnAddress ad, m_root->expand(addr)) {
+	AnThub *thub = dynamic_cast<AnThub*>( m_root->find(ad) );
+	if (thub) {
+	  m_root->disableWatch(thub->agent()->id());
+	  thub->recoverAlertMsg(val);
+	  m_root->enableWatch(thub->agent()->id());
+	}
+	else qDebug() << "invalid address: " << ad.toString();
+      }
+    }
     else if (ct == "TCPU_RESYNC") {
       foreach(AnAddress ad, m_root->expand(addr)) {
 	AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
