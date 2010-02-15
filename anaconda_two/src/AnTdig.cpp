@@ -294,7 +294,7 @@ QString AnTdig::errorDump() const
 	sl << QString("  TDIG PLD Reg[03]   : 0x") + QString::number(m_pld03, 16);
 	sl << QString("  Status             : ") + QString::number(status());
 	for (int i = 1; i <= 3; ++i) {
-		sl << QString("  TDIG %1 Status Word: %2").arg(i).arg(m_tdc[i]->statusString());
+		sl << QString("  TDC %1 Status Word: %2").arg(i).arg(m_tdc[i]->statusString());
 	}
 
 	return sl.join("\n");
