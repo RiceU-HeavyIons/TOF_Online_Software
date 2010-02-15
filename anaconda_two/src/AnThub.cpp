@@ -68,6 +68,17 @@ QString AnThub::ecsrString(bool hilit) const
 }
 
 //-----------------------------------------------------------------------------
+void AnThub::config(int level)
+{
+  if (active() && level >= 1) {
+    // make sure no communication errors are present
+    clearCommError();
+    
+    // no other config needed currently
+  }	
+}
+
+//-----------------------------------------------------------------------------
 QString AnThub::dump() const
 {
 	QStringList sl;
