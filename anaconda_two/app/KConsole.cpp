@@ -118,6 +118,7 @@ void KConsole::clicked(bool b)
   }
   else if (cmd == "DEBUG")               { cmd_debug (cmdl); }
   else if (cmd == "EXPERT")              { cmd_expert (cmdl); }
+  else if (cmd == "AUTOREPAIR")          { cmd_autorepair (cmdl); }
   else if (cmd == "EXPAND"|| cmd == "E") { cmd_expand(cmdl); }
   else if (cmd == "SHOW"  || cmd == "S") { cmd_show  (cmdl); }
   else if (cmd == "SYNC")                { cmd_sync  (cmdl); }
@@ -187,6 +188,21 @@ void KConsole::cmd_debug(const QStringList& cmdl)
 		QStringList sl;
 		AnAgent::setDebug(dlevel);
 		m_tedit->append(QString("Debug level is %1").arg(dlevel));
+		m_ledit->clear();
+	} else {
+		m_tedit->append("invalid parameters");
+	}
+}
+
+//-----------------------------------------------------------------------------
+void KConsole::cmd_autorepair(const QStringList& cmdl)
+{
+	if (cmdl.count() >= 1) {
+		int dlevel = (AnRoot::autorepair() == 0) ? 1 : 0;
+		if(cmdl.count() >= 2) dlevel = parse_int(cmdl[1]);
+		QStringList sl;
+		AnRoot::setAutorepair(dlevel);
+		m_tedit->append(QString("Autorepair is %1").arg(dlevel));
 		m_ledit->clear();
 	} else {
 		m_tedit->append("invalid parameters");

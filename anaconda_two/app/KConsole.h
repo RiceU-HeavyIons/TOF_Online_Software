@@ -37,6 +37,8 @@ signals:
 	void changeExpertMode(bool);
 
 private:
+	void cmd_autorepair (const QStringList &cmdl);
+
 	void cmd_debug (const QStringList &cmdl);
 	void cmd_expert(const QStringList &cmdl);
 	
