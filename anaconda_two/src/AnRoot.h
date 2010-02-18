@@ -39,6 +39,12 @@ public:
 	AnRoot(AnCanObject *parent = 0);
  	virtual ~AnRoot();
 
+	// static members
+	static int TCAN_AUTOREPAIR;
+
+	static int autorepair() { return TCAN_AUTOREPAIR; }
+	static int setAutorepair(int d) { return (TCAN_AUTOREPAIR = d); }
+	
  // inherited from AnCanObject
  	virtual QString dump() const;
 

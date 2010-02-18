@@ -16,6 +16,8 @@
 #include "AnMaster.h"
 #include "AnExceptions.h"
 
+// static member initialization
+int AnRoot::TCAN_AUTOREPAIR = 1;
 
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
@@ -666,7 +668,7 @@ void AnRoot::received(AnRdMsg rmsg)
   if (brd != NULL) {
     if (rmsg.payload() == 0x7) {
       if (rmsg.data() == 0xff000000) { // greeting message
-	if(!isRunning()) {
+	if(!isRunning() && (AnRoot::autorepair() == 1)) {
 	  brd->clearCommError();
 	  AnTdig *tdig = dynamic_cast<AnTdig*>( brd );
 	  if (tdig) {
