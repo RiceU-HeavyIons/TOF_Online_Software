@@ -9,6 +9,12 @@
 #include "AnTdig.h"
 #include "AnExceptions.h"
 
+#ifdef WITH_EPICS
+#include <tsDefs.h> 
+#include <cadef.h> 
+#include <ezca.h>
+#endif
+
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
   : AnBoard(laddr, haddr, parent),
     m_threshold(0), m_chipid(0), m_pld03(0), m_pld03Set(0), m_eeprom(1)
@@ -63,6 +69,12 @@ void AnTdig::sync(int level)
 			setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
 			setEcsr(rmsg.Msg.DATA[3]);
 			agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()));
+#ifdef WITH_EPICS
+			double r = temp();
+			char tempStr[25];
+			sprintf(tempStr, "TOFTempTray%03dTDIG%d_st", laddr().at(1), laddr().at(2) - 1);
+			ezcaPut(tempStr, ezcaDouble, 1, &r);
+#endif
 			AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
 			agent()->write_read(msg, rmsg, 3);
 			m_pld03 = rmsg.Msg.DATA[2];
