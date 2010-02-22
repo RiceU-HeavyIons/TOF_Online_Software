@@ -30,6 +30,18 @@ debug {
 #  LIBS += -L../fakepcan -lpcan
 }
 
+
+CONFIG(epics) {
+	message("epics defined")
+	DEFINES += WITH_EPICS
+
+	EPICSDIR = /usr/local/epics
+	EZCADIR = $${EPICSDIR}/extensions/srz/ezca
+
+	INCLUDEPATH += $$EZCADIR $${EPICSDIR}/base/include $${EPICSDIR}/base/include/os/Linux 
+	INCLUDEPATH += $${EPICSDIR}/extensions/include
+}
+
 DESTDIR = ../lib
 
 # Input

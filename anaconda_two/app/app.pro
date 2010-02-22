@@ -25,6 +25,17 @@ debug {
 }
 message($$CONFIG)
 
+CONFIG(epics) {
+	message("epics defined")
+	EPICSDIR = /usr/local/epics
+	EZCALIBDIR = $${EPICSDIR}/extensions/lib/linux-x86
+	CALIBDIR = $${EPICSDIR}/base/lib/linux-x86
+	LIBDIRS = -L$$CALIBDIR -L$$EZCALIBDIR 
+
+	LIBS += -Wl,-rpath,$$CALIBDIR
+	LIBS += -Wl,-rpath,$$EZCALIBDIR
+	LIBS += $$LIBDIRS -lezca -lca -lCom
+}
 
 DESTDIR = ../
 
