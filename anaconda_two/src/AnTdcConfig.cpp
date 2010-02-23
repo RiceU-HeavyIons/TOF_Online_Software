@@ -14,8 +14,8 @@ AnTdcConfig::AnTdcConfig(QObject *parent) : QObject(parent)
 }
 
 AnTdcConfig::AnTdcConfig(const AnTdcConfig *rhs, QObject *parent) : QObject(parent),
- m_id(rhs->m_id), m_length(rhs->m_length),
- m_check_sum(rhs->m_check_sum), m_block_length(rhs->m_block_length)
+ m_id(rhs->m_id),  m_check_sum(rhs->m_check_sum), 
+m_length(rhs->m_length), m_block_length(rhs->m_block_length)
 {
 	for(quint32 i = 0; i < m_length; ++i) m_data[i] = rhs->m_data[i];
 }
