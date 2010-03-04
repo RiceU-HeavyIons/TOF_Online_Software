@@ -220,7 +220,7 @@ void AnRoot::sync(int level)
 	if(level >= 1) sync(level, list()); // sync all
 }
 
-void AnRoot::resync(int level, const QList<AnBoard*>& blist)
+void AnRoot::relink(int level, const QList<AnBoard*>& blist)
 {
 	QMap<int, QList<AnBoard*> > bmap;
 	foreach (AnBoard* bd, blist)
@@ -230,7 +230,7 @@ void AnRoot::resync(int level, const QList<AnBoard*>& blist)
 	foreach (int id, bmap.keys()) {
 		AnAgent *ag = agentById(id);
 		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_RESYNC, level, bmap[id]);
+		ag->init(TASK_RELINK, level, bmap[id]);
 		ag->start();
 	}
 }

@@ -255,12 +255,12 @@ void AnMaster::p_setMode(int mode)
 	else qDebug() << "invalid address: " << ad.toString();
       }
     }
-    else if (ct == "TCPU_RESYNC") {
+    else if (ct == "TCPU_RELINK") {
       foreach(AnAddress ad, m_root->expand(addr)) {
 	AnTcpu *tcpu = dynamic_cast<AnTcpu*>( m_root->find(ad) );
 	if (tcpu) {
 	  m_root->disableWatch(tcpu->agent()->id());
-	  tcpu->resync(val);
+	  tcpu->relink(val);
 	  m_root->enableWatch(tcpu->agent()->id());
 	} else qDebug() << "invalid address: " << ad.toString();
       }

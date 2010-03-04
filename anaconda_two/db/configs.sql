@@ -65,7 +65,7 @@ insert into config_types values (106, "USLEEP");
 
 insert into config_types values (201, "THUB_BUNCH_RESET");
 insert into config_types values (202, "THUB_RECOVERY_MSG");
-insert into config_types values (211, "TCPU_RESYNC");
+insert into config_types values (211, "TCPU_RELINK");
 insert into config_types values (212, "TCPU_RECOVERY");
 insert into config_types values (213, "THUB_RECOVERY");
 

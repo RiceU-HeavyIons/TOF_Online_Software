@@ -393,14 +393,14 @@ void AnAgent::run()
     }
     break;
   
-  case AnRoot::TASK_RESYNC :
-    log( QString("TASK_RESYNC: level=%1").arg(m_level));
+  case AnRoot::TASK_RELINK :
+    log( QString("TASK_RELINK: level=%1").arg(m_level));
     foreach(AnBoard *brd, m_list) {
       if (m_cancel) return;
       AnTcpu *tcpu = dynamic_cast<AnTcpu*>( brd );
       if (tcpu) {
-	log( QString("TASK_RESYNC: %1").arg(tcpu->name()) );
-	tcpu->resync(m_level);
+	log( QString("TASK_RELINK: %1").arg(tcpu->name()) );
+	tcpu->relink(m_level);
       }
       emit progress(m_id, 100*(++step)/total);
     }

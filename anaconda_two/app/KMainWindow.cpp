@@ -152,12 +152,12 @@ void KMainWindow::setExpertMode(bool em)
 
 void KMainWindow::createActions()
 {
-#ifdef CMD_RESYNC
-	m_ResyncAction = new QAction( QIcon(":images/resync.png"), tr("Resync"), this);
-	m_ResyncAction->setEnabled(true);
-	m_ResyncAction->setStatusTip(tr("Resynchronize TCPU"));
-	m_ResyncAction->setToolTip(tr("Resync"));
-	QObject::connect(m_ResyncAction, SIGNAL(triggered()), this, SLOT(doResync()));
+#ifdef CMD_RELINK
+	m_RelinkAction = new QAction( QIcon(":images/resync.png"), tr("Relink"), this);
+	m_RelinkAction->setEnabled(true);
+	m_RelinkAction->setStatusTip(tr("Relink TCPU"));
+	m_RelinkAction->setToolTip(tr("Relink"));
+	QObject::connect(m_RelinkAction, SIGNAL(triggered()), this, SLOT(doRelink()));
 #endif
 
 #ifdef CMD_INIT
@@ -234,8 +234,8 @@ void KMainWindow::createMenus()
 	QMenu *menu;
 
 	menu = menuBar()->addMenu(tr("Command"));
-#ifdef CMD_RESYNC
-	menu->addAction(m_ResyncAction);
+#ifdef CMD_RELINK
+	menu->addAction(m_RelinkAction);
 #endif
 #ifdef CMD_INIT
 	menu->addAction(m_InitAction);
@@ -278,8 +278,8 @@ void KMainWindow::createToolBars()
 	bar->addWidget(m_combo);
 
 	bar->addSeparator();
-#ifdef CMD_RESYNC
-	bar->addAction(m_ResyncAction);
+#ifdef CMD_RELINK
+	bar->addAction(m_RelinkAction);
 #endif
 
 #ifdef CMD_INIT
@@ -340,12 +340,12 @@ QList<AnBoard*> KMainWindow::selectedBoards()
  * Slot for initialization action
  */
 //-----------------------------------------------------------------------------
-void KMainWindow::doResync()
+void KMainWindow::doRelink()
 {
 	QList<AnBoard*> blist = selectedBoards();
 	if (blist.count() > 0) {
 		setBusy(true);
-		m_root->resync(1, blist);
+		m_root->relink(1, blist);
 	}
 }
 
@@ -479,8 +479,8 @@ void KMainWindow::setBusy(bool sw)
 	m_busy = sw;
 
 	if (m_expertMode) {
-#ifdef CMD_RESYNC
-		m_ResyncAction->setEnabled(!sw);
+#ifdef CMD_RELINK
+		m_RelinkAction->setEnabled(!sw);
 #endif
 #ifdef CMD_INIT
 		m_InitAction->setEnabled(!sw);

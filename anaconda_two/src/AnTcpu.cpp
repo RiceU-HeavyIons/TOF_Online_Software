@@ -247,7 +247,7 @@ void AnTcpu::sync(int level)
 }
 
 //-----------------------------------------------------------------------------
-void AnTcpu::resync(int level)
+void AnTcpu::relink(int level)
 {
 	
 	if (active() && level >= 1 && commError() == 0) {
@@ -259,11 +259,11 @@ void AnTcpu::resync(int level)
 								6, 0xe, 0x2, 0x0, 0xe, 0x2, m_pld02Set);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			log(QString("resync: CAN error occurred: %1").arg(ex.status()));
+			log(QString("relink: CAN error occurred: %1").arg(ex.status()));
 			incCommError();
 		}
 	} else {
-		log(QString("resync: wasn't issued, active=%1, level=%2, commError=%3")
+		log(QString("relink: wasn't issued, active=%1, level=%2, commError=%3")
 			.arg(active()).arg(level).arg(commError()));
 	}
 }

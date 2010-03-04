@@ -32,7 +32,7 @@ public:
 	virtual void reset (int level);
 	virtual void qreset(int level);
 	virtual void sync  (int level = 0);
-	void resync(int level);
+	void relink(int level);
 
 // Inherited from AnBoard
 

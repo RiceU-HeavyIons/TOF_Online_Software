@@ -64,7 +64,7 @@ public:
 		TASK_RESET        = 0x04,
 		TASK_QRESET       = 0x08,
 		TASK_SYNC         = 0x10,
-		TASK_RESYNC       = 0x20,
+		TASK_RELINK       = 0x20,
 		TASK_TCPURECOVERY = 0x40,
 		TASK_THUBRECOVERY = 0x80
 	};
@@ -85,7 +85,7 @@ public:
 
 	void doUserCmd(int i);
 
-	void resync (int level, const QList<AnBoard*>& blist);	
+	void relink (int level, const QList<AnBoard*>& blist);	
 	void init   (int level, const QList<AnBoard*>& blist);	
 	void config (int level, const QList<AnBoard*>& blist);
 	void reset  (int level, const QList<AnBoard*>& blist);
