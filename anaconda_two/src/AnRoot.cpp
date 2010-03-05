@@ -123,6 +123,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 		tc->setTraySn(tray_sn);
 		tc->setLvHv(lv_box, lv_ch, hv_box, hv_ch);
 
+		tc->setThub(thub_id);
+
 		m_lnet[2][id] = tc;
 		m_hnet[device_id][canbus_id] = tc;
 
@@ -133,6 +135,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 				qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
 			}
 			dynamic_cast<AnThub*>(m_lnet[1][thub_id])->serdes(nsrds)->setTcpu(port, tc);
+			tc->setSerdes(nsrds);
+			tc->setSerdesPort(port);
 		}
 	}
 	readModeList();
