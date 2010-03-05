@@ -52,6 +52,15 @@ public:
 // Own Functions
 	AnTdig *tdig(int i) const { return m_tdig[i-1]; }
 
+	int     thub() const   { return m_thub; }
+	int     setThub(int t) { return (m_thub = t); }
+	
+	int     serdes() const   { return m_serdes; }
+	int     setSerdes(int s) { return (m_serdes = s); }
+	
+	int     serdesPort() const   { return m_serdesPort; }
+	int     setSerdesPort(int p) { return (m_serdesPort = p); }
+	
 	quint8  pldReg02() const { return m_pld02; }
 	quint8  setPldReg02(quint8 v) { return (m_pld02 = v); }
 	quint8  pldReg02Set() const { return m_pld02Set; }
@@ -123,6 +132,10 @@ private:
 	QString     m_tray_sn;
 	qint8       m_lv_box, m_lv_ch;
 	qint8       m_hv_box, m_hv_ch;
+
+	int         m_thub;
+	int         m_serdes;
+	int         m_serdesPort;
 };
 
 #endif /* ANTCPU_H_ */
