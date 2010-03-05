@@ -192,3 +192,36 @@ QString AnSerdes::pld9xString() const
 	ret += " (0x" + QString::number(pld9xSet(), 16) + ")";
 	return ret;
 }
+
+//-----------------------------------------------------------------------------
+void AnSerdes::relink(int port)
+{
+	
+  if (active() && port >= 1 && port <= 4 && commError() == 0) {
+    try {
+      TPCANMsg    msg;
+      TPCANRdMsg  rmsg;
+      quint8  srdid = hAddress().at(2);
+      quint8  pld9xSetoff = pld9xSet() & (~(1<<(port-1)));
+      log(QString("Serdes relink at port %1").arg(port));
+      AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 4, 
+		       0x90 + srdid, pld9xSetoff,
+		       0x90 + srdid, pld9xSet());
+      agent()->write_read(msg, rmsg, 2);
+    } catch (AnExCanError ex) {
+      log(QString("relink: CAN error occurred: %1").arg(ex.status()));
+      incCommError();
+    }
+  } else {
+    log(QString("relink: wasn't issued, active=%1, port=%2, commError=%3")
+	.arg(active()).arg(port).arg(commError()));
+  }
+}
+
+void AnSerdes::log(QString str) const
+{
+	foreach(QString s, str.split("\n")) {
+		agent()->root()->log(QString("AnSerdes[%1.%2]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));
+	}
+}
+

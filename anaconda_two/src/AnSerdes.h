@@ -55,12 +55,15 @@ public:
 	
 	QString pld9xString() const;
 
+	void relink(int port);
+
 private:
 	enum { NPORT = 4 };
 	AnTcpu *m_tcpu[NPORT];
 	quint8  m_pld9xBase;
 	quint32   m_serdesFPGAFirmware;
 
+	void log(QString str) const;
 };
 
 #endif /* AnSerdes_H_ */
