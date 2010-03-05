@@ -37,6 +37,10 @@ AnTcpu::AnTcpu(
 	m_eeprom   = 1;
 
 	m_multGatePhase = 0xe0;
+
+	m_thub       = 0;
+	m_serdes     = 0;
+	m_serdesPort = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -250,22 +254,28 @@ void AnTcpu::sync(int level)
 void AnTcpu::relink(int level)
 {
 	
-	if (active() && level >= 1 && commError() == 0) {
-		try {
-			TPCANMsg    msg;
-			TPCANRdMsg  rmsg;
-			AnAgent::set_msg(msg, canidw(),
-								MSGTYPE_STANDARD,
-								6, 0xe, 0x2, 0x0, 0xe, 0x2, m_pld02Set);
-			agent()->write_read(msg, rmsg, 2);
-		} catch (AnExCanError ex) {
-			log(QString("relink: CAN error occurred: %1").arg(ex.status()));
-			incCommError();
-		}
-	} else {
-		log(QString("relink: wasn't issued, active=%1, level=%2, commError=%3")
-			.arg(active()).arg(level).arg(commError()));
-	}
+  if (active() && level >= 1 && commError() == 0) {
+    try {
+      TPCANMsg    msg;
+      TPCANRdMsg  rmsg;
+      AnAgent::set_msg(msg, canidw(),
+		       MSGTYPE_STANDARD,
+		       5, 0xe, 0x2, 0x0, 0x2, m_pld02Set);
+      agent()->write_read(msg, rmsg, 2);
+      
+      AnAddress ad(1, m_thub, m_serdes, 0);
+      AnSerdes *serdes = dynamic_cast<AnSerdes*>( agent()->root()->find(ad) );
+      serdes->relink(m_serdesPort);
+      
+      
+    } catch (AnExCanError ex) {
+      log(QString("relink: CAN error occurred: %1").arg(ex.status()));
+      incCommError();
+    }
+  } else {
+    log(QString("relink: wasn't issued, active=%1, level=%2, commError=%3")
+	.arg(active()).arg(level).arg(commError()));
+  }
 }
 
 /**
