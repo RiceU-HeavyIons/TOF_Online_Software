@@ -16,6 +16,8 @@
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QFontMetrics>
 
+#include <QtGui>
+
 #include "KMainWindow.h"
 #include "KSimpleWindow.h"
 #include "KLevel2View.h"
@@ -153,7 +155,7 @@ void KMainWindow::setExpertMode(bool em)
 void KMainWindow::createActions()
 {
 #ifdef CMD_RELINK
-	m_RelinkAction = new QAction( QIcon(":images/resync.png"), tr("Relink"), this);
+	m_RelinkAction = new QAction( QIcon(":images/resync.png"), tr("Re&link"), this);
 	m_RelinkAction->setEnabled(true);
 	m_RelinkAction->setStatusTip(tr("Relink TCPU"));
 	m_RelinkAction->setToolTip(tr("Relink"));
@@ -178,13 +180,13 @@ void KMainWindow::createActions()
 	QObject::connect(m_ConfigAction, SIGNAL(triggered()), this, SLOT(doConfig()));
 #endif
 
-	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Reset"), this);
+	m_ResetAction = new QAction( QIcon(":images/undo.png"), tr("Re&set"), this);
 	m_ResetAction->setShortcut(tr("Ctrl+R"));
 	m_ResetAction->setStatusTip(tr("Reset Electronics"));
 	m_ResetAction->setToolTip(tr("Reset"));
 	QObject::connect(m_ResetAction, SIGNAL(triggered()), this, SLOT(doReset()));
 
-	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Refresh"), this);
+	m_SyncAction = new QAction( QIcon(":images/sync.png"), tr("Re&fresh"), this);
 	m_SyncAction->setShortcut(tr("Ctrl+S"));
 	m_SyncAction->setStatusTip(tr("Refresh System Information"));
 	m_SyncAction->setToolTip(tr("Refresh"));
@@ -200,21 +202,21 @@ void KMainWindow::createActions()
 	for (int i = 0 ; i < 4; ++i) {
 		m_UserAction[i] = new QAction(
 			QIcon(QString(":images/user%1.png").arg(i + 1) ),
-			QString(tr("User Command %1")).arg(i + 1), this);
+			QString(tr("User Command &%1")).arg(i + 1), this);
 	}
 	QObject::connect(m_UserAction[0], SIGNAL(triggered()), this, SLOT(doUser1()));
 	QObject::connect(m_UserAction[1], SIGNAL(triggered()), this, SLOT(doUser2()));
 	QObject::connect(m_UserAction[2], SIGNAL(triggered()), this, SLOT(doUser3()));
 	QObject::connect(m_UserAction[3], SIGNAL(triggered()), this, SLOT(doUser4()));
 
-	m_ToggleConsoleAction = new QAction(tr("Console"), this);
+	m_ToggleConsoleAction = new QAction(tr("&Console"), this);
 	m_ToggleConsoleAction->setShortcut(tr("Ctrl+J"));
 	// m_ToggleConsoleAction->setCheckable(true);
 	// m_ToggleConsoleAction->setChecked(false);
 	QObject::connect(m_ToggleConsoleAction, SIGNAL(triggered()),
 	                 this, SLOT(toggleConsole()));
 
-	m_ToggleAutoSyncAction = new QAction(tr("Auto Refresh"), this);
+	m_ToggleAutoSyncAction = new QAction(tr("&Auto Refresh"), this);
 	m_ToggleAutoSyncAction->setCheckable(true);
 #ifdef AUTOSYNC_ON_DEFAULT
 	m_ToggleAutoSyncAction->setChecked(true);
@@ -225,6 +227,19 @@ void KMainWindow::createActions()
 	QObject::connect(m_ToggleAutoSyncAction, SIGNAL(triggered()),
 	                 this, SLOT(toggleAutoSync()));
 
+	m_exitAction = new QAction(tr("E&xit"), this);
+	m_exitAction->setShortcut(tr("Ctrl+Q"));
+	m_exitAction->setStatusTip(tr("Exit the application"));
+	connect(m_exitAction, SIGNAL(triggered()), this, SLOT(close()));
+
+	m_aboutAction = new QAction(tr("&About"), this);
+	m_aboutAction->setStatusTip(tr("Show the application's About box"));
+	connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+
+	m_aboutQtAction = new QAction(tr("About &Qt"), this);
+	m_aboutQtAction->setStatusTip(tr("Show the Qt library's About box"));
+	connect(m_aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
 	setBusy(false);
 }
 
@@ -233,7 +248,7 @@ void KMainWindow::createMenus()
 {
 	QMenu *menu;
 
-	menu = menuBar()->addMenu(tr("Command"));
+	menu = menuBar()->addMenu(tr("&Command"));
 #ifdef CMD_RELINK
 	menu->addAction(m_RelinkAction);
 #endif
@@ -255,10 +270,17 @@ void KMainWindow::createMenus()
 
 	menu->addAction(m_ToggleAutoSyncAction);
 
-	menu = menuBar()->addMenu(tr("View"));
+	menu->addSeparator();
+	menu->addAction(m_exitAction);
+	
+	menu = menuBar()->addMenu(tr("&View"));
 	menu->addAction(m_CommandToolbar->toggleViewAction());
 	menu->addAction(m_l2view->toggleViewAction());
 	menu->addAction(m_ToggleConsoleAction);
+
+	menu = menuBar()->addMenu(tr("&Help"));
+	menu->addAction(m_aboutAction);
+	menu->addAction(m_aboutQtAction);
 }
 
 //-----------------------------------------------------------------------------
@@ -525,3 +547,12 @@ void KMainWindow::setSelection(int select)
 	m_l1model->setSelection(select);
 }
 
+//------------------------------------------------------------------------------
+// Private Slots
+void KMainWindow::about()
+{
+    QMessageBox::about(this, tr("About AnacondaII"),
+             tr("<center><b>Anaconda II</b>" 
+		"<br>Developed by Kohei Kajimoto and Joachim Schambach"
+		"<br>University of Texas at Austin</center>"));
+}

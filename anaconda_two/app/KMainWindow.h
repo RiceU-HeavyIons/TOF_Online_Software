@@ -88,6 +88,9 @@ protected slots:
 	void agentFinished();
 	void setSelection(int select);
 
+private slots:
+	void about();
+
 
 private:
 	QList<AnBoard*> selectedBoards();
@@ -121,6 +124,10 @@ private:
 	QAction            *m_ToggleConsoleAction;
 	QAction            *m_ToggleAutoSyncAction;
 	QAction            *m_UserAction[4];
+
+	QAction            *m_exitAction;
+	QAction            *m_aboutAction;
+	QAction            *m_aboutQtAction;
 
 	QToolBar           *m_CommandToolbar;
 	QComboBox          *m_combo;
