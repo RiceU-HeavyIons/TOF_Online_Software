@@ -423,7 +423,11 @@ void AnAgent::run()
 	  tcpu->init(2);
 	  // this just resets the TDCs on all TDIGs, not necessary when doing bunch reset
 	  // tcpu->qreset(2);
-	  tcpu->config(1);
+
+	  //tcpu->config(1);
+	  // try using relink instead:
+	  tcpu->relink(1);
+
 	  tcpu->sync(3);
 	}
       }
