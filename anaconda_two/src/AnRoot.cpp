@@ -13,6 +13,10 @@
 
 #include <QtGui/QApplication>
 #include <QtSql/QSqlQuery>
+
+#include <signal.h>
+#include <sys/file.h>
+
 #include "AnMaster.h"
 #include "AnExceptions.h"
 
@@ -22,157 +26,181 @@ int AnRoot::TCAN_AUTOREPAIR = 1;
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
 {
+  // lockfile not yet opened
+  lockFileFd = -1;
+  
+  // install a signal handler for TERM and INT signals
+  signal(SIGINT,handler);
+  signal(SIGTERM,handler);
 
-	this->setObjectName("Root");
-	this->setActive(true);
+  // create lock file, or open, if already exists
+  umask(0);
+  lockFileFd = open(LOCK_FILENAME, O_WRONLY | O_CREAT, 0666);
+  // try locking it exclusively
+  if(flock(lockFileFd, LOCK_EX | LOCK_NB) != 0) {
+    // can't have two instances of Anaconda running
+    printf("AnacondaII is already running. Quitting this instance...\n");
+    close(lockFileFd);
+    lockFileFd = -1;
+    exit(0);
+  }
 
-	// setup AnCanNet objects for THUB/TCPU tree root
-	for (int i = 1; i <= 2; ++i) {
-		m_lnet[i] = AnCanNet(AnAddress(i, 0, 0, 0), AnAddress());
-		m_lnet[i].setActive(true);
-	}
-
-	m_db = QSqlDatabase::addDatabase("QSQLITE");
-
+  this->setObjectName("Root");
+  this->setActive(true);
+  
+  // setup AnCanNet objects for THUB/TCPU tree root
+  for (int i = 1; i <= 2; ++i) {
+    m_lnet[i] = AnCanNet(AnAddress(i, 0, 0, 0), AnAddress());
+    m_lnet[i].setActive(true);
+  }
+  
+  m_db = QSqlDatabase::addDatabase("QSQLITE");
+  
 #ifdef __APPLE__
-// With Darwin environment, binary image is under .app/Contents/MacOS/ directory...
-	QDir default_path( QString("%1/../../..").arg(QApplication::applicationDirPath()) );
+  // With Darwin environment, binary image is under .app/Contents/MacOS/ directory...
+  QDir default_path( QString("%1/../../..").arg(QApplication::applicationDirPath()) );
 #else
-	QDir default_path( QString("%1").arg(QApplication::applicationDirPath()) );
+  QDir default_path( QString("%1").arg(QApplication::applicationDirPath()) );
 #endif
-	char *dbpath = getenv(DB_PATH_ENV);
-	if (dbpath != NULL && *dbpath != '\0') {
-		m_db.setDatabaseName(dbpath);
-	} else {
-		m_db.setDatabaseName(default_path.filePath(DB_PATH_DEFAULT));
-	}
-
-	if (!m_db.open())
-		qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
-
-	QDateTime now = QDateTime::currentDateTime();
-	char *logdir = getenv("AII_LOG_DIR");
-	if (logdir != NULL && *logdir != '\0') {
-	  m_log   = new AnLog(QString("%1/%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
-	  m_tlog  = new AnLog(QString("%1/temp%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
-	}
-	else {
-	  m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
-	  m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
-	}
-
-	QSqlQuery qry;
-	qry.exec("SELECT id, devid, name, installed FROM devices");
-	while(qry.next()) {
-		int id          = qry.value(0).toInt();
-		int devid       = qry.value(1).toInt();		
-		QString name    = qry.value(2).toString();
-		bool installed  = qry.value(3).toBool();
-
-		m_devid_map[devid] = id;
-		m_hnet[id] = AnCanNet(AnAddress(id, 0, 0, 0), AnAddress(devid, 0, 0, 0));
-		m_hnet[id].setInstalled(installed);
-		m_hnet[id].setActive(installed);
-		m_hnet[id].setObjectName(name);
-	}
-
-	// open devices and create gents 
-	m_agents = AnAgent::open(m_devid_map);
-
-	// create THUB objects
-	qry.exec("SELECT id, device_id, canbus_id, installed FROM thubs");
-	while (qry.next()) {
-		int id         = qry.value(0).toInt();
-		int device_id  = qry.value(1).toInt();
-		int canbus_id  = qry.value(2).toInt();
-		bool installed = qry.value(3).toBool();
-		int devid      = m_hnet[device_id].devid();
-		AnThub *th     = new AnThub(AnAddress(1, id, 0, 0),
-		                            AnAddress(devid, canbus_id, 0, 0), this);
-//		if(!active) continue;
-		th->setInstalled(installed);
-		th->setActive(installed);
-		m_lnet[1][id] = th;
-		m_hnet[device_id][canbus_id] = th;
-		m_devid_thub_map[devid] = th;
-	}
-
-	// create TCPU objects
-	qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, thub_id, serdes,"
-	         " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
-	while (qry.next()) {
-		int id          = qry.value(0).toInt();
-		int device_id   = qry.value(1).toInt();
-		int canbus_id   = qry.value(2).toInt();
-		bool installed  = qry.value(3).toBool();
-		QString tray_sn = qry.value(4).toString();
-		int thub_id     = qry.value(5).toInt();
-		QString serdes  = qry.value(6).toString();
-		int lv_box      = qry.value(7).toInt();
-		int lv_ch       = qry.value(8).toInt();
-		int hv_box      = qry.value(9).toInt();
-		int hv_ch       = qry.value(10).toInt();
-
-		int devid = m_hnet[device_id].devid();
-//		if(!active) continue;
-		AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
-		                        AnAddress(devid, canbus_id, 0, 0), this);
-		tc->setInstalled(installed);
-		tc->setActive(installed);
-//		tc->setTrayId(tray_id);
-		tc->setTraySn(tray_sn);
-		tc->setLvHv(lv_box, lv_ch, hv_box, hv_ch);
-
-		tc->setThub(thub_id);
-
-		m_lnet[2][id] = tc;
-		m_hnet[device_id][canbus_id] = tc;
-
-		if (installed) {
-			int nsrds = serdes[0].toAscii() - 'A' + 1;
-			int port  = serdes[1].toAscii() - '0' + 1;
-			if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
-				qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
-			}
-			dynamic_cast<AnThub*>(m_lnet[1][thub_id])->serdes(nsrds)->setTcpu(port, tc);
-			tc->setSerdes(nsrds);
-			tc->setSerdesPort(port);
-		}
-	}
-	readModeList();
-	readTdcConfig();
-
-	m_master = new AnMaster(this);
-	setMode(0);
-
-	initAutoSync();
-
-	// setup various maps and watches for incoming messages
-	foreach(AnAgent *ag, m_agents) {
-		ag->setRoot(this);
-		ag->setDeviceName(m_hnet[ag->id()].objectName());
-		m_devid_agent_map[ag->devid()] = ag;
-		int sock = ag->socket();
-		m_socket_agent_map[sock] = ag;
-		m_watch[sock] = new QSocketNotifier(sock, QSocketNotifier::Read, this);
-		connect(m_watch[sock], SIGNAL(activated(int)), this, SLOT(watcher(int)));
-		m_watch[sock]->setEnabled(true);
-
-		connect(ag, SIGNAL(finished(int)), this, SLOT(agentFinished(int)));
-		connect(ag, SIGNAL(received(AnRdMsg)), this, SLOT(received(AnRdMsg)));
-	}
+  char *dbpath = getenv(DB_PATH_ENV);
+  if (dbpath != NULL && *dbpath != '\0') {
+    m_db.setDatabaseName(dbpath);
+  } else {
+    m_db.setDatabaseName(default_path.filePath(DB_PATH_DEFAULT));
+  }
+  
+  if (!m_db.open())
+    qFatal("%s:%d; Cannot open configuration database.", __FILE__, __LINE__);
+  
+  QDateTime now = QDateTime::currentDateTime();
+  char *logdir = getenv("AII_LOG_DIR");
+  if (logdir != NULL && *logdir != '\0') {
+    m_log   = new AnLog(QString("%1/%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+    m_tlog  = new AnLog(QString("%1/temp%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+  }
+  else {
+    m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
+    m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
+  }
+  
+  QSqlQuery qry;
+  qry.exec("SELECT id, devid, name, installed FROM devices");
+  while(qry.next()) {
+    int id          = qry.value(0).toInt();
+    int devid       = qry.value(1).toInt();		
+    QString name    = qry.value(2).toString();
+    bool installed  = qry.value(3).toBool();
+    
+    m_devid_map[devid] = id;
+    m_hnet[id] = AnCanNet(AnAddress(id, 0, 0, 0), AnAddress(devid, 0, 0, 0));
+    m_hnet[id].setInstalled(installed);
+    m_hnet[id].setActive(installed);
+    m_hnet[id].setObjectName(name);
+  }
+  
+  // open devices and create gents 
+  m_agents = AnAgent::open(m_devid_map);
+  
+  // create THUB objects
+  qry.exec("SELECT id, device_id, canbus_id, installed FROM thubs");
+  while (qry.next()) {
+    int id         = qry.value(0).toInt();
+    int device_id  = qry.value(1).toInt();
+    int canbus_id  = qry.value(2).toInt();
+    bool installed = qry.value(3).toBool();
+    int devid      = m_hnet[device_id].devid();
+    AnThub *th     = new AnThub(AnAddress(1, id, 0, 0),
+				AnAddress(devid, canbus_id, 0, 0), this);
+    //		if(!active) continue;
+    th->setInstalled(installed);
+    th->setActive(installed);
+    m_lnet[1][id] = th;
+    m_hnet[device_id][canbus_id] = th;
+    m_devid_thub_map[devid] = th;
+  }
+  
+  // create TCPU objects
+  qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, thub_id, serdes,"
+	   " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
+  while (qry.next()) {
+    int id          = qry.value(0).toInt();
+    int device_id   = qry.value(1).toInt();
+    int canbus_id   = qry.value(2).toInt();
+    bool installed  = qry.value(3).toBool();
+    QString tray_sn = qry.value(4).toString();
+    int thub_id     = qry.value(5).toInt();
+    QString serdes  = qry.value(6).toString();
+    int lv_box      = qry.value(7).toInt();
+    int lv_ch       = qry.value(8).toInt();
+    int hv_box      = qry.value(9).toInt();
+    int hv_ch       = qry.value(10).toInt();
+    
+    int devid = m_hnet[device_id].devid();
+    //		if(!active) continue;
+    AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
+			    AnAddress(devid, canbus_id, 0, 0), this);
+    tc->setInstalled(installed);
+    tc->setActive(installed);
+    //		tc->setTrayId(tray_id);
+    tc->setTraySn(tray_sn);
+    tc->setLvHv(lv_box, lv_ch, hv_box, hv_ch);
+    
+    tc->setThub(thub_id);
+    
+    m_lnet[2][id] = tc;
+    m_hnet[device_id][canbus_id] = tc;
+    
+    if (installed) {
+      int nsrds = serdes[0].toAscii() - 'A' + 1;
+      int port  = serdes[1].toAscii() - '0' + 1;
+      if (nsrds < 1 || nsrds > 8 || port < 1 || port > 4) {
+	qFatal("Invalid Serdes Address is found %d %d", nsrds, port);
+      }
+      dynamic_cast<AnThub*>(m_lnet[1][thub_id])->serdes(nsrds)->setTcpu(port, tc);
+      tc->setSerdes(nsrds);
+      tc->setSerdesPort(port);
+    }
+  }
+  readModeList();
+  readTdcConfig();
+  
+  m_master = new AnMaster(this);
+  setMode(0);
+  
+  initAutoSync();
+  
+  // setup various maps and watches for incoming messages
+  foreach(AnAgent *ag, m_agents) {
+    ag->setRoot(this);
+    ag->setDeviceName(m_hnet[ag->id()].objectName());
+    m_devid_agent_map[ag->devid()] = ag;
+    int sock = ag->socket();
+    m_socket_agent_map[sock] = ag;
+    m_watch[sock] = new QSocketNotifier(sock, QSocketNotifier::Read, this);
+    connect(m_watch[sock], SIGNAL(activated(int)), this, SLOT(watcher(int)));
+    m_watch[sock]->setEnabled(true);
+    
+    connect(ag, SIGNAL(finished(int)), this, SLOT(agentFinished(int)));
+    connect(ag, SIGNAL(received(AnRdMsg)), this, SLOT(received(AnRdMsg)));
+  }
 }
 
 //-----------------------------------------------------------------------------
 AnRoot::~AnRoot()
 {
-	terminate();
-	m_db.close();
-	foreach(AnAgent *ag, m_agents) delete ag;
-	
-	log("AnacondaII terminating");
-	delete m_log;
-	delete m_tlog;
+  terminate();
+  m_db.close();
+  foreach(AnAgent *ag, m_agents) delete ag;
+ 
+  // if lockfile is open, unlock it
+  if(lockFileFd != -1) {
+    flock(lockFileFd, LOCK_UN | LOCK_NB);
+    close(lockFileFd);
+  }
+  
+  log("AnacondaII terminating");
+  delete m_log;
+  delete m_tlog;
 }
 
 //-----------------------------------------------------------------------------
@@ -779,3 +807,10 @@ void AnRoot::tlog(QString str)
 	m_tlog->log(str);
 	mtex_tlog.unlock();
 }
+
+void AnRoot::handler(int sigNum)
+{
+  Q_UNUSED(sigNum);
+  qApp->quit();
+} 
+

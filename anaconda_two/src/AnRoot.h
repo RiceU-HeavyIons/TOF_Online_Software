@@ -29,6 +29,7 @@
 
 #define DB_PATH_ENV         "ANA_DB_PATH"           // absolute path or relative to working dir
 #define DB_PATH_DEFAULT     "db/configurations.db"  // relative to binary image
+#define LOCK_FILENAME       "/tmp/AnacondaII.lock"  // lock file to prevent multiple instances of application
 
 class AnMaster;
 
@@ -45,6 +46,8 @@ public:
 	static int autorepair() { return TCAN_AUTOREPAIR; }
 	static int setAutorepair(int d) { return (TCAN_AUTOREPAIR = d); }
 	
+	static void handler(int sigNum);  // Signal handler
+
  // inherited from AnCanObject
  	virtual QString dump() const;
 
@@ -185,5 +188,7 @@ private:
 	QMutex mtex_log;
 	QMutex mtex_tlog;
 	QMutex mtex_watch;
+
+	int lockFileFd;
 };
 #endif /* ANROOT_H_ */
