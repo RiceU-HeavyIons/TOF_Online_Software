@@ -339,7 +339,7 @@ void KMainWindow::createSelector()
 //	policy.setVerticalPolicy(QSizePolicy::Fixed);
 	m_selector->setSizePolicy(policy);
 	int fh = QFontMetrics(m_selector->font()).height();
-	m_selector->setMaximumHeight(m_selector->count()*(fh+4));
+	m_selector->setMaximumHeight(m_selector->count()*(fh+4)+3);
 
 }
 
