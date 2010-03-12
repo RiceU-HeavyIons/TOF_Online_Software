@@ -53,7 +53,7 @@ public:
 	quint8 pld9xBase() const { return m_pld9xBase; }
 	quint8 setPld9xBase(quint8 s) { return (m_pld9xBase = s); }
 	
-	QString pld9xString() const;
+	QString pld9xString(bool hilit = false) const;
 
 	void relink(int port);
 

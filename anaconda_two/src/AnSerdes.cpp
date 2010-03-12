@@ -186,9 +186,11 @@ quint8 AnSerdes::pld9xSet() const {
 	return bts;
 }
 
-QString AnSerdes::pld9xString() const
+QString AnSerdes::pld9xString(bool hilit) const
 {
 	QString ret = "0x" + QString::number(ecsr(), 16);
+	if (hilit && (status() == STATUS_ERROR))
+		ret = QString("<font color='red'>%1</font>").arg(ret);
 	ret += " (0x" + QString::number(pld9xSet(), 16) + ")";
 	return ret;
 }
