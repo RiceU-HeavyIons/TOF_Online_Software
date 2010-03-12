@@ -68,7 +68,7 @@ void KSerdesView::currentRowChanged(const QModelIndex &current, const QModelInde
     m_laddr->setText(srd->lAddress().toString());
     m_haddr->setText(srd->hAddress().toString());
     m_firm->setText(srd->firmwareString());
-    m_ecsr->setText(srd->pld9xString());
+    m_ecsr->setText(srd->pld9xString(true));
     m_ecsr->setToolTip(srd->ecsrString());
     setVisible(true);
   }
