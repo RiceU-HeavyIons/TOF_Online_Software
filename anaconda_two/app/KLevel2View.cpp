@@ -14,7 +14,7 @@ KLevel2View::KLevel2View(const QString &title, QWidget *parent)
 	m_tcpuView = new KTcpuView(this);
 	m_thubView = new KThubView(this);
 
-	QWidget *widget = new QWidget(this);
+	L2Widget *widget = new L2Widget(this);
 	QHBoxLayout *hbox = new QHBoxLayout(widget);
 	hbox->addWidget(m_tcpuView);
 	hbox->addWidget(m_thubView);

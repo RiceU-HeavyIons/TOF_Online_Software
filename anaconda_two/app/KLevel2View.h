@@ -40,4 +40,18 @@ private:
 	QItemSelectionModel *m_selectionModel;
 };
 
+class L2Widget : public QWidget
+{
+public:
+  L2Widget(QWidget *parent) : QWidget(parent)
+    {
+      setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    }
+    
+    QSize sizeHint() const
+    {
+      return QSize(310, 500);
+    }
+};
+
 #endif /* KLevel2View_H_ */
