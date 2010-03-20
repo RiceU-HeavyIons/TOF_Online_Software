@@ -97,7 +97,7 @@ insert into configs values (null,   1, 15,  27,   2, 255,   0,   0,      0); -- 
 -- insert into configs values (null,   1, 15,  27,   2, 255,   0,   0,    224); -- 0xe0
 -- TDIG
 insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
-insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   2500);
+insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   1200);
 insert into configs values (null,   1, 22,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   1, 22,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   1, 23,  34,   2, 255, 255,   0,      2);
@@ -157,8 +157,8 @@ insert into configs values (null,   3, 23, 102,   1, 255,   0,   0,      1);
 -- 3. Reset all TDCs on TDIG
 --insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
 
--- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   2500);
+-- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, and then put in run mode
+insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1200);
 insert into configs values (null,   3, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   3, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   3, 42,  23,   2, 255,   0,   0,     15);
@@ -201,8 +201,8 @@ insert into configs values (null,   4, 21,  12,   1, 255, 255,   0,      0);
 -- 3. Reset all TDCs on TDIG
 -- insert into configs values (null,   4, 31, 103,   2, 255, 255,   0,      2);
 
--- 4. Set TDIG threshold to 2500mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   2500);
+-- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, and then put in run mode
+insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   1200);
 insert into configs values (null,   4, 41,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   4, 41,  33,   2, 122, 255,   0,    500);
 insert into configs values (null,   4, 42,  23,   2, 255,   0,   0,     15);
