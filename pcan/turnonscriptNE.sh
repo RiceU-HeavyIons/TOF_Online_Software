@@ -43,8 +43,8 @@ done
 #    usleep 70000
 #done
 
-# set threshold on each TDIG board to 2500mV
-./xsetThreshold 254 0x7f 0x7f 2500
+# set threshold on each TDIG board to 1200mV
+./xsetThreshold 254 0x7f 0x7f 1200
 usleep 1500000
 # put TCPUs into run mode and turn on Serdes, turn off CANbus data
 ./pc "m s 0x7f2 3 0xe 0x2 0xf 254"
