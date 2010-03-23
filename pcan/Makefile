@@ -105,6 +105,12 @@ xMCU2:		xMCU2.o can_utils.o
 xMCU2_l:	xMCU2_l.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
+xMCU2_noIVT:	xMCU2_noIVT.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+xMCU2_withOffset:	xMCU2_withOffset.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
 x_getChecksum:	x_getChecksum.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
