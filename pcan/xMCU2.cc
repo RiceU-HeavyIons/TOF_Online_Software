@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.6 2010-07-09 20:25:17 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.7 2010-07-09 21:19:17 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -92,8 +92,9 @@ int xwrite_mcu_block(unsigned char *bytes,
 {
   unsigned int checksum;
   TPCANMsg ms;
+#ifndef NO_CAN
   TPCANRdMsg mr;
-
+#endif
   if (bytecount != 0) {
 
     checksum = 0;
@@ -309,7 +310,7 @@ int change_mcu_program(const char *filename,
 
 
 
-  // start upper memory on page boundary
+  // start program memory on page boundary
   validl[1] &= 0xFFFFFC00;
   // end upper memory on page boundary
   validh[1] |= 0x3FF;
@@ -322,7 +323,12 @@ int change_mcu_program(const char *filename,
   // allocate space for program bytes
 
   unsigned char *ivtBytes, *progBytes;
-  ivtBytes = (unsigned char *)malloc(validh[0] - validl[0]);
+  if ((validh[0] - validl[0]) > 2) // a valid IVT address range
+    ivtBytes = (unsigned char *)malloc(validh[0] - validl[0]);
+  else {
+    ivtBytes = (unsigned char *)NULL;
+    validh[0] = validl[0];
+  }
   progBytes = (unsigned char *)malloc(validh[1] - validl[1]);
   memset((void *)ivtBytes, 0, (validh[0] - validl[0])); // default to 0
   memset((void *)progBytes, 0, (validh[1] - validl[1])); // default to 0
@@ -444,14 +450,14 @@ int change_mcu_program(const char *filename,
   hexfile.close();
 
   // ******************** NOW START DOWNLOADING VALID DATA **************
-  if ((validh[0] - validl[0]) > 2) { // a valid interrupt vector table range
+  if (ivtBytes != (unsigned char *)NULL) { // a valid interrupt vector table range
     unsigned char *dataByte;
-    
-
+    int ivtRows;
+    ivtRows = (int)((validh[0] + 0xFE - validl[0])/ 0x100); 
     // for now assume we are doing "real" ivt, which are contained in one page
-    // and downloaded in two rows
+    // and downloaded in two rows or four rows
 
-    // first row
+    // first row (might be offset from page boundary)
     dataByte = ivtBytes;
     baseAddress = validl[0]/2;
     downloadbytes = 0x100 - (validl[0] & 0xff);
@@ -464,18 +470,32 @@ int change_mcu_program(const char *filename,
 #endif
     xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
 
-    // second row
-    baseAddress += downloadbytes/2;
-    dataByte += downloadbytes;
-    downloadbytes = validh[0] - validl[0] - downloadbytes;
 
+    // second row or third row
+    if (ivtRows > 2) {
+      for (int row=1; row<(ivtRows-1); row++) {
+	baseAddress += downloadbytes/2;
+	dataByte += downloadbytes;
+	downloadbytes = 0x100;
+	     
+#ifdef LOCAL_DEBUG
+	cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
+	     << " downloadbytes = " << dec << downloadbytes 
+	     << " eraseflag = " << eraseflag << endl;
+#endif
+	xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
+      }
+    }    
+
+    // last row
+    baseAddress += downloadbytes/2;
+    downloadbytes = validh[0] - baseAddress*2;
 #ifdef LOCAL_DEBUG
     cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
 	 << " downloadbytes = " << dec << downloadbytes 
 	 << " eraseflag = " << eraseflag << endl;
 #endif
     xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
-    
   }
 
 
