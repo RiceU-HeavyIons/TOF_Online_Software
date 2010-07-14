@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.10 2010-07-14 17:26:37 jschamba Exp $
+# $Id: config.py,v 1.11 2010-07-14 17:27:37 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.91'
+version = '1.11'
 
 import sys
 from Tkinter import *
