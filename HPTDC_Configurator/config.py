@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.9 2008-06-30 18:38:54 jschamba Exp $
+# $Id: config.py,v 1.10 2010-07-14 17:26:37 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.9'
+version = '1.91'
 
 import sys
 from Tkinter import *
@@ -158,7 +158,8 @@ class Configurator:
                                                         "Trigger Matching Error", "Read-out FIFO Parity Error",
                                                         "Read-out State Error", "Setup Parity Error",
                                                         "Control Parity Error", "JTAG Instruction Parity Error"),
-                                               listbox_selectmode = EXTENDED,
+                                               #listbox_selectmode = EXTENDED,
+                                               listbox_selectmode = MULTIPLE,
                                                listbox_exportselection = 0,
                                                listbox_height = 4,
                                                hscrollmode = 'none')
