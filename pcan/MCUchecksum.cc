@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCUchecksum.cc,v 1.1 2008-07-02 15:06:32 jschamba Exp $";
+"$Id: MCUchecksum.cc,v 1.2 2010-07-15 19:12:41 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -76,7 +76,8 @@ int checksum_mcu_program(const char *filename,
        << " to " << endAddr
        << " ...\n";
 
-  checksum = ((endAddr - startAddr + 1) / 2) * 0x2fd; // 0x2fd = 3 * 0xff
+  //checksum = ((endAddr - startAddr + 1) / 2) * 0x2fd; // 0x2fd = 3 * 0xff
+  checksum = 0;
 
   hexfile.open(filename); // "in" is default
   if ( !hexfile.good() ) {
@@ -164,13 +165,20 @@ int checksum_mcu_program(const char *filename,
 
     // **************** RECORD TYPE = 0: Data ***************************
     else if (rtype == 0x00) { // data record
+      int recordS = 0;
+      // if startAddr falls inside this record:
+      if ( (startAddr >= address) && ( startAddr < (len/2 + address) ) ) {
+	// first advance to the right location inside this record
+	recordS = (int)(startAddr - address) * 2;
+	address = startAddr;
+      }
 
       if ((address >= startAddr) && (address <= endAddr) && (len != 0)) {
 #ifdef LOCAL_DEBUG
 	cout << " Data: ";
 #endif
 	// every word consists of 2 bytes
-	for (int i=0; i<len; i+=4) {
+	for (int i=recordS; i<len; i+=4) {
 	  if (address > endAddr) break;
 	  // 1st
 	  subs = buf.substr(9+2*i,2);
@@ -201,10 +209,10 @@ int checksum_mcu_program(const char *filename,
 #endif
 	  checksum += dataByte;
 	  // subtract 3 "emtpy" (0xff) cells 
-	  checksum -= 0x2fd; // 3 * 0xff
+	  //checksum -= 0x2fd; // 3 * 0xff
 	  address += 2;
 	}
-
+	
 #ifdef LOCAL_DEBUG
 	cout << endl;
 #endif
