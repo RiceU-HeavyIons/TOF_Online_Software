@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: MCU2.cc,v 1.8 2009-10-23 18:44:27 jschamba Exp $";
+"$Id: MCU2.cc,v 1.9 2010-07-15 19:08:36 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -15,7 +15,8 @@ static char  __attribute__ ((unused)) vcid[] =
  * and TCPU according to Bill Burton's instructions
  */
 
-// #define LOCAL_DEBUG
+//#define LOCAL_DEBUG
+//#define NO_CAN
 
 //****************************************************************************
 // INCLUDES
@@ -46,8 +47,8 @@ const int ERASE_NONE = 0;
 const int ERASE_NORMAL = 1;
 const int ERASE_PRESERVE = 2;
 
-unsigned int validl[] = {          0x100,       0x4000};  // this tells the lowest valid address
-unsigned int validh[] = {          0x200,       0x8FFF};  // this tells the highest valid address
+unsigned int validl[] = {          0x104,       0x4000};  // this tells the lowest valid address
+unsigned int validh[] = {          0x1FF,       0xA7FF};  // this tells the highest valid address
 int   erasetype[] = { ERASE_PRESERVE, ERASE_NORMAL};  // this tells the kind of "erase" flag
 
 //****************************************************************************
@@ -79,20 +80,6 @@ static void signal_handler(int signal)
 }
 
 
-
-//****************************************************************************
-int address_in_range (unsigned int address, int numlimits, unsigned int *limitl, unsigned int *limith) {
-/* this routine determines whether the address is within any of the numlimits ranges specified by:
- * limitl[]<= address <= limith[]
- * returns 0 if not in any region;
- * else returns the number of the region (index +1)
- */
-    for (int i=0; i<numlimits; i++) {
-        if ((address >= *(limitl+i)) && (address <= *(limith+i))) return (i+1);
-    }
-    return (0);     // wasn't in range
-}
-
 //****************************************************************************
 int write_mcu_block(unsigned char *bytes,
 		    const unsigned int startAddr,
@@ -103,7 +90,9 @@ int write_mcu_block(unsigned char *bytes,
 {
   unsigned int checksum;
   TPCANMsg ms;
+#ifndef NO_CAN
   TPCANRdMsg mr;
+#endif
 
   if (bytecount != 0) {
 
@@ -119,10 +108,11 @@ int write_mcu_block(unsigned char *bytes,
     printCANMsg(ms, "MCU2: Sending BlockStart command:");
 #endif
     
+#ifndef NO_CAN
     if ( sendCAN_and_Compare(ms, "MCU2:BlockStart", 4000000, 2, true) != 0) { // timeout = 4 sec
       my_private_exit(errno);
     }
-
+#endif
     
     unsigned char *tmpPtr = bytes;
     int numFullMsgs = bytecount/7;
@@ -142,9 +132,11 @@ int write_mcu_block(unsigned char *bytes,
       printCANMsg(ms, "MCU2: Sending BlockData command:");
 #endif
       
+#ifndef NO_CAN
       if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 4000000, 2, true) != 0) { // timeout = 4 sec
 	my_private_exit(errno);
       }
+#endif
       
     }
 
@@ -159,9 +151,11 @@ int write_mcu_block(unsigned char *bytes,
 #ifdef LOCAL_DEBUG
       printCANMsg(ms, "MCU2: Sending BlockData command:");
 #endif
+#ifndef NO_CAN
       if ( sendCAN_and_Compare(ms, "MCU2:BlockData", 4000000, 2, true) != 0) { // timeout = 4 sec
 	my_private_exit(errno);
       }
+#endif
 
     }
     
@@ -173,6 +167,7 @@ int write_mcu_block(unsigned char *bytes,
     printCANMsg(ms, "MCU2: Sending BlockEnd command:");
 #endif
     
+#ifndef NO_CAN
     if ( (errno = CAN_Write(h, &ms)) ) {
       perror("MCU2:BlockEnd: CAN_Write()");
       return(errno);
@@ -236,6 +231,7 @@ int write_mcu_block(unsigned char *bytes,
       printCANMsg(mr.Msg, "response:");
       my_private_exit(-10);
     }      
+#endif
     
     // ************** MCU2:BlockTargetMCU2 ****************************************
     ms.LEN = 6;
@@ -253,15 +249,18 @@ int write_mcu_block(unsigned char *bytes,
 #ifdef LOCAL_DEBUG
     printCANMsg(ms, "MCU2: Sending BlockTargetMCU2 command:");
 #endif
+#ifndef NO_CAN
     if ( sendCAN_and_Compare(ms, "MCU2:BlockTargetMCU2", 4000000, 2, true) != 0) { // timeout = 4 sec
+      cout << "startAddr = 0x" << hex << startAddr << endl;
       my_private_exit(errno);
     }
+#endif
+
 
   } // if (bytecount != 0)
   
   return 0;
 }
-
 
 //**********************************************
 // here all is done
@@ -290,18 +289,55 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 
   errno = 0;
 
-
   
   // swallow any packets that might be present first
+#ifndef NO_CAN
   TPCANRdMsg mr;
   errno = LINUX_CAN_Read_Timeout(h, &mr, 100000); // timeout = 100 mseconds
+#endif
+
+
+
+  // start program memory on page boundary
+  validl[1] &= 0xFFFFFC00;
+  // end upper memory on page boundary
+  validh[1] |= 0x3FF;
+  // do everything in bytes rather than program addresses
+  validl[0] *= 2;
+  validl[1] *= 2;
+  validh[0] = (validh[0]+1)*2;
+  validh[1] = (validh[1]+1)*2;
+
+  // allocate space for program bytes
+
+  unsigned char *ivtBytes, *progBytes;
+  if ((validh[0] - validl[0]) > 2) // a valid IVT address range
+    ivtBytes = (unsigned char *)malloc(validh[0] - validl[0]);
+  else {
+    ivtBytes = (unsigned char *)NULL;
+    validh[0] = validl[0];
+  }
+  progBytes = (unsigned char *)malloc(validh[1] - validl[1]);
+  memset((void *)ivtBytes, 0, (validh[0] - validl[0])); // default to 0
+  memset((void *)progBytes, 0, (validh[1] - validl[1])); // default to 0
+
+
+  // determine number of pages:
+  int numPages = (int)((validh[1] - validl[1])/ 0x800); 
+  // determine number of rows:
+  int numRows = numPages * 8;
+  
+  unsigned char *pageEmpty, *rowEmpty;
+  pageEmpty = (unsigned char *)malloc(numPages);
+  rowEmpty = (unsigned char *)malloc(numRows);
+  memset((void *)pageEmpty, 1, numPages);
+  memset((void *)rowEmpty, 1, numRows);
+		       
 
   while (hexfile.good()) {
     string subs;
     unsigned int subInt, addr, rtype;
     int len;
-    unsigned char dataByte[256];
-
     
     /*	read a record (line) from the hex file. Each record has the following format:
       
@@ -327,7 +363,8 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
     */
     
     hexfile >> buf;
-
+    //cout << "read line: " << buf << endl;
+    
     subs = buf.substr(1,2);
     len = strtol(subs.c_str(), 0, 16);
     subs = buf.substr(3,4);
@@ -335,15 +372,16 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
     subs = buf.substr(7,2);
     rtype = strtol(subs.c_str(), 0, 16);
 
-    address = (addr + extendAddress) / 2;
+    address = (addr + extendAddress);
 
+
+    
 #ifdef LOCAL_DEBUG
     cout << "length = " << setw(2) << dec << len 
 	 <<" type = " << rtype
 	 << " address = " << showbase << hex << setw(6) << addr 
-	 << " prog address = " << address
-	 << " baseAddress = " << baseAddress
-	 << " downloadbytes = " << dec << downloadbytes
+         << " addr + ext = " << address
+	 << " prog address = " << (address/2)
 	 << endl;
 #endif
 
@@ -357,11 +395,6 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #endif
       extendAddress = subInt << 16;
 
-      if (downloadbytes != 0) {
-	write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
-	baseAddress += downloadbytes;
-	downloadbytes = 0;
-      }
     }
 
 
@@ -370,44 +403,29 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
 #ifdef LOCAL_DEBUG
       cout << "\tEOF record" << endl;
 #endif
-      if (downloadbytes != 0) {
-	write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
-	baseAddress += downloadbytes;
-	downloadbytes = 0;
-      }
       break;
     }
 
     // **************** RECORD TYPE = 0: Data ***************************
     else if (rtype == 0x00) { // data record
-      if (downloadbytes == 0)
-	baseAddress = address;
-      
-      int indexAddr = address_in_range(address, 2, validl, validh);
-      if ((len != 0) &&
-	  (indexAddr != 0) &&
-	  (address >= baseAddress) &&
-	  (address < (baseAddress + 256)) ) {
-	
-	eraseflag = erasetype[indexAddr-1];
-	// read the data bytes:
+      if ( ((address+len) < validh[0]) && (address >= validl[0])) {
 	for (int i=0; i<len; i++) {
 	  subs = buf.substr(9+2*i,2);
-	  dataByte[downloadbytes] = (unsigned char)strtol(subs.c_str(), 0, 16);
-	  downloadbytes++;
-	  if ((downloadbytes == 256) // if buffer is full
-	      || ((baseAddress & 0x7f) + (downloadbytes>>1) == 128)) { // cross row boundary
-	    write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
-	    baseAddress += downloadbytes/2;
-#ifdef LOCAL_DEBUG
-	    cout << "Start new block; new baseAddress = " << showbase << hex << setw(6) << baseAddress << endl;
-#endif
-	    downloadbytes = 0;
-	    indexAddr = address_in_range(baseAddress, 2, validl, validh);
-	    eraseflag = erasetype[indexAddr-1];
-	  }
+	  ivtBytes[(address - validl[0] + i)] = (unsigned char)strtol(subs.c_str(), 0, 16);
 	}
       }
+      else if ( ((address+len) < validh[1]) && (address >= validl[1])) {
+	int pageIndex = (int)((address - validl[1])/0x800);
+	pageEmpty[pageIndex] = 0;
+	int rowIndex = (int)((address - validl[1])/0x100);
+	rowEmpty[rowIndex] = 0;
+
+	for (int i=0; i<len; i++) {
+	  subs = buf.substr(9+2*i,2);
+	  progBytes[(address - validl[1] + i)] = (unsigned char)strtol(subs.c_str(), 0, 16);
+	}
+      }
+
     }
       
       
@@ -418,12 +436,122 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   }
       
   hexfile.close();
+
+
+
+  // page from 0x180 to 0x200
+//   cout << endl;
+//   unsigned char *ttt = ivtBytes;;
+//   ttt += (0x180 - 0x104)*2;
+//   cout << hex;
+//   for (int i=0; i<32; i++) {
+//     for (int j=0; j<8; j++) 
+//       cout << (unsigned int)(*ttt++) << " ";
+//     cout << endl;
+//   }
+//   cout << endl;
+
+  // ******************** NOW START DOWNLOADING VALID DATA **************
+  if (ivtBytes != (unsigned char *)NULL) { // a valid interrupt vector table range
+    unsigned char *dataByte;
+    int ivtRows;
+    ivtRows = (int)((validh[0] + 0xFE - validl[0])/ 0x100); 
+    // for now assume we are doing "real" ivt, which are contained in one page
+    // and downloaded in two rows or four rows
+
+    // first row (might be offset from page boundary)
+    dataByte = ivtBytes;
+    baseAddress = validl[0]/2;
+    downloadbytes = 0x100 - (validl[0] & 0xff);
+    eraseflag = ERASE_PRESERVE;
+
+#ifdef LOCAL_DEBUG
+    cout << "write_mcu_block: baseAddress = " << hex << baseAddress
+	 << " dataByte addr = " << (unsigned int)dataByte
+	 << " downloadbytes = " << dec << downloadbytes 
+	 << " eraseflag = " << eraseflag << endl;
+#endif
+    write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+
+    // second row or third row
+    // eraseflag = ERASE_NONE; // this won't work 
+    // eraseflag needs to be ERASE_PRESERVE here, since the previous ERASE_PRESERVE was followed
+    // by a ROW Write for the whole page, and thus this address needs to be erased again
+    if (ivtRows > 2) {
+      for (int row=1; row<(ivtRows-1); row++) {
+	baseAddress += downloadbytes/2;
+	dataByte += downloadbytes;
+	downloadbytes = 0x100;
+	     
+#ifdef LOCAL_DEBUG
+	cout << "write_mcu_block: baseAddress = " << hex << baseAddress
+	     << " dataByte addr = " << (unsigned int)dataByte
+	     << " downloadbytes = " << dec << downloadbytes 
+	     << " eraseflag = " << eraseflag << endl;
+#endif
+	write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+      }
+    }    
+
+    // last row
+    baseAddress += downloadbytes/2;
+    dataByte += downloadbytes;
+    downloadbytes = validh[0] - baseAddress*2;
+#ifdef LOCAL_DEBUG
+    cout << "write_mcu_block: baseAddress = " << hex << baseAddress
+	 << " dataByte addr = " << (unsigned int)dataByte
+	 << " downloadbytes = " << dec << downloadbytes 
+	 << " eraseflag = " << eraseflag << endl;
+#endif
+    write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+  }
+
+
+
+  if ((validh[1] - validl[1]) > 2) { // a valid program data range
+    unsigned char *dataByte;
+    downloadbytes = 0x100; // 1 row
+    eraseflag = ERASE_NORMAL;
+
+    for (int page=0; page<numPages; page++) {
+      dataByte = progBytes + 0x800*page;
+      if(pageEmpty[page] == 0) {
+	eraseflag = ERASE_NORMAL;
+	baseAddress = validl[1]/2 + page * 0x400;
+#ifdef LOCAL_DEBUG
+	cout << "write_mcu_block: baseAddress = " << hex << baseAddress
+	     << " downloadbytes = " << dec << downloadbytes 
+	     << " eraseflag = " << eraseflag << endl;
+#endif
+	write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+	
+	eraseflag = 0;
+	for (int row=1; row<8; row++) {
+	  baseAddress += 0x80;
+	  dataByte += 0x100;
+	  if (rowEmpty[page*8 + row] == 0) {
+#ifdef LOCAL_DEBUG
+	    cout << "write_mcu_block: baseAddress = " << hex << baseAddress
+		 << " downloadbytes = " << dec << downloadbytes 
+		 << " eraseflag = " << eraseflag << endl;
+#endif
+	    write_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, nodeID);
+	  }
+	}	    
+	
+      }
+    }
+
+    
+  }
+
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
   
   return 0;
 }
+
 
 //******************************** main function *****************************************
 int main(int argc, char *argv[])
@@ -465,9 +593,11 @@ int main(int argc, char *argv[])
   
 
   // open CANbus handle for deviceID <devID>
+#ifndef NO_CAN
   if((errno = openCAN(devID)) != 0) {
     my_private_exit(errno);
   }
+#endif
 
   if (nodeID != 0xff)
     retVal = change_mcu_program(argv[2], nodeID, devID);
