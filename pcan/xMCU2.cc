@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2.cc,v 1.7 2010-07-09 21:19:17 jschamba Exp $";
+"$Id: xMCU2.cc,v 1.8 2010-07-15 19:06:32 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -472,6 +472,9 @@ int change_mcu_program(const char *filename,
 
 
     // second row or third row
+    // eraseflag = ERASE_NONE; // this won't work 
+    // eraseflag needs to be ERASE_PRESERVE here, since the previous ERASE_PRESERVE was followed
+    // by a ROW Write for the whole page, and thus this address needs to be erased again
     if (ivtRows > 2) {
       for (int row=1; row<(ivtRows-1); row++) {
 	baseAddress += downloadbytes/2;
@@ -489,6 +492,7 @@ int change_mcu_program(const char *filename,
 
     // last row
     baseAddress += downloadbytes/2;
+    dataByte += downloadbytes;
     downloadbytes = validh[0] - baseAddress*2;
 #ifdef LOCAL_DEBUG
     cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
