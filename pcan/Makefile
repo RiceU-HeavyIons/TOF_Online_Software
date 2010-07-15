@@ -21,7 +21,7 @@ all:		pcanloop pc pcan_find showSerdes \
 		change_mcu_program analyze_noise clientpc MCU2 \
 		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
 		p_eeprom2_l p_progPLD_l p_progMCU_l MCU2_l \
-		xMCU2 xp_eeprom2 \
+		xMCU2 xp_eeprom2 xMCU2_withOffset xMCU2_noIVT \
 		xp_eeprom2_l xMCU2_l xp_config_pm_l
 
 pcanloop:	pcanloop.cc
