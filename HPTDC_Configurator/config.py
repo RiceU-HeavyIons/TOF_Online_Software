@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.11 2010-07-14 17:27:37 jschamba Exp $
+# $Id: config.py,v 1.12 2010-07-16 16:01:52 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.11'
+version = '1.12'
 
 import sys
 from Tkinter import *
@@ -1209,9 +1209,13 @@ class Configurator:
         tmpSV = StringVar()
         tmpSV.set(str((102400-int(self.trgCtrOffsetNum.get()))))
         parseCtr(self.output, 138, 149, tmpSV, 25)
-        tmpSV.set(str((int(self.searchWindowSizeNum.get()) - 25)))
+        tmpSV.set("0")
+        if (int(self.searchWindowSizeNum.get()) >= 25):
+            tmpSV.set(str((int(self.searchWindowSizeNum.get()) - 25)))
         parseCtr(self.output, 60, 71, tmpSV, 25)
-        tmpSV.set(str((int(self.matchWindowSizeNum.get()) - 25)))
+        tmpSV.set("0")
+        if (int(self.matchWindowSizeNum.get()) >= 25):
+            tmpSV.set(str((int(self.matchWindowSizeNum.get()) - 25)))
         parseCtr(self.output, 72, 83, tmpSV, 25)
         tmpSV.set(str((102400-int(self.rejectCtrOffsetNum.get()))))
         parseCtr(self.output, 48, 59, tmpSV, 25)
@@ -1293,10 +1297,16 @@ class Configurator:
             if (self.output[int(text)] == '1'):
                 self.tmscheckb.invoke(text)
         self.maxEventSizeNum.set(self.maxEventSizeOptions[convertToInt(self.output, 116, 119)])
-        self.trgCtrOffsetNum.set(str(102400 - 25*convertToInt(self.output, 138, 149)))
-        self.searchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 60, 71)))
-        self.matchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 72, 83)))
-        self.rejectCtrOffsetNum.set(str(102400 - 25*convertToInt(self.output, 48, 59)))
+        self.trgCtrOffsetNum.set(str((102400 - 25*convertToInt(self.output, 138, 149))%102400))
+        if ( (25*convertToInt(self.output, 60, 71)) > 0 ):
+            self.searchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 60, 71)))
+        else:
+            self.searchWindowSizeNum.set("0")
+        if ( (25*convertToInt(self.output, 72, 83)) > 0 ):
+            self.matchWindowSizeNum.set(str(25 + 25*convertToInt(self.output, 72, 83)))
+        else:
+            self.matchWindowSizeNum.set("0")
+        self.rejectCtrOffsetNum.set(str((102400 - 25*convertToInt(self.output, 48, 59))%102400))
 
         #### Options page
         self.optionscheckb.setvalue([]) # clear all checkbuttons first
