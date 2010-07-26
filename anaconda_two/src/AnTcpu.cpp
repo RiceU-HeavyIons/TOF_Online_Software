@@ -73,30 +73,32 @@ void AnTcpu::config(int level)
 //	qDebug() << "AnTcpu::config: level = " << level;
 //	qDebug() << "AnTcpu::config: commError = " << commError();
 	
-	if (active() && level >= 1 && commError() == 0) {
-		if(--level >= 1) {
-			for (int i = 0; i < 8; ++i) {
-				m_tdig[i]->config(level);
-			}
-		}
-		// catch final messages
-		// for (int i = 0; i < 8; ++i)
-		// agent()->read(rmsg);
-		// write to PLD REG[2]
-		try {
-			TPCANMsg    msg;
-			TPCANRdMsg  rmsg;
-			AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
-			agent()->write_read(msg, rmsg, 2);
-		} catch (AnExCanError ex) {
-			log(QString("config: CAN error occurred: %1").arg(ex.status()));
-			incCommError();
-		}
-
-	} else {
-		log(QString("config: wasn't issued, active=%1, level=%2, commError=%3")
-			.arg(active()).arg(level).arg(commError()));
+  if (active()) { // only configure if board is marked active
+    if (level >= 1 && commError() == 0) {
+      if(--level >= 1) {
+	for (int i = 0; i < 8; ++i) {
+	  m_tdig[i]->config(level);
 	}
+      }
+      // catch final messages
+      // for (int i = 0; i < 8; ++i)
+      // agent()->read(rmsg);
+      // write to PLD REG[2]
+      try {
+	TPCANMsg    msg;
+	TPCANRdMsg  rmsg;
+	AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
+	agent()->write_read(msg, rmsg, 2);
+      } catch (AnExCanError ex) {
+	log(QString("config: CAN error occurred: %1").arg(ex.status()));
+	incCommError();
+      }
+      
+    } else {
+      log(QString("config: wasn't issued, active=%1, level=%2, commError=%3")
+	  .arg(active()).arg(level).arg(commError()));
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
