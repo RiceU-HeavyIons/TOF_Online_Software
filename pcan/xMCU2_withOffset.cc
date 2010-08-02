@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2_withOffset.cc,v 1.2 2010-07-15 19:10:10 jschamba Exp $";
+"$Id: xMCU2_withOffset.cc,v 1.3 2010-08-02 17:00:47 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -310,19 +310,12 @@ int change_mcu_program(const char *filename,
 
 
 
-  // start program memory on page boundary
-  validl[1] &= 0xFFFFFC00;
-  // end upper memory on page boundary
-  validh[1] |= 0x3FF;
-  // do everything in bytes rather than program addresses
-  validl[0] *= 2;
-  validl[1] *= 2;
-  validh[0] = (validh[0]+1)*2;
-  validh[1] = (validh[1]+1)*2;
-
   // allocate space for program bytes
 
   unsigned char *ivtBytes, *progBytes;
+  ivtBytes = (unsigned char *)NULL;
+  progBytes = (unsigned char *)NULL;
+
   if ((validh[0] - validl[0]) > 2) // a valid IVT address range
     ivtBytes = (unsigned char *)malloc(validh[0] - validl[0]);
   else {
@@ -552,6 +545,9 @@ int change_mcu_program(const char *filename,
     
   }
 
+  free((void *)ivtBytes);
+  free((void *)progBytes);
+
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
@@ -605,6 +601,16 @@ int main(int argc, char *argv[])
        << " filename " << argv[2]
        << " devID 0x" << devID << endl;
 #endif
+
+  // start program memory on page boundary
+  validl[1] &= 0xFFFFFC00;
+  // end upper memory on page boundary
+  validh[1] |= 0x3FF;
+  // do everything in bytes rather than program addresses
+  validl[0] *= 2;
+  validl[1] *= 2;
+  validh[0] = (validh[0]+1)*2;
+  validh[1] = (validh[1]+1)*2;
 
   // install signal handler for manual break
   signal(SIGINT, signal_handler);

@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xMCU2_noIVT.cc,v 1.2 2010-07-15 19:10:10 jschamba Exp $";
+"$Id: xMCU2_noIVT.cc,v 1.3 2010-08-02 17:00:47 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -286,7 +286,7 @@ int change_mcu_program(const char *filename,
   cout << "Downloading MCU second image on TDIG NodeID 0x" << hex << tdigNodeID
        << " through TCPU NodeID 0x" << tcpuNodeID
        << "\n with filename " << filename 
-       << " at devID 0x" << hex << devID << "...\n";
+       << " at devID " << dec << devID << "...\n";
 
 
   unsigned int msgIDVal = (((tdigNodeID<<4) | 0x002) << 18) | tcpuNodeID;
@@ -310,19 +310,13 @@ int change_mcu_program(const char *filename,
 
 
 
-  // start program memory on page boundary
-  validl[1] &= 0xFFFFFC00;
-  // end upper memory on page boundary
-  validh[1] |= 0x3FF;
-  // do everything in bytes rather than program addresses
-  validl[0] *= 2;
-  validl[1] *= 2;
-  validh[0] = (validh[0]+1)*2;
-  validh[1] = (validh[1]+1)*2;
 
   // allocate space for program bytes
 
   unsigned char *ivtBytes, *progBytes;
+  ivtBytes = (unsigned char *)NULL;
+  progBytes = (unsigned char *)NULL;
+
   if ((validh[0] - validl[0]) > 2) // a valid IVT address range
     ivtBytes = (unsigned char *)malloc(validh[0] - validl[0]);
   else {
@@ -551,6 +545,9 @@ int change_mcu_program(const char *filename,
     
   }
 
+  free((void *)ivtBytes);
+  free((void *)progBytes);
+
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
@@ -597,6 +594,16 @@ int main(int argc, char *argv[])
       return -1;
     }
   }
+
+  // start program memory on page boundary
+  validl[1] &= 0xFFFFFC00;
+  // end upper memory on page boundary
+  validh[1] |= 0x3FF;
+  // do everything in bytes rather than program addresses
+  validl[0] *= 2;
+  validl[1] *= 2;
+  validh[0] = (validh[0]+1)*2;
+  validh[1] = (validh[1]+1)*2;
 
 #ifdef LOCAL_DEBUG
   cout << "TDIG nodeID 0x" << hex << tdigNodeID
