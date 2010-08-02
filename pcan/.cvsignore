@@ -4,3 +4,4 @@ xenableChannel xgetStatus xp_config xsetThreshold xMCU2 xp_eeprom2
 xp_config_pm xp_config_scripted xp_config_reset *getChecksum MCUchecksum
 *_l
 getFWIDs getTHUBFWIDs
+biterror mult mcu fpga hptdc
