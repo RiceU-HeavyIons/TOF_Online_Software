@@ -27,7 +27,7 @@ insert into tcpus values (  6, 3, 48,  71,  67,  3, 'D3',  3,  5,  1,  6,  1);
 insert into tcpus values (  7, 3, 49,  65,  61,  3, 'E0',  3,  6,  1,  7,  1);
 insert into tcpus values (  8, 3, 50,  54,  50,  3, 'E1',  3,  7,  1,  8,  1);
 insert into tcpus values (  9, 3, 51,  61,  57,  3, 'E2',  3,  8,  1,  9,  1);
-insert into tcpus values ( 10, 3, 52,  64,  60,  3, 'E3',  3,  9,  1, 10,  0);
+insert into tcpus values ( 10, 3, 52,  75,  71,  3, 'E3',  3,  9,  1, 10,  1);
 insert into tcpus values ( 11, 3, 53,  51,  47,  3, 'F0',  3, 10,  1, 11,  1);
 insert into tcpus values ( 12, 3, 54,  50,  46,  3, 'F1',  3, 11,  1, 12,  1);
 insert into tcpus values ( 13, 3, 55,  91,  87,  3, 'F2',  8,  0,  2,  1,  1);
