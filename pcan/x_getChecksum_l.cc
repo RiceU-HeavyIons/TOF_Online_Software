@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: x_getChecksum_l.cc,v 1.1 2008-11-11 21:50:34 jschamba Exp $";
+"$Id: x_getChecksum_l.cc,v 1.2 2010-08-20 18:54:15 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -40,6 +40,8 @@ using namespace std;
 //****************************************************************************
 // GLOBALS
 HANDLE h = NULL;
+extern const char *RED_ON_WHITE;
+extern const char *NORMAL_COLORS;
 
 //****************************************************************************
 // LOCALS
@@ -75,7 +77,8 @@ int getChecksum(unsigned int tdigNodeID,
 		unsigned int tcpuNodeID, 
 		unsigned short startAddr,
 		unsigned short endAddr,
-		WORD devID)
+		WORD devID,
+		unsigned short expectedChecksum)
 {
   unsigned int addr;
   TPCANMsg ms;
@@ -246,7 +249,12 @@ int getChecksum(unsigned int tdigNodeID,
     }
   }
 
-  cout << "\nChecksum = " << showbase << hex << checksum << endl;
+  cout << "\nChecksum = " << showbase << hex << checksum;
+  if ( (expectedChecksum != 0) && (checksum != expectedChecksum)) {
+    cout << " " << RED_ON_WHITE << "?? checksum don't match, expected " 
+	 << expectedChecksum << NORMAL_COLORS << endl;
+  }
+  cout << endl;
 
   errno = 0;
   my_private_exit(errno);
@@ -260,7 +268,7 @@ int main(int argc, char *argv[])
   unsigned int tdigNodeID, tcpuNodeID;
   WORD devID = 255;
   unsigned short startAddr, endAddr;
-
+  unsigned short expectedChecksum = 0;
 
   cout << vcid << endl;
   cout.flush();
@@ -286,7 +294,15 @@ int main(int argc, char *argv[])
     return -1;
   }
   
-  if (argc == 6) {
+  if (argc == 7) {
+    expectedChecksum = (unsigned short)strtol(argv[6],(char **)NULL, 0);
+    if (devID > 255) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
+      return -1;
+    }
+  }
+
+  if (argc >= 6) {
     devID = strtol(argv[5],(char **)NULL, 0);
     if (devID > 255) {
       printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
@@ -316,5 +332,6 @@ int main(int argc, char *argv[])
        << " devID 0x" << devID << endl;
 #endif
 
-  return getChecksum(tdigNodeID, tcpuNodeID, startAddr, endAddr, devID);
+  return getChecksum(tdigNodeID, tcpuNodeID, startAddr, endAddr, 
+		     devID, expectedChecksum );
 }
