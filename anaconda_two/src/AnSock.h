@@ -22,7 +22,7 @@ public:
   AnSock();
   virtual ~AnSock();
 
-  static QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list);
+  static QMap<int, AnSock*> open(QList<int> &dev_id_list);
   static int TCAN_DEBUG;
   static const char *PCAN_DEVICE_PATTERN;
 
