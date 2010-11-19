@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.12 2010-07-16 16:01:52 jschamba Exp $
+# $Id: config.py,v 1.13 2010-11-19 21:17:25 jschamba Exp $
 
 rtitle = 'HPTDC Configurator'
-version = '1.12'
+version = '1.13'
 
 import sys
 from Tkinter import *
@@ -91,31 +91,43 @@ class Configurator:
                       fill = X)
 
         ###### UPPER LEFT ##########
-        ts = Frame(mainArea,
-                   borderwidth = 3,
-                   relief = RIDGE)
+        ts = LabelFrame(mainArea,
+                        text = "Troubleshooting Features",
+                        font = ("Arial", 12, "bold"),
+                        labelanchor = N,
+                        borderwidth = 3,
+                        relief = RIDGE)
         ts.grid(column = 0, row = 0)
         self.create_ts(ts)
 
         ###### UPPER RIGHT #########
-        drs = Frame(mainArea,
-                    borderwidth = 3,
-                    relief = RIDGE)
+        drs = LabelFrame(mainArea,
+                         text = "Data Readout Features",
+                         font = ("Arial", 12, "bold"),
+                         labelanchor = N,
+                         borderwidth = 3,
+                         relief = RIDGE)
         drs.grid(column = 1, row = 0, sticky=N+S+E+W)
         self.create_drs(drs)
         
         ###### LOWER LEFT ##########
-        os = Frame(mainArea,
-                   borderwidth = 3,
-                   relief = RIDGE)
+        os = LabelFrame(mainArea,
+                        text = "Operating Features",
+                        font = ("Arial", 12, "bold"),
+                        labelanchor = N,
+                        borderwidth = 3,
+                        relief = RIDGE)
         os.grid(column = 0, row = 1, sticky=N+S+E+W)
         self.create_os(os)
 
         ###### LOWER RIGHT ##########
-        tms = Frame(mainArea,
-                   borderwidth = 3,
-                   relief = RIDGE)
-        tms.grid(column = 1, row = 1)
+        tms = LabelFrame(mainArea,
+                         text = "Trigger Matching Features",
+                         font = ("Arial", 12, "bold"),
+                         labelanchor = N,
+                         borderwidth = 3,
+                         relief = RIDGE)
+        tms.grid(column = 1, row = 1, sticky=N+S+E+W)
         self.create_tms(tms)
 
 
@@ -123,14 +135,6 @@ class Configurator:
 
     ##### TROUBLE SHOOTING PARAMETERS ####################
     def create_ts(self, parent):
-        title = Label(parent,
-                      text = 'Troubleshooting Features',
-                      font = ("Arial", 12, "bold"),
-                      padx = 1,
-                      relief = RAISED)
-        title.pack(fill=X, expand=1, pady=1)
-
-
         testSelect = Pmw.OptionMenu(parent,
                                     labelpos = W,
                                     label_text = 'Test Select:',
@@ -169,8 +173,8 @@ class Configurator:
         self.tscheckb = Pmw.RadioSelect(parent,
                                         buttontype = 'checkbutton',
                                         orient = 'vertical',
-                                        hull_borderwidth = 1,
-                                        hull_relief = RIDGE,
+##                                        hull_borderwidth = 1,
+##                                        hull_relief = RIDGE,
                                         labelpos = W,
                                         label_text = 'Enable/Disable:',
                                         labelmargin = 10,
@@ -234,13 +238,6 @@ class Configurator:
 
     ##### DATA READOUT SECTION ####################
     def create_drs(self, parent):
-        title = Label(parent,
-                      text = 'Data Readout Features',
-                      font = ("Arial", 12, "bold"),
-                      padx = 1,
-                      relief = RAISED)
-        title.pack(fill=X, expand=1, pady=1)
-
         tdcIdent = Pmw.EntryField(parent,
                                   labelpos = W,
                                   label_text = "TDC ID (4bit binary): ",
@@ -288,8 +285,8 @@ class Configurator:
         self.drscheckb = Pmw.RadioSelect(parent,
                                          buttontype = 'checkbutton',
                                          orient = 'vertical',
-                                         hull_borderwidth = 1,
-                                         hull_relief = RIDGE,
+##                                         hull_borderwidth = 1,
+##                                         hull_relief = RIDGE,
                                          labelpos = W,
                                          label_text = 'Enable/Disable:',
                                          labelmargin = 40,
@@ -317,18 +314,11 @@ class Configurator:
 
     ##### OPERATING SECTION ####################
     def create_os(self, parent):
-        title = Label(parent,
-                      text = 'Operating Features',
-                      font = ("Arial", 12, "bold"),
-                      padx = 1,
-                      relief = RAISED)
-        title.pack(fill=X, expand=1, pady=1)
-
         self.oscheckb = Pmw.RadioSelect(parent,
                                         buttontype = 'checkbutton',
                                         orient = 'vertical',
-                                        hull_borderwidth = 1,
-                                        hull_relief = RIDGE,
+##                                        hull_borderwidth = 1,
+##                                        hull_relief = RIDGE,
                                         labelpos = W,
                                         label_text = 'Enable/Disable:',
                                         labelmargin = 5,
@@ -395,18 +385,11 @@ class Configurator:
 
     ##### TRIGGER MATCHING SECTION ####################
     def create_tms(self, parent):
-        title = Label(parent,
-                      text = 'Trigger Matching Features',
-                      font = ("Arial", 12, "bold"),
-                      padx = 1,
-                      relief = RAISED)
-        title.pack(fill=X, expand=1, pady=1)
-
         self.tmscheckb = Pmw.RadioSelect(parent,
                                          buttontype = 'checkbutton',
                                          orient = 'vertical',
-                                         hull_borderwidth = 1,
-                                         hull_relief = RIDGE,
+##                                         hull_borderwidth = 1,
+##                                         hull_relief = RIDGE,
                                          labelpos = W,
                                          label_text = 'Enable/Disable:',
                                          labelmargin = 40,
