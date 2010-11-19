@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 #
-# $Id: config.py,v 1.13 2010-11-19 21:17:25 jschamba Exp $
+cvsString = '$Id: config.py,v 1.14 2010-11-19 23:44:26 jschamba Exp $'
+
 
 rtitle = 'HPTDC Configurator'
-version = '1.13'
+cols = cvsString.split()
+version = cols[2]
 
 import sys
 from Tkinter import *
@@ -21,6 +23,13 @@ class Configurator:
         
 	# Create the Balloon.
 	self.balloon = Pmw.Balloon(parent)
+
+        # Create the "about" dialog
+        Pmw.aboutversion(version)
+        Pmw.aboutcopyright('J. Schambach, University of Texas')
+        Pmw.aboutcontact('email: jschamba@physics.utexas.edu')
+        self.about = Pmw.AboutDialog(parent, applicationname = 'HPTDC Configurator')
+        self.about.withdraw()
         
 	# Create and pack the MenuBar.
 	menuBar = Pmw.MenuBar(parent,
@@ -59,8 +68,9 @@ class Configurator:
 
 	menuBar.addmenu('Help', 'User manuals', side = 'right')
 	menuBar.addmenuitem('Help', 'command', 'About this application',
-		command = PrintOne('Action: about'),
-		label = 'About...')
+                            command = self.aboutShow,
+##                            command = PrintOne('Action: about'),
+                            label = 'About...')
 
         notebook = Pmw.NoteBook(parent)
         notebook.pack(fill='both', expand = 1, padx=10, pady=10)
@@ -1349,7 +1359,10 @@ class Configurator:
             sys.stdout.softspace = 0
             print self.output[x],
         print
-        
+
+##### Show About Dialog ##################
+    def aboutShow(self):
+        self.about.show()
 
 ##### This one for testing only ##########
 class PrintOne:
