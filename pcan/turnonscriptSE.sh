@@ -56,7 +56,7 @@ usleep 70000
 usleep 70000
 ./pc "m s 0x402 2 0x97 0x1f 250"
 usleep 70000
-./pc "m s 0x402 2 0x98 0x17 250"
+./pc "m s 0x402 2 0x98 0x13 250"
 
 # issue bunch reset
 usleep 70000
