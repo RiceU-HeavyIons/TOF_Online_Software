@@ -160,9 +160,9 @@ int AnSerdes::status() const
 	quint8 pld9x = ecsr();
 
 // MTD patch
-	if (laddr().at(1) == 4 && laddr().at(2) == 8) {
-		if (m_pld9xBase) pld9x |= 0x4;
-	}
+//	if (laddr().at(1) == 4 && laddr().at(2) == 8) {
+//		if (m_pld9xBase) pld9x |= 0x4;
+//	}
 
 	if (pld9x != pld9xSet()) err++;
 
@@ -179,9 +179,9 @@ quint8 AnSerdes::pld9xSet() const {
 		for (int i = 0; i < 4; ++i)
 			if (m_tcpu[i] && m_tcpu[i]->fibermode()) bts |= (1 << i);
 // MTD patch
-		if (laddr().at(1) == 4 && laddr().at(2) == 8) {
-			bts |= 0x4;
-		}
+//		if (laddr().at(1) == 4 && laddr().at(2) == 8) {
+//			bts |= 0x4;
+//		}
 	}
 	return bts;
 }
