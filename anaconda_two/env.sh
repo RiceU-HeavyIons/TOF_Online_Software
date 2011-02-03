@@ -20,11 +20,11 @@ if [ `hostname` = 'scorpio.rhip.utexas.edu' ]; then
 fi
 
 if [ `hostname` = 'cancer.rhip.utexas.edu' ]; then
-  export PATH=/usr/local/Trolltech/Qt-4.6.2/bin:$PATH
-  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.6.2/lib:$LD_LIBRARY_PATH
+  export PATH=/usr/local/Trolltech/Qt-4.7.1/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.7.1/lib:$LD_LIBRARY_PATH
 fi
 
 if [ `hostname` = 'tofcontrol.starp.bnl.gov' ]; then
-  export PATH=/usr/local/Trolltech/Qt-4.6.2/bin:$PATH
-  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.6.2/lib:$LD_LIBRARY_PATH
+  export PATH=/usr/local/Trolltech/Qt-4.7.1/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.7.1/lib:$LD_LIBRARY_PATH
 fi
