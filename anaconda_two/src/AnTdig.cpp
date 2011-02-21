@@ -101,7 +101,7 @@ void AnTdig::sync(int level)
 			setSynced();
 
 		} catch (AnExCanError ex) {
-			log(QString("sync:  CAN error occurred: %1").arg(ex.status()));
+		  log(QString("sync:  CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			log(btrace.join("\n"));
 			log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
 			incCommError();
@@ -128,7 +128,7 @@ void AnTdig::init(int level)
 			if(--level >= 1) m_tdc[0]->init(level);
 		// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 		} catch (AnExCanError ex) {
-			log(QString("init:  CAN error occurred: %1").arg(ex.status()));
+		  log(QString("init:  CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	}
@@ -161,7 +161,7 @@ void AnTdig::config(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 3, 0x08, vl, vh);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			log(QString("config: CAN Error Occurred: %1").arg(ex.status()));
+		  log(QString("config: CAN Error Occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	}
@@ -188,7 +188,7 @@ void AnTdig::reset(int level)
 			}
 
 		} catch (AnExCanError ex) {
-			log(QString("reset: CAN Error Occurred: %1").arg(ex.status()));
+		  log(QString("reset: CAN Error Occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	}
@@ -218,7 +218,7 @@ void AnTdig::qreset(int level)
 			// for(int i = 1; i < 4; ++i) m_tdc[i]->reset();
 			// }
 		} catch (AnExCanError ex) {
-			log(QString("qreset: CAN Error Occurred: %1").arg(ex.status()));
+		  log(QString("qreset: CAN Error Occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	}

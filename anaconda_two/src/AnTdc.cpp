@@ -65,7 +65,7 @@ void AnTdc::init(int level)
 			AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0x9f);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+		  qDebug() << "CAN error occurred: 0x" << hex << ex.status() << dec;
 			incCommError();
 		}
 	}
@@ -116,7 +116,7 @@ void AnTdc::config(int level)
 			set_mask_msg(msg);
 			agent()->write_read(msg, rmsg, 2);
 		} catch (AnExCanError ex) {
-			qDebug() << "CAN error occurred: " << ex.status();
+		  qDebug() << "CAN error occurred: 0x" << hex << ex.status() << dec;
 			incCommError();
 		}
 	}
@@ -185,7 +185,7 @@ void AnTdc::sync(int level)
 			btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 			setSynced();
 		} catch (AnExCanError ex) {
-			log(QString("sync:  CAN error occurred: %1").arg(ex.status()));
+		  log(QString("sync:  CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			log(btrace.join("\n"));
 			incCommError();
 		}

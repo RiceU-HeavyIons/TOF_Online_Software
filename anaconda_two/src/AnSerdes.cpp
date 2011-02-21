@@ -68,7 +68,7 @@ void AnSerdes::config(int level)
       AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
       agent()->write_read(msg, rmsg, 2);
     } catch (AnExCanError ex) {
-      qDebug() << "CAN error occurred: " << ex.status();
+      qDebug() << "CAN error occurred: 0x" << hex << ex.status() << dec;
       incCommError();
     }
   }	
@@ -211,7 +211,7 @@ void AnSerdes::relink(int port)
 		       0x90 + srdid, pld9xSet());
       agent()->write_read(msg, rmsg, 2);
     } catch (AnExCanError ex) {
-      log(QString("relink: CAN error occurred: %1").arg(ex.status()));
+      log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
       incCommError();
     }
   } else {

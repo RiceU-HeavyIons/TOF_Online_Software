@@ -90,7 +90,7 @@ void AnTcpu::config(int level)
 	AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
 	agent()->write_read(msg, rmsg, 2);
       } catch (AnExCanError ex) {
-	log(QString("config: CAN error occurred: %1").arg(ex.status()));
+	log(QString("config: CAN error occurred: 0x%1").arg(ex.status(),0,16));
 	incCommError();
       }
       
@@ -131,7 +131,7 @@ void AnTcpu::init(int level)
 			if (--level >= 1)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->init(level);
 		} catch (AnExCanError ex) {
-			log(QString("init: CAN error occurred: %1").arg(ex.status()));
+		  log(QString("init: CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			log(QString("init: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
 			incCommError();
 		}
@@ -161,7 +161,7 @@ void AnTcpu::reset(int level)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			log(QString("reset: CAN error occurred: %1").arg(ex.status()));
+		  log(QString("reset: CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	}
@@ -180,7 +180,7 @@ void AnTcpu::qreset(int level)
 				for (int i = 0; i < 8; ++i) m_tdig[i]->qreset(level);
 
 		} catch (AnExCanError ex) {
-			log(QString("qreset: CAN error occurred: %1").arg(ex.status()));
+		  log(QString("qreset: CAN error occurred: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	} else {
@@ -240,7 +240,7 @@ void AnTcpu::sync(int level)
 
 				setSynced();
 			} catch (AnExCanError ex) {
-				log(QString("sync: CAN error occurred: %1").arg(ex.status()));
+			  log(QString("sync: CAN error occurred: 0x%1").arg(ex.status(),0,16));
 				log(btrace.join("\n"));
 				incCommError();
 				log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
@@ -271,7 +271,7 @@ void AnTcpu::relink(int level)
       
       
     } catch (AnExCanError ex) {
-      log(QString("relink: CAN error occurred: %1").arg(ex.status()));
+      log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
       incCommError();
     }
   } else {

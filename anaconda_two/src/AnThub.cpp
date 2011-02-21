@@ -121,7 +121,7 @@ void AnThub::reset(int level)
 				for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			log(QString("reset: CANBus error occcured: %1").arg(ex.status()));
+		  log(QString("reset: CAN error occcured: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	} else {
@@ -151,7 +151,7 @@ void AnThub::qreset(int level)
 			// 	for(int i = 0; i < 8; ++i) m_serdes[i]->reset(level);
 
 		} catch (AnExCanError ex) {
-			log(QString("qreset: CANBus error occcured: %1").arg(ex.status()));
+		  log(QString("qreset: CAN error occcured: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	} else {
@@ -209,7 +209,7 @@ void AnThub::sync(int level)
       
       setSynced();
     } catch (AnExCanError ex) {
-      log(QString("sync: CANBus error occcured: %1").arg(ex.status()));
+      log(QString("sync: CAN error occcured: 0x%1").arg(ex.status(),0,16));
       log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
       incCommError();
     }
@@ -236,7 +236,7 @@ void AnThub::bunchReset(int level)
 			agent()->write_read(msg, rmsg, 2);
 
 		} catch (AnExCanError ex) {
-			log(QString("bunchReset: CANBus error occcured: %1").arg(ex.status()));
+		  log(QString("bunchReset: CAN error occcured: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	} else {
@@ -263,7 +263,7 @@ void AnThub::reloadFPGAs(int level)
 			agent()->write_read(msg, rmsg, 2);
 
 		} catch (AnExCanError ex) {
-			log(QString("reloadFPGAs: CANBus error occcured: %1").arg(ex.status()));
+		  log(QString("reloadFPGAs: CAN error occcured: 0x%1").arg(ex.status(),0,16));
 			incCommError();
 		}
 	} else {
@@ -289,7 +289,7 @@ void AnThub::recoverAlertMsg(int val)
       agent()->write_read(msg, rmsg, 2);
       
     } catch (AnExCanError ex) {
-      log(QString("recoverAlertMsg: CANBus error occcured: %1").arg(ex.status()));
+      log(QString("recoverAlertMsg: CAN error occcured: 0x%1").arg(ex.status(),0,16));
       incCommError();
     }
   } else {
