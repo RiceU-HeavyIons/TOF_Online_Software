@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.25 2009-08-31 20:45:47 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.26 2011-02-21 22:56:37 jschamba Exp $";
 #endif /* lint */
 
 
@@ -56,6 +56,15 @@ typedef struct
 
 //****************************************************************************
 // CODE 
+
+/******************************************************************/
+void usage(char *name)
+{
+  printf("USAGE: %s [-{B|b} <baudrate>]\n", name);
+  printf(" -B <baudrate> or -b <baudrate> baudrate (500k or 1m)\n");
+}
+
+/******************************************************************/
 
 void check_err(__u32  err,  char *txtbuff)
 {
@@ -156,6 +165,7 @@ int main(int argc, char *argv[])
   int elapsed_time = 0;
   time_t *theTime = new time_t;
   int numEvents = 0;
+  int c;
 
   int openHandles[256] = {0};
   int currentIndex = 0;
@@ -163,13 +173,27 @@ int main(int argc, char *argv[])
   errno = 0;
   devID = 255;
 
-  if (argc >1) {
-    devID = atoi(argv[1]);
-    if (devID > 255) {
-      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);fflush(stdout);
-      return 1;
+  if (argc > 1)
+  {
+    while ((c = getopt(argc, argv, "B:b:")) != EOF)
+    {
+      switch(toupper(c))
+      {
+        case 'B': 
+	  if (strcmp(optarg,"500k") == 0) 
+	    wBTR0BTR1 = CAN_BAUD_500K;
+	  else if (strcmp(optarg,"1m") == 0)
+	    wBTR0BTR1 = CAN_BAUD_1M;
+	  else
+	    printf("Invalid baud rate %s, using 500k\n", optarg);
+
+	  break;
+
+        default : usage (argv[0]); exit (1); break;
+      }
     }
   }
+
 
   // give some information back
   if (wBTR0BTR1)
