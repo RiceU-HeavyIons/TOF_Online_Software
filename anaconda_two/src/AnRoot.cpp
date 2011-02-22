@@ -209,162 +209,162 @@ AnRoot::~AnRoot()
  */
 QString AnRoot::dump() const
 {
-	QStringList sl;
+  QStringList sl;
 
-	sl << QString().sprintf("AnRoot(%p):", this);
-	sl << QString("  Name             : ") + name();
-	sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Installed        : ") + (installed() ? "yes" : "no");
-	sl << QString("  Active           : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized     : ") + synced().toString();
+  sl << QString().sprintf("AnRoot(%p):", this);
+  sl << QString("  Name             : ") + name();
+  sl << QString("  Hardware Address : ") + haddr().toString().toStdString().c_str();
+  sl << QString("  Logical Address  : ") + laddr().toString().toStdString().c_str();
+  sl << QString("  Installed        : ") + (installed() ? "yes" : "no");
+  sl << QString("  Active           : ") + (active() ? "yes" : "no");
+  sl << QString("  Synchronized     : ") + synced().toString();
 
-	return sl.join("\n");
+  return sl.join("\n");
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::init(int level)
 {
-	if (level >= 1) init(level, list());
+  if (level >= 1) init(level, list());
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::config(int level)
 {
-	if(level >= 1) config(level, list());
+  if(level >= 1) config(level, list());
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::reset(int level)
 {
-	if(level >= 1) reset(level, list()); // reset all
+  if(level >= 1) reset(level, list()); // reset all
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::qreset(int level)
 {
-	if(level >= 1) qreset(level, list()); // reset all
+  if(level >= 1) qreset(level, list()); // reset all
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::sync(int level)
 {
-	if(level >= 1) sync(level, list()); // sync all
+  if(level >= 1) sync(level, list()); // sync all
 }
 
 void AnRoot::relink(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_RELINK, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_RELINK, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::init(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_INIT, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_INIT, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::config(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_CONFIG, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_CONFIG, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::reset(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_RESET, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    //		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_RESET, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::qreset(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_QRESET, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    //		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_QRESET, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::tcpurecovery(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_TCPURECOVERY, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    //		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_TCPURECOVERY, level, bmap[id]);
+    ag->start();
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::thubrecovery(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-//		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
-		if (ag->isRunning()) continue; // forget if agent is busy
-		ag->init(TASK_THUBRECOVERY, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    //		qDebug() << "AnRoot::reset id" << id << "ag->id()" << ag->id();
+    if (ag->isRunning()) continue; // forget if agent is busy
+    ag->init(TASK_THUBRECOVERY, level, bmap[id]);
+    ag->start();
+  }
 }
 
 
@@ -373,106 +373,106 @@ void AnRoot::thubrecovery(int level, const QList<AnBoard*>& blist)
  */
 void AnRoot::sync(int level, const QList<AnBoard*>& blist)
 {
-	QMap<int, QList<AnBoard*> > bmap;
-	foreach (AnBoard* bd, blist)
-		bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
+  QMap<int, QList<AnBoard*> > bmap;
+  foreach (AnBoard* bd, blist)
+    bmap[deviceIdFromDevid(bd->haddr().at(0))] << bd;
 
-	emit aboutStart();
-	foreach (int id, bmap.keys()) {
-		AnAgent *ag = agentById(id);
-		if (ag->isRunning()) {
-			qDebug() << "agent is running and can't issue next task";
-			continue; // forget if agent is busy
-		}
-		ag->init(TASK_SYNC, level, bmap[id]);
-		ag->start();
-	}
+  emit aboutStart();
+  foreach (int id, bmap.keys()) {
+    AnAgent *ag = agentById(id);
+    if (ag->isRunning()) {
+      qDebug() << "agent is running and can't issue next task";
+      continue; // forget if agent is busy
+    }
+    ag->init(TASK_SYNC, level, bmap[id]);
+    ag->start();
+  }
 
-//	for(int i = 0; i < n; ++i) m_agent[i].wait();
-// TODO it's too early to set this flag
-	setSynced();
+  //	for(int i = 0; i < n; ++i) m_agent[i].wait();
+  // TODO it's too early to set this flag
+  setSynced();
 }
 
 int AnRoot::status()
 {
-	int hist[5];
-	for(int i = 0; i < 5; ++i) hist[i] = 0;
+  int hist[5];
+  for(int i = 0; i < 5; ++i) hist[i] = 0;
 
-	foreach (AnBoard *bd, list()) {
-		if (bd->active())
-			hist[bd->status()]++;
-	}
-	int ret = 0;
-	if(hist[AnBoard::STATUS_ERROR]) ret = AnBoard::STATUS_ERROR;
-	if(hist[AnBoard::STATUS_COMM_ERR]) ret = AnBoard::STATUS_COMM_ERR;
-	return ret;
+  foreach (AnBoard *bd, list()) {
+    if (bd->active())
+      hist[bd->status()]++;
+  }
+  int ret = 0;
+  if(hist[AnBoard::STATUS_ERROR]) ret = AnBoard::STATUS_ERROR;
+  if(hist[AnBoard::STATUS_COMM_ERR]) ret = AnBoard::STATUS_COMM_ERR;
+  return ret;
 }
 //-----------------------------------------------------------------------------
 // Agents support
 bool AnRoot::isRunning() const
 {
-	bool ret = false;
-	foreach(AnAgent *ag, m_agents) ret |= ag->isRunning();
+  bool ret = false;
+  foreach(AnAgent *ag, m_agents) ret |= ag->isRunning();
 
-	return ret;
+  return ret;
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::stop() const {
-	foreach(AnAgent *ag, m_agents)
-		if (ag->isRunning()) ag->stop();
-	foreach(AnAgent *ag, m_agents) ag->wait();
+  foreach(AnAgent *ag, m_agents)
+    if (ag->isRunning()) ag->stop();
+  foreach(AnAgent *ag, m_agents) ag->wait();
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::terminate() const {
-	qDebug() << "AnRoot::terminate";
-	foreach(AnAgent *ag, m_agents) ag->stop();
-	foreach(AnAgent *ag, m_agents) ag->terminate();
-	foreach(AnAgent *ag, m_agents) ag->wait();
-	m_master->terminate();
-	m_master->wait();
+  qDebug() << "AnRoot::terminate";
+  foreach(AnAgent *ag, m_agents) ag->stop();
+  foreach(AnAgent *ag, m_agents) ag->terminate();
+  foreach(AnAgent *ag, m_agents) ag->wait();
+  m_master->terminate();
+  m_master->wait();
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::wait() const {
-	foreach(AnAgent *ag, m_agents) ag->wait();
+  foreach(AnAgent *ag, m_agents) ag->wait();
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::agentFinished(int __attribute__((unused)) id)
 {
-	if(!isRunning()) {
-		emit finished();
-		emit updated();
-	}
+  if(!isRunning()) {
+    emit finished();
+    emit updated();
+  }
 }
 
 //-----------------------------------------------------------------------------
 QStringList AnRoot::modeList() const
 {
-	QStringList list;
-	foreach(mode md, m_mode_list) list << md.name;
-	return list;
+  QStringList list;
+  foreach(mode md, m_mode_list) list << md.name;
+  return list;
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
-	log(QString("AnRoot::setMode: %1").arg(i));
-//	disableWatch();
-	m_mode_idx = i;
-	m_mode = m_mode_list[i].id;
-	emit aboutStart();
-	m_master->setMode(m_mode);
+  log(QString("AnRoot::setMode: %1").arg(i));
+  //	disableWatch();
+  m_mode_idx = i;
+  m_mode = m_mode_list[i].id;
+  emit aboutStart();
+  m_master->setMode(m_mode);
 }
 
 //-----------------------------------------------------------------------------
 void AnRoot::doUserCmd(int i)
 {
-//	disableWatch();
-	emit aboutStart();
-	m_master->setMode(i + 100);
+  //	disableWatch();
+  emit aboutStart();
+  m_master->setMode(i + 100);
 }
 
 /**
@@ -482,8 +482,8 @@ void AnRoot::doUserCmd(int i)
 // TODO Include validation process
 AnCanObject *AnRoot::find(const AnAddress &lad)
 {
-	return dynamic_cast<AnCanObject*>
-				( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
+  return dynamic_cast<AnCanObject*>
+    ( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
 }
 
 /**
@@ -491,11 +491,11 @@ AnCanObject *AnRoot::find(const AnAddress &lad)
  */
 QList<AnBoard*> AnRoot::find(const QList<AnAddress> &alist)
 {
-	QList<AnBoard*> blist;
-	foreach(AnAddress lad, alist)
-		blist << dynamic_cast<AnBoard*>(find(lad));
+  QList<AnBoard*> blist;
+  foreach(AnAddress lad, alist)
+    blist << dynamic_cast<AnBoard*>(find(lad));
 
-	return blist;
+  return blist;
 }
 
 // TODO Implement array version of find
@@ -507,63 +507,63 @@ QList<AnBoard*> AnRoot::find(const QList<AnAddress> &alist)
 // TODO Validate input and expanded address
 QList<AnAddress> AnRoot::expand(const AnAddress &lad)
 {
-	int a1 = lad.at(0);
-	int a2 = lad.at(1);
-	int a3 = lad.at(2);
-	int a4 = lad.at(3);
+  int a1 = lad.at(0);
+  int a2 = lad.at(1);
+  int a3 = lad.at(2);
+  int a4 = lad.at(3);
 
-	QList<AnAddress> lst1, lst2;
+  QList<AnAddress> lst1, lst2;
 
-	if (a1 == 255)
-		lst1 << AnAddress(1, a2, a3, a4) << AnAddress(2, a2, a3, a4);
-	else
-		lst1 << AnAddress(a1, a2, a3, a4);
+  if (a1 == 255)
+    lst1 << AnAddress(1, a2, a3, a4) << AnAddress(2, a2, a3, a4);
+  else
+    lst1 << AnAddress(a1, a2, a3, a4);
 
-	// first round
-	foreach(AnAddress ad, lst1) {
-		a1 = ad.at(0);
-		if (a1 == 1 && a2 == 255)
-			for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
-		else if (a1 == 2 && a2 == 255)
-			for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
-		else
-			lst2 << AnAddress(a1, a2, a3, a4);
-	}
+  // first round
+  foreach(AnAddress ad, lst1) {
+    a1 = ad.at(0);
+    if (a1 == 1 && a2 == 255)
+      for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
+    else if (a1 == 2 && a2 == 255)
+      for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
+    else
+      lst2 << AnAddress(a1, a2, a3, a4);
+  }
 
-	// second round
-	lst1.clear();
-	foreach(AnAddress ad, lst2) {
-		a1 = ad.at(0);
-		a2 = ad.at(1);
-		if (a3 == 255)
-			for(int i = 1; i <= 8; ++i) lst1 << AnAddress(a1, a2, i, a4);
-		else
-			lst1 << AnAddress(a1, a2, a3, a4);
-	}
+  // second round
+  lst1.clear();
+  foreach(AnAddress ad, lst2) {
+    a1 = ad.at(0);
+    a2 = ad.at(1);
+    if (a3 == 255)
+      for(int i = 1; i <= 8; ++i) lst1 << AnAddress(a1, a2, i, a4);
+    else
+      lst1 << AnAddress(a1, a2, a3, a4);
+  }
 
-	// third round
-	lst2.clear();
-	foreach(AnAddress ad, lst1) {
-		a1 = ad.at(0);
-		a2 = ad.at(1);
-		a3 = ad.at(2);
-		if (a1 == 1 && a4 == 255)
-			lst2 << AnAddress(a1, a2, a3, 0);
-		else if (a1 == 2 && a4 == 255)
-			for(int i = 1; i <= 3; ++i) lst2 << AnAddress(a1, a2, a3, i);
-		else
-			lst2 << AnAddress(a1, a2, a3, a4);
-	}
+  // third round
+  lst2.clear();
+  foreach(AnAddress ad, lst1) {
+    a1 = ad.at(0);
+    a2 = ad.at(1);
+    a3 = ad.at(2);
+    if (a1 == 1 && a4 == 255)
+      lst2 << AnAddress(a1, a2, a3, 0);
+    else if (a1 == 2 && a4 == 255)
+      for(int i = 1; i <= 3; ++i) lst2 << AnAddress(a1, a2, a3, i);
+    else
+      lst2 << AnAddress(a1, a2, a3, a4);
+  }
 
-	return lst2;
+  return lst2;
 }
 
 //-----------------------------------------------------------------------------
 AnCanObject *AnRoot::hfind(const AnAddress &had)
 {
-//	qDebug () << "AnRoot::hfind" << had;
-	return dynamic_cast<AnCanObject*>
-				( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
+  //	qDebug () << "AnRoot::hfind" << had;
+  return dynamic_cast<AnCanObject*>
+    ( hat(had.at(0))->hat(had.at(1))->hat(had.at(2))->hat(had.at(3)) );
 }
 
 // QList<AnBoard*> AnRoot::boardsByIndex(int i) const
@@ -579,9 +579,9 @@ AnCanObject *AnRoot::hfind(const AnAddress &had)
 //-----------------------------------------------------------------------------
 QStringList AnRoot::deviceNames() const
 {
-	QStringList st;
-	foreach(AnCanNet a, m_hnet) st << a.name();
-	return st;
+  QStringList st;
+  foreach(AnCanNet a, m_hnet) st << a.name();
+  return st;
 }
 
 
@@ -593,7 +593,7 @@ QStringList AnRoot::deviceNames() const
  */
 void AnRoot::stopAutoSync()
 {
-	if (m_timer->isActive()) m_timer->stop();
+  if (m_timer->isActive()) m_timer->stop();
 }
 
 /**
@@ -601,15 +601,15 @@ void AnRoot::stopAutoSync()
  */
 void AnRoot::autosync()
 {
-	if (!isRunning()) {
-		disableWatch();
-		(*m_autoSyncIter)->sync(2);
-		enableWatch();
-		emit updated(*m_autoSyncIter);
-		++m_autoSyncIter;
-		if (m_autoSyncIter == m_autoSyncList.constEnd())
-			m_autoSyncIter = m_autoSyncList.constBegin();
-	}
+  if (!isRunning()) {
+    disableWatch();
+    (*m_autoSyncIter)->sync(2);
+    enableWatch();
+    emit updated(*m_autoSyncIter);
+    ++m_autoSyncIter;
+    if (m_autoSyncIter == m_autoSyncList.constEnd())
+      m_autoSyncIter = m_autoSyncList.constBegin();
+  }
 }
 
 /**
@@ -617,20 +617,20 @@ void AnRoot::autosync()
  */
 void AnRoot::enableWatch()
 {
-	mtex_watch.lock();
-//	qDebug() << "AnRoot::enableWatch";
-	foreach (QSocketNotifier *sn, m_watch) {
-		sn->setEnabled(true);
-	}
-	mtex_watch.unlock();
+  mtex_watch.lock();
+  //	qDebug() << "AnRoot::enableWatch";
+  foreach (QSocketNotifier *sn, m_watch) {
+    sn->setEnabled(true);
+  }
+  mtex_watch.unlock();
 }
 
 void AnRoot::enableWatch(int id)
 {
-	mtex_watch.lock();
-//	qDebug() << "AnRoot::enableWatch" << id;
-	m_watch[agentById(id)->socket()]->setEnabled(true);	
-	mtex_watch.unlock();
+  mtex_watch.lock();
+  //	qDebug() << "AnRoot::enableWatch" << id;
+  m_watch[agentById(id)->socket()]->setEnabled(true);	
+  mtex_watch.unlock();
 }
 
 /**
@@ -638,28 +638,28 @@ void AnRoot::enableWatch(int id)
  */
 void AnRoot::disableWatch()
 {
-	mtex_watch.lock();
-//	qDebug() << "AnRoot::disableWatch";
-	foreach (QSocketNotifier *sn, m_watch) {
-		sn->setEnabled(false);
-	}
-	mtex_watch.unlock();
+  mtex_watch.lock();
+  //	qDebug() << "AnRoot::disableWatch";
+  foreach (QSocketNotifier *sn, m_watch) {
+    sn->setEnabled(false);
+  }
+  mtex_watch.unlock();
 }
 
 void AnRoot::disableWatch(int id)
 {
-	mtex_watch.lock();
-//	qDebug() << "AnRoot::disableWatch" << id;
-	m_watch[agentById(id)->socket()]->setEnabled(false);	
-	mtex_watch.unlock();
+  mtex_watch.lock();
+  //	qDebug() << "AnRoot::disableWatch" << id;
+  m_watch[agentById(id)->socket()]->setEnabled(false);	
+  mtex_watch.unlock();
 }
 
 void AnRoot::watchStatus()
 {
-	qDebug() << "AnRoot::watchStatus";
-	foreach (QSocketNotifier *sn, m_watch) {
-		qDebug() << "isEnabled" << sn->isEnabled() << "socket" << sn->socket();
-	}
+  qDebug() << "AnRoot::watchStatus";
+  foreach (QSocketNotifier *sn, m_watch) {
+    qDebug() << "isEnabled" << sn->isEnabled() << "socket" << sn->socket();
+  }
 	
 }
 
@@ -668,24 +668,24 @@ void AnRoot::watchStatus()
  */
 void AnRoot::watcher(int sock)
 {
-	log(QString("AnRoot::watcher: sock=%1").arg(sock));
+  log(QString("AnRoot::watcher: sock=%1").arg(sock));
 
-	if (m_watch.contains(sock)) {
-		// disable watch again
-		m_watch[sock]->setEnabled(false);
+  if (m_watch.contains(sock)) {
+    // disable watch again
+    m_watch[sock]->setEnabled(false);
 
-		AnAgent *ag = m_socket_agent_map[sock];
-		TPCANRdMsg rmsg;
-		try {
-			ag->read(rmsg, -1);
-			received(AnRdMsg(ag->devid(), rmsg));
-		} catch (AnExCanError ex) {
-			log(QString("AnRoot::watcher[%1]: Communication Error Occurred: %2")
-			    .arg(sock).arg(ex.status()));
-		}
-		// enable watch again
-		m_watch[sock]->setEnabled(true);
-	}
+    AnAgent *ag = m_socket_agent_map[sock];
+    TPCANRdMsg rmsg;
+    try {
+      ag->read(rmsg, -1);
+      received(AnRdMsg(ag->devid(), rmsg));
+    } catch (AnExCanError ex) {
+      log(QString("AnRoot::watcher[%1]: CAN Communication Error Occurred: 0x%2")
+	  .arg(sock).arg(ex.status(),0,16));
+    }
+    // enable watch again
+    m_watch[sock]->setEnabled(true);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -711,10 +711,10 @@ void AnRoot::received(AnRdMsg rmsg)
 	  emit updated(brd);
 	}
       } else if (rmsg.data() == 0xff550000) { // recovery message
-	log("received: got recovery message");
+	log("received: got CAN recovery message");
 	doUserCmd(3);
       } else {
-	log( QString("received: error message from %1").arg(brd->name()) );
+	log( QString("received: CAN alert message from %1").arg(brd->name()) );
 	brd->sync(3);
       }
     } else if (rmsg.payload() == 0x4) {
@@ -733,57 +733,57 @@ void AnRoot::received(AnRdMsg rmsg)
 
 void AnRoot::readModeList()
 {
-	m_mode_list.clear();
+  m_mode_list.clear();
 
-	QSqlQuery qry;
-	qry.exec("SELECT id, name, description FROM config_sets");
-	while(qry.next()) {
-		mode md;
-		md.id          = qry.value(0).toInt();
-		md.name        = qry.value(1).toString();
-		md.description = qry.value(2).toString();
-		m_mode_list << md;
-	}
+  QSqlQuery qry;
+  qry.exec("SELECT id, name, description FROM config_sets");
+  while(qry.next()) {
+    mode md;
+    md.id          = qry.value(0).toInt();
+    md.name        = qry.value(1).toString();
+    md.description = qry.value(2).toString();
+    m_mode_list << md;
+  }
 }
 //-----------------------------------------------------------------------------
 void AnRoot::readTdcConfig()
 {
-	m_tcnfs.clear();
+  m_tcnfs.clear();
 
-	QSqlQuery qry;
-	qry.exec("SELECT id, name, length, checksum, bit_string FROM tdc_configs");
-	while(qry.next()) {
-		quint32 id       = qry.value(0).toUInt();
-		QString name     = qry.value(1).toString();
-		quint32 length   = qry.value(2).toUInt();
-		quint32 checksum = qry.value(3).toUInt();
-		QString bstr     = qry.value(4).toString();
-		AnTdcConfig *cnf = new AnTdcConfig(this);
-		cnf->setId(id);
-		cnf->loadFromString(bstr);
+  QSqlQuery qry;
+  qry.exec("SELECT id, name, length, checksum, bit_string FROM tdc_configs");
+  while(qry.next()) {
+    quint32 id       = qry.value(0).toUInt();
+    QString name     = qry.value(1).toString();
+    quint32 length   = qry.value(2).toUInt();
+    quint32 checksum = qry.value(3).toUInt();
+    QString bstr     = qry.value(4).toString();
+    AnTdcConfig *cnf = new AnTdcConfig(this);
+    cnf->setId(id);
+    cnf->loadFromString(bstr);
 
-		if (cnf->length() != length || cnf->checksum() != checksum) {
-			qWarning("failed to load tdc_config[%d]", id);
-		} else {
-			m_tcnfs[id] = cnf;
-		}
+    if (cnf->length() != length || cnf->checksum() != checksum) {
+      qWarning("failed to load tdc_config[%d]", id);
+    } else {
+      m_tcnfs[id] = cnf;
+    }
 
-	}
+  }
 
-	// copy to agents
-	foreach (AnAgent *ag, m_agents) ag->setTdcConfigs(m_tcnfs);
+  // copy to agents
+  foreach (AnAgent *ag, m_agents) ag->setTdcConfigs(m_tcnfs);
 }
 
 /**
  * Initialize AutoSync
  */
 void AnRoot::initAutoSync() {
-	m_timer = new QTimer(this);
-	m_autoSyncList = list();
-	m_autoSyncIter = m_autoSyncList.constBegin();
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
-	m_timer->setInterval(2000);
-//	m_timer->start();
+  m_timer = new QTimer(this);
+  m_autoSyncList = list();
+  m_autoSyncIter = m_autoSyncList.constBegin();
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
+  m_timer->setInterval(2000);
+  //	m_timer->start();
 }
 
 /**
@@ -791,21 +791,21 @@ void AnRoot::initAutoSync() {
  */
 void AnRoot::startAutoSync()
 {
-	if (!m_timer->isActive()) m_timer->start();
+  if (!m_timer->isActive()) m_timer->start();
 }
 
 void AnRoot::log(QString str)
 {
-	mtex_log.lock();
-	m_log->log(str);
-	mtex_log.unlock();
+  mtex_log.lock();
+  m_log->log(str);
+  mtex_log.unlock();
 }
 
 void AnRoot::tlog(QString str)
 {
-	mtex_tlog.lock();
-	m_tlog->log(str);
-	mtex_tlog.unlock();
+  mtex_tlog.lock();
+  m_tlog->log(str);
+  mtex_tlog.unlock();
 }
 
 void AnRoot::handler(int sigNum)
