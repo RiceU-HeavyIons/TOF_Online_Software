@@ -68,8 +68,13 @@ void AnSerdes::config(int level)
       AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
       agent()->write_read(msg, rmsg, 2);
     } catch (AnExCanError ex) {
-      qDebug() << "CAN error occurred: 0x" << hex << ex.status() << dec;
-      incCommError();
+      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	qDebug() << "CAN QRCVEMPTY error occurred: 0x" << hex << ex.status() << dec;
+      } 
+      else {
+	qDebug() << "CAN error occurred: 0x" << hex << ex.status() << dec;
+	incCommError();
+      }
     }
   }	
 }
@@ -198,7 +203,6 @@ QString AnSerdes::pld9xString(bool hilit) const
 //-----------------------------------------------------------------------------
 void AnSerdes::relink(int port)
 {
-	
   if (active() && port >= 1 && port <= 4 && commError() == 0) {
     try {
       TPCANMsg    msg;
@@ -211,11 +215,17 @@ void AnSerdes::relink(int port)
 		       0x90 + srdid, pld9xSet());
       agent()->write_read(msg, rmsg, 2);
     } catch (AnExCanError ex) {
-      log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
-      incCommError();
+      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	// probably harmless, just log
+	log(QString("relink: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
+      }
+      else {
+	log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
+	incCommError();
+      }
     }
   } else {
-    log(QString("relink: wasn't issued, active=%1, port=%2, commError=%3")
+    log(QString("relink problem: active=%1, port=%2, commError=%3")
 	.arg(active()).arg(port).arg(commError()));
   }
 }
