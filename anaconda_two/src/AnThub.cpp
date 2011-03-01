@@ -209,9 +209,18 @@ void AnThub::sync(int level)
       
       setSynced();
     } catch (AnExCanError ex) {
-      log(QString("sync: CAN error occcured: 0x%1").arg(ex.status(),0,16));
+      QStringList btrace;
+      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	// probably harmless, only print log message
+	log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
+	log(btrace.join("\n"));
+      } 
+      else {
+	log(QString("sync: CAN error occurred: 0x%1").arg(ex.status(),0,16));
+	log(btrace.join("\n"));
+	incCommError();
+      }
       log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
-      incCommError();
     }
   } else {
     log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
