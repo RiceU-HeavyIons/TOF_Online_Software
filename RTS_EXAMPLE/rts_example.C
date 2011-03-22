@@ -419,6 +419,7 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
   // right now only the "raw" pointer is available/known
   dd = rdr->det("mtd")->get("raw") ;
   if(dd) {
+    printf("MTD found\n");
     while(dd->iterate()) {
       found = 1 ;
 
