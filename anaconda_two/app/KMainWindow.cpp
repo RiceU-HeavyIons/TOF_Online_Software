@@ -319,6 +319,7 @@ QList<AnBoard*> KMainWindow::selectedBoards()
 //-----------------------------------------------------------------------------
 void KMainWindow::doRelink()
 {
+  m_root->log( QString("KMainWindow: Relink button pressed") );
   QList<AnBoard*> blist = selectedBoards();
   if (blist.count() > 0) {
     setBusy(true);
@@ -361,6 +362,7 @@ void KMainWindow::doConfig()
 void KMainWindow::doReset()
 {
   setBusy(true);
+  m_root->log( QString("KMainWindow: Reset button pressed") );
   
   QList<AnBoard*> blist = selectedBoards();
   if (blist.count() > 0) {
@@ -374,7 +376,8 @@ void KMainWindow::doReset()
 void KMainWindow::doSync()
 {
   setBusy(true);
-  
+  m_root->log( QString("KMainWindow: Sync button pressed") );
+
   QList<AnBoard*> blist = selectedBoards();
   if (blist.count() > 0) {
     m_root->sync(2, blist);
@@ -387,6 +390,7 @@ void KMainWindow::doSync()
 void KMainWindow::doUser1()
 {
   setBusy(true);
+  m_root->log( QString("KMainWindow: User1 button pressed") );
   m_root->doUserCmd(1);
 }
 
@@ -394,6 +398,7 @@ void KMainWindow::doUser1()
 void KMainWindow::doUser2()
 {
   setBusy(true);
+  m_root->log( QString("KMainWindow: User2 button pressed") );
   m_root->doUserCmd(2);
 }
 
@@ -401,6 +406,7 @@ void KMainWindow::doUser2()
 void KMainWindow::doUser3()
 {
   setBusy(true);
+  m_root->log( QString("KMainWindow: User3 button pressed") );
   m_root->doUserCmd(3);
 }
 
@@ -408,6 +414,7 @@ void KMainWindow::doUser3()
 void KMainWindow::doUser4()
 {
   setBusy(true);
+  m_root->log( QString("KMainWindow: User4 button pressed") );
   m_root->doUserCmd(4);
 }
 
