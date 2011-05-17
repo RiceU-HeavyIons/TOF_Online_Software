@@ -22,7 +22,9 @@ all:		pcanloop pc pcan_find showSerdes \
 		p_progPLD p_progMCU p_eeprom2 xp_config_pm \
 		p_eeprom2_l p_progPLD_l p_progMCU_l MCU2_l \
 		xMCU2 xp_eeprom2 xMCU2_withOffset xMCU2_noIVT \
-		xp_eeprom2_l xMCU2_l xp_config_pm_l
+		xp_eeprom2_l xMCU2_l xp_config_pm_l \
+		x_readHPTDCconfig_l
+
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
@@ -130,6 +132,9 @@ showSerdes:		showSerdes.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 getFWIDs:		getFWIDs.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
+x_readHPTDCconfig_l:	x_readHPTDCconfig_l.o can_utils.o
 	$(CXX)  $^ -o $@ -lpcan
 
 sendcmd:	sendcmd.cc
