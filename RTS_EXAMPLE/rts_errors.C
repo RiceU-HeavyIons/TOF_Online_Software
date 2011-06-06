@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
 	    if (dd->Int32[i] == prevWord) {
 	      if (prev_seq != evp->seq) {
 		printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-		       evp->file_name, evp->seq, evp->token, r+1, tray_str);
+		       evp->file_name, evp->seq, evp->token, r, tray_str);
 		prev_seq = evp->seq;
 		
 		printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
 	      if((dd->Int32[i] & 0xFFFFFF00) != 0xC0000000) {
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
 		if((dd->Int32[i] & 0x1) == parity) {
 		  if (prev_seq != evp->seq) {
 		    printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			   evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			   evp->file_name, evp->seq, evp->token, r, tray_str);
 		    prev_seq = evp->seq;
 		    
 		    printf("\t%4d: 0x%08X\n",i-3,dd->Int32[i-3]) ;
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
 		if (find0xe) {
 		  if (prev_seq != evp->seq) {
 		    printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			   evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			   evp->file_name, evp->seq, evp->token, r, tray_str);
 		    prev_seq = evp->seq;
 		    
 		    printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -290,7 +290,7 @@ int main(int argc, char *argv[])
 	      }
 	      else if (((dd->Int32[i]) & 0xFFF) != firstPhase)  {
 		printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-		       evp->file_name, evp->seq, evp->token, r+1, tray_str);
+		       evp->file_name, evp->seq, evp->token, r, tray_str);
 		prev_seq = evp->seq;
 		
 		printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 	      if (!find0x2 && (dd->Int32[i] & 0xFF000000) == 0x20000000) { // first header 
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
 	      if (find0x2) {
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -338,7 +338,7 @@ int main(int argc, char *argv[])
 		if ((reported_count == 1022) && (item_count == 1021)) {
 		  if (prev_seq != evp->seq) {
 		    printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			   evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			   evp->file_name, evp->seq, evp->token, r, tray_str);
 		    prev_seq = evp->seq;
 		    
 		    printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
 	      if(parity == 1) {
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
 	      if (find0xe) {
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -398,7 +398,7 @@ int main(int argc, char *argv[])
 	      else if (find0x2) {
 		if (prev_seq != evp->seq) {
 		  printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-			 evp->file_name, evp->seq, evp->token, r+1, tray_str);
+			 evp->file_name, evp->seq, evp->token, r, tray_str);
 		  prev_seq = evp->seq;
 		  
 		  printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
 	    else if((dd->Int32[i] & 0xF0000000) == 0x60000000) {
 	      if (prev_seq != evp->seq) {
 		printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-		       evp->file_name, evp->seq, evp->token, r+1, tray_str);
+		       evp->file_name, evp->seq, evp->token, r, tray_str);
 		prev_seq = evp->seq;
 		
 		printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
@@ -439,7 +439,7 @@ int main(int argc, char *argv[])
 	    else {
 	      if (prev_seq != evp->seq) {
 		printf("File name \"%s\": sequence %d: token %d - RDO %d: %s\n",
-		       evp->file_name, evp->seq, evp->token, r+1, tray_str);
+		       evp->file_name, evp->seq, evp->token, r, tray_str);
 		prev_seq = evp->seq;
 		
 		printf("\t%4d: 0x%08X\n",i-2,dd->Int32[i-2]) ;
