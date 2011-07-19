@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcan_find.cc,v 1.4 2009-08-31 20:45:47 jschamba Exp $";
+"$Id: pcan_find.cc,v 1.5 2011-07-19 22:09:23 jschamba Exp $";
 #endif /* lint */
 
 
@@ -25,6 +25,7 @@ static char  __attribute__ ((unused)) vcid[] =
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 
 //****************************************************************************
 // DEFINES
@@ -103,6 +104,8 @@ int main(int argc, char *argv[])
   char devName[255];
   TPDIAG my_PDiag;
   bool firsttime = true;
+  int nFileHandle;
+  TPEXTRAPARAMS params;
   
   errno = 0;
   
@@ -160,17 +163,29 @@ int main(int argc, char *argv[])
       }
     }
     
-    // get the hardware ID from the diag structure:
+    nFileHandle = LINUX_CAN_FileHandle(h);
+    params.nSubFunction = SF_GET_HCDEVICENO;
+
+    errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    if(errno != 0) {
+      printf("\tioctl returned %d\n", errno); 
+      perror("pcan_find: ioctl()");
+      my_private_exit(errno);
+    }
+
+     // get the hardware ID from the diag structure:
     LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x, wErrorFlag = 0x%x\n", 
+    printf("\tDevice at %s: IRQ Level = 0x%x, Hardware ID = 0x%x, wErrorFlag = 0x%x\n", 
 	   devName, 
 	   my_PDiag.wIrqLevel,
+	   params.func.ucHCDeviceNo,
 	   my_PDiag.wErrorFlag);
     if (my_PDiag.wErrorFlag != 0) {
 	  check_err(my_PDiag.wErrorFlag, txt);
 	  printf("\t--%s\n", txt);
     }      
     
+
     CAN_Close(h);
     
   }
