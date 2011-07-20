@@ -15,7 +15,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QDebug>
 
-#include "libpcan.h"
+#include "locallibpcan.h"
 
 #include "AnTdcConfig.h"
 #include "AnRdMsg.h"

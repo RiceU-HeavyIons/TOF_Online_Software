@@ -8,7 +8,7 @@
 #define AnRdMsg_H_ 1
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>
-#include "libpcan.h"
+#include "locallibpcan.h"
 #include "AnAddress.h"
 
 class AnRdMsg {

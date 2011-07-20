@@ -13,7 +13,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMap>
 
-#include "libpcan.h"
+#include "locallibpcan.h"
 #include "pcan.h"
 using namespace PCAN;
 

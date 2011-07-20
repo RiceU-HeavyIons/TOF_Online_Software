@@ -5,7 +5,7 @@
  *      Author: koheik
  */
 #include <cstdio>
-#include <libpcan.h>
+#include "locallibpcan.h"
 using namespace PCAN;
 #include "AnBoard.h"
 

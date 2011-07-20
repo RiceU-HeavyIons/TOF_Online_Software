@@ -16,7 +16,7 @@
 #include <QtCore/QStringList>
 
 #include <cstdio>
-#include "libpcan.h"
+#include "locallibpcan.h"
 using namespace PCAN;
 
 class AnTdcConfig;
