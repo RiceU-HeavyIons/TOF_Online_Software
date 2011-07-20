@@ -140,13 +140,17 @@ x_readHPTDCconfig_l:	x_readHPTDCconfig_l.o can_utils.o
 sendcmd:	sendcmd.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
 
+checkCan:	checkCan.o can_utils.o
+	$(CXX)  $^ -o $@ -lpcan
+
 clean:
 	rm -f *.o pcanloop pc p_config change_mcu_program pcan_find setThreshold \
 		p_config_run5 analyze_noise clientpc MCU2 xp_config_scripted \
 		p_progPLD p_progMCU can_utils.o getStatus p_eeprom2 enableChannel \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xMCU2 xp_eeprom2 xp_config_reset getChecksum x_getChecksum \
-		getFWIDs getTHUBFWIDs MCUchecksum THUBchecksum xp_config_pm *_l 
+		getFWIDs getTHUBFWIDs MCUchecksum THUBchecksum xp_config_pm *_l \
+		checkCan 
 
 backup:
 	rm -f pcan.tgz; \
