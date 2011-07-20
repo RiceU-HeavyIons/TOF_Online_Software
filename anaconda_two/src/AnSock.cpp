@@ -8,6 +8,9 @@
 #include <fcntl.h>
 #include <glob.h>
 #include <QtCore/QDebug>
+
+#include <sys/ioctl.h>
+
 #include "AnSock.h"
 
 int AnSock::TCAN_DEBUG = 1;
@@ -39,75 +42,80 @@ void AnSock::set_msg(TPCANMsg &msg, ...)
 
 QMap<int, AnSock*> AnSock::open(QList<int> &dev_id_list) {
 
-	QMap<int, AnSock*> sock_map;
-	foreach(int dev_id, dev_id_list) sock_map[dev_id] = NULL;
-
-	char *dev_path;
-
-	TPDIAG tpdiag;
-	char txt_buff[VERSIONSTRING_LEN];
-	unsigned int i;
-
-	//WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-	WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
-	int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
-
-	glob_t globb;
-
-	globb.gl_offs = 0;
-	glob(PCAN_DEVICE_PATTERN, GLOB_DOOFFS, NULL, &globb);
-
-	if (globb.gl_pathc == 0)
-	{
-		qDebug() << "device files were not found";
-	}
-
-	HANDLE h = NULL;
-	for(i = 0; i < globb.gl_pathc; i++) {
-		if (TCAN_DEBUG) {
-			printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
-		}
-		dev_path = globb.gl_pathv[i];
-		h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
-		if (h == NULL) {
-			if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
-			continue;
-		}
-		LINUX_CAN_Statistics(h, &tpdiag);
-		int dev_id = tpdiag.wIrqLevel;
-
-		if (sock_map.contains(dev_id)) {
-			CAN_Init(h, wBTR0BTR1, nExtended);
-			AnSock *sock = new AnSock();
-			sock->handle = h;
-			sock->addr = dev_id;
-			sock->dev_path = dev_path;
-			sock_map[dev_id] = sock;
-
-			if (TCAN_DEBUG) {
-				CAN_VersionInfo(h, txt_buff);
-				printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
-				printf("dev_id:   %x\n", dev_id);
-				printf("dev_name: %s\n", dev_path);
-				printf("version_info: %s\n", txt_buff);
-			}
-		} else { // this dev_id is not requested
-			CAN_Close(h);
-		}
-	}
-	globfree(&globb);
-
-	foreach(int dev_id, sock_map.keys()) {
-		if (sock_map[dev_id] == NULL)
-			qFatal("Device %d is not found.", dev_id);
-	}
-	return sock_map;
+  QMap<int, AnSock*> sock_map;
+  foreach(int dev_id, dev_id_list) sock_map[dev_id] = NULL;
+  
+  char *dev_path;
+  
+  int nFileHandle;
+  TPEXTRAPARAMS params;
+  char txt_buff[VERSIONSTRING_LEN];
+  unsigned int i;
+  
+  //WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
+  WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
+  int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
+  
+  glob_t globb;
+  
+  globb.gl_offs = 0;
+  glob(PCAN_DEVICE_PATTERN, GLOB_DOOFFS, NULL, &globb);
+  
+  if (globb.gl_pathc == 0)
+    {
+      qDebug() << "device files were not found";
+    }
+  
+  HANDLE h = NULL;
+  for(i = 0; i < globb.gl_pathc; i++) {
+    if (TCAN_DEBUG) {
+      printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
+    }
+    dev_path = globb.gl_pathv[i];
+    h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
+    if (h == NULL) {
+      if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
+      continue;
+    }
+    
+    nFileHandle = LINUX_CAN_FileHandle(h);
+    params.nSubFunction = SF_GET_HCDEVICENO;
+    ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    int dev_id = params.func.ucHCDeviceNo;
+    
+    if (sock_map.contains(dev_id)) {
+      CAN_Init(h, wBTR0BTR1, nExtended);
+      AnSock *sock = new AnSock();
+      sock->handle = h;
+      sock->addr = dev_id;
+      sock->dev_path = dev_path;
+      sock_map[dev_id] = sock;
+      
+      if (TCAN_DEBUG) {
+	CAN_VersionInfo(h, txt_buff);
+	printf("handle:   %llx\n", reinterpret_cast<unsigned long long>(h));
+	printf("dev_id:   %x\n", dev_id);
+	printf("dev_name: %s\n", dev_path);
+	printf("version_info: %s\n", txt_buff);
+      }
+    } else { // this dev_id is not requested
+      CAN_Close(h);
+    }
+  }
+  globfree(&globb);
+  
+  foreach(int dev_id, sock_map.keys()) {
+    if (sock_map[dev_id] == NULL)
+      qFatal("Device %d is not found.", dev_id);
+  }
+  return sock_map;
 }
 
 int AnSock::open(quint8 dev_id) {
   char *dev_path;
 
-  TPDIAG tpdiag;
+  int nFileHandle;
+  TPEXTRAPARAMS params;
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
 
@@ -140,9 +148,11 @@ int AnSock::open(quint8 dev_id) {
       if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
       continue;
     }
-    LINUX_CAN_Statistics(h, &tpdiag);
+    nFileHandle = LINUX_CAN_FileHandle(h);
+    params.nSubFunction = SF_GET_HCDEVICENO;
+    ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
 
-    if (dev_id != tpdiag.wIrqLevel) {
+    if (dev_id != params.func.ucHCDeviceNo) {
       CAN_Close(h);
       h = NULL;
       continue;
