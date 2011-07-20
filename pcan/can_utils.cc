@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.12 2009-10-23 18:43:14 jschamba Exp $";
+"$Id: can_utils.cc,v 1.13 2011-07-20 17:13:38 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -33,6 +33,7 @@ using namespace std;
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <sys/ioctl.h>
 
 // pcan include file
 #include <libpcan.h>
@@ -102,8 +103,10 @@ void check_err(__u32  err,  char *txtbuff)
 int openCAN(WORD devID)
 {
   char devName[255];
-  TPDIAG my_PDiag;
+//   TPDIAG my_PDiag;
   char txt[255]; // temporary string storage
+  int nFileHandle;
+  TPEXTRAPARAMS params;
 
   // search for correct device ID:
   for (int i=0; i<8; i++) {
@@ -115,11 +118,20 @@ int openCAN(WORD devID)
       //my_private_exit(errno);
       continue;
     }
-    // get the hardware ID from the diag structure:
-    LINUX_CAN_Statistics(h,&my_PDiag);
+//     // get the hardware ID from the diag structure:
+//     LINUX_CAN_Statistics(h,&my_PDiag);
+//     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+// 	   my_PDiag.wIrqLevel);
+//     if (my_PDiag.wIrqLevel == devID) break;
+
+    // get the hardware ID from the special ioctl call
+    nFileHandle = LINUX_CAN_FileHandle(h);
+    params.nSubFunction = SF_GET_HCDEVICENO;
+    errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel);
-    if (my_PDiag.wIrqLevel == devID) break;
+	   params.func.ucHCDeviceNo);
+    if (params.func.ucHCDeviceNo == devID) break;
+
     CAN_Close(h);
   }
 

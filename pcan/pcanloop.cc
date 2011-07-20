@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcanloop.cc,v 1.26 2011-02-21 22:56:37 jschamba Exp $";
+"$Id: pcanloop.cc,v 1.27 2011-07-20 17:13:38 jschamba Exp $";
 #endif /* lint */
 
 
@@ -29,6 +29,7 @@ using namespace std;
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 
 //****************************************************************************
 // DEFINES
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
   unsigned int buffer[2];
   unsigned char *uc_ptr =  (unsigned char *)buffer;
   int fifofd;
-  TPDIAG my_PDiag;
+//   TPDIAG my_PDiag;
   WORD devID;
   char devName[255];
   // timing variables
@@ -169,6 +170,9 @@ int main(int argc, char *argv[])
 
   int openHandles[256] = {0};
   int currentIndex = 0;
+
+  int nFileHandle;
+  TPEXTRAPARAMS params;
 
   errno = 0;
   devID = 255;
@@ -213,13 +217,25 @@ int main(int argc, char *argv[])
     if (h == NULL) {
       continue;
     }
-    // get the hardware ID from the diag structure:
-    LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   my_PDiag.wIrqLevel); fflush(stdout);
 
-    hI[my_PDiag.wIrqLevel] = h;
-    openHandles[currentIndex++] = my_PDiag.wIrqLevel;
+//    // get the hardware ID from the diag structure:
+//     LINUX_CAN_Statistics(h,&my_PDiag);
+//     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+// 	   my_PDiag.wIrqLevel); fflush(stdout);
+//
+//     hI[my_PDiag.wIrqLevel] = h;
+//     openHandles[currentIndex++] = my_PDiag.wIrqLevel;
+
+
+    // get the hardware ID from the special ioctl call
+    nFileHandle = LINUX_CAN_FileHandle(h);
+    params.nSubFunction = SF_GET_HCDEVICENO;
+    errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+	   params.func.ucHCDeviceNo); fflush(stdout);
+
+    hI[params.func.ucHCDeviceNo] = h;
+    openHandles[currentIndex++] = params.func.ucHCDeviceNo;
 
     // init to a user defined bit rate
     if (wBTR0BTR1) {
