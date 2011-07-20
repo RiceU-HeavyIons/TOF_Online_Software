@@ -202,8 +202,12 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
   
   char *dev_path;
   
+#ifndef FAKEPCAN
   int nFileHandle;
   TPEXTRAPARAMS params;
+#else
+  TPDIAG tpdiag;
+#endif
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
   
@@ -231,11 +235,15 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
       }
       continue;
     }
+#ifndef FAKEPCAN
     nFileHandle = LINUX_CAN_FileHandle(h);
     params.nSubFunction = SF_GET_HCDEVICENO;
     ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
     int dev_id = params.func.ucHCDeviceNo;
-    
+#else
+    LINUX_CAN_Statistics(h, &tpdiag);
+    int dev_id = tpdiag.wIrqLevel;
+#endif
     if (devid_map.contains(dev_id)) {
       CAN_Init(h, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
       AnAgent *sock = new AnAgent();
@@ -269,8 +277,12 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
 int AnAgent::open(quint8 dev_id) {
   char *dev_path;
 
+#ifndef FAKEPCAN
   int nFileHandle;
   TPEXTRAPARAMS params;
+#else
+  TPDIAG tpdiag;
+#endif
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
 
@@ -303,11 +315,19 @@ int AnAgent::open(quint8 dev_id) {
       if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
       continue;
     }
+#ifndef FAKEPCAN
     nFileHandle = LINUX_CAN_FileHandle(h);
     params.nSubFunction = SF_GET_HCDEVICENO;
     ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+#else
+    LINUX_CAN_Statistics(h, &tpdiag);
+#endif
 
+#ifndef FAKEPCAN
     if (dev_id != params.func.ucHCDeviceNo) {
+#else
+    if (dev_id != tpdiag.wIrqLevel) {
+#endif
       CAN_Close(h);
       h = NULL;
       continue;
