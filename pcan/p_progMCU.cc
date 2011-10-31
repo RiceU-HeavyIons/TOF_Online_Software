@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU.cc,v 1.10 2009-03-10 14:21:59 jschamba Exp $";
+"$Id: p_progMCU.cc,v 1.11 2011-10-31 14:48:45 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -21,6 +21,8 @@ static char  __attribute__ ((unused)) vcid[] =
 using namespace std;
 
 // other headers
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>

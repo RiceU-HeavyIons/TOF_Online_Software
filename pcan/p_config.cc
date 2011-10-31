@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_config.cc,v 1.14 2007-10-12 22:38:04 jschamba Exp $";
+"$Id: p_config.cc,v 1.15 2011-10-31 14:35:06 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -18,6 +18,8 @@ static char  __attribute__ ((unused)) vcid[] =
 using namespace std;
 
 // other headers
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>

@@ -5,7 +5,7 @@
  *               : 
  */
 
-static char vcid[] = "$Id: x_readHPTDCconfig_l.cc,v 1.1 2011-05-17 18:39:24 jschamba Exp $";
+static char vcid[] = "$Id: x_readHPTDCconfig_l.cc,v 1.2 2011-10-31 15:03:45 jschamba Exp $";
 static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 
 //****************************************************************************
@@ -16,6 +16,8 @@ static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 using namespace std;
 
 // other headers
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>

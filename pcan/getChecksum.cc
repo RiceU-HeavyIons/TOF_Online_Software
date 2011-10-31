@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: getChecksum.cc,v 1.1 2008-07-02 15:12:30 jschamba Exp $";
+"$Id: getChecksum.cc,v 1.2 2011-10-31 14:40:59 jschamba Exp $";
 #endif /* lint */
 
 /* 
@@ -26,6 +26,8 @@ static char  __attribute__ ((unused)) vcid[] =
 using namespace std;
 
 // other headers
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
@@ -254,7 +256,7 @@ int getChecksum(unsigned int tcpuNodeID,
 //****************************************************************************
 int main(int argc, char *argv[])
 {
-  unsigned int tdigNodeID, tcpuNodeID;
+  unsigned int tcpuNodeID;
   WORD devID = 255;
   unsigned short startAddr, endAddr;
 
