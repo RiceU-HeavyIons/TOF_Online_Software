@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: pcan_find.cc,v 1.5 2011-07-19 22:09:23 jschamba Exp $";
+"$Id: pcan_find.cc,v 1.6 2011-10-31 15:06:04 jschamba Exp $";
 #endif /* lint */
 
 
@@ -175,10 +175,11 @@ int main(int argc, char *argv[])
 
      // get the hardware ID from the diag structure:
     LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: IRQ Level = 0x%x, Hardware ID = 0x%x, wErrorFlag = 0x%x\n", 
+    printf("\tDevice at %s: IRQ Level = 0x%x, Hardware ID = 0x%x, dwBase = 0x%x, wErrorFlag = 0x%x\n", 
 	   devName, 
 	   my_PDiag.wIrqLevel,
 	   params.func.ucHCDeviceNo,
+	   my_PDiag.dwBase,
 	   my_PDiag.wErrorFlag);
     if (my_PDiag.wErrorFlag != 0) {
 	  check_err(my_PDiag.wErrorFlag, txt);
