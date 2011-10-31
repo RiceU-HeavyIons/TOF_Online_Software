@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: showSerdes.cc,v 1.1 2009-11-04 20:06:30 jschamba Exp $";
+"$Id: showSerdes.cc,v 1.2 2011-10-31 14:21:33 jschamba Exp $";
 #endif /* lint */
 
 //****************************************************************************
@@ -17,6 +17,7 @@ static char  __attribute__ ((unused)) vcid[] =
 using namespace std;
 
 // other headers
+#include <stdlib.h>
 #include <libpcan.h>
 #include "can_utils.h"
 
