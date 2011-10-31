@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: can_utils.cc,v 1.13 2011-07-20 17:13:38 jschamba Exp $";
+"$Id: can_utils.cc,v 1.14 2011-10-31 14:23:03 jschamba Exp $";
 #endif /* lint */
 
 // #define LOCAL_DEBUG
@@ -30,6 +30,7 @@ const char *NORMAL_COLORS = "\033[0m";
 using namespace std;
 
 // other headers
+#include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
