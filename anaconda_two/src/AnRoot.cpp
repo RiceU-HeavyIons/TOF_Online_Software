@@ -16,6 +16,8 @@
 
 #include <signal.h>
 #include <sys/file.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "AnMaster.h"
 #include "AnExceptions.h"
