@@ -28,3 +28,8 @@ if [ `hostname` = 'tofcontrol.starp.bnl.gov' ]; then
   export PATH=/usr/local/Trolltech/Qt-4.7.1/bin:$PATH
   export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.7.1/lib:$LD_LIBRARY_PATH
 fi
+
+if [ `hostname` = 'reserve1.starp.bnl.gov' ]; then
+  export PATH=/usr/local/Trolltech/Qt-4.7.1/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/Trolltech/Qt-4.7.1/lib:$LD_LIBRARY_PATH
+fi
