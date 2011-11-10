@@ -25,7 +25,7 @@ insert into tcpus values (  4, 3, 46,   9,   6,  3, 'D1',  3,  3,  1,  4,  1);
 insert into tcpus values (  5, 3, 47, 110, 106,  3, 'D2',  3,  4,  1,  5,  1);
 insert into tcpus values (  6, 3, 48,  71,  67,  3, 'D3',  3,  5,  1,  6,  1);
 insert into tcpus values (  7, 3, 49,  65,  61,  3, 'E0',  3,  6,  1,  7,  1);
-insert into tcpus values (  8, 3, 50,  54,  50,  3, 'E1',  3,  7,  1,  8,  1);
+insert into tcpus values (  8, 3, 50,  85,  81,  3, 'E1',  3,  7,  1,  8,  1);
 insert into tcpus values (  9, 3, 51,  61,  57,  3, 'E2',  3,  8,  1,  9,  1);
 insert into tcpus values ( 10, 3, 52,  75,  71,  3, 'E3',  3,  9,  1, 10,  1);
 insert into tcpus values ( 11, 3, 53,  51,  47,  3, 'F0',  3, 10,  1, 11,  1);
@@ -41,7 +41,7 @@ insert into tcpus values ( 20, 3, 62,  14,  11,  3, 'H1',  8,  7,  2,  8,  1);
 
 insert into tcpus values ( 21, 1, 33,  32,  28,  1, 'A0',  8,  8,  2,  9,  1);
 insert into tcpus values ( 22, 1, 34,  10,   7,  1, 'A1',  8,  9,  2, 10,  1);
-insert into tcpus values ( 23, 1, 35,  29,  25,  1, 'A2',  8, 10,  2, 11,  1);
+insert into tcpus values ( 23, 1, 35,   6,   3,  1, 'A2',  8, 10,  2, 11,  1);
 insert into tcpus values ( 24, 1, 36,  37,  33,  1, 'A3',  8, 11,  2, 12,  1);
 insert into tcpus values ( 25, 1, 37,  23,  19,  1, 'B0',  9,  0,  3,  1,  1);
 insert into tcpus values ( 26, 1, 38,  21,  17,  1, 'B1',  9,  1,  3,  2,  1);
@@ -116,7 +116,7 @@ insert into tcpus values ( 89, 2, 56, 102,  98,  2, 'F3',  6,  4,  8,  5,  1);
 insert into tcpus values ( 90, 2, 57,  60,  56,  2, 'G0',  6,  5,  8,  6,  1);
 insert into tcpus values ( 91, 2, 58,  92,  88,  2, 'G1',  6,  6,  8,  7,  1);
 insert into tcpus values ( 92, 2, 59, 119, 115,  2, 'G2',  6,  7,  8,  8,  1);
-insert into tcpus values ( 93, 2, 60, 106, 102,  2, 'G3',  6,  8,  8,  9,  1);
+insert into tcpus values ( 93, 2, 60,  82,  78,  2, 'G3',  6,  8,  8,  9,  1);
 insert into tcpus values ( 94, 2, 61, 112, 108,  2, 'H0',  6,  9,  8, 10,  1);
 insert into tcpus values ( 95, 2, 62, 116, 112,  2, 'H1',  6, 10,  8, 11,  1);
 
