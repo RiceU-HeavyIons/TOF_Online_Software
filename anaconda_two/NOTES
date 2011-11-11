@@ -1,0 +1,64 @@
+With default non-expert mode, you only can refresh and issue user command 3. 
+If you want to use expert mode again, you just need to open console from view menu 
+and type 'expert 1'. 
+Typing 'expert 0' brings it back to non-expert mode.
+
+Here is a list of current commands:
+
+1. resync (selectable)
+    THUB    do nothing
+    TCPU    3 0xe 0x2 0x0
+            3 0xe 0x2 set-value
+2. reset (selectable)
+    THUB    4 0x81 0x3 0x81 0x0
+    TCPU    child TDIG reset (5 0xe 0x2 0x1 0x2 0x0)
+
+3. refresh (selectable)
+
+4. user command 1: issue bunch reset to THUB NW
+
+5. user command 2: reset all TDIGs (5 0xe 0x2 0x1 0x2 0x0)
+
+You can clear crc errors by "user command 3" and bunch reset is issued at the end of commands sequence.
+
+A2: You need to refresh; gathering CRC information from boards and updating display. 
+I think the easiest and fastest way to do this is...
+ 1) Select "Error" in the left selector panel.
+ 2) Click "user command 3" to recover all error trays.
+ 3) Click top-left header button of the main panel to select all trays used to report errors
+ 4) Click "Refresh" button
+
+Please note...
+  1) you can unselect by clicking some part of gui like empty part under the left selector panel.
+  2) User commands are not aware of the selection state of the main panel and do whatever defined in the database.
+
+3) Refresh follows with recovery process 
+
+
+Console commands:
+
+"HELP                               show this help message\n";
+"CLEAR                              clear console\n";
+    
+"EXPAND  <addr>                     expand wild card address\n";
+"SHOW    <addr>                     show device information\n";
+"SYNC    <addr> <level=3>           synchronize devices at address\n";
+"RESET   <addr>                     reset device at address\n";
+"CONFIG  <addr>                     configure device at address\n";
+    
+"READ    <addr> <par1> <par2> ...   read from hardware address\n";
+"WRITE   <addr> <par1> <par2> ...   write to hardware address \n";
+    
+"MSG     <arg1> <arg2> ...          lazy replacement of pc's command\n";
+"DEBUG"               { cmd_debug (cmdl); }
+"SELECT" || "INSERT" || "UPDATE" {cmd_sql(cmdl);
+
+"ABOUT"
+
+/**
+ * Read command
+ *
+ * Examples:  read 2.1 0xe 0x2       read pld register 02 from Tcpu 1
+ *            read 2.10.* 0xb1       read TDIG status from all TDIGs via Tcpu 10
+ */
+
