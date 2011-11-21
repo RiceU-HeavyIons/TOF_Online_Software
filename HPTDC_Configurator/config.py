@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-cvsString = '$Id: config.py,v 1.14 2010-11-19 23:44:26 jschamba Exp $'
+cvsString = '$Id$'
 
 
 rtitle = 'HPTDC Configurator'

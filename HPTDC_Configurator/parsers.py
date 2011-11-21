@@ -1,6 +1,6 @@
 #Utility functions
 #
-# $Id: parsers.py,v 1.1 2005-11-04 15:43:34 jschamba Exp $
+# $Id$
 
 import string
 
