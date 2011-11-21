@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: p_progMCU_l.cc,v 1.2 2011-10-31 14:53:57 jschamba Exp $";
+"$Id$";
 #endif /* lint */
 
 // #define LOCAL_DEBUG

@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xsetThreshold.cc,v 1.5 2008-01-24 22:30:33 jschamba Exp $";
+"$Id$";
 #endif /* lint */
 
 // #define LOCAL_DEBUG

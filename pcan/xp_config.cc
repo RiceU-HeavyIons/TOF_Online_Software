@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id: xp_config.cc,v 1.6 2011-10-31 14:31:32 jschamba Exp $";
+"$Id$";
 #endif /* lint */
 
 //****************************************************************************
