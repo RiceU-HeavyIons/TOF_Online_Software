@@ -262,7 +262,7 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
   unsigned int startAddr, endAddr;
   unsigned  char pgmByte[64];
 
-//   TPDIAG my_PDiag;
+  TPDIAG my_PDiag;
   int nFileHandle;
   TPEXTRAPARAMS params;
   char devName[255];
@@ -307,18 +307,18 @@ int change_mcu_program(const char *filename, unsigned int nodeID, WORD devID)
       //my_private_exit(errno);
       continue;
     }
-//     // get the hardware ID from the diag structure:
-//     LINUX_CAN_Statistics(h,&my_PDiag);
-//     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-// 	   my_PDiag.wIrqLevel);
-//     if (my_PDiag.wIrqLevel == devID) break;
-    // get the hardware ID from the special ioctl call
-    nFileHandle = LINUX_CAN_FileHandle(h);
-    params.nSubFunction = SF_GET_HCDEVICENO;
-    errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    // get the hardware ID from the diag structure:
+    LINUX_CAN_Statistics(h,&my_PDiag);
     printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
-	   params.func.ucHCDeviceNo);
-    if (params.func.ucHCDeviceNo == devID) break;
+	   my_PDiag.wIrqLevel);
+    if (my_PDiag.wIrqLevel == devID) break;
+    // // get the hardware ID from the special ioctl call
+    // nFileHandle = LINUX_CAN_FileHandle(h);
+    // params.nSubFunction = SF_GET_HCDEVICENO;
+    // errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    // printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+    // 	   params.func.ucHCDeviceNo);
+    // if (params.func.ucHCDeviceNo == devID) break;
     CAN_Close(h);
   }
 

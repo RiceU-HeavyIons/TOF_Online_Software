@@ -93,11 +93,6 @@ static void signal_handler(int signal)
 // here all is done
 int main(int argc, char *argv[])
 {
-  //int nType = HW_USB;
-  //__u32 dwPort = 0;
-  //__u16 wIrq = 0;
-  //__u16 wBTR0BTR1 = CAN_BAUD_250K;
-  //__u16 wBTR0BTR1 = CAN_BAUD_1M;
   __u16 wBTR0BTR1 = CAN_BAUD_500K;
   int   nExtended = CAN_INIT_TYPE_ST;
   char txt[255]; // temporary string storage
@@ -130,16 +125,11 @@ int main(int argc, char *argv[])
 
 
   for (int i=0; i<8; i++) {
-    //sprintf(devName, "/dev/pcan%d", 32+i);
     sprintf(devName, "/dev/pcanusb%d", i);
-    //h = CAN_Open(HW_USB, dwPort, wIrq);
     h = LINUX_CAN_Open(devName, O_RDWR);
     if (h == NULL) {
-      //printf("Failed to open device %s\n", devName);
-      //my_private_exit(errno);
       continue;
     }
-    //printf("Opened pcan device at %s\n", devName);
 
     if (firsttime) {
       // get version info
@@ -163,22 +153,23 @@ int main(int argc, char *argv[])
       }
     }
     
-    nFileHandle = LINUX_CAN_FileHandle(h);
-    params.nSubFunction = SF_GET_HCDEVICENO;
+    //    nFileHandle = LINUX_CAN_FileHandle(h);
+    //params.nSubFunction = SF_GET_HCDEVICENO;
 
-    errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
-    if(errno != 0) {
-      printf("\tioctl returned %d\n", errno); 
-      perror("pcan_find: ioctl()");
-      my_private_exit(errno);
-    }
+    // errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    // if(errno != 0) {
+    //   printf("\tioctl returned %d\n", errno); 
+    //   perror("pcan_find: ioctl()");
+    //   my_private_exit(errno);
+    // }
 
      // get the hardware ID from the diag structure:
     LINUX_CAN_Statistics(h,&my_PDiag);
-    printf("\tDevice at %s: IRQ Level = 0x%x, Hardware ID = 0x%x, dwBase = 0x%x, wErrorFlag = 0x%x\n", 
+    //printf("\tDevice at %s: IRQ Level = 0x%x, Hardware ID = 0x%x, dwBase = 0x%x, wErrorFlag = 0x%x\n", 
+    printf("\tDevice at %s: IRQ Level = 0x%x, dwBase = 0x%x, wErrorFlag = 0x%x\n", 
 	   devName, 
 	   my_PDiag.wIrqLevel,
-	   params.func.ucHCDeviceNo,
+	   //params.func.ucHCDeviceNo,
 	   my_PDiag.dwBase,
 	   my_PDiag.wErrorFlag);
     if (my_PDiag.wErrorFlag != 0) {
