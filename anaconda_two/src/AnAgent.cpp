@@ -202,12 +202,12 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
   
   char *dev_path;
   
-#ifndef FAKEPCAN
-  int nFileHandle;
-  TPEXTRAPARAMS params;
-#else
+// #ifndef FAKEPCAN
+//   int nFileHandle;
+//   TPEXTRAPARAMS params;
+// #else
   TPDIAG tpdiag;
-#endif
+// #endif
   char txt_buff[VERSIONSTRING_LEN];
   unsigned int i;
   
@@ -235,15 +235,15 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
       }
       continue;
     }
-#ifndef FAKEPCAN
-    nFileHandle = LINUX_CAN_FileHandle(h);
-    params.nSubFunction = SF_GET_HCDEVICENO;
-    ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
-    int dev_id = params.func.ucHCDeviceNo;
-#else
+// #ifndef FAKEPCAN
+//     nFileHandle = LINUX_CAN_FileHandle(h);
+//     params.nSubFunction = SF_GET_HCDEVICENO;
+//     ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+//     int dev_id = params.func.ucHCDeviceNo;
+// #else
     LINUX_CAN_Statistics(h, &tpdiag);
     int dev_id = tpdiag.wIrqLevel;
-#endif
+// #endif
     if (devid_map.contains(dev_id)) {
       CAN_Init(h, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
       AnAgent *sock = new AnAgent();
