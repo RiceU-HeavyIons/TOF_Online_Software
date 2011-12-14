@@ -1,6 +1,6 @@
 cmd = touch
 
-all: pcan32 pcan31 pcan30 pcan29 pcan28 pcan27
+all: pcan32 pcan31 pcan30 pcan29 pcan28 pcan27 pcan26
 pcan32:
 	@${cmd} $@
 
@@ -17,6 +17,9 @@ pcan28:
 	@${cmd} $@
 
 pcan27:
+	@${cmd} $@
+
+pcan26:
 	@${cmd} $@
 
 distclean:
