@@ -38,6 +38,7 @@ static dinfo dlist[] = {
  {252, (HANDLE)0xcc04, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan29", -1},
  {251, (HANDLE)0xcc05, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan28", -1},
  {250, (HANDLE)0xcc06, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan27", -1},
+ {249, (HANDLE)0xcc07, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan26", -1},
  {0,             NULL,             0,                0, {0, 0, 0, {0}}, 0, 0,       "", -1}
 };
 
