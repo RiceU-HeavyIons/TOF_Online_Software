@@ -141,6 +141,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
     //		if(!active) continue;
     AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 			    AnAddress(devid, canbus_id, 0, 0), this);
+    // for MTD:
+    if (id > 122) tc->setName(QString("MTD  %1").arg(tray_sn));
     tc->setInstalled(installed);
     tc->setActive(installed);
     //		tc->setTrayId(tray_id);
@@ -525,9 +527,9 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
   foreach(AnAddress ad, lst1) {
     a1 = ad.at(0);
     if (a1 == 1 && a2 == 255)
-      for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      for(int i = 1; i <= 5; ++i) lst2 << AnAddress(a1, i, a3, a4);
     else if (a1 == 2 && a2 == 255)
-      for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      for(int i = 1; i <= 125; ++i) lst2 << AnAddress(a1, i, a3, a4);
     else
       lst2 << AnAddress(a1, a2, a3, a4);
   }
