@@ -123,6 +123,10 @@ insert into configs values (null,   1, 93,  31,   2, 121,   8,   0,      0);
 insert into configs values (null,   1, 94,  31,   2, 122,   4,   0,      0);
 insert into configs values (null,   1, 95,  31,   2, 122,   7,   0,      0);
 insert into configs values (null,   1, 96,  31,   2, 122,   8,   0,      0);
+-- Disable TDIG 3 and 6 for MTD 226 (id 123)
+insert into configs values (null,   1, 97,  31,   2, 123,   3,   0,      0);
+insert into configs values (null,   1, 98,  31,   2, 123,   6,   0,      0);
+
 
 
 -- Set 2
