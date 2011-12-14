@@ -314,8 +314,20 @@ AnAgent *AnTcpu::agent() const
 bool AnTcpu::setInstalled(bool b) {
 
   AnCanObject::setInstalled(b);
-  for (int i = 0; i < 8; ++i)
-    m_tdig[i]->setInstalled(installed());
+  if (lAddress().at(1) > 122) { 
+    // MTD: by default disable TDIG 4, 6, and 7
+    for (int i = 0; i<3; i++)
+      m_tdig[i]->setInstalled(installed());
+    for (int i = 4; i<6; i++)
+      m_tdig[i]->setInstalled(installed());
+    m_tdig[3]->setInstalled(false);
+    m_tdig[6]->setInstalled(false);
+    m_tdig[7]->setInstalled(false);
+  }
+  else 
+    // TOF Tray: by default all TDIGs enabled
+    for (int i = 0; i < 8; ++i)
+      m_tdig[i]->setInstalled(installed());
 		
   return installed();
 }
