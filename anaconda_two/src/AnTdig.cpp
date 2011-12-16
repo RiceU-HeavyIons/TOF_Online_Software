@@ -421,3 +421,13 @@ void AnTdig::log(QString str) const
     agent()->root()->log(QString("AnTdig[%1.%2]: " + s).arg(laddr().at(1)).arg(laddr().at(2)));
   }
 }
+
+QString AnTdig::tempString(bool hilit) const
+{
+  QString ret = QString::number(temp(), 'f', 2) + QString(" C");
+  
+  if (hilit && (temp() > tempAlarm()))
+    ret = QString("<font color='red'>%1</font>").arg(ret);
+  
+  return ret;
+}

@@ -42,26 +42,26 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
   grid->addWidget(l_eeprom = new QLabel("EEPROM:"), ++row, 0);
   grid->addWidget(m_eeprom = new QLabel("----"),  row, 1);
 
-	for (int i = 0; i < 3; ++i) {
-		grid->addWidget(l_status[i] = new QLabel(QString("TDC %1 Status:").arg(i+1)), ++row, 0);
-		grid->addWidget(m_status[i] = new QLabel("--"),                                 row, 1);
-	}
+  for (int i = 0; i < 3; ++i) {
+    grid->addWidget(l_status[i] = new QLabel(QString("TDC %1 Status:").arg(i+1)), ++row, 0);
+    grid->addWidget(m_status[i] = new QLabel("--"),                                 row, 1);
+  }
 
-	QFont ft(QApplication::font());
-//	l_laddr->setFont(ft); m_laddr->setFont(ft);
-	l_haddr->setFont(ft); m_haddr->setFont(ft);
-	l_firm->setFont(ft);  m_firm->setFont(ft);
-	l_chip->setFont(ft);  m_chip->setFont(ft);
-	l_temp->setFont(ft);  m_temp->setFont(ft);
-	l_ecsr->setFont(ft);  m_ecsr->setFont(ft);
-	l_pld03->setFont(ft); m_pld03->setFont(ft);	
-	l_thrs->setFont(ft);  m_thrs->setFont(ft);
-	l_eeprom->setFont(ft); m_eeprom->setFont(ft);
-	for (int i = 0; i < 3; ++i) {
-		l_status[i]->setFont(ft);
-		m_status[i]->setFont(ft);
-	}
-	setVisible(false);
+  QFont ft(QApplication::font());
+  //	l_laddr->setFont(ft); m_laddr->setFont(ft);
+  l_haddr->setFont(ft); m_haddr->setFont(ft);
+  l_firm->setFont(ft);  m_firm->setFont(ft);
+  l_chip->setFont(ft);  m_chip->setFont(ft);
+  l_temp->setFont(ft);  m_temp->setFont(ft);
+  l_ecsr->setFont(ft);  m_ecsr->setFont(ft);
+  l_pld03->setFont(ft); m_pld03->setFont(ft);	
+  l_thrs->setFont(ft);  m_thrs->setFont(ft);
+  l_eeprom->setFont(ft); m_eeprom->setFont(ft);
+  for (int i = 0; i < 3; ++i) {
+    l_status[i]->setFont(ft);
+    m_status[i]->setFont(ft);
+  }
+  setVisible(false);
 }
 
 KTdigView::~KTdigView() {
@@ -70,19 +70,19 @@ KTdigView::~KTdigView() {
 
 void KTdigView::setSelectionModel(QItemSelectionModel *md)
 {
-	m_selectionModel = md;
+  m_selectionModel = md;
 
-	QObject::connect(
-		m_selectionModel,
-		SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
-		this,
-		SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
+  QObject::connect(
+		   m_selectionModel,
+		   SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)),
+		   this,
+		   SLOT(currentRowChanged(const QModelIndex &, const QModelIndex &)));
 
-	QObject::connect(
-		m_selectionModel,
-		SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-		this,
-		SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+  QObject::connect(
+		   m_selectionModel,
+		   SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+		   this,
+		   SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
 void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex &parent)
@@ -96,7 +96,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_haddr->setText(tdig->hAddress().toString());
     m_firm->setText(tdig->firmwareString());
     m_chip->setText(tdig->chipIdString());
-    m_temp->setText(tdig->tempString());
+    m_temp->setText(tdig->tempString(true));
     m_thrs->setText(tdig->thresholdString());
     m_ecsr->setText(tdig->ecsrString(true));
     m_ecsr->setToolTip(tdig->ecsrToolTipString());
