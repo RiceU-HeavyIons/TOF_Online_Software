@@ -52,9 +52,9 @@ private:
 	quint64 m_status;
 
 	typedef struct {
-		char    *name;
-		int     start;
-		int     length;
+		const char    *name;
+		int           start;
+		int           length;
 	} field_t;
 
 	static field_t field[26];
