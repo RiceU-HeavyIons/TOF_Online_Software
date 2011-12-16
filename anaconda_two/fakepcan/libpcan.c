@@ -17,29 +17,31 @@
 #include <libpcan.h>
 #define VERSION_STRING "Fake_PCAN_Driver_20081119"
 
+#define UNUSED_ARGUMENT(x) (void)x
+
 // device information
 typedef struct {
-	int           irq;
-	HANDLE        handle;
-	DWORD         bitrate;
-	int           msgtype;
-	TPCANMsg      msg;
-	unsigned int  csum;
-	unsigned int  cunt;
-	char          dname[64];
-	int           sock;
+  int           irq;
+  HANDLE        handle;
+  DWORD         bitrate;
+  int           msgtype;
+  TPCANMsg      msg;
+  unsigned int  csum;
+  unsigned int  cunt;
+  char          dname[64];
+  int           sock;
 } dinfo;
 
 // initialized device information
 static dinfo dlist[] = {
- {255, (HANDLE)0xcc01, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan32", -1},
- {254, (HANDLE)0xcc02, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan31", -1},
- {253, (HANDLE)0xcc03, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan30", -1},
- {252, (HANDLE)0xcc04, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan29", -1},
- {251, (HANDLE)0xcc05, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan28", -1},
- {250, (HANDLE)0xcc06, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan27", -1},
- {249, (HANDLE)0xcc07, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan26", -1},
- {0,             NULL,             0,                0, {0, 0, 0, {0}}, 0, 0,       "", -1}
+  {255, (HANDLE)0xcc01, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan32", -1},
+  {254, (HANDLE)0xcc02, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan31", -1},
+  {253, (HANDLE)0xcc03, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan30", -1},
+  {252, (HANDLE)0xcc04, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan29", -1},
+  {251, (HANDLE)0xcc05, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan28", -1},
+  {250, (HANDLE)0xcc06, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan27", -1},
+  {249, (HANDLE)0xcc07, CAN_BAUD_500K, CAN_INIT_TYPE_ST, {0, 0, 0, {0}}, 0, 0, "pcan26", -1},
+  {0,             NULL,             0,                0, {0, 0, 0, {0}}, 0, 0,       "", -1}
 };
 
 static pthread_t *thrd = NULL;
@@ -61,19 +63,19 @@ static pthread_t *thrd = NULL;
 //
 HANDLE CAN_Open(WORD wHardwareType, ...)
 {
-	int nPort;
+  int nPort;
 
-	va_list vlist;
-	va_start(vlist, wHardwareType);
+  va_list vlist;
+  va_start(vlist, wHardwareType);
 
-	switch(wHardwareType) {
-		case HW_PCI:
-		nPort = va_arg(vlist, int);
-		break;
-	}
+  switch(wHardwareType) {
+  case HW_PCI:
+    nPort = va_arg(vlist, int);
+    break;
+  }
 
-	va_end(vlist);
-	return NULL;
+  va_end(vlist);
+  return NULL;
 }
 
 //****************************************************************************
@@ -85,18 +87,18 @@ HANDLE CAN_Open(WORD wHardwareType, ...)
 //
 DWORD CAN_Init(HANDLE hHandle, WORD wBTR0BTR1, int nCANMsgType)
 {
-	int i;
+  int i;
 #ifdef DEBUG
-	fprintf(stderr, "FAKE::CAN_Init(%p, 0x%04x, %d)\n", hHandle, wBTR0BTR1, nCANMsgType);
+  fprintf(stderr, "FAKE::CAN_Init(%p, 0x%04x, %d)\n", hHandle, wBTR0BTR1, nCANMsgType);
 #endif
-	for(i = 0; dlist[i].irq; i++) {
-		if(dlist[i].handle == hHandle) {
-			dlist[i].bitrate = wBTR0BTR1;
-			dlist[i].msgtype = nCANMsgType;
-			return CAN_ERR_OK;
-		}
-	}
-	return -1;
+  for(i = 0; dlist[i].irq; i++) {
+    if(dlist[i].handle == hHandle) {
+      dlist[i].bitrate = wBTR0BTR1;
+      dlist[i].msgtype = nCANMsgType;
+      return CAN_ERR_OK;
+    }
+  }
+  return -1;
 }
 
 //****************************************************************************
@@ -105,31 +107,31 @@ DWORD CAN_Init(HANDLE hHandle, WORD wBTR0BTR1, int nCANMsgType)
 //  The last close on the hardware put the chip into passive state.
 DWORD CAN_Close(HANDLE hHandle)
 {
-	dinfo *ptr;
-	int   nopen = 0;
+  dinfo *ptr;
+  int   nopen = 0;
 #ifdef DEBUG
-	fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
+  fprintf(stderr, "CAN_CLose(%p)\n", hHandle);
 #endif
-	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle) {
-			char sname[256];
-			close(ptr->sock);
-			ptr->sock = -1;
-			sprintf(sname, "dev/%s.sock", ptr->dname);
-			unlink(sname);
+  for (ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle) {
+      char sname[256];
+      close(ptr->sock);
+      ptr->sock = -1;
+      sprintf(sname, "dev/%s.sock", ptr->dname);
+      unlink(sname);
 #ifdef DEBUG
-			puts(sname);
+      puts(sname);
 #endif
-		}
-		if (ptr->sock >=0 ) nopen++;
-	}
+    }
+    if (ptr->sock >=0 ) nopen++;
+  }
 
-	if (nopen == 0 && thrd != NULL) {
-		pthread_cancel(*thrd);
-		thrd = NULL;
-	}
+  if (nopen == 0 && thrd != NULL) {
+    pthread_cancel(*thrd);
+    thrd = NULL;
+  }
 
-	return CAN_ERR_OK;
+  return CAN_ERR_OK;
 }
 
 //****************************************************************************
@@ -139,13 +141,13 @@ DWORD CAN_Close(HANDLE hHandle)
 //  If the status is negative a system error is returned (e.g. -EBADF).
 DWORD CAN_Status(HANDLE hHandle)
 {
-	dinfo *ptr;
+  dinfo *ptr;
 
-	for(ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle)
-			{ break;}
-	}
-	return CAN_ERR_OK;
+  for(ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle)
+      { break;}
+  }
+  return CAN_ERR_OK;
 }
 
 //****************************************************************************
@@ -155,16 +157,16 @@ DWORD CAN_Status(HANDLE hHandle)
 //
 DWORD CAN_Write(HANDLE hHandle, TPCANMsg* pMsgBuff)
 {
-	int i;
+  int i;
 
 #ifdef DEBUG
-	fprintf(stderr, "FAKE::CAN_Write(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
+  fprintf(stderr, "FAKE::CAN_Write(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 #endif
-	for(i = 0; dlist[i].irq; i++)
-		if(dlist[i].handle == hHandle) {
-			memcpy(&dlist[i].msg, pMsgBuff, sizeof(TPCANMsg));
-		}
-	return CAN_ERR_OK;
+  for(i = 0; dlist[i].irq; i++)
+    if(dlist[i].handle == hHandle) {
+      memcpy(&dlist[i].msg, pMsgBuff, sizeof(TPCANMsg));
+    }
+  return CAN_ERR_OK;
 }
 
 //****************************************************************************
@@ -177,344 +179,347 @@ DWORD CAN_Write(HANDLE hHandle, TPCANMsg* pMsgBuff)
 //  nMicroSeconds  < 0 -> blocking, same as CAN_Write()
 DWORD LINUX_CAN_Write_Timeout(HANDLE hHandle, TPCANMsg* pMsgBuff, int nMicroSeconds)
 {
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  UNUSED_ARGUMENT(pMsgBuff);
+  UNUSED_ARGUMENT(nMicroSeconds);
+  return CAN_ERR_OK;
 }
 
 DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
 {
-	dinfo *ptr;
-	double temp;
+  dinfo *ptr;
+  double temp;
 
-	for(ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle)
-			{ break;}
-	}
+  for(ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle)
+      { break;}
+  }
 
-	if (ptr->irq == 0) return -1;
+  if (ptr->irq == 0) return -1;
 
-	memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
-	pMsgBuff->ID |= 0x1;
-	switch(pMsgBuff->DATA[0]) {
+  memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+  pMsgBuff->ID |= 0x1;
+  switch(pMsgBuff->DATA[0]) {
 
-	case 0x01: // MCU Firmware ID
-		pMsgBuff->LEN = 8;
-		pMsgBuff->DATA[1] = 0x54;
-		pMsgBuff->DATA[2] = 0x10;
-		pMsgBuff->DATA[3] = 0x10;
-		pMsgBuff->DATA[4] = 0x10;
-		pMsgBuff->DATA[5] = 0x10;
-		pMsgBuff->DATA[6] = 0x10;
-		pMsgBuff->DATA[7] = 0x10;
+  case 0x01: // MCU Firmware ID
+    pMsgBuff->LEN = 8;
+    pMsgBuff->DATA[1] = 0x54;
+    pMsgBuff->DATA[2] = 0x10;
+    pMsgBuff->DATA[3] = 0x10;
+    pMsgBuff->DATA[4] = 0x10;
+    pMsgBuff->DATA[5] = 0x10;
+    pMsgBuff->DATA[6] = 0x10;
+    pMsgBuff->DATA[7] = 0x10;
 
-		usleep(20000);
-		break;
-	case 0x02: // FPGA Firmware ID
-		pMsgBuff->LEN = 4;
-		if (pMsgBuff->DATA[1] == 0) {
-			pMsgBuff->DATA[2] = 0x84;
-			pMsgBuff->DATA[3] = 0x84;
-		} else {
-			pMsgBuff->DATA[2] = 0x74;
-			pMsgBuff->DATA[3] = 0x84;
-		}
-		usleep(20000);
-		break;
+    usleep(20000);
+    break;
+  case 0x02: // FPGA Firmware ID
+    pMsgBuff->LEN = 4;
+    if (pMsgBuff->DATA[1] == 0) {
+      pMsgBuff->DATA[2] = 0x84;
+      pMsgBuff->DATA[3] = 0x84;
+    } else {
+      pMsgBuff->DATA[2] = 0x74;
+      pMsgBuff->DATA[3] = 0x84;
+    }
+    usleep(20000);
+    break;
 
-	case 0x03: // Get Temperature
-	    temp = 30.0 + 10.0*rand()/RAND_MAX;
-		pMsgBuff->LEN = 2;
-		pMsgBuff->DATA[0] = 0xFF & (int)(temp*100.0); // temperature xx.16
-		pMsgBuff->DATA[1] = 0xFF & (int)(temp); // temperature 32.xx
-		pMsgBuff->DATA[2] = 0xbb; // ESCR
-		pMsgBuff->DATA[3] = 0; // AD 1L
-		pMsgBuff->DATA[4] = 0; // AD 1H
-		pMsgBuff->DATA[5] = 0; // AD 2L
-		pMsgBuff->DATA[6] = 0; // AD 2H
-		usleep(20000);
-		break;
+  case 0x03: // Get Temperature
+    temp = 30.0 + 10.0*rand()/RAND_MAX;
+    pMsgBuff->LEN = 2;
+    pMsgBuff->DATA[0] = 0xFF & (int)(temp*100.0); // temperature xx.16
+    pMsgBuff->DATA[1] = 0xFF & (int)(temp); // temperature 32.xx
+    pMsgBuff->DATA[2] = 0xbb; // ESCR
+    pMsgBuff->DATA[3] = 0; // AD 1L
+    pMsgBuff->DATA[4] = 0; // AD 1H
+    pMsgBuff->DATA[5] = 0; // AD 2L
+    pMsgBuff->DATA[6] = 0; // AD 2H
+    usleep(20000);
+    break;
 
-	case 0x05: // CRC Error bits
-		pMsgBuff->LEN = 2;
-		pMsgBuff->DATA[0] = 0xcd;
-		pMsgBuff->DATA[1] = 0xab;
-		usleep(20000);
-		break;
-	case 0x99: // bunch reset
-		pMsgBuff->LEN = 2;
-		pMsgBuff->DATA[1] = 0;
-		break;
-	default:
-		pMsgBuff->LEN = 2;
-		pMsgBuff->DATA[1] = 0;
-	}
-	if (pMsgBuff->DATA[0] >= 0x91 && pMsgBuff->DATA[0] <= 0x98) {
-		if( (pMsgBuff->ID & 0xF) == 0x5) {
-			pMsgBuff->LEN = 1;
-			pMsgBuff->DATA[0] = 0x1f;
-		} else {
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-		}
-		usleep(20000);
-	}
+  case 0x05: // CRC Error bits
+    pMsgBuff->LEN = 2;
+    pMsgBuff->DATA[0] = 0xcd;
+    pMsgBuff->DATA[1] = 0xab;
+    usleep(20000);
+    break;
+  case 0x99: // bunch reset
+    pMsgBuff->LEN = 2;
+    pMsgBuff->DATA[1] = 0;
+    break;
+  default:
+    pMsgBuff->LEN = 2;
+    pMsgBuff->DATA[1] = 0;
+  }
+  if (pMsgBuff->DATA[0] >= 0x91 && pMsgBuff->DATA[0] <= 0x98) {
+    if( (pMsgBuff->ID & 0xF) == 0x5) {
+      pMsgBuff->LEN = 1;
+      pMsgBuff->DATA[0] = 0x1f;
+    } else {
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+    }
+    usleep(20000);
+  }
 
-	return CAN_ERR_OK;
+  return CAN_ERR_OK;
 }
 
 DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
-	int i;
-	dinfo *ptr;
-	double temp;
+  int i;
+  dinfo *ptr;
+  double temp;
 
-	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle)
-			{ break; }
+  for (ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle)
+      { break; }
+  }
+
+  if (ptr->irq == 0) return -1;
+
+  memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+
+  if (pMsgBuff->MSGTYPE == MSGTYPE_STANDARD && 0x400 == (pMsgBuff->ID & 0xF00))
+    return THUB_readHandler(hHandle, pMsgBuff);
+
+  switch (pMsgBuff->MSGTYPE) {
+  case MSGTYPE_STANDARD: /* TCPU */
+    pMsgBuff->ID |= 0x1;
+    switch(pMsgBuff->DATA[0]) {
+    case 0x0e: /* PLD read/write, assuming reading from 0x2 */
+      if( (pMsgBuff->ID & 0xF) == 5) {
+	int i, j;
+	int len = pMsgBuff->LEN;
+	pMsgBuff->LEN = 1 + 2*(len - 1);
+	for (i = 1; i < len; ++i) {
+	  j = 2*i - 1;
+	  if (ptr->msg.DATA[i] == 0x2) {
+	    pMsgBuff->DATA[j]     = 0x02;
+	    pMsgBuff->DATA[j + 1] = 0x0f;
+	  }
+	  if (ptr->msg.DATA[i] == 0x3) {
+	    pMsgBuff->DATA[j]     = 0x03;
+	    pMsgBuff->DATA[j + 1] = 0x02;
+	  }
+	  if (ptr->msg.DATA[i] == 0xe) {
+	    pMsgBuff->DATA[j]     = 0x00;
+	    pMsgBuff->DATA[j + 1] = 0x02;
+	  }
 	}
+      } else
+	pMsgBuff->LEN = 2;
 
-	if (ptr->irq == 0) return -1;
+      break;
 
-	memcpy(pMsgBuff, &(ptr->msg), sizeof(TPCANMsg));
+    case 0x8a:
+      pMsgBuff->LEN = 3;
+      pMsgBuff->DATA[1] = 0x00;
+      pMsgBuff->DATA[2] = 0x87;
+      break;
+    case 0xb0:
+      pMsgBuff->LEN = 8;
+      pMsgBuff->DATA[1] = 16; // temperature xx.16
+      pMsgBuff->DATA[2] = 32; // temperature 32.xx
+      pMsgBuff->DATA[3] = 0x8b; // ESCR
+      pMsgBuff->DATA[4] = 0; // AD 1L
+      pMsgBuff->DATA[5] = 0; // AD 1H
+      pMsgBuff->DATA[6] = 0; // AD 2L
+      pMsgBuff->DATA[7] = 0; // AD 2H
+      break;
+    case 0xb1:
+      pMsgBuff->LEN = 4;
+      pMsgBuff->DATA[1] = 0x45; // ID.L
+      pMsgBuff->DATA[2] = 0x02; // ID.H
+      pMsgBuff->DATA[3] = 0x85; // FPGA
+      break;
+    case 0xb2:
+      pMsgBuff->LEN = 8;
+      pMsgBuff->DATA[1] = 0x70;
+      pMsgBuff->DATA[2] = 0x60;
+      pMsgBuff->DATA[3] = 0x50;
+      pMsgBuff->DATA[4] = 0x40;
+      pMsgBuff->DATA[5] = 0x30;
+      pMsgBuff->DATA[6] = 0x20;
+      pMsgBuff->DATA[7] = 0x10;
+      usleep(2000);
+      break;
+    }
+    break;
+  case MSGTYPE_EXTENDED:
+    pMsgBuff->ID |= 0x40000;
+    switch(pMsgBuff->DATA[0]) {
+    case 0x04: // Control TDC
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(2000);
+      break;
+    case 0x05: // Cet Status TDC 1
+      if (ptr->msg.LEN == 1) { // first round
+	pMsgBuff->LEN = 8;
+	pMsgBuff->DATA[1] = 0;
+	pMsgBuff->DATA[2] = 0;
+	pMsgBuff->DATA[3] = 0;
+	pMsgBuff->DATA[4] = 0;
+	pMsgBuff->DATA[5] = 0;
+	pMsgBuff->DATA[6] = 0;
+	pMsgBuff->DATA[7] = 0;
+	ptr->msg.LEN = 8;
+      } else { /* second round */
+	pMsgBuff->LEN = 2;
+	pMsgBuff->DATA[7] = 0;
+      }
+      usleep(2000);
+      break;
+    case 0x06: /* Cet Status TDC 2 */
+      if (ptr->msg.LEN == 1)  { /* first round */
+	pMsgBuff->LEN = 8;
+	pMsgBuff->DATA[1] = 0x01;
+	pMsgBuff->DATA[2] = 0x02;
+	pMsgBuff->DATA[3] = 0x03;
+	pMsgBuff->DATA[4] = 0x04;
+	pMsgBuff->DATA[5] = 0x05;
+	pMsgBuff->DATA[6] = 0x06;
+	pMsgBuff->DATA[7] = 0x07;
+	ptr->msg.LEN = 8;
+      } else { /* second round */
+	pMsgBuff->LEN = 2;
+	pMsgBuff->DATA[1] = 0x08;
+      }
+      usleep(2000);
+      break;
+    case 0x07: /* Cet Status TDC 3 */
+      if (ptr->msg.LEN == 1) { /* first round */
+	pMsgBuff->LEN = 8;
+	pMsgBuff->DATA[1] = 0;
+	pMsgBuff->DATA[2] = 0;
+	pMsgBuff->DATA[3] = 0;
+	pMsgBuff->DATA[4] = 0;
+	pMsgBuff->DATA[5] = 0;
+	pMsgBuff->DATA[6] = 0;
+	pMsgBuff->DATA[7] = 0;
+	ptr->msg.LEN = 8;
+      } else { // second round
+	pMsgBuff->LEN = 2;
+	pMsgBuff->DATA[1] = 0;
+      }
+      usleep(2000);
+      break;
 
-	if (pMsgBuff->MSGTYPE == MSGTYPE_STANDARD && 0x400 == (pMsgBuff->ID & 0xF00))
-		return THUB_readHandler(hHandle, pMsgBuff);
-
-	switch (pMsgBuff->MSGTYPE) {
-		case MSGTYPE_STANDARD: /* TCPU */
-		pMsgBuff->ID |= 0x1;
-		switch(pMsgBuff->DATA[0]) {
-		case 0x0e: /* PLD read/write, assuming reading from 0x2 */
-			if( (pMsgBuff->ID & 0xF) == 5) {
-				int i, j;
-				int len = pMsgBuff->LEN;
-				pMsgBuff->LEN = 1 + 2*(len - 1);
-				for (i = 1; i < len; ++i) {
-					j = 2*i - 1;
-					if (ptr->msg.DATA[i] == 0x2) {
-						pMsgBuff->DATA[j]     = 0x02;
-						pMsgBuff->DATA[j + 1] = 0x0f;
-					}
-					if (ptr->msg.DATA[i] == 0x3) {
-						pMsgBuff->DATA[j]     = 0x03;
-						pMsgBuff->DATA[j + 1] = 0x02;
-					}
-					if (ptr->msg.DATA[i] == 0xe) {
-						pMsgBuff->DATA[j]     = 0x00;
-						pMsgBuff->DATA[j + 1] = 0x02;
-					}
-				}
-			} else
-				pMsgBuff->LEN = 2;
-
-			break;
-
-		case 0x8a:
-			pMsgBuff->LEN = 3;
-			pMsgBuff->DATA[1] = 0x00;
-			pMsgBuff->DATA[2] = 0x87;
-			break;
-		case 0xb0:
-			pMsgBuff->LEN = 8;
-			pMsgBuff->DATA[1] = 16; // temperature xx.16
-			pMsgBuff->DATA[2] = 32; // temperature 32.xx
-			pMsgBuff->DATA[3] = 0x8b; // ESCR
-			pMsgBuff->DATA[4] = 0; // AD 1L
-			pMsgBuff->DATA[5] = 0; // AD 1H
-			pMsgBuff->DATA[6] = 0; // AD 2L
-			pMsgBuff->DATA[7] = 0; // AD 2H
-			break;
-		case 0xb1:
-			pMsgBuff->LEN = 4;
-			pMsgBuff->DATA[1] = 0x45; // ID.L
-			pMsgBuff->DATA[2] = 0x02; // ID.H
-			pMsgBuff->DATA[3] = 0x85; // FPGA
-			break;
-		case 0xb2:
-			pMsgBuff->LEN = 8;
-			pMsgBuff->DATA[1] = 0x70;
-			pMsgBuff->DATA[2] = 0x60;
-			pMsgBuff->DATA[3] = 0x50;
-			pMsgBuff->DATA[4] = 0x40;
-			pMsgBuff->DATA[5] = 0x30;
-			pMsgBuff->DATA[6] = 0x20;
-			pMsgBuff->DATA[7] = 0x10;
-			usleep(2000);
-			break;
-		}
-		break;
-	case MSGTYPE_EXTENDED:
-		pMsgBuff->ID |= 0x40000;
-		switch(pMsgBuff->DATA[0]) {
-		case 0x04: // Control TDC
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(2000);
-			break;
-		case 0x05: // Cet Status TDC 1
-			if (ptr->msg.LEN == 1) { // first round
-				pMsgBuff->LEN = 8;
-				pMsgBuff->DATA[1] = 0;
-				pMsgBuff->DATA[2] = 0;
-				pMsgBuff->DATA[3] = 0;
-				pMsgBuff->DATA[4] = 0;
-				pMsgBuff->DATA[5] = 0;
-				pMsgBuff->DATA[6] = 0;
-				pMsgBuff->DATA[7] = 0;
-				ptr->msg.LEN = 8;
-			} else { /* second round */
-				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[7] = 0;
-			}
-			usleep(2000);
-			break;
-		case 0x06: /* Cet Status TDC 2 */
-			if (ptr->msg.LEN == 1)  { /* first round */
-				pMsgBuff->LEN = 8;
-				pMsgBuff->DATA[1] = 0x01;
-				pMsgBuff->DATA[2] = 0x02;
-				pMsgBuff->DATA[3] = 0x03;
-				pMsgBuff->DATA[4] = 0x04;
-				pMsgBuff->DATA[5] = 0x05;
-				pMsgBuff->DATA[6] = 0x06;
-				pMsgBuff->DATA[7] = 0x07;
-				ptr->msg.LEN = 8;
-			} else { /* second round */
-				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[1] = 0x08;
-			}
-			usleep(2000);
-			break;
-		case 0x07: /* Cet Status TDC 3 */
-			if (ptr->msg.LEN == 1) { /* first round */
-				pMsgBuff->LEN = 8;
-				pMsgBuff->DATA[1] = 0;
-				pMsgBuff->DATA[2] = 0;
-				pMsgBuff->DATA[3] = 0;
-				pMsgBuff->DATA[4] = 0;
-				pMsgBuff->DATA[5] = 0;
-				pMsgBuff->DATA[6] = 0;
-				pMsgBuff->DATA[7] = 0;
-				ptr->msg.LEN = 8;
-			} else { // second round
-				pMsgBuff->LEN = 2;
-				pMsgBuff->DATA[1] = 0;
-			}
-			usleep(2000);
-			break;
-
-		case 0x0e:
-			if( (pMsgBuff->ID & 0x40000) == 0x40000) {
-				int i, j;
-				int len = pMsgBuff->LEN;
-				pMsgBuff->LEN = 1 + 2*(len - 1);
-				for (i = 1; i < len; ++i) {
-					j = 2*i - 1;
-					if (ptr->msg.DATA[i] == 0x2) {
-						pMsgBuff->DATA[j]     = 0x2;
-						pMsgBuff->DATA[j + 1] = 0xf;
-					}
-					if (ptr->msg.DATA[i] == 0x3) {
-						pMsgBuff->DATA[j]     = 0x3;
-						pMsgBuff->DATA[j + 1] = 0x0;
-					}
-				}
-			} else
-				pMsgBuff->LEN = 2;
-			break;
-
-		case 0x08: // Threshold Set
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(2000);
-			break;
-		case 0x10: // Block Start
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			ptr->csum = 0;
-			ptr->cunt = 0;
-			usleep(2000);
-			break;
-		case 0x20: // Block Data
-		    for (i = 1; i < ptr->msg.LEN; i++) ptr->csum += ptr->msg.DATA[i];
-			ptr->cunt += (ptr->msg.LEN - 1);
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(2000);
-			break;
-		case 0x30: // Block Data
-			pMsgBuff->LEN = 8;
-			pMsgBuff->DATA[1] = 0;
-			pMsgBuff->DATA[2] = 0xFF & (ptr->cunt);
-			pMsgBuff->DATA[3] = 0xFF & ((ptr->cunt) >> 8);
-			pMsgBuff->DATA[4] = 0xFF & (ptr->csum);
-			pMsgBuff->DATA[5] = 0xFF & ((ptr->csum) >> 8);
-			pMsgBuff->DATA[6] = 0xFF & ((ptr->csum) >> 16);
-			pMsgBuff->DATA[7] = 0xFF & ((ptr->csum) >> 24);
-			usleep(2000);
-		break;
-		case 0x40: // Write to ALL TDC
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(1500000);
-		break;
-		case 0x41: // Write to TDC 1
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(500000);
-		break;
-		case 0x42: // Write to TDC 2
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(500000);
-		break;
-		case 0x43: // Write to TDC 3
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(500000);
-		break;
-		case 0x90: // Reset All TDCs
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(30000);
-		break;
-		case 0xb0: // Get Board Status
-		    temp = 30.0 + 10.0*rand()/RAND_MAX;
-			pMsgBuff->LEN = 8;
-			pMsgBuff->DATA[1] = 0xFF & (int)(temp*100.0); // temperature xx.16
-			pMsgBuff->DATA[2] = 0xFF & (int)(temp); // temperature 32.xx
-			pMsgBuff->DATA[3] = 0xbb; // ESCR
-			pMsgBuff->DATA[4] = 0; // AD 1L
-			pMsgBuff->DATA[5] = 0; // AD 1H
-			pMsgBuff->DATA[6] = 0; // AD 2L
-			pMsgBuff->DATA[7] = 0; // AD 2H
-			usleep(2000);
-			break;
-		case 0xb1:
-			pMsgBuff->LEN = 4;
-			pMsgBuff->DATA[1] = 0x53; // ID.L
-			pMsgBuff->DATA[2] = 0x11; // ID.H
-			pMsgBuff->DATA[3] = 0x74; // FPGA
-			usleep(2000);
-			break;
-		case 0xb2:
-			pMsgBuff->LEN = 8;
-			pMsgBuff->DATA[1] = 0x77;
-			pMsgBuff->DATA[2] = 0x66;
-			pMsgBuff->DATA[3] = 0x55;
-			pMsgBuff->DATA[4] = 0x44;
-			pMsgBuff->DATA[5] = 0x33;
-			pMsgBuff->DATA[6] = 0x22;
-			pMsgBuff->DATA[7] = 0x11;
-			usleep(2000);
-			break;
-		default:
-			pMsgBuff->LEN = 2;
-			pMsgBuff->DATA[1] = 0;
-			usleep(2000);
-		}
-		break;
+    case 0x0e:
+      if( (pMsgBuff->ID & 0x40000) == 0x40000) {
+	int i, j;
+	int len = pMsgBuff->LEN;
+	pMsgBuff->LEN = 1 + 2*(len - 1);
+	for (i = 1; i < len; ++i) {
+	  j = 2*i - 1;
+	  if (ptr->msg.DATA[i] == 0x2) {
+	    pMsgBuff->DATA[j]     = 0x2;
+	    pMsgBuff->DATA[j + 1] = 0xf;
+	  }
+	  if (ptr->msg.DATA[i] == 0x3) {
+	    pMsgBuff->DATA[j]     = 0x3;
+	    pMsgBuff->DATA[j + 1] = 0x0;
+	  }
 	}
+      } else
+	pMsgBuff->LEN = 2;
+      break;
 
-	return CAN_ERR_OK;
+    case 0x08: // Threshold Set
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(2000);
+      break;
+    case 0x10: // Block Start
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      ptr->csum = 0;
+      ptr->cunt = 0;
+      usleep(2000);
+      break;
+    case 0x20: // Block Data
+      for (i = 1; i < ptr->msg.LEN; i++) ptr->csum += ptr->msg.DATA[i];
+      ptr->cunt += (ptr->msg.LEN - 1);
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(2000);
+      break;
+    case 0x30: // Block Data
+      pMsgBuff->LEN = 8;
+      pMsgBuff->DATA[1] = 0;
+      pMsgBuff->DATA[2] = 0xFF & (ptr->cunt);
+      pMsgBuff->DATA[3] = 0xFF & ((ptr->cunt) >> 8);
+      pMsgBuff->DATA[4] = 0xFF & (ptr->csum);
+      pMsgBuff->DATA[5] = 0xFF & ((ptr->csum) >> 8);
+      pMsgBuff->DATA[6] = 0xFF & ((ptr->csum) >> 16);
+      pMsgBuff->DATA[7] = 0xFF & ((ptr->csum) >> 24);
+      usleep(2000);
+      break;
+    case 0x40: // Write to ALL TDC
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(1500000);
+      break;
+    case 0x41: // Write to TDC 1
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(500000);
+      break;
+    case 0x42: // Write to TDC 2
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(500000);
+      break;
+    case 0x43: // Write to TDC 3
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(500000);
+      break;
+    case 0x90: // Reset All TDCs
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(30000);
+      break;
+    case 0xb0: // Get Board Status
+      temp = 30.0 + 10.0*rand()/RAND_MAX;
+      pMsgBuff->LEN = 8;
+      pMsgBuff->DATA[1] = 0xFF & (int)(temp*100.0); // temperature xx.16
+      pMsgBuff->DATA[2] = 0xFF & (int)(temp); // temperature 32.xx
+      pMsgBuff->DATA[3] = 0xbb; // ESCR
+      pMsgBuff->DATA[4] = 0; // AD 1L
+      pMsgBuff->DATA[5] = 0; // AD 1H
+      pMsgBuff->DATA[6] = 0; // AD 2L
+      pMsgBuff->DATA[7] = 0; // AD 2H
+      usleep(2000);
+      break;
+    case 0xb1:
+      pMsgBuff->LEN = 4;
+      pMsgBuff->DATA[1] = 0x53; // ID.L
+      pMsgBuff->DATA[2] = 0x11; // ID.H
+      pMsgBuff->DATA[3] = 0x74; // FPGA
+      usleep(2000);
+      break;
+    case 0xb2:
+      pMsgBuff->LEN = 8;
+      pMsgBuff->DATA[1] = 0x77;
+      pMsgBuff->DATA[2] = 0x66;
+      pMsgBuff->DATA[3] = 0x55;
+      pMsgBuff->DATA[4] = 0x44;
+      pMsgBuff->DATA[5] = 0x33;
+      pMsgBuff->DATA[6] = 0x22;
+      pMsgBuff->DATA[7] = 0x11;
+      usleep(2000);
+      break;
+    default:
+      pMsgBuff->LEN = 2;
+      pMsgBuff->DATA[1] = 0;
+      usleep(2000);
+    }
+    break;
+  }
+
+  return CAN_ERR_OK;
 
 }
 //****************************************************************************
@@ -524,9 +529,9 @@ DWORD readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff) {
 DWORD CAN_Read(HANDLE hHandle, TPCANMsg* pMsgBuff)
 {
 
-	fprintf(stderr, "FAKE::CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
+  fprintf(stderr, "FAKE::CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 
-	return readHandler(hHandle, pMsgBuff);
+  return readHandler(hHandle, pMsgBuff);
 }
 
 //****************************************************************************
@@ -536,19 +541,19 @@ DWORD CAN_Read(HANDLE hHandle, TPCANMsg* pMsgBuff)
 //  or a error occures.
 DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 {
-	dinfo *ptr;
+  dinfo *ptr;
 #ifdef FAKE_DEBUG
-	fprintf(stderr, "FAKE::LINUX_CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
+  fprintf(stderr, "FAKE::LINUX_CAN_Read(hHandle=%p, pMsgBuff=%p)\n", hHandle, pMsgBuff);
 #endif
-	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle) {
-			int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
-			if ( cnt == sizeof(TPCANRdMsg)) {
-				return CAN_ERR_OK;
-			}
-		}
-	}
-	return readHandler(hHandle, &(pMsgBuff->Msg));
+  for (ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle) {
+      int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
+      if ( cnt == sizeof(TPCANRdMsg)) {
+	return CAN_ERR_OK;
+      }
+    }
+  }
+  return readHandler(hHandle, &(pMsgBuff->Msg));
 }
 
 //****************************************************************************
@@ -561,24 +566,25 @@ DWORD LINUX_CAN_Read(HANDLE hHandle, TPCANRdMsg* pMsgBuff)
 //  nMicroSeconds  < 0 -> blocking, same as LINUX_CAN_Read()
 DWORD LINUX_CAN_Read_Timeout(HANDLE hHandle, TPCANRdMsg* pMsgBuff, int nMicroSeconds)
 {
-	dinfo *ptr;
+  UNUSED_ARGUMENT(nMicroSeconds);
+  dinfo *ptr;
 
 #ifdef FAKE_DEBUG
-	fprintf(stderr,
-		"FAKE::LINUX_CAN_Read_Timeout(hHandle=%p, pMsgBuff=%p, nMicroSeconds=%d)\n",
-		hHandle, pMsgBuff, nMicroSeconds);
+  fprintf(stderr,
+	  "FAKE::LINUX_CAN_Read_Timeout(hHandle=%p, pMsgBuff=%p, nMicroSeconds=%d)\n",
+	  hHandle, pMsgBuff, nMicroSeconds);
 #endif
 
-	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle) {
-			int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
-			if ( cnt == sizeof(TPCANRdMsg)) {
-				return CAN_ERR_OK;
-			}
-		}
-	}
+  for (ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle) {
+      int cnt = recv(ptr->sock, pMsgBuff, sizeof(TPCANRdMsg), MSG_DONTWAIT);
+      if ( cnt == sizeof(TPCANRdMsg)) {
+	return CAN_ERR_OK;
+      }
+    }
+  }
 
-	return readHandler(hHandle, &(pMsgBuff->Msg));
+  return readHandler(hHandle, &(pMsgBuff->Msg));
 }
 
 //***************************************************************************
@@ -587,7 +593,8 @@ DWORD LINUX_CAN_Read_Timeout(HANDLE hHandle, TPCANRdMsg* pMsgBuff, int nMicroSec
 //
 DWORD CAN_ResetFilter(HANDLE hHandle)
 {
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  return CAN_ERR_OK;
 }
 
 //***************************************************************************
@@ -598,7 +605,11 @@ DWORD CAN_ResetFilter(HANDLE hHandle)
 //
 DWORD CAN_MsgFilter(HANDLE hHandle, DWORD FromID, DWORD ToID, int nCANMsgType)
 {
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  UNUSED_ARGUMENT(FromID);
+  UNUSED_ARGUMENT(ToID);
+  UNUSED_ARGUMENT(nCANMsgType);
+  return CAN_ERR_OK;
 }
 
 //***************************************************************************
@@ -606,12 +617,12 @@ DWORD CAN_MsgFilter(HANDLE hHandle, DWORD FromID, DWORD ToID, int nCANMsgType)
 //
 int LINUX_CAN_FileHandle(HANDLE hHandle)
 {
-	dinfo *ptr;
+  dinfo *ptr;
 
-	for (ptr = dlist; ptr->irq; ptr++) {
-		if (ptr->handle == hHandle) return ptr->sock;
-	}
-	return -1;
+  for (ptr = dlist; ptr->irq; ptr++) {
+    if (ptr->handle == hHandle) return ptr->sock;
+  }
+  return -1;
 }
 
 //****************************************************************************
@@ -623,7 +634,11 @@ int LINUX_CAN_FileHandle(HANDLE hHandle)
 //  successfuly sent or an error is thrown.
 DWORD LINUX_CAN_Extended_Status(HANDLE hHandle, int *nPendingReads, int *nPendingWrites)
 {
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  UNUSED_ARGUMENT(nPendingReads);
+  UNUSED_ARGUMENT(nPendingWrites);
+
+  return CAN_ERR_OK;
 }
 
 //****************************************************************************
@@ -632,9 +647,10 @@ DWORD LINUX_CAN_Extended_Status(HANDLE hHandle, int *nPendingReads, int *nPendin
 //
 DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff)
 {
-//	fprintf(stderr, "LINUX_CAN_VersionInfo(%p, %p)\n", hHandle, lpszTextBuff);
-	strcpy(lpszTextBuff, VERSION_STRING);
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  //	fprintf(stderr, "LINUX_CAN_VersionInfo(%p, %p)\n", hHandle, lpszTextBuff);
+  strcpy(lpszTextBuff, VERSION_STRING);
+  return CAN_ERR_OK;
 }
 
 //****************************************************************************
@@ -644,54 +660,55 @@ DWORD CAN_VersionInfo(HANDLE hHandle, LPSTR lpszTextBuff)
 //
 int nGetLastError(void)
 {
-	return CAN_ERR_OK;
+  return CAN_ERR_OK;
 }
 
 void* runner(void *arg)
 {
-	static int id = 0;
+  UNUSED_ARGUMENT(arg);
+  //	static int id = 0;
 
-	dinfo *ptr;
-	srand(100);
+  dinfo *ptr;
+  srand(100);
 
-	sleep(10);
+  sleep(10);
 
-	for (ptr = dlist; ; ptr++) {
-		if (ptr->irq == 0) ptr = dlist;
+  for (ptr = dlist; ; ptr++) {
+    if (ptr->irq == 0) ptr = dlist;
 
-		if (ptr->sock > 0 && ptr->irq != 252 && ptr->irq != 253) { /* the device is open */
-			TPCANRdMsg rmsg;
-			int i, fd;
-			struct sockaddr_un addr;
-			unsigned short tcpu, tdig;
+    if (ptr->sock > 0 && ptr->irq != 252 && ptr->irq != 253) { /* the device is open */
+      TPCANRdMsg rmsg;
+      int i, fd;
+      struct sockaddr_un addr;
+      unsigned short tcpu, tdig;
 
-			fd = socket(PF_UNIX, SOCK_DGRAM, 0);
+      fd = socket(PF_UNIX, SOCK_DGRAM, 0);
 
-			addr.sun_family = AF_UNIX;
-			sprintf(addr.sun_path, "dev/%s.sock", ptr->dname);
-			connect(fd, &addr, sizeof(addr));
+      addr.sun_family = AF_UNIX;
+      sprintf(addr.sun_path, "dev/%s.sock", ptr->dname);
+      connect(fd, (struct sockaddr *)(&addr), sizeof(addr));
 
-			tcpu = (0x21 + (int)(30.0*rand()/RAND_MAX));
-			tdig = (0x10 + (int)(8.0*rand()/RAND_MAX));
-			switch((int)(2.0*rand()/ RAND_MAX)) {
-			case 0:
-				rmsg.Msg.MSGTYPE = MSGTYPE_STANDARD;
-				rmsg.Msg.ID   = (tcpu << 4) + 0x7;
-				break;
-			case 1:
-				rmsg.Msg.MSGTYPE = MSGTYPE_EXTENDED;
-				rmsg.Msg.ID   = (tdig << 4 | 0x7) << 18 | tcpu;
-			}
-			rmsg.Msg.LEN  = 4;
-			rmsg.Msg.DATA[0] = 0xff;
-			for(i = 1; i < 4; ++i) rmsg.Msg.DATA[i] = 0;
-			send(fd, &rmsg, sizeof(rmsg), 0);
-//			fprintf(stderr, "sent msg %d (%p)\n", id++, pthread_self());
-			close(fd);
+      tcpu = (0x21 + (int)(30.0*rand()/RAND_MAX));
+      tdig = (0x10 + (int)(8.0*rand()/RAND_MAX));
+      switch((int)(2.0*rand()/ RAND_MAX)) {
+      case 0:
+	rmsg.Msg.MSGTYPE = MSGTYPE_STANDARD;
+	rmsg.Msg.ID   = (tcpu << 4) + 0x7;
+	break;
+      case 1:
+	rmsg.Msg.MSGTYPE = MSGTYPE_EXTENDED;
+	rmsg.Msg.ID   = (tdig << 4 | 0x7) << 18 | tcpu;
+      }
+      rmsg.Msg.LEN  = 4;
+      rmsg.Msg.DATA[0] = 0xff;
+      for(i = 1; i < 4; ++i) rmsg.Msg.DATA[i] = 0;
+      send(fd, &rmsg, sizeof(rmsg), 0);
+      //			fprintf(stderr, "sent msg %d (%p)\n", id++, pthread_self());
+      close(fd);
 
-			sleep(10);
-		}
-	}
+      sleep(10);
+    }
+  }
 }
 //****************************************************************************
 //  LINUX_CAN_Open() - another open, LINUX like
@@ -702,51 +719,52 @@ void* runner(void *arg)
 //
 HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 {
-	static int cnt = 0;
-	static pthread_mutex_t mutex;
-	pthread_mutex_lock(&mutex);
+  UNUSED_ARGUMENT(nFlag);
+  static int cnt = 0;
+  static pthread_mutex_t mutex;
+  pthread_mutex_lock(&mutex);
 
-	int i;
-	HANDLE h = 0;
+  int i;
+  HANDLE h = 0;
 
 #ifdef DEBUG
-	fprintf(stderr, "FAKE::LINUX_CAN_Open(%s, %x)\n", szDeviceName, nFlag);
+  fprintf(stderr, "FAKE::LINUX_CAN_Open(%s, %x)\n", szDeviceName, nFlag);
 #endif
-	for (i = 0; dlist[i].irq; i++) {
-		char *bn = strdup(szDeviceName);
-		if (strcmp(basename(bn), dlist[i].dname) == 0) {
-			int sock, er;
-			char sname[256];
-			struct sockaddr_un addr;
+  for (i = 0; dlist[i].irq; i++) {
+    char *bn = strdup(szDeviceName);
+    if (strcmp(basename(bn), dlist[i].dname) == 0) {
+      int sock, er;
+      char sname[256];
+      struct sockaddr_un addr;
 
-			sprintf(sname, "%s.sock", szDeviceName);
-			addr.sun_family = AF_UNIX;
-			strcpy(addr.sun_path, sname);
-			sock = socket(PF_UNIX, SOCK_DGRAM, 0);
+      sprintf(sname, "%s.sock", szDeviceName);
+      addr.sun_family = AF_UNIX;
+      strcpy(addr.sun_path, sname);
+      sock = socket(PF_UNIX, SOCK_DGRAM, 0);
 
-			er = bind(sock, &addr, sizeof(addr.sun_family) + strlen(sname) + 1);
-			if (er >=0) {
-				h = dlist[i].handle;
-				dlist[i].sock = sock;
-			} else {
-				h = NULL;
-				perror("bind");
-			}
-			break;
-		}
-		free(bn);
-	}
+      er = bind(sock, (struct sockaddr *)(&addr), sizeof(addr.sun_family) + strlen(sname) + 1);
+      if (er >=0) {
+	h = dlist[i].handle;
+	dlist[i].sock = sock;
+      } else {
+	h = NULL;
+	perror("bind");
+      }
+      break;
+    }
+    free(bn);
+  }
 
-	if(h != NULL && cnt == 0) {
-		thrd = malloc(sizeof(pthread_t));
-		if (pthread_create(thrd, NULL, runner, NULL))
-			perror("pthread_create");
-//		fprintf(stderr, "thrd(%p)= %p\n", &thrd, thrd);
-		++cnt;
-	}
+  if(h != NULL && cnt == 0) {
+    thrd = malloc(sizeof(pthread_t));
+    if (pthread_create(thrd, NULL, runner, NULL))
+      perror("pthread_create");
+    //		fprintf(stderr, "thrd(%p)= %p\n", &thrd, thrd);
+    ++cnt;
+  }
 
-	pthread_mutex_unlock(&mutex);
-	return h;
+  pthread_mutex_unlock(&mutex);
+  return h;
 }
 
 //****************************************************************************
@@ -754,34 +772,34 @@ HANDLE LINUX_CAN_Open(const char *szDeviceName, int nFlag)
 //
 DWORD LINUX_CAN_Statistics(HANDLE hHandle, TPDIAG *diag)
 {
-// typedef struct
-// {
-//   WORD  wType;           // the type of interface hardware - see HW_....
-//   DWORD dwBase;          // the base address or port of this device
-//   WORD  wIrqLevel;       // the irq level of this device
-//   DWORD dwReadCounter;   // counts all reads to this device from start
-//   DWORD dwWriteCounter;  // counts all writes
-//   DWORD dwIRQcounter;    // counts all interrupts
-//   DWORD dwErrorCounter;  // counts all errors
-//   WORD  wErrorFlag;      // gathers all errors
-//   int   nLastError;      // the last local error for this device
-//   int   nOpenPaths;      // number of open paths for this device
-//   char  szVersionString[VERSIONSTRING_LEN]; // driver version string
-// } TPDIAG;
-	int i;
+  // typedef struct
+  // {
+  //   WORD  wType;           // the type of interface hardware - see HW_....
+  //   DWORD dwBase;          // the base address or port of this device
+  //   WORD  wIrqLevel;       // the irq level of this device
+  //   DWORD dwReadCounter;   // counts all reads to this device from start
+  //   DWORD dwWriteCounter;  // counts all writes
+  //   DWORD dwIRQcounter;    // counts all interrupts
+  //   DWORD dwErrorCounter;  // counts all errors
+  //   WORD  wErrorFlag;      // gathers all errors
+  //   int   nLastError;      // the last local error for this device
+  //   int   nOpenPaths;      // number of open paths for this device
+  //   char  szVersionString[VERSIONSTRING_LEN]; // driver version string
+  // } TPDIAG;
+  int i;
 #ifdef DEBUG
-	fprintf(stderr, "FAKE::LINUX_CAN_Statistics(%p, %p)\n", hHandle, diag);
+  fprintf(stderr, "FAKE::LINUX_CAN_Statistics(%p, %p)\n", hHandle, diag);
 #endif
-	for(i = 0; dlist[i].irq; i++) {
-		if(dlist[i].handle == hHandle) {
-			diag->wType     = HW_USB;
-			diag->dwBase    = 100;
-			diag->wIrqLevel = dlist[i].irq;
-			strcpy(diag->szVersionString, VERSION_STRING);
-			return CAN_ERR_OK;
-		}
-	}
-	return -1;
+  for(i = 0; dlist[i].irq; i++) {
+    if(dlist[i].handle == hHandle) {
+      diag->wType     = HW_USB;
+      diag->dwBase    = 100;
+      diag->wIrqLevel = dlist[i].irq;
+      strcpy(diag->szVersionString, VERSION_STRING);
+      return CAN_ERR_OK;
+    }
+  }
+  return -1;
 }
 
 //****************************************************************************
@@ -795,6 +813,8 @@ DWORD LINUX_CAN_Statistics(HANDLE hHandle, TPDIAG *diag)
 //
 WORD LINUX_CAN_BTR0BTR1(HANDLE hHandle, DWORD dwBitRate)
 {
-	return CAN_ERR_OK;
+  UNUSED_ARGUMENT(hHandle);
+  UNUSED_ARGUMENT(dwBitRate);
+  return CAN_ERR_OK;
 }
 
