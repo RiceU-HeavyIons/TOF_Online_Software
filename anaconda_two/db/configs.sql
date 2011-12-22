@@ -9,10 +9,12 @@ create table component_types (
     id                  integer primary key,
     name                char(32)
 );
+begin transaction;
 insert into component_types values (1, "THUB");
 insert into component_types values (2, "TCPU");
 insert into component_types values (3, "TDIG");
 insert into component_types values (4, "TPMT");
+commit transaction;
 
 
 drop table if exists config_sets;
@@ -21,10 +23,12 @@ create table config_sets (
     name                char(32) not null,
     description         vchar(128)
 );
+begin transaction;
 insert into config_sets values (1, "Default",               "default mode uploaded when frontend starts");
 insert into config_sets values (2, "Standby",               "Standby");
 insert into config_sets values (3, "Phys Mode",             "Physics mode");
 insert into config_sets values (4, "Phys Mode (monitor)",   "Physics Mode (monitor)");
+commit transaction;
 
 drop table if exists config_types;
 create table config_types (
@@ -32,6 +36,7 @@ create table config_types (
     name        char(32)
 );
 
+begin transaction;
 -- parameters
 insert into config_types values (  1, "THUB_ENABLE"       );
 insert into config_types values (  2, "THUB_TEMP_ALARM"   );
@@ -68,6 +73,7 @@ insert into config_types values (202, "THUB_RECOVERY_MSG");
 insert into config_types values (211, "TCPU_RELINK");
 insert into config_types values (212, "TCPU_RECOVERY");
 insert into config_types values (213, "THUB_RECOVERY");
+commit transaction;
 
 drop table if exists configs;
 create table configs (
@@ -82,6 +88,7 @@ create table configs (
     val                 integer
 );
 
+begin transaction;
 -- Set 1:
 ---------- ----------------   id  set ord  typ  ad1  ad2  ad3  ad4   value
 -- THUB
@@ -263,3 +270,4 @@ insert into configs values (null, 103,  6,  201,   1,   1,   0,   0,      2);
 ---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 insert into configs values (null, 104,  1,  212,   2, 255,   0,   0,      1);
 insert into configs values (null, 104,  2,  201,   1,   1,   0,   0,      1);
+commit transaction;
