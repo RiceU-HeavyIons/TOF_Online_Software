@@ -1,0 +1,316 @@
+/* $Id: default.css,v 1.17 2008/10/15 23:35:26 tofp Exp $ */
+
+body {
+	margin:		0;
+	padding:	8px 4px 8px 4px;
+}
+
+h1  {
+	color: #eee;
+	background: #e7aa5c;
+	border: 2px solid #c79a4c;
+	padding: 1.5px 6px 1.5px 6px;
+	
+}
+
+h2 {
+	color: #eee;
+	/*	background: #e7aa5c; */
+	border: 2px solid #c79a4c;
+/*	margin: 0px 20px 0px 5px; */
+	padding: 1.5px 6px 1.5px 6px;
+}
+
+h3 {
+	color: #eee;
+	background: #e7aa5c;
+	border: 1px solid #c79a4c;
+/*	margin: 0px 30px 0px 15px; */
+	padding: 1.5px 6px 1.5px 6px;
+}
+
+p	{	padding: 1px 15px 1px 15px; }
+div	{	padding: 1px 15px 1px 15px; }
+	
+pre {
+	border: 1px dashed #abaaa6;
+	padding: 5px 10px 5px 10px;
+	margin: 10px 60px 10px 20px;
+}
+
+img {
+	border: 0px;
+}
+
+blockquote {
+	color: black;
+	background: #fff;
+	border: 1px dashed #c79a4c;
+	margin: 2% 6% 2% 6%;
+	padding: 1.5px 6px 1.5px 6px;
+}
+
+
+body {
+	margin: 10px 20px 10px 20px;
+	background: #bbb;
+}
+
+div#main {
+	background: white; 
+	border: 2px #999 solid;
+	padding: 10px;
+}
+
+body.popup {
+	margin: 5px 10px 5px 10px;
+	background: #bbb;
+}
+
+/* title, section */
+div.title {font-size: 120%;}
+
+div.title {
+	font-size: 150%;
+	border-top: 1px solid #55e;
+	border-left: 5px solid #55e; 
+	margin: 2px 2px 2px 2px;
+	padding: 2px 10px 2px 10px;
+}
+
+.section div.title {
+	font-size: 110%;
+	border-top: 1px solid #55e;
+	border-left: 5px solid #55e;
+	margin: 2px 2px 2px 2px;
+	padding: 2px 2px 2px 10px;
+}
+
+
+/* default table */
+tr.rowt {
+	background-color: #eee;
+	font-size: 60%;
+}
+
+tr.row0 {
+	border: solid 1px black;
+	background-color: #ddddff;
+/*	font-size: 80%; */
+}
+
+tr.row1 {
+	border:solid 1px black;
+	background-color: #eeeeff;
+/*	font-size: 80%; */
+}
+
+tr.row0:hover {color:black; background: #f0f0d0;}
+tr.row1:hover {color:black; background: #f0f0d0;}
+
+
+td.tcpu{
+	border-left: dashed black 2px;
+	border-bottom: dashed black 2px;
+}
+td.tdig{
+	border-left: dashed black 2px;
+	border-bottom: dashed black 2px;
+}
+td.tino{
+	border-left: dashed black 2px;
+	border-bottom: dashed black 2px;
+}
+
+td.connector{
+	border-left: dashed black 2px;
+}
+td.module{
+	border-left:dashed black 2px;
+	border-top:dashed black 2px;
+}
+
+td.timestamp {
+	font-size: 80%;
+}
+
+td.float {
+	text-align: right;
+	font-size: 80%;
+}
+
+td.int {
+	text-align: right;
+/*	font-size: 80%; */
+}
+
+td.size {
+	text-align: right;
+}
+td {padding: 1pt 2pt 1pt 2pt;}
+
+/* highlighting */
+.highlight {
+	background: #ff5;
+}
+
+/* module list */
+table#module_list { font-size: 11pt; border: 1px solid black; }
+table#module_list td.size { text-align: right; width: 48pt;}
+table#module_list td.jig {text-align: center; }
+table#module_list tr.row0:hover { color: blue; background: #d0d0f0; }
+table#module_list tr.row1:hover { color: blue; background: #f0f0f0; }
+table#module_list tr.row0 a {text-decoration: none;}
+table#module_list tr.row1 a {text-decoration: none;}
+table#module_list tr.row0 a:hover {color: red;}
+table#module_list tr.row1 a:hover {color: red;}
+
+/* toolbar setting */
+
+div#toolbar {
+	float: right;
+	margin: 0px;
+	padding: 0px;
+	font-size: 80%;
+	background: white;
+/*	border: 2px #999 solid; */
+/*	border-bottom: 0px; */
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright: 8px;
+	-webkit-border-top-left-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	font-family: sans-serif;
+	opacity: 0.2;
+/*	border: 2px solid #aaa; */
+/*	border-bottom: 0px solid #aaa; */
+}
+
+div#toolbar a {
+	text-decoration: none;
+	color: #11e;
+}
+div#toolbar a#current {
+	text-decoration: none;
+	color: green;
+}
+
+div.tmenu {
+	float: left;
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright: 8px;
+	-webkit-border-top-left-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	padding: 0px;
+	opacity: 0.8;
+}
+div.tmenut {
+	padding: 1px 10px 1px 10px;
+}
+div.tsub {
+	position: absolute;
+	display: none;
+	border: 1px solid #d0d0d0;
+	-moz-border-radius-topright: 8px;
+	-moz-border-radius-bottomright: 8px;
+	-moz-border-radius-bottomleft: 8px;
+	background: #ffffff;
+	padding: 0px;
+}
+div.tsubi {
+	padding: 2px 10px 2px 10px;
+	white-space: nowrap;
+}
+div.tsubi a {
+	color: #000;
+}
+div.tsubi:hover {
+	background: #e0e0e0;
+}
+
+/* run list */
+table#run_list { font-size: 11pt; border: 1px solid black; }
+table#run_list td.size { text-align: right; width: 48pt;}
+table#run_list td.jig {text-align: center; }
+table#run_list tr.row0:hover { color: blue; background: #d0d0f0; }
+table#run_list tr.row1:hover { color: blue; background: #f0f0f0; }
+table#run_list tr.row0 a {text-decoration: none;}
+table#run_list tr.row1 a {text-decoration: none;}
+table#run_list tr.row0 a:hover {color: red;}
+table#run_list tr.row1 a:hover {color: red;}
+   
+table#gas_list td.val { background: #eee; }
+
+/* magnifier */
+div.fullimg {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+/* login */
+body.login {
+    background: #eee;
+}
+.login div#container {
+    width: 360px;
+	margin: 60px auto 20px auto;
+	
+}
+
+.login div#dialog {
+    background: #fff;
+    border: 6px solid #999;
+	padding: 20px 40px 10px 40px;
+}
+
+.login dt {
+    float: left;
+	width: 80px;
+	font-size: 14px;
+	line-height: 24px;
+}
+.login dd {
+    margin: 0px 0px 5px 90px;
+	font-size: 11px;
+	line-height: 24px;
+	width: 120px;
+}
+
+.login div.error {
+	padding: 2px 4px 2px 4px;
+	color: red;
+}
+
+/* tray/inner.php */
+table#module_content {
+    font-size: 11pt;
+    border: 1px solid black;
+    text-align:center;
+}
+
+#module_conten td.size { text-align: right; width: 48pt;}
+#module_conten td.jig {text-align: center; }
+#module_conten tr.row0:hover { color: black; background: #f0f0d0; }
+#module_conten tr.row1:hover { color: black; background: #f0f0d0; }
+#module_conten tr.row0 a {text-decoration: none;}
+#module_conten tr.row1 a {text-decoration: none;}
+#module_conten tr.row0 a:hover {color: red;}
+#module_conten tr.row1 a:hover {color: red;}
+#module_conten tr.row_tdig {color:black; background:  black; }
+#module_conten tr.row_tino {color:black; background:  black; }
+#module_conten tr.row_module {color:black; background:  black; }
+
+/* tray/notes.php */
+table#notes { font-size: 11pt; border: 1px solid black; }
+table#notes td.note {font-size: 11pt; width: 12px;}
+
+/* tray/list.php */
+table#tray_list { font-size: 11pt; border: 1px solid black; }
+table#tray_list td.size { text-align: right; width: 48pt;}
+table#tray_list td.jig {text-align: center; }
+table#tray_list tr.row0:hover { color: black; border: solid 1px black; background: #f0f0d0;}
+table#tray_list tr.row1:hover { color: black; border: solid 1px black; background: #f0f0d0;}
+table#tray_list tr.row0 a {text-decoration: none;}
+table#tray_list tr.row1 a {text-decoration: none;}
+table#tray_list tr.row0 a:hover {color: red;}
+table#tray_list tr.row1 a:hover {color: red;}

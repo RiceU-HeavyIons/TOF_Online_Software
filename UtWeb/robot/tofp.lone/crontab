@@ -1,0 +1,13 @@
+# $Id: crontab,v 1.8 2007/08/22 02:44:52 tofp Exp $
+SHELL=/bin/sh
+PATH=/bin:/usr/bin:/usr/local/root/bin
+MAILTO=tofp
+BASE=/homes/tofp/UtWeb/robot/tofp.lone
+LOG=/homes/tofp/public_html/_static/var/log/cron.log
+LD_LIBRARY_PATH=/usr/local/root/lib
+ROOTSYS=/usr/local/root
+
+13 * * * * run-parts ${BASE}/cron.hourly >> ${LOG}
+18 4 * * * run-parts ${BASE}/cron.daily  >> ${LOG}
+23 3 * * 0 run-parts ${BASE}/cron.weekly >> ${LOG}
+

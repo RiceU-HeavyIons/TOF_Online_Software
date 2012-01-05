@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- $Id: operation.html,v 1.3 2007/08/21 11:18:11 tofp Exp $ -->
+<!-- Copyright (C) 2006, 2007, Kohei Kajimoto -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>quick how-to</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" type="text/css" href="../style/orange.css"/>
+<style type="text/css">
+div.command {
+	font-family: monospace;
+	color: white;
+	background-color: black;
+	margin: 5px 40px 5px 40px;
+	padding: 10px;
+	border: 1px solid blue;
+}
+</style>
+</head>
+<body>
+<h1>quick how-to</h1>
+
+<h2><a name="tree_maker">TreeMaker</a></h2>
+<h3>environment setup</h3>
+<p>Programs contained in the directory <b>tof/TreeMaker</b> use ROOT fremework extensively, 
+so please make sure ROOT environment is configured correctly before analysis; 
+if you're using sh/bash type like these</p>
+<div class="command">
+sh$ export ROOTSYS=/home/tofp/root<br/>
+sh$ export PATH=${ROOTSYS}/bin:${PATH}<br/>
+sh$ export LD_LIBRARY_PATH=${ROOTSYS}/lib<br/>
+</div>
+<p>or if you're using csh/tcsh</p>
+<div class="command">
+csh&gt; setenv ROOTSYS /home/tofp/root<br/>
+csh&gt; setenv PATH ${ROOTSYS}/bin:${PATH}<br/>
+csh&gt; setenv LD_LIBRARY_PATH ${ROOTSYS}/lib<br/>
+</div>
+
+<p>Now you're ready to compile the programs.</p>
+<div class="command">
+[tofp@pegasus TreeMaker]$ make<br/>
+g++ -g3 -Wall `root-config --cflags` -o TreeMaker.o -c TreeMaker.C<br/>
+g++ -g3 -Wall `root-config --cflags` -o TSTreeMaker.o -c TSTreeMaker.C<br/>
+g++ -g3 -Wall `root-config --cflags` -o TSPacket.o -c TSPacket.C<br/>
+g++ `root-config --glibs` -o TreeMaker TreeMaker.o TSTreeMaker.o TSPacket.o<br/>
+g++ -g3 -Wall `root-config --cflags` -o PlotNoiseRate.o -c PlotNoiseRate.C<br/>
+g++ -g3 -Wall `root-config --cflags` -o TSEvent.o -c TSEvent.cxx<br/>
+g++ `root-config --glibs` -o PlotNoiseRate PlotNoiseRate.o TSPacket.o TSEvent.o<br/>
+</div>
+
+<h3>execution</h3>
+<p><b>TreeMaker</b> is the main program. Here is an example of how to run the code:</p>
+<div class="command">
+$ ./TreeMaker /home/data/test_stand/ts10000018.dat 1
+</div>
+<p>First argument is data file and second is a switch for type of data file 
+(TAMP=0, TINO=1). It creates *.root file in the same directory.</p>
+
+<h2><a name="histo_maker">HistoMaker</a></h2>
+<p>If you have set up the environment variables above, you can build executant by just typing make.
+<div class="command">
+[tofp@pegasus HistoMaker]$ make<br/>
+g++ -g3 -Wall `root-config --cflags` -c HistoMaker.C -o HistoMaker.o<br/>
+g++ -g3 -Wall `root-config --cflags` -c TSHistoMaker.C -o TSHistoMaker.o<br/>
+g++ -g3 -Wall `root-config --cflags` -c TSResults.C -o TSResutls.o<br/>
+g++ -g3 -Wall `root-config --cflags` -c TSFitParams.C -o TSFitParams.o<br/>
+g++ -g3 -Wall `root-config --glibs` -o HistoMaker HistoMaker.o TSHistoMaker.o TSResutls.o TSFitParam<br/>
+</div>
+
+<h3>execution</h3>
+<p><b>HistoMaker</b> is the main program here. It doesn't make output directories for you, 
+so you need to make them by hand first.</p>
+<div class="command">
+$ mkdir -p /home/data/test_stand/out/ts10000018/fig
+</div>
+
+<p>Then let's create histograms (gifs actually).</p>
+<div class="command">
+$ export DATA_DIR=/home/data/test_stand<br/>
+$ ./HistoMakers ${DATA_DIR}/ts10000018.root ${DATA_DIR}/out/ts10000018/fig/ 7 444000
+</div>
+<p>First argment is the ROOT file made by TreeMaker, second is ouput directory, third is mode, 
+and the last one is running time in second. Please use mode=7 for TINO or 15 (=07|010) for TAMP.
+Please consult the source code, HistoMaker.C for details. Running time can be obtaind from *.log file 
+in the data directory.</p>
+<div class="command">
+$ cat /home/data/test_stand/ts10000018.log<br/>
+1140118680576 [Thu Feb 16 13:38:00 CST 2006] start 10000018<br/>
+1140562680968 [Tue Feb 21 16:58:00 CST 2006] stop 10000018 (444000392 msec)<br/>
+</div>
+<p>All outputs are placed in the directory we made above.</p>
+
+<h2>TestStandWeb</h2>
+<p>There are some Ruby scripts for creating html files.</p>
+<div class="command">
+$ cd tof/TestStandWeb<br/>
+$ ruby script/make_html.rb ${DATA_DIR}/out/ts10000018 ts10000018 3 3 1<br/>
+$ ruby script/thumb.rb ${DATA_DIR}/out/ts10000018<br/>
+</div>
+<p>I guess, "3 3 1" menas that the pads array consists of 3 raws, 3 columns, and iteration for slwing correction has been done once.</p>
+<p>Let's check it out!</p>
+<div class="command">
+$ firefox ${DATA_DIR}/out/ts10000018/
+</div>
+
+<h2>Other Stuff</h2>
+<ul>
+ <li>tof/HistoMaker/stats
+  <p>Working direcotry for the summary page. Some results are here in <a href="http://www.yaml.org/">YAML</a> format.
+ I typed all data by hand. A Ruby script in this directory can summarize the files into a html file.</p>
+ </li>
+ <li>tof/TSCenter
+  <p>A GUI for the pcanloop. start.sh gets it up.</p>
+ </li>
+ <li>tof/gasmon
+  <p>A recorder for the THPS400 unit. It's writing data into a local ROOT file. It's also serving a little client generating 
+  <a href="http://www.rhip.utexas.edu/~koheik/tof/gasmon.svg">a graph</a> via (SSH tunneled) TCP connection. Currently client 
+  is working on pisces as a user process.</p>
+ </li>
+</body>
+</html>

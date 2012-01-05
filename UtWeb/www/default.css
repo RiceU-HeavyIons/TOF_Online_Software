@@ -1,0 +1,118 @@
+/* $Id: default.css,v 1.3 2006/10/31 17:28:33 koheik Exp $ */
+
+body {
+	margin:		0;
+	padding:	10px 15px 10px 15px;
+}
+
+h1  {
+	color: #eee;
+	background: #e7aa5c;
+	border: 2px solid #c79a4c;
+	padding: 1.5px 6px 1.5px 6px;
+	
+}
+
+h2 {
+	color: #eee;
+	/*	background: #e7aa5c; */
+	border: 2px solid #c79a4c;
+/*	margin: 0px 20px 0px 5px; */
+	padding: 1.5px 6px 1.5px 6px
+}
+
+h3 {
+	color: #eee;
+	background: #e7aa5c;
+	border: 1px solid #c79a4c;
+/*	margin: 0px 30px 0px 15px; */
+	padding: 1.5px 6px 1.5px 6px;
+}
+
+p	{	padding: 1px 15px 1px 15px; }
+div	{	padding: 1px 15px 1px 15px; }
+	
+pre {
+	border: 1px dashed #abaaa6;
+	padding: 5px 10px 5px 10px;
+	margin: 10px 60px 10px 20px;
+}
+/*
+td {
+	border: 1px solid #e7aa5c;
+	font-size: small;
+} */
+
+img {
+	border: 0px;
+}
+
+blockquote {
+	color: black;
+	background: #fff;
+	border: 1px dashed #c79a4c;
+	margin: 2% 6% 2% 6%;
+	padding: 1.5px 6px 1.5px 6px
+		
+	}
+
+
+body {
+	margin: 10px 20px 10px 20px;
+	background: #bbb;
+}
+div#main {
+	background: white; 
+	border: 2px #999 solid;
+	padding: 10px;
+}
+
+body.popup {
+	margin: 5px 10px 5px 10px;
+	background: #bbb;
+}
+
+div.title {font-size: 120%;}
+
+tr.rowt {
+	background-color: #eee;
+	font-size: 60%;
+}
+
+tr.row0 {
+	background-color: #ddddff;
+/*	font-size: 80%; */
+}
+tr.row1 {
+	background-color: #ffffff;
+/*	font-size: 80%; */
+}
+td { padding: 1pt 2pt 1pt 2pt; }
+td.size {
+	text-align: right;
+}
+
+div#toolbar { 
+	font-size: 80%;
+	background: #eee;
+	margin: 0px;
+	padding: 2px;
+	border: 2px solid #aaa;
+	border-bottom: 0px solid #aaa;
+}
+
+div.title {
+	font-size: 150%;
+	border-top: 1px solid #55e;
+	border-left: 5px solid #55e; 
+	margin: 2px 2px 2px 2px;
+	padding: 2px 10px 2px 10px;
+}
+
+.section div.title {
+	font-size: 110%;
+	border-top: 1px solid #55e;
+	border-left: 5px solid #55e;
+	margin: 2px 2px 2px 2px;
+	padding: 2px 2px 2px 10px;
+}
