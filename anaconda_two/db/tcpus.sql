@@ -133,7 +133,7 @@ insert into tcpus values (104, 4, 41,  77,  73,  4, 'C0',  5,  7,  9,  8,  1);
 insert into tcpus values (105, 4, 42,  80,  76,  4, 'C1',  5,  8,  9,  9,  1);
 insert into tcpus values (106, 4, 43,  87,  83,  4, 'C2',  5,  9,  9, 10,  1);
 insert into tcpus values (107, 4, 44,  73,  69,  4, 'B2',  5, 10,  9, 11,  1);
-insert into tcpus values (108, 4, 45,  84,  80,  4, 'D0',  5, 11,  9, 12,  1);
+insert into tcpus values (108, 4, 45,  64,  60,  4, 'D0',  5, 11,  9, 12,  1);
 
 insert into tcpus values (109, 4, 46,  86,  82,  4, 'D1', 11,  0, 10,  1,  1);
 insert into tcpus values (110, 4, 47,  78,  74,  4, 'D2', 11,  1, 10,  2,  1);
