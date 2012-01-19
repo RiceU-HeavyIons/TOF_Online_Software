@@ -15,6 +15,7 @@ static char  __attribute__ ((unused)) vcid[] =
 // INCLUDES
 #include <iostream>
 //#include <fstream>
+#include <string>
 using namespace std;
 
 #include <stdio.h>
@@ -331,8 +332,25 @@ int main(int argc, char *argv[])
 	  saveit = true;
 	  if (fp != (FILE *)NULL)
 	    printf("File already open, ignoring...\n");
-	  else
-	    fp = fopen (ptr, "w");
+	  else {
+	    string stFilename(ptr);
+	    if(stFilename.find_last_of("/") != string::npos) {
+	      struct stat st;
+	      string stDirname = stFilename.substr(0,stFilename.find_last_of("/"));
+	      if (stat(stDirname.c_str(), &st) != 0) {
+		/* Directory does not exist */
+		string stCmdline = "mkdir -p " + stDirname;
+		// if (mkdir(stDirname.c_str(), 0777) != 0)
+		if (system(stCmdline.c_str()) != 0)
+		  cout << "Couldn't create directory " 
+		       << stDirname << endl;
+	      }	      
+	    }
+	    if ((fp = fopen (ptr, "w")) == (FILE *)NULL) {
+	      cout << "Couldn't open file " << ptr << endl;
+	      saveit = false;
+	    }
+	  }
 	}
 	else
 	  printf("No filename specified. No file opened\n");
