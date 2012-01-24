@@ -7,7 +7,8 @@ function tbon(){
 
 function tboff(){
 	var e = document.getElementById('toolbar');
-	e.style.opacity = "0.2";
+	//e.style.opacity = "0.2";
+	e.style.opacity = "0.8";
 }
 
 function topen(e, name) {
