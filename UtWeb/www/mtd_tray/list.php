@@ -1,5 +1,5 @@
 <?php
-# $Id: list.php,v 1.1 2012/01/05 17:29:04 tofp Exp $
+# $Id: list.php,v 1.2 2012/01/24 18:22:22 tofp Exp $
 include("../../lib/orm.php");
 include("../../lib/connect.php");
 include("../../lib/session.php");
@@ -83,6 +83,12 @@ function new_tray(){
   echo "</form>";
 }
 
+function new_run(){
+  echo "<form action='create_noiserun.php' method='post'>";
+  echo "<input name='new' type='submit' value='Run'/>";
+  echo "</form>";
+}
+
 function new_component(){
   echo "<form action='../component/create.php' method='post'>";
   echo "<input name='new' type='submit' value='Create New Board'/>";
@@ -137,6 +143,8 @@ if(Session::loggedin()){
   new_module();
   echo "</td><td>";
   new_component();
+  echo "</td><td>";
+  new_run();
   echo "</td><td>";
   Session::logout_button();
 }
