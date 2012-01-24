@@ -1,5 +1,5 @@
 <?php
-# $Id: view.php,v 1.1 2012/01/05 17:29:04 tofp Exp $
+# $Id: view.php,v 1.2 2012/01/24 18:23:10 tofp Exp $
 include("../../lib/connect.php");
 include("../../lib/orm.php");
 include("../../lib/utility.php");
@@ -167,53 +167,46 @@ if ($tray->id > 0) {
   
 
 # -----------------------------------------------------------------------------
-  if ($rs = $tray->find_runs("run_type_id = 4")) {
+# Noise Runs:
+  $runsr=mysql_query("SELECT * FROM mtd_runs WHERE tray_id = '$tray->id' AND run_type_id = 4 ", $con);
+  if (mysql_num_rows($runsr) > 0) {
     echo "<div class='section'>\n";
-    echo "<div class='title'>Noise Test (Hz)</div>\n";
+    echo "<div class='title'>Noise Runs</div>\n";
     $l = 0;
     echo "<table>\n";
     echo "<tr>\n";
     echo " <th></th>\n";
     echo " <th>ID</th>\n";
-#    echo " <th>Status</th>\n";
-#    echo " <th>Operator</th>\n";
-#   echo " <th>Type</th>\n";
-    echo " <th>Config</th>\n";
-    echo " <th>Setup</th>\n";
     echo " <th>Start</th>\n";
     echo " <th>Stop</th>\n";
-    echo " <th>Avg</th>\n";
-    echo " <th>Min</th>\n";
-    echo " <th>Max</th>\n";
-#    echo " <th>MR</th>\n";
+    echo " <th>Events</th>\n";
+    echo " <th>Results</th>\n";
     echo "</tr>\n";
 
-    foreach($rs as $run) {
-      if($ct = $run->mr_count) {
+    while ($rs = mysql_fetch_object($runsr)) {
         $l += 1;
         $ll = $l % 2;
         echo " <tr class='row$ll'>\n";
         echo "  <td>$l.</td>\n";
-        echo "  <td>", mk_link($run->id, "../run/show.php?id=" . $run->id), "</td>\n";
-#        echo "  <td>", $run->status->name, "</td>\n";
-#        echo "  <td>", $run->user->name, "</td>\n";
-#       echo "  <td>", $run->type->name, "</td>\n";
-        echo "  <td>", mk_link($run->config->id, "../config/show.php?id=" . $run->config->id), "</td>\n";
-        echo "  <td>", $run->config->type->name, "</td>\n";
-        echo "  <td>", $run->start, "</td>\n";
-        echo "  <td>", $run->stop, "</td>\n";
-        $st = $run->stats_for_tray($tray->id);
-        echo "  <td class='float'>" . sprintf("%5.1f", $st["avg"]) . "</td>\n";
-        echo "  <td class='float'>" . sprintf("%5.1f", $st["min"]) . "</td>\n";
-        echo "  <td class='float'>" . sprintf("%5.1f", $st["max"]) . "</td>\n";
+        echo "  <td>", $rs->id, "</td>\n";
+        #echo "  <td>", mk_link($run->id, "../run/show.php?id=" . $run->id), "</td>\n";
+        echo "  <td>", $rs->start, "</td>\n";
+        echo "  <td>", $rs->stop, "</td>\n";
+        echo "  <td>", $rs->events, "</td>\n";
+        echo "  <td>", mk_link("results.pdf", $rs->results_uri), "</td>\n";
+        #$st = $run->stats_for_tray($tray->id);
+        #echo "  <td class='float'>" . sprintf("%5.1f", $st["avg"]) . "</td>\n";
+        #echo "  <td class='float'>" . sprintf("%5.1f", $st["min"]) . "</td>\n";
+        #echo "  <td class='float'>" . sprintf("%5.1f", $st["max"]) . "</td>\n";
 #        echo "  <td class='int'>", $ct, "</td>\n";
         echo " </tr>\n";
-      }
     }
     echo "</table>\n";
     echo "</div> <!-- section -->\n";
   }
+
 # -----------------------------------------------------------------------------
+# Time Resolution runs:
   if ($rs = $tray->find_runs("run_type_id = 7")) {
     echo "<div class='section'>\n";
     echo "<div class='title'>Timing Resolution Test (ps)</div>\n";
