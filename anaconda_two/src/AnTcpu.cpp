@@ -119,7 +119,7 @@ void AnTcpu::init(int level)
       if (m_eeprom == 2) d0 = 0x8a;          // EEPROM 2
       AnAgent::set_msg(msg, canidw(),
 		       MSGTYPE_STANDARD, 5, d0, 0x69, 0x96, 0xa5, 0x5a);
-      //			                 MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
+      //	       MSGTYPE_STANDARD, 5, 0x7f, 0x69, 0x96, 0xa5, 0x5a);
       agent()->write_read(msg, rmsg, 3);
 
       // moving the multiplicity gate: default is 0 (do nothing for 0)
@@ -135,10 +135,12 @@ void AnTcpu::init(int level)
       log(QString("init: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
       incCommError();
     }
-  } else {
-    log(QString("init: wasn't issued, active=%1, level=%2, commError=%3")
-	.arg(active()).arg(level).arg(commError()));
-  }
+  } 
+  // This log really isn't necessary
+//   else {
+//     log(QString("init: wasn't issued, active=%1, level=%2, commError=%3")
+// 	.arg(active()).arg(level).arg(commError()));
+//   }
 }
 
 //-----------------------------------------------------------------------------
