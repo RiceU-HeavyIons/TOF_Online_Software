@@ -183,8 +183,11 @@ insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
 --insert into configs values (null,   3, 54,  12,   1,   2,   7,   0,      0);
 insert into configs values (null,   3, 55, 102,   1, 255, 255,   0,      1);
 
--- 6. TCPU NW 0x3a (58) seems to not always sync, toggle it
---insert into configs values (null,   3, 61, 211,   2,  46,   0,   0,      1);
+-- 6. TCPU NW 0x2d (45) and 0x2f (47) seem to not always sync, toggle it
+-- first sleep a little
+insert into configs values (null,   3, 60, 106,   0,   0,   0,   0, 500000);
+insert into configs values (null,   3, 61, 211,   2,  45,   0,   0,      1);
+insert into configs values (null,   3, 62, 211,   2,  47,   0,   0,      1);
 
 -- 7. sleep a little (700ms)
 insert into configs values (null,   3, 70, 106,   0,   0,   0,   0, 700000);
