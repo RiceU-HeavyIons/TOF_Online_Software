@@ -22,6 +22,17 @@
 #include "AnMaster.h"
 #include "AnExceptions.h"
 
+/*
+  JS:
+  To create this version.h file:
+  echo -n "#define SVN_VERSION \"" > src/version.h
+  svnversion -n . >> src/version.h 
+  echo -n "\"" >> src/version.h 
+  echo ""  >> src/version.h 
+*/
+
+#include "version.h"
+
 // static member initialization
 int AnRoot::TCAN_AUTOREPAIR = 1;
 
@@ -85,6 +96,8 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
     m_tlog = new AnLog(default_path.filePath(QString("log/temp%1").arg(now.toString("yyyyMMdd.log"))));
   }
   
+  log(QString("AnRoot::AnacondaSVNVersion: %1").arg(SVN_VERSION));
+
   QSqlQuery qry;
   qry.exec("SELECT id, devid, name, installed FROM devices");
   while(qry.next()) {
@@ -100,7 +113,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
     m_hnet[id].setObjectName(name);
   }
   
-  // open devices and create gents 
+  // open devices and create agents 
   m_agents = AnAgent::open(m_devid_map);
   
   // create THUB objects
@@ -141,6 +154,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
     //		if(!active) continue;
     AnTcpu *tc = new AnTcpu(AnAddress(2, id, 0, 0),
 			    AnAddress(devid, canbus_id, 0, 0), this);
+
     // for MTD:
     if (id > 122) tc->setName(QString("MTD  %1").arg(tray_sn));
     tc->setInstalled(installed);
@@ -170,7 +184,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   
   m_master = new AnMaster(this);
   setMode(0);
-  
+
   initAutoSync();
   
   // setup various maps and watches for incoming messages
@@ -397,6 +411,7 @@ void AnRoot::sync(int level, const QList<AnBoard*>& blist)
   setSynced();
 }
 
+//-----------------------------------------------------------------------------
 int AnRoot::status()
 {
   int hist[5];
@@ -411,6 +426,7 @@ int AnRoot::status()
   if(hist[AnBoard::STATUS_COMM_ERR]) ret = AnBoard::STATUS_COMM_ERR;
   return ret;
 }
+
 //-----------------------------------------------------------------------------
 // Agents support
 bool AnRoot::isRunning() const
@@ -479,6 +495,7 @@ void AnRoot::doUserCmd(int i)
   m_master->setMode(i + 100);
 }
 
+//-----------------------------------------------------------------------------
 /**
  * Find object from logical address. Validation is not implemented and causes
  * segmentation fault very very easily.
@@ -490,6 +507,7 @@ AnCanObject *AnRoot::find(const AnAddress &lad)
     ( at(lad.at(0))->at(lad.at(1))->at(lad.at(2))->at(lad.at(3)) );
 }
 
+//-----------------------------------------------------------------------------
 /**
  * Find object by Address list and return object list 
  */
@@ -749,6 +767,7 @@ void AnRoot::readModeList()
     m_mode_list << md;
   }
 }
+
 //-----------------------------------------------------------------------------
 void AnRoot::readTdcConfig()
 {
