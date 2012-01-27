@@ -10,6 +10,14 @@ INCLUDEPATH += . ../inc
 QT += sql
 CONFIG -= release
 CONFIG += debug
+
+extralib.target = extra
+extralib.commands = cd ..; ./makeVersionFile.sh
+extralib.depends =
+ 
+QMAKE_EXTRA_TARGETS += extralib
+PRE_TARGETDEPS = extra
+
 # STATIC = no
 # contains(STATIC, yes) {
 #   CONFIG += static
@@ -51,7 +59,7 @@ HEADERS += AnExceptions.h \
            AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \
            AnRoot.h AnAgent.h AnMaster.h \
-           AnRdMsg.h AnLog.h
+           AnRdMsg.h AnLog.h version.h
 
 SOURCES += AnAddress.cpp \
            AnCanObject.cpp AnCanNet.cpp AnBoard.cpp \
