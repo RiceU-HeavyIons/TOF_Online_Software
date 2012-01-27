@@ -16,7 +16,7 @@ extralib.commands = cd ..; ./makeVersionFile.sh
 extralib.depends =
  
 QMAKE_EXTRA_TARGETS += extralib
-PRE_TARGETDEPS = extra
+#PRE_TARGETDEPS = extra
 
 # STATIC = no
 # contains(STATIC, yes) {
