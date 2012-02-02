@@ -70,7 +70,7 @@ QString AnRdMsg::toString() const
 	char buf1[128];
 	char buf2[16];
 
-	sprintf(buf1, "AnRdMsg(DEVID=0x%x ID=0x%x TYPE=0x%x LEN=%d DATA=[",
+	sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
 		devid(), id(), type(), len());
 	for(int i = 0; i < len(); ++i) {
 		if (i == 0)
@@ -88,7 +88,7 @@ QDebug operator<<(QDebug dbg, const AnRdMsg &m)
 	char buf1[128];
 	char buf2[16];
 
-	sprintf(buf1, "AnRdMsg(DEVID=0x%x ID=0x%x TYPE=0x%x LEN=%d DATA=[",
+	sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
 		m.devid(), m.id(), m.type(), m.len());
 	for(int i = 0; i < m.len(); ++i) {
 		if (i == 0)
