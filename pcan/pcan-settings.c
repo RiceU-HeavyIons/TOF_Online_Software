@@ -130,8 +130,8 @@ int setDeviceNumber(int nFileNo, int deviceNo)
 int main(int argc, char *argv[])
 {
   int ret = 0;
-  char *szDevNode = DEFAULT_NODE;
-  char *szSerialNo = "";
+  char *szDevNode = (char *)DEFAULT_NODE;
+  char *szSerialNo = (char *)"";
   unsigned int serialNo = 0;
   int deviceNo = 0;
   poptContext context;
@@ -233,11 +233,14 @@ int main(int argc, char *argv[])
       else
       {
         ret = getDeviceNumber(nFileNo, &deviceNo);
-        if (!ret)
-          if (verbose)
+        if (!ret) {
+          if (verbose) {
             printf("%s: DeviceNumber is %d\n", PRGNAME, deviceNo);
-          else
+	  }
+          else {
             printf("%d\n", deviceNo);
+	  }
+	}
       }
     }
 
