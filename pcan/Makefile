@@ -12,7 +12,7 @@ DIST_FILES = pcanloop.cc pc.c can_utils.cc can_utils.h \
 
 # Targets:
 
-all:		pcanloop pc pcan_find showSerdes \
+all:		pcan-settings pcanloop pc pcan_find showSerdes \
 		xgetStatus xp_config xsetThreshold xenableChannel \
 		xp_config_scripted xp_config_reset p_config \
 		x_getChecksum_l getChecksum_l xp_config_scripted_l \
@@ -25,6 +25,9 @@ all:		pcanloop pc pcan_find showSerdes \
 		xp_eeprom2_l xMCU2_l xp_config_pm_l \
 		x_readHPTDCconfig_l
 
+
+pcan-settings:	pcan-settings.c
+	$(CXX) -Wall $^ -o $@ -lpopt -lpcan
 
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
