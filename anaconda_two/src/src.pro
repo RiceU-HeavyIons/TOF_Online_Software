@@ -41,7 +41,8 @@ debug {
 
 CONFIG(epics) {
 	message("epics defined")
-	DEFINES += WITH_EPICS
+#	DEFINES += WITH_EPICS
+	DEFINES += WITH_EPICS UNIX
 
 	EPICSDIR = /usr/local/epics
 	EZCADIR = $${EPICSDIR}/extensions/srz/ezca
@@ -59,6 +60,7 @@ HEADERS += AnExceptions.h \
            AnTcpu.h AnTdig.h AnTdc.h AnTdcConfig.h \
            AnThub.h AnSerdes.h \
            AnRoot.h AnAgent.h AnMaster.h \
+           AnEpicsLogger.h \
            AnRdMsg.h AnLog.h version.h
 
 SOURCES += AnAddress.cpp \
@@ -66,4 +68,5 @@ SOURCES += AnAddress.cpp \
            AnTcpu.cpp AnTdig.cpp AnTdc.cpp AnTdcConfig.cpp \
            AnThub.cpp AnSerdes.cpp \
            AnRoot.cpp AnAgent.cpp AnMaster.cpp \
+           AnEpicsLogger.cpp \
            AnRdMsg.cpp AnLog.cpp
