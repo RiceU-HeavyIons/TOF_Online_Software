@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 
 #include "AnMaster.h"
+#include "AnEpicsLogger.h"
 #include "AnExceptions.h"
 
 /*
@@ -182,11 +183,17 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   readModeList();
   readTdcConfig();
   
+  // This starts a new thread for logging temperatures to EPICS
+  m_epicsLogger = new AnEpicsLogger(this);
+  m_epicsLogger->start();
+
   m_master = new AnMaster(this);
   setMode(0);
 
   initAutoSync();
-  
+
+
+
   // setup various maps and watches for incoming messages
   foreach(AnAgent *ag, m_agents) {
     ag->setRoot(this);
@@ -745,7 +752,8 @@ void AnRoot::received(AnRdMsg rmsg)
 	emit updated(brd);
       }
     }
-  } else {
+  }
+  else {
     log("received: unknown source");
   }
 }
@@ -824,12 +832,22 @@ void AnRoot::log(QString str)
   mtex_log.unlock();
 }
 
-void AnRoot::tlog(QString str)
+void AnRoot::tlog(QString str, int type, int tray, int board, double val)
 {
   mtex_tlog.lock();
   m_tlog->log(str);
+#ifdef WITH_EPICS
+  if (type > 0)
+    m_epicsLogger->q_elog(type,tray,board,val);
+#else
+  Q_UNUSED(type);
+  Q_UNUSED(tray);
+  Q_UNUSED(board);
+  Q_UNUSED(val);
+#endif
   mtex_tlog.unlock();
 }
+
 
 void AnRoot::handler(int sigNum)
 {

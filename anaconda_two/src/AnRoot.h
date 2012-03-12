@@ -32,6 +32,7 @@
 #define LOCK_FILENAME       "/tmp/AnacondaII.lock"  // lock file to prevent multiple instances of application
 
 class AnMaster;
+class AnEpicsLogger;
 
 class AnRoot : public AnCanObject {
 	Q_OBJECT
@@ -131,7 +132,7 @@ public:
 	void emit_finished() { emit finished(); }
 	
 	void log(QString str);
-	void tlog(QString str);	
+	void tlog(QString str, int type=0, int tray=0, int board=0, double val = 0.0);	
 
 signals:
 	void updated(AnBoard*);
@@ -160,6 +161,7 @@ private:
 	QMap<int, AnCanNet>     m_lnet;
 
 	AnMaster               *m_master;
+	AnEpicsLogger          *m_epicsLogger;
 	QMap<int, AnAgent*>     m_agents;
 	QMap<int, AnAgent*>     m_socket_agent_map;
 	QMap<int, AnAgent*>     m_devid_agent_map;
