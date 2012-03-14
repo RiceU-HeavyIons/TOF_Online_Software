@@ -212,7 +212,7 @@ void AnTcpu::sync(int level)
 	clearCommError();
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	setEcsr(rmsg.Msg.DATA[3]);
-	setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+	setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/256.0);
 	agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()));
 
 	if (level >= 3) {

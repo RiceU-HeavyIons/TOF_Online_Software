@@ -60,7 +60,7 @@ void AnTdig::sync(int level)
       btrace << AnRdMsg(haddr().at(0), rmsg).toString();
       // since communication succeeded, make sure commError is cleared
       clearCommError();
-      setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/100.0);
+      setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/256.0);
       setEcsr(rmsg.Msg.DATA[3]);
 #ifdef WITH_EPICS
       agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()),
