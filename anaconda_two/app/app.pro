@@ -28,8 +28,8 @@ message($$CONFIG)
 CONFIG(epics) {
 	message("epics defined")
 	EPICSDIR = /usr/local/epics
-	EZCALIBDIR = $${EPICSDIR}/extensions/lib/linux-x86
-	CALIBDIR = $${EPICSDIR}/base/lib/linux-x86
+	EZCALIBDIR = $${EPICSDIR}/extensions/lib/linux-x86_64
+	CALIBDIR = $${EPICSDIR}/base/lib/linux-x86_64
 	LIBDIRS = -L$$CALIBDIR -L$$EZCALIBDIR 
 
 	LIBS += -Wl,-rpath,$$CALIBDIR
