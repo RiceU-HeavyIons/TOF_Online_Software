@@ -6,7 +6,7 @@ TEMPLATE = subdirs
 CONFIG += debug
 
 debug {
-  SUBDIRS += fakepcan dev
+  SUBDIRS += fakepcan
 }
 
 SUBDIRS += src app
