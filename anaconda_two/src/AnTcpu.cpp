@@ -213,7 +213,12 @@ void AnTcpu::sync(int level)
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	setEcsr(rmsg.Msg.DATA[3]);
 	setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/256.0);
+#ifdef WITH_EPICS
+	agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()),
+			      2, laddr().at(1), 0, temp());
+#else
 	agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()));
+#endif
 
 	if (level >= 3) {
 	  // get firmware versions

@@ -66,6 +66,11 @@ void AnEpicsLogger::run()
 	  sprintf(tempStr, "TOFTempTray%03dTDIG%d", elog.tray, elog.board);
 	  //sprintf(tempStr, "TOFTempTray%03dTDIG%d", 1, 1);
 	  break;
+	case 2:
+	  sprintf(tempStr, "TOFTempTray%03dTCPU", elog.tray);
+	  break;
+	default:
+	  sprintf(tempStr, "TOFunknown");
 	}
       
 #ifdef WITH_EPICS
