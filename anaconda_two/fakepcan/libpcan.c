@@ -228,8 +228,8 @@ DWORD THUB_readHandler(HANDLE hHandle, TPCANMsg *pMsgBuff)
   case 0x03: // Get Temperature
     temp = 30.0 + 10.0*rand()/RAND_MAX;
     pMsgBuff->LEN = 2;
-    pMsgBuff->DATA[0] = 0xFF & (int)(temp*100.0); // temperature xx.16
-    pMsgBuff->DATA[1] = 0xFF & (int)(temp); // temperature 32.xx
+    pMsgBuff->DATA[0] = 0xFF & (int)(temp*128.0); // temperature xx.16
+    pMsgBuff->DATA[1] = 0xFF & (int)(temp/2.0); // temperature 32.xx
     pMsgBuff->DATA[2] = 0xbb; // ESCR
     pMsgBuff->DATA[3] = 0; // AD 1L
     pMsgBuff->DATA[4] = 0; // AD 1H
