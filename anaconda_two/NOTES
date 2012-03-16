@@ -1,3 +1,9 @@
+With Qt 4.8.0, I had to compile Qt with the following configure command line under SL5.7:
+
+./configure -no-webkit
+
+But it still worked.
+
 With default non-expert mode, you only can refresh and issue user command 3. 
 If you want to use expert mode again, you just need to open console from view menu 
 and type 'expert 1'. 
