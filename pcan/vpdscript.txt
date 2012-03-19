@@ -1,0 +1,7 @@
+0 0x10 hptdc/cfig20120319.txt
+0 0x11 hptdc/cfig20120319.txt
+0 0x12 hptdc/cfig20120319.txt
+0 0x14 hptdc/cfig20120319.txt
+0 0x15 hptdc/cfig20120319.txt
+1 0x10 hptdc/cfig20120319a.txt
+1 0x14 hptdc/cfig20120319a.txt
