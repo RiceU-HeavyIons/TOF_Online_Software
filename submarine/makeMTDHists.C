@@ -125,10 +125,10 @@ int makeMTDHists (
   TLine *line = new TLine(11.98864,-0.03483106,11.98864,c1->GetUymax());
   line->Draw();
 
-  tex = new TLatex(2.239441,14.2183,"High Z");
+  tex = new TLatex(2.239441,(noise->GetMaximum())/2.0,"High Z");
   tex->SetLineWidth(2);
   tex->Draw();
-  tex = new TLatex(14.61455,13.65999,"Low Z");
+  tex = new TLatex(14.61455,(noise->GetMaximum())/2.0 , "Low Z");
   tex->SetLineWidth(2);
   tex->Draw();
 
