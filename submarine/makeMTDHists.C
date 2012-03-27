@@ -122,7 +122,7 @@ int makeMTDHists (
   pt->SetFillColor(19);
   TText *text = pt->AddText(basicTitle);
   pt->Draw();
-  TLine *line = new TLine(11.98864,-0.03483106,11.98864,c1->GetUymax());
+  TLine *line = new TLine(12.0,0.0,12.0,(noise->GetMaximum())*1.05);
   line->Draw();
 
   tex = new TLatex(2.239441,(noise->GetMaximum())/2.0,"High Z");
