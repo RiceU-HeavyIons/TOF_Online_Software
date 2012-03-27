@@ -181,6 +181,7 @@ if ($tray->id > 0) {
     echo " <th>Stop</th>\n";
     echo " <th>Events</th>\n";
     echo " <th>Results</th>\n";
+    echo " <th>Notes</th>\n";
     echo "</tr>\n";
 
     while ($rs = mysql_fetch_object($runsr)) {
@@ -194,6 +195,7 @@ if ($tray->id > 0) {
         echo "  <td>", $rs->stop, "</td>\n";
         echo "  <td>", $rs->events, "</td>\n";
         echo "  <td>", mk_link("results.pdf", $rs->results_uri), "</td>\n";
+        echo "  <td>", $rs->note, "</td>\n";
         #$st = $run->stats_for_tray($tray->id);
         #echo "  <td class='float'>" . sprintf("%5.1f", $st["avg"]) . "</td>\n";
         #echo "  <td class='float'>" . sprintf("%5.1f", $st["min"]) . "</td>\n";
