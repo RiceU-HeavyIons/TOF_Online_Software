@@ -223,12 +223,16 @@ void AnTcpu::sync(int level)
 	if (level >= 3) {
 	  // get firmware versions
 	  AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb1);
+	  btrace << AnRdMsg(haddr().at(0), msg).toString();
 	  rdata = agent()->write_read(msg, rmsg, 4);
+	  btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	  setFirmwareId(0xFFFFFF & rdata);
 
 	  // get chip id
 	  AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0xb2);
+	  btrace << AnRdMsg(haddr().at(0), msg).toString();
 	  rdata = agent()->write_read(msg, rmsg, 8);
+	  btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	  setChipId(0xFFFFFFFFFFFFFFULL & (rdata >> 8));
 	}
 
@@ -238,7 +242,9 @@ void AnTcpu::sync(int level)
 	// m_pld02 = rmsg.Msg.DATA[2];
 	// m_pld0e = rmsg.Msg.DATA[4];
 	AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 3, 0xe, 0x2, 0x3);
+	btrace << AnRdMsg(haddr().at(0), msg).toString();
 	agent()->write_read(msg, rmsg, 5);
+	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	m_pld02 = rmsg.Msg.DATA[2];
 	m_pld03 = rmsg.Msg.DATA[4] & 0x03;
 
