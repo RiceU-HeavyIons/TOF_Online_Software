@@ -540,8 +540,12 @@ int AnAgent::open(quint8 dev_id) {
       if (status == CAN_ERR_QRCVEMPTY) {
 	log( QString("error_handle: CANBus[%1] QRCVEMPTY Error: 0x%2")
 	     .arg(addr).arg(QString::number(status, 16)) );
-	throw AnExCanError(status);
-	//			throw AnExCanTimeOut(status);
+	log(QString("error_handle: latest msg " + AnRdMsg(addr, msg).toString() + "\n"));
+
+	// 3/30/2012: try to just log this error, but let agent retry?
+	// i.e. don't throw AnExCanError
+	// throw AnExCanError(status); 
+	// throw AnExCanTimeOut(status);
       }
       else if (status > 0) {
 	incCommError();
