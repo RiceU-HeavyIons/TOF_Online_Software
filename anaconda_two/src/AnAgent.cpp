@@ -156,6 +156,12 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     int ntry = 3; // try 3 times
     for (; ntry > 0; --ntry) {
       er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
+      if (er == CAN_ERR_QRCVEMPTY) {
+	// timeout
+	log(QString("Read timeout: latest msg " + AnRdMsg(addr, msg).toString() + "\n"));
+	er = 0;
+	continue; // retry
+      }
       error_handle(er, rmsg.Msg);
 
       if (TCAN_DEBUG) {
