@@ -153,7 +153,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
   error_handle(er, msg);
 
   for (unsigned int i = 0; i < niter && !er; ++i) {
-    int ntry = 10; // tra 10 times
+    int ntry = 3; // try 3 times
     for (; ntry > 0; --ntry) {
       er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
       error_handle(er, rmsg.Msg);
