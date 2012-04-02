@@ -158,7 +158,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
       er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
       if (er == CAN_ERR_QRCVEMPTY) {
 	// timeout
-	log(QString("Read timeout: latest msg " + AnRdMsg(addr, msg).toString() + "\n"));
+	log(QString("Read timeout: latest msg " + AnRdMsg(addr, msg).toString()));
 	er = 0;
 	continue; // retry
       }
@@ -177,14 +177,15 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
       }
     }
     if (ntry == 0) {
-      log( QString("Didn't receive reply message for %1").arg(msg.ID) );
-      //			incCommError();
+      log( QString("Didn't receive reply message after 3 retries for 0x%1")
+	   .arg(QString::number(msg.ID,16)) );
+      incCommError();
       throw AnExCanError(0);
     }
     else {
       if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
-	log( QString("Return payload doesn't match: expected %1, received %2")
-	     .arg(msg.DATA[0]).arg(rmsg.Msg.DATA[0]) );
+	log( QString("Return payload doesn't match: expected 0x%1, received 0x%2")
+	     .arg(QString::number(msg.DATA[0],16)).arg(QString::number(rmsg.Msg.DATA[0],16)) );
 	//				incCommError();
 	throw AnExCanError(0);
       }
@@ -546,7 +547,7 @@ int AnAgent::open(quint8 dev_id) {
       if (status == CAN_ERR_QRCVEMPTY) {
 	log( QString("error_handle: CANBus[%1] QRCVEMPTY Error: 0x%2")
 	     .arg(addr).arg(QString::number(status, 16)) );
-	log(QString("error_handle: latest msg " + AnRdMsg(addr, msg).toString() + "\n"));
+	log(QString("error_handle: latest msg " + AnRdMsg(addr, msg).toString()));
 
 	// 3/30/2012: try to just log this error, but let agent retry?
 	// i.e. don't throw AnExCanError
