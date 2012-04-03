@@ -159,21 +159,25 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
       if (er == CAN_ERR_QRCVEMPTY) {
 	// timeout
 	log(QString("Read timeout: latest msg " + AnRdMsg(addr, msg).toString()));
-	er = 0;
-	continue; // retry
-      }
-      error_handle(er, rmsg.Msg);
-
-      if (TCAN_DEBUG) {
-	print_recv(rmsg.Msg);
-	emit debug_recv(AnRdMsg(devid(), rmsg));
-      }
-
-      if (match(msg, rmsg.Msg)) {
-	break;
+	//er = 0;
+	// try sending message again:
+	er = CAN_Write(m_handle, &msg);
+	// retry reading
       }
       else {
-	// emit received(AnRdMsg(devid(), rmsg));
+	error_handle(er, rmsg.Msg);
+
+	if (TCAN_DEBUG) {
+	  print_recv(rmsg.Msg);
+	  emit debug_recv(AnRdMsg(devid(), rmsg));
+	}
+
+	if (match(msg, rmsg.Msg)) {
+	  break;
+	}
+	else {
+	  // emit received(AnRdMsg(devid(), rmsg));
+	}
       }
     }
     if (ntry == 0) {
