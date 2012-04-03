@@ -9,96 +9,108 @@
 
 AnRdMsg::AnRdMsg()
 {
-	// c-tor
+  // c-tor
 }
 
 AnRdMsg::AnRdMsg(const quint8 devid, const PCAN::TPCANRdMsg &rmsg)
 {
-	m_devid = devid;
-	m_id    = rmsg.Msg.ID;
-	m_type  = rmsg.Msg.MSGTYPE;
-	m_len   = rmsg.Msg.LEN;
-	for (int i = 0; i < m_len; ++i) m_data[i] = rmsg.Msg.DATA[i];
+  m_devid = devid;
+  m_id    = rmsg.Msg.ID;
+  m_type  = rmsg.Msg.MSGTYPE;
+  m_len   = rmsg.Msg.LEN;
+  for (int i = 0; i < m_len; ++i) m_data[i] = rmsg.Msg.DATA[i];
 }
 
 AnRdMsg::AnRdMsg(const quint8 devid, const PCAN::TPCANMsg &msg)
 {
-	m_devid = devid;
-	m_id    = msg.ID;
-	m_type  = msg.MSGTYPE;
-	m_len   = msg.LEN;
-	for (int i = 0; i < m_len; ++i) m_data[i] = msg.DATA[i];
+  m_devid = devid;
+  m_id    = msg.ID;
+  m_type  = msg.MSGTYPE;
+  m_len   = msg.LEN;
+  for (int i = 0; i < m_len; ++i) m_data[i] = msg.DATA[i];
 }
 
 AnRdMsg::~AnRdMsg()
 {
-	// d-tor
+  // d-tor
 }
 
 quint64 AnRdMsg::data() const
 {
-	quint64 ret = 0;
-	for(int i = 0; i < m_len; ++i) ret = (ret << 8) | m_data[i];
-	return ret;
+  quint64 ret = 0;
+  for(int i = 0; i < m_len; ++i) ret = (ret << 8) | m_data[i];
+  return ret;
 }
 
 AnAddress AnRdMsg::source() const
 {
-	quint8 tcpu;
-	quint8 tdig;
+  quint8 tcpu;
+  quint8 tdig;
 
-	if (m_type == MSGTYPE_EXTENDED) {
-		tcpu = (m_id & 0xff);
-		tdig = (m_id >> 22) & 0xff;
-	} else {
-		tcpu = (m_id >> 4) & 0xff;
-		tdig = 0;
-	}
-	return AnAddress(m_devid, tcpu, tdig, 0);
+  if (m_type == MSGTYPE_EXTENDED) {
+    tcpu = (m_id & 0xff);
+    tdig = (m_id >> 22) & 0xff;
+  } else {
+    tcpu = (m_id >> 4) & 0xff;
+    tdig = 0;
+  }
+  return AnAddress(m_devid, tcpu, tdig, 0);
 }
 
 quint8 AnRdMsg::payload() const
 {
-	if (m_type == MSGTYPE_EXTENDED)
-		return ((m_id >> 18) & 0xf);
-	else
-		return (m_id & 0xf);
+  if (m_type == MSGTYPE_EXTENDED)
+    return ((m_id >> 18) & 0xf);
+  else
+    return (m_id & 0xf);
 }
 
 QString AnRdMsg::toString() const
 {
-	char buf1[128];
-	char buf2[16];
+  char buf1[128];
+  char buf2[16];
+  int length;
+  
+  sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
+	  devid(), id(), type(), len());
+  if (len() < 9)
+    length = len();
+  else
+    length = 8;
 
-	sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
-		devid(), id(), type(), len());
-	for(int i = 0; i < len(); ++i) {
-		if (i == 0)
-			sprintf(buf2, "0x%02x", data(i));
-		else
-			sprintf(buf2, " 0x%02x", data(i));
-		strcat(buf1, buf2);
-	}
-	strcat(buf1, "])");
-	return QString(buf1);
+  for(int i = 0; i < length; ++i) {
+    if (i == 0)
+      sprintf(buf2, "0x%02x", data(i));
+    else
+      sprintf(buf2, " 0x%02x", data(i));
+    strcat(buf1, buf2);
+  }
+  strcat(buf1, "])");
+  return QString(buf1);
 }
 
 QDebug operator<<(QDebug dbg, const AnRdMsg &m)
 {
-	char buf1[128];
-	char buf2[16];
+  char buf1[128];
+  char buf2[16];
+  int length;
 
-	sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
-		m.devid(), m.id(), m.type(), m.len());
-	for(int i = 0; i < m.len(); ++i) {
-		if (i == 0)
-			sprintf(buf2, "0x%02x", m.data(i));
-		else
-			sprintf(buf2, " 0x%02x", m.data(i));
-		strcat(buf1, buf2);
-	}
-	strcat(buf1, "])");
-	dbg << buf1;
-	return dbg;
+  sprintf(buf1, "AnRdMsg(DEVID=%d ID=0x%x TYPE=0x%x LEN=%d DATA=[",
+	  m.devid(), m.id(), m.type(), m.len());
+  
+  if (m.len() < 9)
+    length = m.len();
+  else
+    length = 8;
+
+  for(int i = 0; i < length; ++i) {
+    if (i == 0)
+      sprintf(buf2, "0x%02x", m.data(i));
+    else
+      sprintf(buf2, " 0x%02x", m.data(i));
+    strcat(buf1, buf2);
+  }
+  strcat(buf1, "])");
+  dbg << buf1;
+  return dbg;
 }
-
