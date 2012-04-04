@@ -143,6 +143,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
   unsigned int length = 0;
   unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
   int er;
+  int ntry;
 
   if (TCAN_DEBUG) {
     print_send(msg);
@@ -153,8 +154,8 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
   error_handle(er, msg);
 
   for (unsigned int i = 0; i < niter && !er; ++i) {
-    int ntry = 3; // try 3 times
-    for (; ntry > 0; --ntry) {
+    // try 3 times
+    for (ntry=3; ntry > 0; ntry--) {
       er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
       if (er == CAN_ERR_QRCVEMPTY) {
 	// timeout
@@ -181,7 +182,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
       }
     }
     if (ntry == 0) {
-      log( QString("Didn't receive reply message after 3 retries for 0x%1")
+      log( QString("Didn't receive reply message after 3 retries for msg with ID 0x%1")
 	   .arg(QString::number(msg.ID,16)) );
       incCommError();
       throw AnExCanError(0);
