@@ -467,9 +467,13 @@ int AnAgent::open(quint8 dev_id) {
 	    // this just resets the TDCs on all TDIGs, not necessary when doing bunch reset
 	    // tcpu->qreset(2);
 
-	    //tcpu->config(1);
-	    // try using relink instead:
-	    tcpu->relink(1);
+	    if ((tcpu->lAddress().at(1) == 121) || (tcpu->lAddress().at(1) == 122)) 
+	      // so that this doesn't interfere with the other TCPUs on agent 1 or 2
+	      // just do the config (just turns on link on TCPU)
+	      tcpu->config(1);
+	    else
+	      // try using relink for all others, which also resets serdes on THUB:
+	      tcpu->relink(1);
 
 	    tcpu->sync(2);
 	  }
