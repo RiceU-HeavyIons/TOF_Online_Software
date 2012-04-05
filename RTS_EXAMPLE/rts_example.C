@@ -192,6 +192,7 @@ int main(int argc, char *argv[])
 	unsigned int parity = 0;
 	unsigned int phaseNW = 0;
 	while(dd->iterate()) {
+	  int tray = 0;
 	  int r = dd->row;
 	  bool find0x2 = false;
 	  bool find0xe = false;
@@ -229,6 +230,7 @@ int main(int argc, char *argv[])
 	      }
 	      find0x2 = true;
 	      find0xe = true;
+	      tray = (int)(dd->Int32[i] & 0xFF)/2;
 	      trayhalf_count++; 
 	    }
 
@@ -245,12 +247,15 @@ int main(int argc, char *argv[])
 		}
 		firstHeader = false;
 	      }
-	      else if (((dd->Int32[i]) & 0xFFF) != firstPhase)  {
-		printf(" *** wrong phase 0x%x (should be 0x%x)", dd->Int32[i] & 0xFFF, 
-		       firstPhase);
+	      else if ((tray != 121) && (tray != 122)) {
+		// start detectors have different phase, don't check for now
+		if (((dd->Int32[i]) & 0xFFF) != firstPhase)  {
+		  printf(" *** tray %d wrong phase 0x%x (should be 0x%x)", tray,
+			 dd->Int32[i] & 0xFFF, 
+			 firstPhase);
 
+		}
 	      }
-			      
 	      if (!find0x2 && (dd->Int32[i] & 0xFF000000) == 0x20000000) // first header 
 		printf(" *** geographical word missing");
 	      find0x2 = false;
@@ -315,9 +320,17 @@ int main(int argc, char *argv[])
 	    printf("\n");
 	  }
 	  printf("\t");
-	  if ( (trayhalf_count != 60) && (trayhalf_count != 62) )
+	  if ( (r == 1) && (trayhalf_count != 62))
 	    printf("*** ");
-	  printf("tray half count = %d\n", trayhalf_count);
+	  else if ( (r == 2) && (trayhalf_count != 60))
+	    printf("*** ");
+	  else if ( (r == 3) && (trayhalf_count != 60))
+	    printf("*** ");
+	  else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
+	    printf("*** ");
+// 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
+// 	    printf("*** ");
+	  printf("RDO %d tray half count = %d\n", r, trayhalf_count);
 	}
 	//JSend: end of TOF analysis
 	  
