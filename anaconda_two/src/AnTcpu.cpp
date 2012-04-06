@@ -376,8 +376,8 @@ QString AnTcpu::dump() const
   sl << QString("  PLD Reg[02] Set   : 0x") + QString::number(m_pld02Set, 16);
   sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
   sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
-  sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
-  sl << QString("  PLD Reg[0E] Set   : 0x") + QString::number(m_pld0eSet, 16);
+  //sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
+  //sl << QString("  PLD Reg[0E] Set   : 0x") + QString::number(m_pld0eSet, 16);
   sl << QString("  EEPROM Selector   : %1").arg(m_eeprom);
   sl << QString("  Mult. Gate Phase  : ") + multGatePhaseString();
   sl << QString("  Status            : ") + QString::number(status());
@@ -399,7 +399,7 @@ QString AnTcpu::errorDump() const
   sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
   sl << QString("  PLD Reg[02]       : 0x") + QString::number(m_pld02, 16);
   sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
-  sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
+  //sl << QString("  PLD Reg[0E]       : 0x") + QString::number(m_pld0e, 16);
   sl << QString("  Status            : ") + QString::number(status());
 
   for (int i = 0; i < 8; i++) {
