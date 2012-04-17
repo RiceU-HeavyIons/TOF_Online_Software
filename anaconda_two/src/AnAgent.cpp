@@ -184,14 +184,16 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
     if (ntry == 0) {
       log( QString("Didn't receive reply message after 3 retries for msg with ID 0x%1")
 	   .arg(QString::number(msg.ID,16)) );
-      incCommError();
+      // since this is most likely a board specific communication error,
+      // don't increase the agent communication error count
+      //incCommError(); 
       throw AnExCanError(0);
     }
     else {
       if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
 	log( QString("Return payload doesn't match: expected 0x%1, received 0x%2")
 	     .arg(QString::number(msg.DATA[0],16)).arg(QString::number(rmsg.Msg.DATA[0],16)) );
-	//				incCommError();
+	//incCommError();
 	throw AnExCanError(0);
       }
       length += rmsg.Msg.LEN;
@@ -203,7 +205,7 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
   if (return_length != length) {
     log( QString("Return length doesn't match: expected %1, received %2")
 	 .arg(return_length).arg(length) );
-    //		incCommError();
+    //incCommError();
     throw AnExCanError(0);
   }
 
