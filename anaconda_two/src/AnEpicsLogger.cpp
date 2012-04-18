@@ -75,7 +75,7 @@ void AnEpicsLogger::run()
       
 #ifdef WITH_EPICS
 	if(ezcaPut(tempStr, ezcaDouble, 1, &(elog.val)) != EZCA_OK)
-	  ezcaPerror("AnEpicsLogger:");
+	  ezcaPerror((char *)"AnEpicsLogger:");
 #endif
       }
 
