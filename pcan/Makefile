@@ -32,6 +32,9 @@ pcan-settings:	pcan-settings.c
 pcanloop:	pcanloop.cc
 	$(CXX) -Wall $^ -o $@ -lpcan
 
+pcanloop_noise:	pcanloop_noise.cc
+	$(CXX) -Wall $^ -o $@ -lpcan
+
 pc:	pc.c
 	$(CC) -Wall $^ -o $@
 
