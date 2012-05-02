@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
   unsigned int tdigNodeID = strtol(argv[1], (char **)NULL, 0);
   unsigned int tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
 
-  if (argc == 5) {
+  if (argc >= 5) {
     devID = strtol(argv[4],(char **)NULL, 0);
     if (devID > 255) {
       printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
@@ -304,8 +304,16 @@ int main(int argc, char *argv[])
   // install signal handler for manual break
   signal(SIGINT, signal_handler);
 
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
+  if (argc == 6) {
+    if((errno = openCAN_br(devID, CAN_BAUD_1M)) != 0) {
+      my_private_exit(errno);
+    }
+  
+  }
+  else {
+    if((errno = openCAN(devID)) != 0) {
+      my_private_exit(errno);
+    }
   }
   
   if (tcpuNodeID != 0xff)
