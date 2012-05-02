@@ -7,6 +7,7 @@ using namespace std;
 
 extern void printCANMsg(const TPCANMsg &, const char *);
 extern int openCAN(WORD);
+extern int openCAN_br(WORD, WORD);
 extern int sendCAN_and_Compare(TPCANMsg &, const char *, const int, 
 			       unsigned int = 0xffffffff, bool = false);
 

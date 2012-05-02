@@ -107,8 +107,8 @@ int openCAN(WORD devID)
   char devName[255];
   TPDIAG my_PDiag;
   char txt[255]; // temporary string storage
-  int nFileHandle;
-  TPEXTRAPARAMS params;
+  //int nFileHandle;
+  //TPEXTRAPARAMS params;
 
   // search for correct device ID:
   for (int i=0; i<8; i++) {
@@ -161,6 +161,75 @@ int openCAN(WORD devID)
   //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
   //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_EX); // open for Extended messages
   errno = CAN_Init(h, CAN_BAUD_500K,  CAN_INIT_TYPE_EX); // open for Extended messages
+  if (errno) {
+    perror("CAN_Init()");
+    return(errno);
+  } 
+
+  return (0);
+}
+
+//****************************************************************************
+int openCAN_br(WORD devID, WORD wBTR0BTR1)
+{
+  char devName[255];
+  TPDIAG my_PDiag;
+  char txt[255]; // temporary string storage
+  //int nFileHandle;
+  //TPEXTRAPARAMS params;
+
+  // search for correct device ID:
+  for (int i=0; i<8; i++) {
+    //sprintf(devName, "/dev/pcan%d", 32+i);
+    sprintf(devName, "/dev/pcanusb%d", i);
+    h = LINUX_CAN_Open(devName, O_RDWR);
+    if (h == NULL) {
+      //printf("Failed to open device %s\n", devName);
+      //my_private_exit(errno);
+      continue;
+    }
+    // get the hardware ID from the diag structure:
+    LINUX_CAN_Statistics(h,&my_PDiag);
+    printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+	   my_PDiag.wIrqLevel);
+    if (my_PDiag.wIrqLevel == devID) break;
+
+    // // get the hardware ID from the special ioctl call
+    // nFileHandle = LINUX_CAN_FileHandle(h);
+    // params.nSubFunction = SF_GET_HCDEVICENO;
+    // errno = ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
+    // printf("\tDevice at %s: Hardware ID = 0x%x\n", devName, 
+    // 	   params.func.ucHCDeviceNo);
+    // if (params.func.ucHCDeviceNo == devID) break;
+
+    CAN_Close(h);
+  }
+
+  if (!h) {
+    printf("Device ID 0x%x not found\n", devID);
+    errno = nGetLastError();
+    perror("CAN_Open()");
+    return(errno);
+  }
+
+    
+  // get version info
+  errno = CAN_VersionInfo(h, txt);
+  if (!errno) {
+#ifdef LOCAL_DEBUG
+    cout << "driver version = "<< txt << endl;
+#endif
+  }
+  else {
+    perror("CAN_VersionInfo()");
+    return(errno);
+  }
+
+  // open CAN Port, init PCAN-USB
+  //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_ST);
+  //errno = CAN_Init(h, CAN_BAUD_1M,  CAN_INIT_TYPE_EX); // open for Extended messages
+  //errno = CAN_Init(h, CAN_BAUD_500K,  CAN_INIT_TYPE_EX); // open for Extended messages
+  errno = CAN_Init(h, wBTR0BTR1,  CAN_INIT_TYPE_EX); // open for Extended messages
   if (errno) {
     perror("CAN_Init()");
     return(errno);
