@@ -42,7 +42,7 @@ struct hit {
 
 //function to take the head and tail timings and make a timing difference
 //currently only takes 1st of both, but in principle can be optimized
-std::vector<float> pairTimings(vector<float> a,vector<float> b, int channel)
+std::vector<float> pairTimings(vector<float> a,vector<float> b)
 {
   vector<float> pairs;
   pairs.clear();
@@ -93,7 +93,6 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 {
   theHits.clear();
 
-  const int nChannels=25; //this is also definded externally in mtdNoise, but not visible here yet
   vector<float> LEs[nChannels];
   vector<float> TEs[nChannels];
   vector<float> Zs[nChannels];
@@ -150,7 +149,7 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 	for(int aa=0;aa<nChannels;aa++) {
 	  
 	  //match LE's and TE's for a module
-	  tots=pairTimings(LEs[aa],TEs[aa],aa);
+	  tots=pairTimings(LEs[aa],TEs[aa]);
 	  //Zs=getZs(LEs[aa],aa);
 	  //loop over matches 
 	  
