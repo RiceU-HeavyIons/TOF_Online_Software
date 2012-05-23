@@ -49,10 +49,10 @@ tsw_toolbar();
   echo "<input name='event_no' type='text' size='11'/></td></tr>";
 
   echo "<tr><td colspan='5'>Data Location:<br>";
-  echo "<input name='data_uri' type='text' size='75'/></td></tr>";
+  echo "<input name='data_uri' type='text' size='80'/></td></tr>";
 
   echo "<tr><td colspan='5'>Results PDF Location:<br>";
-  echo "<input name='results_uri' type='text' size='75'/></td></tr>";
+  echo "<input name='results_uri' type='text' size='80'/></td></tr>";
 
   echo "<tr><td colspan='4'>Notes:<br>";
   echo "<textarea name='text' rows='5' cols='35' type='text'/></textarea><br>";
