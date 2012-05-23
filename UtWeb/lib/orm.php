@@ -1280,7 +1280,11 @@ class Tray {
 
 	function p_link() {
 		if($this->id) {
-		  $ret = "<a href='../tray/view.php?id=" . $this->id . "'>";
+		  if ($this->sn < 200)
+		    $ret = "<a href='../tray/view.php?id=" . $this->id . "'>";
+		  else
+		    $ret = "<a href='../mtd_tray/view.php?id=" . $this->id . "'>";
+		  
 		  $ret .= $this->sn . "</a>";
 		} else
 		  $ret = "";
