@@ -1,5 +1,5 @@
 <?php
-# $Id: view.php,v 1.2 2012/01/24 18:23:10 tofp Exp $
+# $Id: view.php,v 1.3 2012/05/24 14:53:13 tofp Exp $
 include("../../lib/connect.php");
 include("../../lib/orm.php");
 include("../../lib/utility.php");
@@ -181,6 +181,8 @@ if ($tray->id > 0) {
     echo " <th>Stop</th>\n";
     echo " <th>Events</th>\n";
     echo " <th>Results</th>\n";
+    echo " <th>HV</th>\n";
+    echo " <th>Threshold</th>\n";
     echo " <th>Notes</th>\n";
     echo "</tr>\n";
 
@@ -195,6 +197,8 @@ if ($tray->id > 0) {
         echo "  <td>", $rs->stop, "</td>\n";
         echo "  <td>", $rs->events, "</td>\n";
         echo "  <td>", mk_link("results.pdf", $rs->results_uri), "</td>\n";
+        echo "  <td>", $rs->param1, "</td>\n";
+        echo "  <td>", $rs->param2, "</td>\n";
         echo "  <td>", $rs->note, "</td>\n";
         #$st = $run->stats_for_tray($tray->id);
         #echo "  <td class='float'>" . sprintf("%5.1f", $st["avg"]) . "</td>\n";

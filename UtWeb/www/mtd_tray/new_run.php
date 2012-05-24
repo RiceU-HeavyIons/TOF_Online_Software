@@ -37,9 +37,9 @@ if ($type == 'new_run') {
 
 
   $sql = "INSERT INTO mtd_runs (id, tray_id, run_status_id, run_type_id, user_id, start, stop, ";
-  $sql .= "run_time, events, data_uri, results_uri, note) VALUES (";
+  $sql .= "run_time, events, data_uri, results_uri, note, param1, param2) VALUES (";
   $sql .= "'$run_no', '$tray_id', '$run_status_id', 4, '$user_id', '$start_date', '$end_date', ";
-  $sql .= "default, '$event_no', '$data_uri', '$results_uri', '$notes' )";
+  $sql .= "default, '$event_no', '$data_uri', '$results_uri', '$notes', 6300, 2500 )";
 
   $insert = mysql_query($sql, $con) or die(mysql_error()); 
   header( "Location: ./create_noiserun.php");
