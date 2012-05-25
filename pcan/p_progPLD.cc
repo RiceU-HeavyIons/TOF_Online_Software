@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
   // pldNum = 9: all Serdes FPGAs
   int pldNum = atoi(argv[2]);
   int nodeID = strtol(argv[3], (char **)NULL, 0);
-  if (argc == 5) {
+  if (argc >= 5) {
     devID = strtol(argv[4],(char **)NULL, 0);
     if (devID > 255) {
       printf("Invalid Device ID 0x%x. Use a device ID between 0 and 255\n", devID);
@@ -296,9 +296,16 @@ int main(int argc, char *argv[])
   // install signal handler for manual break
   signal(SIGINT, signal_handler);
 
-  // open CANbus device devID
-  if((errno = openCAN(devID)) != 0) {
-    my_private_exit(errno);
+  if (argc == 6) {
+    if((errno = openCAN_br(devID, CAN_BAUD_1M)) != 0) {
+      my_private_exit(errno);
+    }
+  }
+  else {
+    // open CANbus device devID
+    if((errno = openCAN(devID)) != 0) {
+      my_private_exit(errno);
+    }
   }
 
   if ((pldNum < 9) && (pldNum >= 0))
