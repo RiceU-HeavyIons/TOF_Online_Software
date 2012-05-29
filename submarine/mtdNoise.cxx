@@ -3,6 +3,7 @@
 #include <iomanip>
 //#include <fstream>
 #include <vector>
+#include <sstream>
 
 #include <TFile.h>
 #include <TTree.h>
@@ -103,52 +104,67 @@ void doAnalysis(vector<hit>& theHits, TNtuple* totTuple) {
 ///////////////////// main  /////////////////////////////////////
 /////////////////// program /////////////////////////////////////
 
-int main(int acgc, char* argv[])
+int main(int argc, char* argv[])
 {
-
-  cout<<endl;
-
+  if(argc<2) {
+    cout << "Usage: " << argv[0] << " <filename> [<TDIG #> <maxEvents> <maxLines>] " << endl;
+    return 0;
+  }
+    
   //input file
   string inName=argv[1];
   ifstream io(inName.c_str());
-  if(!io){cerr<<"no input file!!"<<endl; exit(1);}
-  //max number of events
+  if(!io) { cerr << "no input file!!" << endl; exit(1); }
+  
+  // default TDIG
+  int tdig = 0;
+  if(argc > 2) {tdig=atoi(argv[2]);}
+
+  // max number of events
   int maxEventN=10000000-1;
-  if(argv[2]){maxEventN=atoi(argv[2]);}
-  //max number of events
+  if(argc > 3) {maxEventN=atoi(argv[3]);}
+
+  // max number of events
   int maxLineN=-1;
-  if(argv[3]){maxLineN=atoi(argv[3]);}
-
-
+  if(argc == 5) {maxLineN=atoi(argv[4]);}
 
   //set path names for output files names
+
 //   string outname="rootfiles/";
 //   outname+=inName.substr(inName.find_last_of("/")+1);
 //   outname+=".root";
+
   string outname = inName.substr(0,inName.find_last_of("/")+1);
-  outname+="noisedata.root";
-  cout<<"saving ROOT file as:\n./"<<outname<<endl;
+  outname += "noisedata";
+  //ostringstream temp;
+  //temp << tdig;
+  //outname += temp.str();
+  outname += static_cast<ostringstream*>( &(ostringstream() << tdig) )->str();
+  outname +=".root";
+
+  cout << "saving ROOT file as:\n./" << outname << endl;
   TFile outFile(outname.c_str(),"recreate");
-  cout<<endl;
+  cout << endl;
 
   TNtuple* totTuple=new TNtuple("totTuple","totTuple","aa:z");
 
   // initialize the time-over-threshold histograms (one for each MRPC)
   char hName[100];
-  for(int aa=0;aa<nChannels;aa++){
+  for(int aa=0; aa<nChannels; aa++) {
     sprintf(hName,"tot_%i ",aa);
-    totHistos[aa]=new TH1F(hName,hName,300,0,3000);
-  }
-  for(int aa=0;aa<nChannels/2;aa++){
-    sprintf(hName,"z_%i ",aa);
-    zHistos[aa]=new TH1F(hName,hName,100,-0.5,1.5);
+    totHistos[aa] = new TH1F(hName,hName,300,0,3000);
   }
 
-  TH2F* corrPlot=new TH2F("corrPlot","corrPlot",nChannels,0,nChannels,nChannels,0,nChannels);
+  for(int aa=0; aa<nChannels/2; aa++) {
+    sprintf(hName,"z_%i ",aa);
+    zHistos[aa] = new TH1F(hName,hName,100,-0.5,1.5);
+  }
+
+  TH2F* corrPlot = new TH2F("corrPlot","corrPlot",nChannels,0,nChannels,nChannels,0,nChannels);
   TH2F* corrPlot2[nStacks];
-  for(int aa=0;aa<nStacks;aa++){
+  for(int aa=0; aa<nStacks; aa++){
     sprintf(hName,"corrSmall_%d",aa);
-    corrPlot2[aa]=new TH2F(hName,hName,24,0,23,24,0,23);
+    corrPlot2[aa] = new TH2F(hName,hName,24,0,23,24,0,23);
   }
 
   regressor correlationSmall[nStacks];
@@ -169,14 +185,14 @@ int main(int acgc, char* argv[])
   vector<hit> theHits;
 
   //now begin looking at data
-  unsigned int n, m;
+  unsigned int dWord;
   int line=0;
   io >> hex;
-  while (io >> n) {
+  while (io >> dWord) {
     if(eventN > maxEventN){ if(line=0){cout<<"\n\nEnding early!\n\n"<<endl;} break; }
     if((maxLineN > 0) && (line > maxLineN) ){ break; }
 
-    readEvent(n, theHits, io);
+    readEvent(dWord, theHits, io, tdig);
     doAnalysis(theHits, totTuple);
     line++;
   }
@@ -233,7 +249,9 @@ int main(int acgc, char* argv[])
 //   text_str+=inName.substr(inName.find_last_of("/")+1);
 //   text_str+=".txt";
   string text_str = inName.substr(0,inName.find_last_of("/")+1);
-  text_str += "results.txt";
+  text_str += "results";
+  text_str += static_cast<ostringstream*>( &(ostringstream() << tdig) )->str();
+  text_str += ".txt";
   cout<<"Printing out noise to file:\n"<<text_str<<endl;
   outTextFile=fopen(text_str.c_str(),"w");
 

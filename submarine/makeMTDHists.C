@@ -37,7 +37,10 @@ int makeMTDHists (
 //     stThr + "T." +
 //     fileType;
 
-  TString stFileName = TString(inFile(0, inFile.Last('/')+1) + "results.pdf");
+  TString stFileName = TString(inFile(0, inFile.Last('/')+1) + "results" +
+			       inFile(inFile.Last('.')-1) + ".pdf");
+  TString ttt(inFile(inFile.Last('.')-1));
+  cout << "last letter = " << ttt << endl;
   cout << "results saved to " << stFileName <<  endl;
   TString runtimesFileName = TString(inFile(0, inFile.Last('/')+1) + "runtimes");
   TString runName1 = TString(inFile(0,inFile.Last('/')));

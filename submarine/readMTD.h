@@ -89,7 +89,7 @@ std::vector<float> getZs(std::vector<float> LEs, int channelId){
 int eventN=0; //set some counters
 int badEventN=0; //set some counters
 
-void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
+void readEvent(unsigned int dWord, vector<hit>& theHits, ifstream& ourIO, int reqTDIG)
 {
   theHits.clear();
 
@@ -100,13 +100,13 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 
   int trayId=1;
 
-  int tray_half=0;
+  int tray_half=-1;
   bool corrupt=false;
   int thisEvent=eventN;
 
 
   // the first word read on entry should be geographical word 1
-  if(n == 0xc0000001 ) { //start event read of TDIG 4-7
+  if(dWord == 0xc0000001 ) { //start event read of TDIG 4-7
     tray_half=2;
   }
   else {
@@ -115,25 +115,23 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 
   // loop through all data words until 0xe0XXXXXX
   while(eventN == thisEvent) {
-    ourIO >> n; // read next packet
+    ourIO >> dWord; // read next packet
 
-    //TsPacket *p = new TsPacket(n);
-
-    if(n == 0xc0000001 ) { //start event read of TDIG 4-7
-      tray_half=2;
-    }
-
-    else if( (n & 0xF0000000) == 0x20000000  ) { // TDC header
-    }
-
-    else if( (n & 0xFF000000) == 0xe1000000  ) { // end event read of TDIG 4-7
-    }
-
-    else if(n == 0xc0000000 ) { //start second half of event read of TDIG 0-3
+    if(dWord == 0xc0000001 ) { //start event read of TDIG 4-7
       tray_half=1;
     }
 
-    else if( (n & 0xFF000000) == 0xe0000000  ) { //end event read of TDIG 0-3
+    else if( (dWord & 0xF0000000) == 0x20000000  ) { // TDC header
+    }
+
+    else if( (dWord & 0xFF000000) == 0xe1000000  ) { // end event read of TDIG 4-7
+    }
+
+    else if(dWord == 0xc0000000 ) { //start second half of event read of TDIG 0-3
+      tray_half=0;
+    }
+
+    else if( (dWord & 0xFF000000) == 0xe0000000  ) { //end event read of TDIG 0-3
 
       //********************************************************************************************//
       //********************************************************************************************//
@@ -146,22 +144,22 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 	
 	//now loop over all modules and look at 
 	//stored hits from event
-	for(int aa=0;aa<nChannels;aa++) {
+	for(int ch=0; ch<nChannels; ch++) {
 	  
 	  //match LE's and TE's for a module
-	  tots=pairTimings(LEs[aa],TEs[aa]);
-	  //Zs=getZs(LEs[aa],aa);
+	  tots = pairTimings(LEs[ch],TEs[ch]);
+	  //Zs = getZs(LEs[ch],ch);
 	  //loop over matches 
 	  
 	  //we are essentially just taking the old format and converting it into "theHits"
-	  theHits.push_back(   hit(aa, trayId,  LEs[aa], TEs[aa], tots, Zs[aa])   );
+	  theHits.push_back( hit(ch, trayId,  LEs[ch], TEs[ch], tots, Zs[ch]) );
 	  
 	  
 	  //clear for next loop
 	  tots.clear();				
-	  LEs[aa].clear();
-	  TEs[aa].clear();
-	  Zs[aa].clear();
+	  LEs[ch].clear();
+	  TEs[ch].clear();
+	  Zs[ch].clear();
 	}		
 	
 	eventN++;
@@ -182,20 +180,22 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
       
     }
 
-    else if ( ((n & 0xF0000000) == 0x40000000) ||
-	      ((n & 0xF0000000) == 0x50000000) ) { // Leading or Trailing Edge
+    else if ( ((dWord & 0xF0000000) == 0x40000000) ||
+	      ((dWord & 0xF0000000) == 0x50000000) ) { // Leading or Trailing Edge
 
+      int tdig = (dWord & 0x0C000000) >> 26 + (tray_half* 4);
       // Submarine MTD Data is only in TDIG 0
-      if ((tray_half == 1) && ((n & 0x0C000000) == 0)  ) {
-	int tdcChannel   = (n & 0x00E00000) >> 21;
-	int tdc = (n & 0x03000000) >> 24;
+      // if ((tray_half == 0) && ((dWord & 0x0C000000) == 0)  ) {
+      if ( tdig == reqTDIG  ) {
+	int tdcChannel   = (dWord & 0x00E00000) >> 21;
+	int tdc = (dWord & 0x03000000) >> 24;
 	int channel = tdc*8 + tdcChannel;
 	int mtdChannel = x_map[channel];
 	if(DEBUG) cout<<"le @ channel: " << mtdChannel << endl;
 
-	unsigned int edgeTime = ((n & 0x00180000) >> 19) + ((n & 0x0007FFFF) << 2);
+	unsigned int edgeTime = ((dWord & 0x00180000) >> 19) + ((dWord & 0x0007FFFF) << 2);
 	
-	if ((n & 0xF0000000) == 0x40000000) { // Leading edge
+	if ((dWord & 0xF0000000) == 0x40000000) { // Leading edge
 	  LEs[mtdChannel].push_back(edgeTime);
 	  echo_leHisto->Fill(mtdChannel);
 	}
@@ -208,39 +208,8 @@ void readEvent(unsigned int n, vector<hit>& theHits, ifstream& ourIO)
 
     else {
       // Don't do anything with all other packets:
-      cout << "*** unexpected packet 0x" << hex << n << endl;
+      cout << "*** unexpected packet 0x" << hex << dWord << endl;
     }
-
-
-/*     else if(tray_half == 1 ) {  */
-/*       /////// MTD Data is in  tray half 1 */
-/*       int outChannel=p->GetIdChannel();// */
-/*       int outTDig=p->tdc;//this function returns TDC channel */
-/*       int tempChannel=8*(outTDig-0)+outChannel; */
-/*       int abChannel=x_map[tempChannel]; */
-
-
-/*       if( p->IsLE() ) {  */
-	
-/* 	if(DEBUG) cout<<"le @ channel: "<< abChannel */
-/* 		      << " (" << tempChannel<< ")" << endl; */
-/* 	unsigned int et=p->GetEdgeTime(); */
-/* 	LEs[abChannel].push_back(et); */
-/* 	echo_leHisto->Fill(abChannel); */
-
-/*       } */
-
-/*       if(p->IsTE() ) { */
-/* 	cout << "*** tempChannel " << tempChannel  */
-/* 	     << " tdc_map " << (int)(p->GetChannel()) << endl; */
-/* 	unsigned int et=p->GetEdgeTime(); */
-/* 	TEs[abChannel].push_back(et); */
-/* 	echo_teHisto->Fill(abChannel); */
-/* 	if(DEBUG) cout<<"te @ channel: "<<abChannel<<endl; */
-/*       } */
-/*     } */
-
-    //delete p;
 
   } // while...
 
