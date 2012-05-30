@@ -36,6 +36,9 @@ if ($type == 'new_run') {
   $run_status_id = $r3->id;
 
 
+  $data_uri = "file://sagitta/home/data/mtdData/noisetests/" . $data_uri;
+  $results_uri = "http://www.rhip.utexas.edu:/~tofp/mtdData/noisetests/" . $results_uri;
+
   $sql = "INSERT INTO mtd_runs (id, tray_id, run_status_id, run_type_id, user_id, start, stop, ";
   $sql .= "run_time, events, data_uri, results_uri, note, param1, param2) VALUES (";
   $sql .= "'$run_no', '$tray_id', '$run_status_id', 4, '$user_id', '$start_date', '$end_date', ";
