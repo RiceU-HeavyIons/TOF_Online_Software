@@ -74,7 +74,8 @@ int main(int argc, char *argv[])
   int items = 0;
 
   while (datafile.good()) {
-    datafile >> dummy >> value;
+    //datafile >> dummy >> value;
+    datafile >> value;
     if (!datafile.good()) break;
 
 #ifdef LOCALDEBUG
@@ -88,11 +89,15 @@ int main(int argc, char *argv[])
 #ifdef LOCALDEBUG
       cout << " debug word\n";
 #endif
-      int count = (value & 0xff00) >> 8;
+      int count = (value & 0xfff00) >> 8;
       if (count != items) 
-	cout << "wrong number of data values: found "
-	     << items << ", debug word reports "
-	     << count << endl;
+	cout << "Event " << dec << numEv 
+	     << ": wrong number of data values: found "
+	     << items
+	     << ", debug word reports "
+	     << count << " (" 
+	     << hex << showbase << count << dec
+	     << ")" << endl;
       items = 0;
       continue;
     }
@@ -147,9 +152,12 @@ int main(int argc, char *argv[])
       trailtdigh[tdig][tdcid][tdcchan]++;
      }
     else {
-#ifdef LOCALDEBUG
-      cout << " Bad ID\n";
-#endif
+      items++;
+      //#ifdef LOCALDEBUG
+      cout << "Event " << dec << numEv 
+	   << ": Bad ID " 
+	   << hex << showbase << value << dec << endl;
+      //#endif
       continue;
     }
 
