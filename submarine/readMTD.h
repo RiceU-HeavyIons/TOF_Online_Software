@@ -107,7 +107,7 @@ void readEvent(unsigned int dWord, vector<hit>& theHits, ifstream& ourIO, int re
 
   // the first word read on entry should be geographical word 1
   if(dWord == 0xc0000001 ) { //start event read of TDIG 4-7
-    tray_half=2;
+    tray_half=1;
   }
   else {
     cout << "Didn't see StartOfEvent (0xc0000001)" << endl;
@@ -183,7 +183,7 @@ void readEvent(unsigned int dWord, vector<hit>& theHits, ifstream& ourIO, int re
     else if ( ((dWord & 0xF0000000) == 0x40000000) ||
 	      ((dWord & 0xF0000000) == 0x50000000) ) { // Leading or Trailing Edge
 
-      int tdig = (dWord & 0x0C000000) >> 26 + (tray_half* 4);
+      int tdig = ((dWord & 0x0C000000) >> 26) + (tray_half* 4);
       // Submarine MTD Data is only in TDIG 0
       // if ((tray_half == 0) && ((dWord & 0x0C000000) == 0)  ) {
       if ( tdig == reqTDIG  ) {
