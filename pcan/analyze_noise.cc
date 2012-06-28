@@ -112,6 +112,12 @@ int main(int argc, char *argv[])
 #ifdef LOCALDEBUG
       cout << " geo word 1\n";
 #endif
+      if (items > 0) {
+	cout << "Event " << dec << numEv
+	     << " tray half " << tdigMult
+	     << ": no separator seen" << endl;
+	items = 0;
+      }
       numEv++;
       tdigMult = 1;
       continue;
@@ -120,6 +126,12 @@ int main(int argc, char *argv[])
 #ifdef LOCALDEBUG
       cout << " geo word 0\n";
 #endif
+      if (items > 0) {
+	cout << "Event " << dec << numEv
+	     << " tray half " << tdigMult
+	     << ": no separator seen" << endl;
+	items = 0;
+      }
       tdigMult = 0;
       continue;
     }
