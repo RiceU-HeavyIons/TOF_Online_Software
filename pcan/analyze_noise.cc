@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     if (!datafile.good()) break;
 
 #ifdef LOCALDEBUG
-    cout << "value = 0x" << value;
+    cout << "value = " << hex << showbase << value;
 #endif
 
     int edgeid = int( (value & 0xf0000000)>>28 );
@@ -115,7 +115,8 @@ int main(int argc, char *argv[])
       if (items > 0) {
 	cout << "Event " << dec << numEv
 	     << " tray half " << tdigMult
-	     << ": no separator seen" << endl;
+	     << ": no separator seen. Item count was " 
+	     << items << endl;
 	items = 0;
       }
       numEv++;
@@ -129,7 +130,8 @@ int main(int argc, char *argv[])
       if (items > 0) {
 	cout << "Event " << dec << numEv
 	     << " tray half " << tdigMult
-	     << ": no separator seen" << endl;
+	     << ": no separator seen. Item count was " 
+	     << items << endl;
 	items = 0;
       }
       tdigMult = 0;
@@ -142,7 +144,7 @@ int main(int argc, char *argv[])
       tdcid &= 0x3;
       tdcchan = (value&0x00E00000)>>21;
 #ifdef LOCALDEBUG
-      cout << ", leading edge word" 
+      cout << ", leading edge word" << dec 
 	   << ", tdig: " << tdig
 	   << ", tdcid: " << tdcid
 	   << ", tdcchan: " << tdcchan << endl;
@@ -156,7 +158,7 @@ int main(int argc, char *argv[])
       tdcid &= 0x3;
       tdcchan = (value&0x00E00000)>>21;
 #ifdef LOCALDEBUG
-      cout << ", trailing edge word" 
+      cout << ", trailing edge word" << dec
 	   << ", tdig: " << tdig
 	   << ", tdcid: " << tdcid
 	   << ", tdcchan: " << tdcchan << endl;
