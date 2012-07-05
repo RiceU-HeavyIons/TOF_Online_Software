@@ -355,7 +355,7 @@ int findAllTCPUs(int h, vector<unsigned int> *pTcpuIDs)
 #ifdef LOCAL_DEBUG
   char txt[255]; // temporary string storage
 #endif
-  int errno;
+  int errno = 0;
   struct can_frame m;
   struct can_frame mr;
   unsigned int tcpuID;

@@ -21,6 +21,7 @@ using namespace std;
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <net/if.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 

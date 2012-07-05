@@ -34,6 +34,7 @@ using namespace std;
 #include <signal.h>
 
 // pcan include file
+#include <net/if.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
