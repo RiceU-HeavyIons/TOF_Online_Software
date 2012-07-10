@@ -19,7 +19,6 @@
 #include "AnAgent.h"
 #include "AnCanObject.h"
 #include "AnCanNet.h"
-#include "AnSock.h"
 #include "AnThub.h"
 #include "AnTcpu.h"
 #include "AnTdig.h"
