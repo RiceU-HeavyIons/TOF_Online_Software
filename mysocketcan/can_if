@@ -31,7 +31,7 @@ test -x /sbin/modprobe || exit 0
 
 # The syntax for the CAN devices is: devname[@bitrate][,restart-ms]
 # example CAN_IF="can0 can1@500000 can2@500000,200 can3,500"
-CAN_IF="can0@1000000 can1@1000000 can2@1000000 can3@1000000 can4@1000000 can5@1000000 can6@1000000 can7@1000000"
+CAN_IF="can0@1000000,100 can1@1000000,100 can2@1000000,100 can3@1000000,100 can4@1000000,100 can5@1000000,100 can6@1000000,100 can7@1000000,100"
 
 # To modify the sampling-point and SJW settings for the in-kernel bittiming
 # calculation. "0" =&gt; set default values (CAN CIA sampling-point / sjw=1)
@@ -39,8 +39,8 @@ SAMPOINT="0" # example for 84% : SAMPOINT=".840"
 SJW="0"      # example for max. sjw : SJW="4"
 
 #VCAN_IF="vcan0 vcan1 vcan2 vcan3"
-VCAN_IF=""
-PROBE=""
+VCAN_IF="vcan0 vcan1 vcan2 vcan3 vcan4 vcan5 vcan6 vcan7"
+PROBE="vcan"
 
 case "$1" in
         start|force-reload)
