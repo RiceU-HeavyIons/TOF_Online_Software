@@ -73,9 +73,9 @@ int showSerdes(int devID)
       return -1;
     }
 
-    if ( (errno = CAN_Read_Timeout(h, &mr, 1000000)) != 0) { // timeout = 1 sec
+    if ( (errno = CAN_Read_Timeout(h, &mr, 1000000)) <= 0) { // timeout = 1 sec
 #ifdef LOCAL_DEBUG
-      cout << "LINUX_CAN_Read_Timeout returned " << errno << endl;
+      cout << "CAN_Read_Timeout returned " << errno << endl;
 #endif
       close(h);
       return -1;
