@@ -19,7 +19,8 @@ CFLAGS    = -O2 -Wall -Wno-parentheses \
 PROGRAMS = candump cangen cansend \
 		getFWIDs getTHUBFWIDs getChecksum x_getChecksum \
 		x_config_pm x_config x_config_scripted \
-		MCU2 x_MCU2 eeprom2 x_eeprom2 \
+		MCU2 x_MCU2 x_MCU2_withOffset x_MCU2_noIVT \
+		eeprom2 x_eeprom2 \
 		progMCU progPLD \
 		x_setThreshold showSerdes x_enableChannel \
 		x_readHPTDCconfig
@@ -51,6 +52,8 @@ eeprom2.o:		can_utils.h
 x_eeprom2.o:		can_utils.h
 MCU2.o:			can_utils.h
 x_MCU2.o:		can_utils.h
+x_MCU2_withOffset.o:	can_utils.h
+x_MCU2_noIVT.o:		can_utils.h
 getTHUBFWIDs.o:		can_utils.h
 getChecksum.o:		can_utils.h
 x_getChecksum.o:	can_utils.h
@@ -77,6 +80,12 @@ MCU2:		MCU2.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
 x_MCU2:		x_MCU2.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+x_MCU2_withOffset:	x_MCU2_withOffset.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+x_MCU2_noIVT:	x_MCU2_noIVT.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
 eeprom2:	eeprom2.o can_utils.o
