@@ -22,6 +22,7 @@ tsw_toolbar('component');
     <option>TDIG</option>
     <option>TINO</option>
     <option>MINO</option>
+    <option>MTRIG</option>
    </select>
   </td>
   <td>Arrival Date:<br />

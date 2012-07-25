@@ -42,6 +42,7 @@ if ($type == 'new_component') {
   elseif($comp_type == 'TDIG') {$comp_type='2';}
   elseif($comp_type == 'TINO') {$comp_type='3';}
   elseif($comp_type == 'MINO') {$comp_type='7';}
+  elseif($comp_type == 'MTRIG') {$comp_type='8';}
   if($notes!=''){
 #    $date = date(" Y-m-d ");
 #    $full_notes=addslashes($date.$notes);
