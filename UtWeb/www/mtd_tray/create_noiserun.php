@@ -23,8 +23,20 @@ tsw_toolbar();
   echo "<form name='new_noiserun' action='./new_run.php' method='post'/>";
   echo "<input name='request_type' type='hidden' value='new_run'/>";
 
-  echo "<tr><td>Tray Serial:<br>";
-  echo "<input name='tray_sn' type='text' size='8'/></td></tr>";
+  echo "<tr><td>Tray 0 Serial:<br>";
+  echo "<input name='tray_0_sn' type='text' size='8'/></td></tr>";
+  
+  echo "<tr><td>Tray 1 Serial:<br>";
+  echo "<input name='tray_1_sn' type='text' size='8'/></td></tr>";
+  
+  echo "<tr><td>Tray 2 Serial:<br>";
+  echo "<input name='tray_3_sn' type='text' size='8'/></td></tr>";
+  
+  echo "<tr><td>Tray 4 Serial:<br>";
+  echo "<input name='tray_4_sn' type='text' size='8'/></td></tr>";
+  
+  echo "<tr><td>Tray 5 Serial:<br>";
+  echo "<input name='tray_5_sn' type='text' size='8'/></td></tr>";
 
   echo "<tr><td>Select User<br>";
   echo "<select name='user'>";
@@ -51,7 +63,7 @@ tsw_toolbar();
   echo "<tr><td colspan='5'>Data Location:<br>";
   echo "<input name='data_uri' type='text' size='80'/></td></tr>";
 
-  echo "<tr><td colspan='5'>Results PDF Location:<br>";
+  echo "<tr><td colspan='5'>**OPTIONAL** Results PDF Location (Only enter if different from \"RunNumber/results%d.pdf\"):<br>";
   echo "<input name='results_uri' type='text' size='80'/></td></tr>";
 
   echo "<tr><td colspan='4'>Notes:<br>";
