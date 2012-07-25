@@ -252,16 +252,15 @@ int eeprom2(const char *filename,
 
   // ************** CONFIGURE_TDC:Write FPGA_CONFIG1 ****************************************
   ms.can_id = (0x002 | (tdigNodeID<<4)) <<18 | tcpuNodeID | CAN_EFF_FLAG;
-  ms.can_id = 1;
   
-  // "FPGA_CONFIG0"
+  // "FPGA_CONFIG1"
   ms.data[0] = 0x12;
   
 #ifdef LOCAL_DEBUG
-  printCANMsg(ms, "x_eeprom2: Sending Write FPGA_CONFIG0 command:");
+  printCANMsg(ms, "x_eeprom2: Sending Write FPGA_CONFIG1 command:");
 #endif
   
-  if ( sendCAN_and_Compare(h, ms, "x_eeprom2: Write FPGA_CONFIG0", 500000, 2, true) != 0) { // timeout = 0.5 sec
+  if ( sendCAN_and_Compare(h, ms, "x_eeprom2: Write FPGA_CONFIG1", 1000000, 2, true) != 0) { // timeout = 1 sec
     cout << "Old MCU code?\n";
   }
 
