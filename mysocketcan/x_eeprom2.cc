@@ -252,6 +252,7 @@ int eeprom2(const char *filename,
 
   // ************** CONFIGURE_TDC:Write FPGA_CONFIG1 ****************************************
   ms.can_id = (0x002 | (tdigNodeID<<4)) <<18 | tcpuNodeID | CAN_EFF_FLAG;
+  ms.can_dlc = 1;
   
   // "FPGA_CONFIG1"
   ms.data[0] = 0x12;
