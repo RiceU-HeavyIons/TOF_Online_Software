@@ -4,20 +4,17 @@
  *  Created on: Nov 29, 2008
  *      Author: koheik
  */
-#include <QtCore/QMutex>
+#include <iostream>
+#include <cerrno>
+using namespace std;
 
-#include <sys/ioctl.h>
+#include <QtCore/QMutex>
 
 #include "AnAgent.h"
 #include "AnRoot.h"
 #include "AnExceptions.h"
 
 int AnAgent::TCAN_DEBUG = 0;
-#ifndef FAKEPCAN
-const char * AnAgent::PCAN_DEVICE_PATTERN = "/dev/pcanusb*";
-#else
-const char * AnAgent::PCAN_DEVICE_PATTERN = "./dev/pcan*";
-#endif
 
 //-----------------------------------------------------------------------------
 AnAgent::AnAgent(QObject *parent) : QThread(parent), m_handle(0), m_comm_err(0)
@@ -30,43 +27,43 @@ AnAgent::~AnAgent()
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::set_msg(TPCANMsg &msg, ...)
+void AnAgent::set_msg(struct can_frame &msg, ...)
 {
   va_list argptr;
   va_start(argptr, msg);
 
-  msg.ID      = va_arg(argptr, int);
-  msg.MSGTYPE = va_arg(argptr, int);
-  msg.LEN     = va_arg(argptr, int);
-  for (int i = 0; i < msg.LEN && i < 8; ++i)
-    msg.DATA[i] = va_arg(argptr, int);
+  msg.can_id = va_arg(argptr, int) | va_arg(argptr, int);
+  //msg.MSGTYPE = va_arg(argptr, int);
+  msg.can_dlc     = va_arg(argptr, int);
+  for (int i = 0; i < msg.can_dlc && i < 8; ++i)
+    msg.data[i] = va_arg(argptr, int);
 
   va_end(argptr);
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::print(const TPCANMsg &msg)
+void AnAgent::print(const struct can_frame &msg)
 {
   int i;
 
-  printf("CANMsg ID: 0x%x TYPE: 0x%02x DATA[%d]: ",
-	 msg.ID, msg.MSGTYPE, msg.LEN);
-  for (i = 0; i < msg.LEN && i < 8; i++)
-    printf("0x%02x ", msg.DATA[i]);
+  printf("CANMsg ID: 0x%x DATA[%d]: ",
+	 msg.can_id, msg.can_dlc);
+  for (i = 0; i < msg.can_dlc && i < 8; i++)
+    printf("0x%02x ", msg.data[i]);
   puts("");
   fflush(stdout);
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::print(const TPCANRdMsg &rmsg)
-{
-  print(rmsg.Msg);
-}
+// void AnAgent::print(const TPCANRdMsg &rmsg)
+// {
+//   print(rmsg.Msg);
+// }
 
 // member functions
 
 QMutex mtex;
-void AnAgent::print_send(const TPCANMsg &msg)
+void AnAgent::print_send(const struct can_frame &msg)
 {
   mtex.lock();
   printf("[%d] >> ", m_id);
@@ -75,7 +72,7 @@ void AnAgent::print_send(const TPCANMsg &msg)
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::print_recv(const TPCANMsg &msg)
+void AnAgent::print_recv(const struct can_frame &msg)
 {
   mtex.lock();
   printf("[%d] << ", m_id);
@@ -84,7 +81,7 @@ void AnAgent::print_recv(const TPCANMsg &msg)
 }
 
 //-----------------------------------------------------------------------------
-quint64 AnAgent::read(TPCANRdMsg &rmsg,
+quint64 AnAgent::read(struct can_frame &rmsg,
 		      int return_length, unsigned int time_out)
 {
   //	pre_check();
@@ -96,20 +93,20 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 
   for (unsigned int i = 0; i < niter && !er; ++i) {
     er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-    error_handle(er, rmsg.Msg);
+    error_handle(er, rmsg);
 
     if (TCAN_DEBUG) {
-      print_recv(rmsg.Msg);
+      print_recv(rmsg);
       emit debug_recv(AnRdMsg(devid(), rmsg));
     }
 
-    length += rmsg.Msg.LEN;
-    for (int j = 1; j < rmsg.Msg.LEN; ++j)
-      data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+    length += rmsg.can_dlc;
+    for (int j = 1; j < rmsg.can_dlc; ++j)
+      data |= static_cast<quint64>(rmsg.data[j]) << 8 * (7*i + j-1);
   }
 
   if (return_length >= 0 && return_length != (int)length) {
-    log( QString("Return length doesn't match: expected %1, received %2")
+    log( QString("read return length doesn't match: expected %1, received %2")
 	 .arg(return_length).arg(length) );
     throw AnExCanError(0);
   }
@@ -118,9 +115,9 @@ quint64 AnAgent::read(TPCANRdMsg &rmsg,
 }
 
 //-----------------------------------------------------------------------------
-void AnAgent::raw_write(TPCANMsg &msg, int time_out)
+void AnAgent::raw_write(struct can_frame &msg, int time_out)
 {
-  pre_check();
+  //pre_check();
 
   int er;
 
@@ -134,46 +131,54 @@ void AnAgent::raw_write(TPCANMsg &msg, int time_out)
 }
 
 //-----------------------------------------------------------------------------
-quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
+quint64 AnAgent::write_read(struct can_frame &msg, struct can_frame &rmsg,
 			    unsigned int return_length, unsigned int time_out)
 {
-  pre_check();
+  //pre_check();
 
   quint64 data = 0;
   unsigned int length = 0;
-  unsigned int niter = return_length / 8 + ((return_length % 8)? 1 : 0);
+  unsigned int niter;
   int er;
   int ntry;
 
+  niter = return_length / 8 + ((return_length % 8)? 1 : 0);
   if (TCAN_DEBUG) {
     print_send(msg);
     emit debug_send(AnRdMsg(devid(), msg));
   }
 
+  if (commError() >= AGENT_COMM_ERROR_THRESHOLD) {
+    throw AnExCanError(-1);
+  }
+  
   er = CAN_Write(m_handle, &msg);
   error_handle(er, msg);
+  clearCommError(); // since it succeeded
 
-  for (unsigned int i = 0; i < niter && !er; ++i) {
+  er = 1;
+  for (unsigned int i = 0; i < niter && (er > 0); ++i) {
     // try 3 times
     for (ntry=3; ntry > 0; ntry--) {
       er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, time_out);
-      if (er == CAN_ERR_QRCVEMPTY) {
+      //if (er == CAN_ERR_QRCVEMPTY) {
+      if (er == 0) {
 	// timeout
-	log(QString("Read timeout: latest msg " + AnRdMsg(addr, msg).toString()));
+	log(QString("write_read: read timeout: latest msg " + AnRdMsg(addr, msg).toString()));
 	//er = 0;
 	// try sending message again:
 	er = CAN_Write(m_handle, &msg);
 	// retry reading
       }
       else {
-	error_handle(er, rmsg.Msg);
+	error_handle(er, rmsg);
 
 	if (TCAN_DEBUG) {
-	  print_recv(rmsg.Msg);
+	  print_recv(rmsg);
 	  emit debug_recv(AnRdMsg(devid(), rmsg));
 	}
 
-	if (match(msg, rmsg.Msg)) {
+	if (match(msg, rmsg)) {
 	  break;
 	}
 	else {
@@ -181,30 +186,32 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 	}
       }
     }
+
     if (ntry == 0) {
       log( QString("Didn't receive reply message after 3 retries for msg with ID 0x%1")
-	   .arg(QString::number(msg.ID,16)) );
+	   .arg(QString::number(msg.can_id,16)) );
       // since this is most likely a board specific communication error,
       // don't increase the agent communication error count
       //incCommError(); 
       throw AnExCanError(0);
     }
     else {
-      if (rmsg.Msg.DATA[0] != msg.DATA[0] && ((rmsg.Msg.ID >> 4) != 0x40)) {
+      if (rmsg.data[0] != msg.data[0] && ((rmsg.can_id >> 4) != 0x40)) { // not a THUB
 	log( QString("Return payload doesn't match: expected 0x%1, received 0x%2")
-	     .arg(QString::number(msg.DATA[0],16)).arg(QString::number(rmsg.Msg.DATA[0],16)) );
+	     .arg(QString::number(msg.data[0],16)).arg(QString::number(rmsg.data[0],16)) );
 	//incCommError();
 	throw AnExCanError(0);
       }
-      length += rmsg.Msg.LEN;
-      for(int j = 1; j < rmsg.Msg.LEN; ++j)
-	data |= static_cast<quint64>(rmsg.Msg.DATA[j]) << 8 * (7*i + j-1);
+      length += rmsg.can_dlc;
+      for(int j = 1; j < rmsg.can_dlc; ++j)
+	data |= static_cast<quint64>(rmsg.data[j]) << 8 * (7*i + j-1);
     }
   }
 
-  if (return_length != length) {
-    log( QString("Return length doesn't match: expected %1, received %2")
-	 .arg(return_length).arg(length) );
+  
+  if ( (er > 0) && (return_length != length)) {
+    log( QString("write_read error %3 return length doesn't match: expected %1, received %2")
+	 .arg(return_length).arg(length).arg(er) );
     //incCommError();
     throw AnExCanError(0);
   }
@@ -213,164 +220,58 @@ quint64 AnAgent::write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
 }
 //-----------------------------------------------------------------------------
 QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
-
+  int h = -1;
   QMap<int, AnAgent*> sock_map;
+
   foreach(int id, devid_map) sock_map[id] = NULL;
   
-  char *dev_path;
-  
-  // #ifndef FAKEPCAN
-  //   int nFileHandle;
-  //   TPEXTRAPARAMS params;
-  // #else
-  TPDIAG tpdiag;
-  // #endif
-  char txt_buff[VERSIONSTRING_LEN];
-  unsigned int i;
-  
-  glob_t globb;
-  
-  globb.gl_offs = 0;
-  glob(PCAN_DEVICE_PATTERN, GLOB_DOOFFS, NULL, &globb);
-  
-  if (globb.gl_pathc == 0) {
-    qDebug() << "device files were not found";
-  }
-  
-  HANDLE h = NULL;
-  for(i = 0; i < globb.gl_pathc; i++) {
-    if (TCAN_DEBUG) {
-      fprintf(stderr, "glob[%d] %s\n", i, globb.gl_pathv[i]);
+  QMapIterator<int, int> i(devid_map);
+  while (i.hasNext()) {
+    i.next();
+    int id = i.value();
+    int dev_id = i.key();
+    
+    if((h = CAN_Open(dev_id)) < 0) {
+      qFatal("Device %d is not found.", i.value());
     }
-    dev_path = globb.gl_pathv[i];
-    h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
-    if (h == NULL) {
-      if (TCAN_DEBUG) {
-	fprintf(stderr, "cannot open: %s\n", dev_path);
-	// log( QString("cannot open: %1").arg(dev_path) );
-      }
-      continue;
-    }
-    // #ifndef FAKEPCAN
-    //     nFileHandle = LINUX_CAN_FileHandle(h);
-    //     params.nSubFunction = SF_GET_HCDEVICENO;
-    //     ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
-    //     int dev_id = params.func.ucHCDeviceNo;
-    // #else
-    LINUX_CAN_Statistics(h, &tpdiag);
-    int dev_id = tpdiag.wIrqLevel;
-    // #endif
-    if (devid_map.contains(dev_id)) {
-      CAN_Init(h, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
+    else {
+      char dev_path[7];
+      sprintf(dev_path, "can%d", dev_id);
+
       AnAgent *sock = new AnAgent();
       sock->m_handle = h;
       sock->addr = dev_id;
       sock->dev_path = dev_path;
-      sock_map[devid_map[dev_id]] = sock;
-      
-      if (TCAN_DEBUG) {
-	CAN_VersionInfo(h, txt_buff);
-	printf("handle:   %p\n", h);
-	printf("dev_id:   %x\n", dev_id);
-	printf("dev_name: %s\n", dev_path);
-	printf("version_info: %s\n", txt_buff);
-      }
-    }
-    else { // this dev_id is not requested
-      CAN_Close(h);
+      sock_map[id] = sock;
+      sock_map[id]->setId(id);
     }
   }
-  globfree(&globb);
-  
-  foreach(int id, devid_map) {
-    if (sock_map[id] == NULL)
-      qFatal("Device %d is not found.", id);
-    sock_map[id]->setId(id);
-  }
+
   return sock_map;
 }
 
 //-----------------------------------------------------------------------------
 int AnAgent::open(quint8 dev_id) {
-  char *dev_path;
+  char dev_path[7];
+  int h = -1;
 
-#ifndef FAKEPCAN
-  int nFileHandle;
-  TPEXTRAPARAMS params;
-#else
-  TPDIAG tpdiag;
-#endif
-  char txt_buff[VERSIONSTRING_LEN];
-  unsigned int i;
+  sprintf(dev_path, "can%d", dev_id);
 
-  //WORD wBTR0BTR1 = CAN_BAUD_1M;         /* 250K, 500K */
-  WORD wBTR0BTR1 = CAN_BAUD_500K;         /* 250K, 500K */
-  int nExtended  = CAN_INIT_TYPE_EX;    /* CAN_INIT_TYPE_ST */
-
-  glob_t globb;
-
-  globb.gl_offs = 0;
-  glob(PCAN_DEVICE_PATTERN, GLOB_DOOFFS, NULL, &globb);
-
-  //  dl->dl_irq = (WORD*)malloc(globb.gl_pathc*sizeof(WORD));
-  //  dl->dl_path = (char**)malloc(globb.gl_pathc*sizeof(char *));
-
-
-  if (globb.gl_pathc == 0) {
-    qDebug() << "device files were not found";
+  if((h = CAN_Open(dev_id)) < 0) {
+    qFatal("Device %d is not found.", dev_id);
   }
 
-  HANDLE h = NULL;
-  for(i = 0; i < globb.gl_pathc; i++) {
-    if (TCAN_DEBUG) {
-      printf("glob[%d] %s\n", i, globb.gl_pathv[i]);
-    }
-    dev_path = globb.gl_pathv[i];
-    h = LINUX_CAN_Open(dev_path, O_RDWR | O_NONBLOCK);
-    if (h == NULL) {
-      if (TCAN_DEBUG) fprintf(stderr, "cannot open: %s\n", dev_path);
-      continue;
-    }
-#ifndef FAKEPCAN
-    nFileHandle = LINUX_CAN_FileHandle(h);
-    params.nSubFunction = SF_GET_HCDEVICENO;
-    ioctl(nFileHandle, PCAN_EXTRA_PARAMS, &params);
-#else
-    LINUX_CAN_Statistics(h, &tpdiag);
-#endif
+  this->m_handle = h;
+  this->addr = dev_id;
+  this->dev_path = dev_path;
 
-#ifndef FAKEPCAN
-    if (dev_id != params.func.ucHCDeviceNo) {
-#else
-      if (dev_id != tpdiag.wIrqLevel) {
-#endif
-	CAN_Close(h);
-	h = NULL;
-	continue;
-      }
-
-      if (TCAN_DEBUG) {
-	CAN_Init(h, wBTR0BTR1, nExtended);
-	CAN_VersionInfo(h, txt_buff);
-	printf("handle:   %p\n", h);
-	printf("dev_id:   %x\n", dev_id);
-	printf("dev_name: %s\n", dev_path);
-	printf("version_info: %s\n", txt_buff);
-      }
-      this->m_handle = h;
-      this->addr = dev_id;
-      this->dev_path = dev_path;
-      break;
-    }
-
-    globfree(&globb);
-    m_handle = h;
-
-    if (m_handle == NULL)
-      return -1;
-    else
-      return 0;
-  }
+  m_handle = h;
+  
+  if (m_handle <= 0)
+    return -1;
+  else
+    return 0;
+}
 
   //-----------------------------------------------------------------------------
   void AnAgent::init(int mode, int level, QList<AnBoard*> list)
@@ -528,19 +429,36 @@ int AnAgent::open(quint8 dev_id) {
   // private functions
 
   //-----------------------------------------------------------------------------
-  bool AnAgent::match(TPCANMsg &snd, TPCANMsg &rcv)
+  bool AnAgent::match(struct can_frame &snd, struct can_frame &rcv)
   {
-    if(snd.MSGTYPE == MSGTYPE_EXTENDED) {
-      return ((snd.ID | 0x40000) == rcv.ID);
+    if((snd.can_id & MSGTYPE_EXTENDED) == MSGTYPE_EXTENDED) {
+      return ((snd.can_id | 0x40000) == rcv.can_id);
     }
     else {
-      return ((snd.ID | 0x1) == rcv.ID);
+      return ((snd.can_id | 0x1) == rcv.can_id);
     }
   }
 
-  //-----------------------------------------------------------------------------
-  void AnAgent::error_handle(int er, TPCANMsg &msg)
-  {
+//-----------------------------------------------------------------------------
+void AnAgent::error_handle(int er, struct can_frame &msg)
+{
+  if (er == 0) {
+    // timeout
+    log( QString("error_handle: CANBus[%1] Timeout Error")
+	 .arg(addr));
+    log(QString("error_handle: latest msg " + AnRdMsg(addr, msg).toString()));
+  }
+  else if (er < 0) {
+    incCommError();
+    // log( QString("error_handle: CANBus[%1] other Error: 0x%2")
+    // 	 .arg(addr).arg(QString::number(er, 16)) );
+    log( QString("error_handle: CANBus[%1]  error: %2")
+	 .arg(addr).arg(QString(strerror(errno))));
+    throw AnExCanError(errno);
+    
+  }
+
+#ifdef NOTNOW
     if (er == 0 && (msg.MSGTYPE & MSGTYPE_STATUS)) {
       int status = CAN_Status(m_handle);
       if (status & CAN_ERR_ANYBUSERR) {
@@ -567,7 +485,7 @@ int AnAgent::open(quint8 dev_id) {
       }
       else if (status > 0) {
 	incCommError();
-	log( QString("error_handle: CANBus[%1] other Error: 0x%2")
+	log( QString("error_handle: CANBus[%1] error: 0x%2")
 	     .arg(addr).arg(QString::number(status, 16)) );
 	throw AnExCanError(status);
       }
@@ -578,36 +496,43 @@ int AnAgent::open(quint8 dev_id) {
 	throw AnExCanError(status);
       }
     }
+#endif
+}
+
+void AnAgent::pre_check()
+{
+  //	qDebug() << "AnAgent::pre_check(): commError()" << commError();
+  
+  if(m_handle == NULL) {
+    qDebug() << "device is not open";
+    throw AnExCanError(0);
   }
-
-  void AnAgent::pre_check()
-  {
-    //	qDebug() << "AnAgent::pre_check(): commError()" << commError();
-
-    if(m_handle == NULL) {
-      qDebug() << "device is not open";
-      throw AnExCanError(0);
-    }
-
-    TPCANRdMsg rmsg;
-    int er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, 0);
-
-    if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS)) {
-      int status = CAN_Status(m_handle);
-      if (status & CAN_ERR_ANYBUSERR) {
-	incCommError();
-	er = CAN_Init(m_handle, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
-      }
-    }
-
-    if (commError() >= AGENT_COMM_ERROR_THRESHOLD) {
-      throw AnExCanError(0);
-    }
+  
+  struct can_frame rmsg;
+  int er = LINUX_CAN_Read_Timeout(m_handle, &rmsg, 0);
+  
+  if (er <= 0) {
+    incCommError();
   }
-
-  void AnAgent::log(QString str)
-  {
-    foreach(QString s, str.split("\n")) {
-      m_root->log(QString("AnAgent[%1]: " + s).arg(m_id));
+  
+#ifdef NOTNOW
+  if (er == 0 && (rmsg.Msg.MSGTYPE & MSGTYPE_STATUS)) {
+    int status = CAN_Status(m_handle);
+    if (status & CAN_ERR_ANYBUSERR) {
+      incCommError();
+      er = CAN_Init(m_handle, AGENT_PCAN_INIT_BAUD, AGENT_PCAN_INIT_TYPE);
     }
   }
+#endif
+  
+  if (commError() >= AGENT_COMM_ERROR_THRESHOLD) {
+    throw AnExCanError(0);
+  }
+}
+
+void AnAgent::log(QString str)
+{
+  foreach(QString s, str.split("\n")) {
+    m_root->log(QString("AnAgent[%1]: " + s).arg(m_id));
+  }
+}

@@ -5,8 +5,11 @@
  *      Author: koheik
  */
 #include <cstdio>
-#include "locallibpcan.h"
-using namespace PCAN;
+#include <net/if.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
+//#include "locallibpcan.h"
+//using namespace PCAN;
 #include "AnBoard.h"
 
 AnBoard::AnBoard(const AnAddress &laddr, const AnAddress &haddr,
@@ -67,28 +70,28 @@ quint32 AnBoard::setFirmwareId(quint32 firmware)
 
 void AnBoard::msgr(const QList<quint8>& dary)
 {
-	if (active()) {
-		TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-	
-		msg.ID      = canidr();
-		msg.MSGTYPE = cantyp();
-		msg.LEN     = dary.count();
-		for(int i = 0; i < msg.LEN; ++i) msg.DATA[i] = dary[i];
-	    agent()->write_read(msg, rmsg, 2);
-	}
+  if (active()) {
+    struct can_frame msg;
+    struct can_frame rmsg;
+    
+    msg.can_id      = canidr() | cantyp();
+    //msg.MSGTYPE = cantyp();
+    msg.can_dlc     = dary.count();
+    for(int i = 0; i < msg.can_dlc; ++i) msg.data[i] = dary[i];
+    agent()->write_read(msg, rmsg, 2);
+  }
 }
 
 void AnBoard::msgw(const QList<quint8>& dary)
 {
-	if (active()) {
-		TPCANMsg    msg;
-	    TPCANRdMsg  rmsg;
-	
-		msg.ID      = canidw();
-		msg.MSGTYPE = cantyp();
-		msg.LEN     = dary.count();
-		for(int i = 0; i < msg.LEN; ++i) msg.DATA[i] = dary[i];
-	    agent()->write_read(msg, rmsg, 2);
-	}
+  if (active()) {
+    struct can_frame msg;
+    struct can_frame rmsg;
+    
+    msg.can_id      = canidw() | cantyp();
+    //msg.MSGTYPE = cantyp();
+    msg.can_dlc     = dary.count();
+    for(int i = 0; i < msg.can_dlc; ++i) msg.data[i] = dary[i];
+    agent()->write_read(msg, rmsg, 2);
+  }
 }

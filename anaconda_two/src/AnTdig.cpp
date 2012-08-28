@@ -11,7 +11,7 @@
 
 AnTdig::AnTdig(const AnAddress& laddr, const AnAddress& haddr, AnCanObject *parent)
   : AnBoard(laddr, haddr, parent),
-    m_threshold(0), m_chipid(0), m_pld03(0), m_pld03Set(0), m_eeprom(1)
+    m_threshold(0), m_actualThreshold(-1), m_chipid(0), m_pld03(0), m_pld03Set(0), m_eeprom(1)
 {
   setObjectName(QString("TDIG ") + lAddress().toString());
 
@@ -48,8 +48,8 @@ void AnTdig::sync(int level)
 {
   if (active() && level >= 1 && commError() < 2) {
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
     quint64     rdata;
     QStringList btrace;
 
@@ -60,8 +60,8 @@ void AnTdig::sync(int level)
       btrace << AnRdMsg(haddr().at(0), rmsg).toString();
       // since communication succeeded, make sure commError is cleared
       clearCommError();
-      setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/256.0);
-      setEcsr(rmsg.Msg.DATA[3]);
+      setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
+      setEcsr(rmsg.data[3]);
 #ifdef WITH_EPICS
       agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()),
 			    1, laddr().at(1), laddr().at(2), temp());
@@ -70,8 +70,12 @@ void AnTdig::sync(int level)
 #endif
       AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
       agent()->write_read(msg, rmsg, 3);
-      m_pld03 = rmsg.Msg.DATA[2];
-
+      m_pld03 = rmsg.data[2];
+      // get Threshold
+      AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0x8);
+      agent()->write_read(msg, rmsg, 3);
+      m_actualThreshold = (int)((rmsg.data[1] + (rmsg.data[2] << 8))*3300.0/4095.0 + 0.5); 
+      
       if (level >= 3) {
 	// get firmware version
 	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
@@ -94,7 +98,8 @@ void AnTdig::sync(int level)
       setSynced();
 
     } catch (AnExCanError ex) {
-      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      //if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      if (ex.status() == 0) {
 	// probably harmless, only print log message
 	log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
 	log(btrace.join("\n"));
@@ -116,8 +121,8 @@ void AnTdig::sync(int level)
 void AnTdig::init(int level)
 {
   if (active() && level >= 1) {
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
     clearCommError();
     try {
       quint8 d0 = 0x89;                  // EEPROM 1
@@ -153,8 +158,8 @@ void AnTdig::config(int level)
       }
 
       // write threshold
-      TPCANMsg msg;
-      TPCANRdMsg rmsg;
+      struct can_frame msg;
+      struct can_frame rmsg;
       quint16 val = (quint16)(threshold() * 4095.0 / 3300.0 + 0.5);
       quint8  vl  = (val & 0xff);
       quint8  vh  = ((val >> 8) & 0x0f);
@@ -167,7 +172,7 @@ void AnTdig::config(int level)
   }
 }
 /**
- * Rest TDIG
+ * Reset TDIG
  **/
 void AnTdig::reset(int level)
 {
@@ -203,8 +208,8 @@ void AnTdig::qreset(int level)
     clearCommError();
     try {
       // do nothing here
-      TPCANMsg    msg;
-      TPCANRdMsg  rmsg;
+      struct can_frame msg;
+      struct can_frame rmsg;
 
       AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 5, 0xe, 0x2, 0x1, 0x2, 0x0);
       agent()->write_read(msg, rmsg, 2);
@@ -285,7 +290,8 @@ QString AnTdig::dump() const
   sl << QString("  ECSR              : 0x") + QString::number(ecsr(), 16);
   sl << QString("  PLD Reg[03]       : 0x") + QString::number(m_pld03, 16);
   sl << QString("  PLD Reg[03] Set   : 0x") + QString::number(m_pld03Set, 16);
-  sl << QString("  Threshold         : ") + thresholdString();
+  sl << QString("  Threshold Set     : ") + thresholdString();
+  sl << QString("  Threshold         : ") + actualThresholdString();
   sl << QString("  EEPROM Selector   : %1").arg(m_eeprom);
   sl << QString("  Status            : ") + QString::number(status());
   sl << QString("  East / West       : ") + (isEast()? "East" : "West");

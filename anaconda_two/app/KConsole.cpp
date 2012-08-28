@@ -25,8 +25,12 @@
 #include "AnAddress.h"
 #include "KConsole.h"
 
-#include "libpcan.h"
-using namespace PCAN;
+#include <net/if.h>
+#include <linux/can.h>
+#include <linux/can/raw.h>
+//#include "libpcan.h"
+//using namespace PCAN;
+
 //-----------------------------------------------------------------------------
 KConsole::KConsole(AnRoot *root, QWidget *parent) : QDialog(parent),
 	m_root(root), m_nmsgs(0)
@@ -382,8 +386,9 @@ void KConsole::cmd_msg(const QStringList& cmdl)
 {
 	int er = 0;
 
-	TPCANMsg msg;
+	struct can_frame msg;
 	int devid;
+	int MSGTYPE = 0;
 
 	if (cmdl.count() < 4) {
 		++er;
@@ -392,27 +397,27 @@ void KConsole::cmd_msg(const QStringList& cmdl)
 	if (er == 0) {
 		QString type = cmdl[1].toUpper();
 		if (type == "S") {
-			msg.MSGTYPE = MSGTYPE_STANDARD;
+			MSGTYPE = MSGTYPE_STANDARD;
 		} else if (type == "E") {
-			msg.MSGTYPE = MSGTYPE_EXTENDED;
+			MSGTYPE = MSGTYPE_EXTENDED;
 		} else  {
 			m_tedit->append("message type has to be S or E");
 			++er;
 		}
 	}
 	if (er == 0) {
-		msg.ID  = parse_int(cmdl[2]);
-		msg.LEN = parse_int(cmdl[3]);
+		msg.can_id  = parse_int(cmdl[2]) | MSGTYPE;
+		msg.can_dlc = parse_int(cmdl[3]);
 
-		if (cmdl.count() != msg.LEN + 5) {
+		if (cmdl.count() != msg.can_dlc + 5) {
 			m_tedit->append("message length is not correct. devid is mandatory here");
 			++er;
 		}
 	}
 	if (er == 0) {
-		for(int i = 0; i < msg.LEN; ++i)
-			msg.DATA[i] = parse_int(cmdl[4 + i]);
-		devid = parse_int(cmdl[4 + msg.LEN]);
+		for(int i = 0; i < msg.can_dlc; ++i)
+			msg.data[i] = parse_int(cmdl[4 + i]);
+		devid = parse_int(cmdl[4 + msg.can_dlc]);
 
 		AnAgent *ag = m_root->agent(devid);
 		if (ag != NULL)

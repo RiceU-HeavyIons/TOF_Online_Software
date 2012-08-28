@@ -12,22 +12,22 @@ AnRdMsg::AnRdMsg()
   // c-tor
 }
 
-AnRdMsg::AnRdMsg(const quint8 devid, const PCAN::TPCANRdMsg &rmsg)
-{
-  m_devid = devid;
-  m_id    = rmsg.Msg.ID;
-  m_type  = rmsg.Msg.MSGTYPE;
-  m_len   = rmsg.Msg.LEN;
-  for (int i = 0; i < m_len; ++i) m_data[i] = rmsg.Msg.DATA[i];
-}
+// AnRdMsg::AnRdMsg(const quint8 devid, const PCAN::TPCANRdMsg &rmsg)
+// {
+//   m_devid = devid;
+//   m_id    = rmsg.Msg.ID;
+//   m_type  = rmsg.Msg.MSGTYPE;
+//   m_len   = rmsg.Msg.LEN;
+//   for (int i = 0; i < m_len; ++i) m_data[i] = rmsg.Msg.DATA[i];
+// }
 
-AnRdMsg::AnRdMsg(const quint8 devid, const PCAN::TPCANMsg &msg)
+AnRdMsg::AnRdMsg(const quint8 devid, const struct can_frame &msg)
 {
   m_devid = devid;
-  m_id    = msg.ID;
-  m_type  = msg.MSGTYPE;
-  m_len   = msg.LEN;
-  for (int i = 0; i < m_len; ++i) m_data[i] = msg.DATA[i];
+  m_id    = msg.can_id;
+  m_type  = (msg.can_id & MSGTYPE_EXTENDED) ? 1 : 0;
+  m_len   = msg.can_dlc;
+  for (int i = 0; i < m_len; ++i) m_data[i] = msg.data[i];
 }
 
 AnRdMsg::~AnRdMsg()
@@ -47,7 +47,7 @@ AnAddress AnRdMsg::source() const
   quint8 tcpu;
   quint8 tdig;
 
-  if (m_type == MSGTYPE_EXTENDED) {
+  if ((m_id & MSGTYPE_EXTENDED) == MSGTYPE_EXTENDED) {
     tcpu = (m_id & 0xff);
     tdig = (m_id >> 22) & 0xff;
   } else {
@@ -59,7 +59,7 @@ AnAddress AnRdMsg::source() const
 
 quint8 AnRdMsg::payload() const
 {
-  if (m_type == MSGTYPE_EXTENDED)
+  if ((m_id & MSGTYPE_EXTENDED) == MSGTYPE_EXTENDED)
     return ((m_id >> 18) & 0xf);
   else
     return (m_id & 0xf);

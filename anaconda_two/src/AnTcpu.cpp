@@ -85,8 +85,8 @@ void AnTcpu::config(int level)
       // agent()->read(rmsg);
       // write to PLD REG[2]
       try {
-	TPCANMsg    msg;
-	TPCANRdMsg  rmsg;
+	struct can_frame msg;
+	struct can_frame rmsg;
 	AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 3, 0xe, 0x2, m_pld02Set);
 	agent()->write_read(msg, rmsg, 2);
       } catch (AnExCanError ex) {
@@ -109,8 +109,8 @@ void AnTcpu::init(int level)
 
   if (active() && level >= 1) {
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
 
     clearCommError();
 
@@ -150,8 +150,8 @@ void AnTcpu::reset(int level)
   if (active() && level >= 1) {
     clearCommError();
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
 
     try {
       // this may not implemented yet
@@ -195,10 +195,10 @@ void AnTcpu::qreset(int level)
 void AnTcpu::sync(int level)
 {
   if (active()) {
-    if (level >= 1 && commError() < 2) {
+    if (level >= 1 && commError() < 10) { // give up after 10 tries
 
-      TPCANMsg    msg;
-      TPCANRdMsg  rmsg;
+      struct can_frame msg;
+      struct can_frame rmsg;
       quint64     rdata;
       QStringList btrace;
 
@@ -211,8 +211,8 @@ void AnTcpu::sync(int level)
 	// since communication succeeded, make sure commError is cleared
 	clearCommError();
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-	setEcsr(rmsg.Msg.DATA[3]);
-	setTemp((double)rmsg.Msg.DATA[2] + (double)(rmsg.Msg.DATA[1])/256.0);
+	setEcsr(rmsg.data[3]);
+	setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
 #ifdef WITH_EPICS
 	agent()->root()->tlog(QString("TCPU %1: %2").arg(laddr().at(1)).arg(temp()),
 			      2, laddr().at(1), 0, temp());
@@ -245,18 +245,20 @@ void AnTcpu::sync(int level)
 	btrace << AnRdMsg(haddr().at(0), msg).toString();
 	agent()->write_read(msg, rmsg, 5);
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-	m_pld02 = rmsg.Msg.DATA[2];
-	m_pld03 = rmsg.Msg.DATA[4] & 0x03;
+	m_pld02 = rmsg.data[2];
+	m_pld03 = rmsg.data[4] & 0x03;
 
 	if (--level >= 1)
 	  for(quint8 i = 0; i < 8; ++i) m_tdig[i]->sync(level);
 
 	setSynced();
       } catch (AnExCanError ex) {
-	if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	//if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	if (ex.status() == 0) {
 	  // probably harmless, only print log message
-	  log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
+	  log(QString("sync: CAN timeout error occurred"));
 	  log(btrace.join("\n"));
+	  incCommError();
 	} 
 	else {
 	  log(QString("sync: CAN error occurred: 0x%1").arg(ex.status(),0,16));
@@ -278,8 +280,8 @@ void AnTcpu::relink(int level)
 	
   if (active() && level >= 1 && commError() == 0) {
     try {
-      TPCANMsg    msg;
-      TPCANRdMsg  rmsg;
+      struct can_frame msg;
+      struct can_frame rmsg;
       AnAgent::set_msg(msg, canidw(),
 		       MSGTYPE_STANDARD,
 		       5, 0xe, 0x2, 0x0, 0x2, m_pld02Set);

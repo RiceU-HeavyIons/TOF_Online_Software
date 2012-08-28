@@ -58,8 +58,8 @@ void AnSerdes::config(int level)
   if (active() && level >= 1) {
     quint8  srdid = hAddress().at(2);
     
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
     
     // make sure no communication errors are present
     clearCommError();
@@ -68,7 +68,8 @@ void AnSerdes::config(int level)
       AnAgent::set_msg(msg, canidw(), MSGTYPE_STANDARD, 2, 0x90 + srdid, pld9xSet());
       agent()->write_read(msg, rmsg, 2);
     } catch (AnExCanError ex) {
-      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      //if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      if (ex.status() == 0) {
 	qDebug() << "CAN QRCVEMPTY error occurred: 0x" << hex << ex.status() << dec;
       } 
       else {
@@ -87,23 +88,23 @@ void AnSerdes::sync(int level)
   if (active() && level >= 1) {
     quint8  srdid = hAddress().at(2);
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
-    quint64     rdata;
+    struct can_frame msg;
+    struct can_frame rmsg;
+    quint64 rdata;
 
     if (level >= 1) {
       AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 2, 0x02, srdid);
       agent()->write_read(msg, rmsg, 4);
 
       m_serdesFPGAFirmware = 0;
-      for(int j = 0; j < rmsg.Msg.LEN; ++j)
-	m_serdesFPGAFirmware |= static_cast<quint32>(rmsg.Msg.DATA[j]) << 8 * j;
+      for(int j = 0; j < rmsg.can_dlc; ++j)
+	m_serdesFPGAFirmware |= static_cast<quint32>(rmsg.data[j]) << 8 * j;
       // setMcuFirmwareId(rdata);
     }
 
     AnAgent::set_msg(msg, canidr(), MSGTYPE_STANDARD, 1, 0x90 + srdid);
     rdata = agent()->write_read(msg, rmsg, 1);
-    setEcsr(rmsg.Msg.DATA[0]);
+    setEcsr(rmsg.data[0]);
 
     setSynced();
   }
@@ -206,8 +207,8 @@ void AnSerdes::relink(int port)
   // allow for up to 3 communication errors, before giving up for good
   if (active() && (port >= 1) && (port <= 4) && (commError() < 3)) {
     try {
-      TPCANMsg    msg;
-      TPCANRdMsg  rmsg;
+      struct can_frame msg;
+      struct can_frame rmsg;
       quint8  srdid = hAddress().at(2);
       quint8  pld9xSetoff = pld9xSet() & (~(1<<(port-1)));
       log(QString("Serdes relink at port %1").arg(port));
@@ -218,7 +219,8 @@ void AnSerdes::relink(int port)
       // clear communication errors, since call succeeded
       clearCommError();
     } catch (AnExCanError ex) {
-      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      //if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      if (ex.status() == 0) {
 	// probably harmless, just log
 	log(QString("relink: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
       }

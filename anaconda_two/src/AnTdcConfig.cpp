@@ -87,9 +87,9 @@ quint32 AnTdcConfig::loadFromFile(const char *path)
 }
 
 //-----------------------------------------------------------------------------
-void AnTdcConfig::setBlockMsg(TPCANMsg *msg, int line) {
+void AnTdcConfig::setBlockMsg(struct can_frame *msg, int line) {
 
-	msg->DATA[0] = 0x20;
+	msg->data[0] = 0x20;
 
 	int len;
 
@@ -100,8 +100,8 @@ void AnTdcConfig::setBlockMsg(TPCANMsg *msg, int line) {
 	else
 		len = 0;
 
-  msg->LEN = len;
+  msg->can_dlc = len;
 
   for (int j = 1; j < len; ++j)
-    msg->DATA[j] = m_data[7*line + (j-1)];
+    msg->data[j] = m_data[7*line + (j-1)];
 }

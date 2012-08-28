@@ -5,7 +5,7 @@
 TEMPLATE = lib
 TARGET = anaconda
 VERSION = 1.0.0
-DEPENDPATH += . ../fakepcan
+#DEPENDPATH += . ../fakepcan
 INCLUDEPATH += . ../inc
 QT += sql
 CONFIG -= release
@@ -25,18 +25,18 @@ QMAKE_EXTRA_TARGETS += extralib
 # !contains(STATIC, yes) {
 #   CONFIG += shared
 # }
-message(PCAN: $$PCAN)
-contains(PCAN, fake) {
-  LIBS += -L../fakepcan -lpcan
-  DEFINES += FAKEPCAN
-} else {
-  LIBS += -lpcan
-}
+#message(PCAN: $$PCAN)
+#contains(PCAN, fake) {
+#  LIBS += -L../fakepcan -lpcan
+#  DEFINES += FAKEPCAN
+#} else {
+#  LIBS += -lpcan
+#}
 
 message(CONFIG: $$CONFIG)
-debug {
+#debug {
 #  LIBS += -L../fakepcan -lpcan
-}
+#}
 
 
 CONFIG(epics) {
@@ -69,4 +69,5 @@ SOURCES += AnAddress.cpp \
            AnThub.cpp AnSerdes.cpp \
            AnRoot.cpp AnAgent.cpp AnMaster.cpp \
            AnEpicsLogger.cpp \
-           AnRdMsg.cpp AnLog.cpp
+           AnRdMsg.cpp AnLog.cpp \
+           can_utils.cpp

@@ -15,11 +15,11 @@ POST_TARGETDEPS += ../lib/libanaconda.a
 LIBS += -L../lib -lanaconda
 
 message(PCAN: $$PCAN)
-contains(PCAN, fake) {
-  LIBS += -L../fakepcan -lpcan
-} else {
-  LIBS += -lpcan
-}
+#contains(PCAN, fake) {
+#  LIBS += -L../fakepcan -lpcan
+#} else {
+#  LIBS += -lpcan
+#}
 
 debug {
 }

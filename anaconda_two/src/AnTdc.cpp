@@ -52,8 +52,8 @@ void AnTdc::init(int level)
   if (active() && level >= 1 && commError() == 0) {
     quint8  data0 = 0x04 | hAddress().at(3);
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
 
     try {
       AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 6, data0, 0xe4, 0xff, 0xff, 0xff, 0xff);
@@ -79,8 +79,8 @@ void AnTdc::config(int level)
 
   if (active() && level >= 1) {
     quint64 rdata;
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
     AnTdcConfig *tc = agent()->tdcConfig(configId());
     qDebug() << "AnTdc::config()" << tc;
 
@@ -125,7 +125,7 @@ void AnTdc::config(int level)
 /**
  * Set TPCANMsg for write channel mask
  */
-void AnTdc::set_mask_msg(TPCANMsg &msg) const
+void AnTdc::set_mask_msg(struct can_frame &msg) const
 {
   // 40bit control word for setting mask is...
   // 0b 100h hhhg gggf fffe eeed dddc cccb bbba aaa0 1000
@@ -142,13 +142,13 @@ void AnTdc::set_mask_msg(TPCANMsg &msg) const
   for (int i = 0; i < 8; ++i)
     cwrd |= ((0x1 & (m_mask >> i)) ? 0x0ULL : 0xfULL) << (4*i + 5);
 
-  msg.ID = canidw();
-  msg.MSGTYPE = MSGTYPE_EXTENDED;
-  msg.LEN = 6;
-  msg.DATA[0] = 0x40 | haddr().at(3);
+  msg.can_id = canidw() | MSGTYPE_EXTENDED;
+  //msg.MSGTYPE = MSGTYPE_EXTENDED;
+  msg.can_dlc = 6;
+  msg.data[0] = 0x40 | haddr().at(3);
 		
   for (int i = 0; i < 5; i++)
-    msg.DATA[i + 1] = 0xff & (cwrd >> 8*i);
+    msg.data[i + 1] = 0xff & (cwrd >> 8*i);
 }
 
 
@@ -160,8 +160,8 @@ void AnTdc::reset(int level) {
   if (active() && level >= 1) {
     quint8  data0 = 0x90 | hAddress().at(3);
 
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
 
     AnAgent::set_msg(msg, canidw(), MSGTYPE_EXTENDED, 1, data0);
     agent()->write_read(msg, rmsg, 2, 20000000);
@@ -175,8 +175,8 @@ void AnTdc::sync(int level)
 {
   if (active() and level >= 1) {
     QStringList btrace;
-    TPCANMsg    msg;
-    TPCANRdMsg  rmsg;
+    struct can_frame msg;
+    struct can_frame rmsg;
     try {
       quint8  data0 = 0x04 | hAddress().at(3);
       AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, data0);
@@ -185,7 +185,8 @@ void AnTdc::sync(int level)
       btrace << AnRdMsg(haddr().at(0), rmsg).toString();
       setSynced();
     } catch (AnExCanError ex) {
-      if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      //if (ex.status() == CAN_ERR_QRCVEMPTY) {
+      if (ex.status() == 0) {
 	// probably harmless, only print log message
 	log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
 	log(btrace.join("\n"));

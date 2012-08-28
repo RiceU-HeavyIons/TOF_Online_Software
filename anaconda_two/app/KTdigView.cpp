@@ -97,7 +97,7 @@ void KTdigView::currentRowChanged(const QModelIndex &current, const QModelIndex 
     m_firm->setText(tdig->firmwareString());
     m_chip->setText(tdig->chipIdString());
     m_temp->setText(tdig->tempString(true));
-    m_thrs->setText(tdig->thresholdString());
+    m_thrs->setText(tdig->actualThresholdString());
     m_ecsr->setText(tdig->ecsrString(true));
     m_ecsr->setToolTip(tdig->ecsrToolTipString());
     m_pld03->setText(tdig->pldReg03String(true));

@@ -149,12 +149,12 @@ insert into tcpus values (119, 4, 56, 100,  96,  4, 'F3', 11, 10, 10, 11,  1);
 insert into tcpus values (120, 4, 57, 107, 103,  4, 'G0', 11, 11, 10, 12,  1);
 
 -- upVPD WEST
-insert into tcpus values (121, 5, 32,   0,  'W', 1, 'H2', 1,  9,  0,  0,  1);
+insert into tcpus values (121, 5, 32,   0,  'W', 1, 'H2', 1,  9,  0,  0,  0);
 -- upVPD EAST
-insert into tcpus values (122, 6, 32,   0,  'E', 2, 'H2', 1,  8,  0,  0,  1);
+insert into tcpus values (122, 6, 32,   0,  'E', 2, 'H2', 1,  8,  0,  0,  0);
 
 -- MTD
-insert into tcpus values (123, 7, 58,  26,  26, 5, 'A0',  1,  6,  0,  0,  1);
-insert into tcpus values (124, 7, 59,  27,  27, 5, 'A1',  1, 10,  0,  0,  1);
-insert into tcpus values (125, 7, 60,  28,  28, 5, 'A2',  1,  5,  0,  0,  1);
+insert into tcpus values (123, 7, 58,  26,  26, 5, 'A0',  1,  6,  0,  0,  0);
+insert into tcpus values (124, 7, 59,  27,  27, 5, 'A1',  1, 10,  0,  0,  0);
+insert into tcpus values (125, 7, 60,  28,  28, 5, 'A2',  1,  5,  0,  0,  0);
 commit transaction;

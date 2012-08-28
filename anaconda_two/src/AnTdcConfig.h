@@ -16,8 +16,12 @@
 #include <QtCore/QStringList>
 
 #include <cstdio>
+
+//#include <net/if.h>
+//#include <linux/can.h>
+//#include <linux/can/raw.h>
 #include "locallibpcan.h"
-using namespace PCAN;
+/*  using namespace PCAN;*/
 
 class AnTdcConfig;
 
@@ -42,7 +46,7 @@ public:
 	quint32 checksum() const { return m_check_sum; }
 
 	quint32 blockLength() const { return m_block_length; }
-	void setBlockMsg(TPCANMsg *msg, int line);
+	void setBlockMsg(struct can_frame *msg, int line);
 
 private:
 

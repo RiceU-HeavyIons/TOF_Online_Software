@@ -15,6 +15,9 @@
 #include <QtCore/QMap>
 #include <QtCore/QDebug>
 
+//#include <net/if.h>
+//#include <linux/can.h>
+//#include <linux/can/raw.h>
 #include "locallibpcan.h"
 
 #include "AnTdcConfig.h"
@@ -22,8 +25,9 @@
 
 #define AGENT_COMM_ERROR_THRESHOLD     10
 /*#define AGENT_PCAN_INIT_BAUD           CAN_BAUD_1M*/
-#define AGENT_PCAN_INIT_BAUD           CAN_BAUD_500K
-#define AGENT_PCAN_INIT_TYPE           CAN_INIT_TYPE_EX
+/*#define AGENT_PCAN_INIT_BAUD           CAN_BAUD_500K*/
+/*#define AGENT_PCAN_INIT_TYPE           CAN_INIT_TYPE_EX*/
+
 class AnBoard;
 class AnRoot;
 
@@ -35,20 +39,20 @@ public:
 	~AnAgent();
 
 	static int TCAN_DEBUG;
-	static const char *PCAN_DEVICE_PATTERN;
+	/*static const char *PCAN_DEVICE_PATTERN;*/
 
-	static void set_msg(TPCANMsg &msg, ...);
-	static void print(const TPCANMsg &msg);
-	static void print(const TPCANRdMsg &rmsg);
+	static void set_msg(struct can_frame &msg, ...);
+	static void print(const struct can_frame &msg);
+	//static void print(const struct can_frame &rmsg);
 	static QMap<int, AnAgent*> open(QMap<int, int> &devid_map);
 	static int debug() { return TCAN_DEBUG; }
 	static int setDebug(int d) { return (TCAN_DEBUG = d); }
 
 	int open(quint8 dev_id);
-	quint64 read(TPCANRdMsg &rmsg,
+	quint64 read(struct can_frame &rmsg,
 	            int return_length, unsigned int time_out = 6000000);
-	void raw_write(TPCANMsg &msg, int time_out = 6000000);
-	quint64 write_read(TPCANMsg &msg, TPCANRdMsg &rmsg,
+	void raw_write(struct can_frame &msg, int time_out = 6000000);
+	quint64 write_read(struct can_frame &msg, struct can_frame &rmsg,
 	      unsigned int return_length, unsigned int time_out = 6000000);
 
 	int id() const { return m_id; }
@@ -57,7 +61,8 @@ public:
 	void setTdcConfigs(const QMap<int, AnTdcConfig*>& tcnfs);
 
 	quint8 devid() const { return addr; }
-	int socket() const { return LINUX_CAN_FileHandle(m_handle); }
+	/*int socket() const { return LINUX_CAN_FileHandle(m_handle); }*/
+	int socket() const { return m_handle; }
 
 	QString deviceName() const { return m_deviceName; }
 	QString setDeviceName(const QString& nm) { return (m_deviceName = nm); }
@@ -91,10 +96,10 @@ protected:
 	virtual void run();
 
 private:
-	void print_send(const TPCANMsg &msg);
-	void print_recv(const TPCANMsg &msg);
-	bool match(TPCANMsg &snd, TPCANMsg &rcv);
-	void error_handle(int er, TPCANMsg &msg);
+	void print_send(const struct can_frame &msg);
+	void print_recv(const struct can_frame &msg);
+	bool match(struct can_frame &snd, struct can_frame &rcv);
+	void error_handle(int er, struct can_frame &msg);
 
 	void pre_check();
 
@@ -108,7 +113,7 @@ private:
 	bool                     m_cancel;
 	QMap<int, AnTdcConfig*>  m_tcnfs; // thread local copy of tdc configs
 
-	HANDLE                   m_handle;
+	int                      m_handle;
 	quint8                   addr;
 	QString                  dev_path;
 

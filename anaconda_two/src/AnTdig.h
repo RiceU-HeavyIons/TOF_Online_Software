@@ -44,8 +44,10 @@ class AnTdig: public AnBoard {
   // Own Functions
   int threshold() const { return m_threshold; }
   int setThreshold(int t) { return (m_threshold = t); }
+  int actualThreshold() const { return m_actualThreshold; }
 
   QString thresholdString() const { return QString::number(m_threshold) + QString(" mV"); }
+  QString actualThresholdString() const { return QString::number(m_actualThreshold) + QString(" mV"); }
 /*   QString tempString() const { return QString::number(temp()) + QString(" C");} */
   QString tempString(bool hilit=false) const;
   quint64 chipId() const { return m_chipid; }
@@ -77,6 +79,7 @@ class AnTdig: public AnBoard {
 
   AnTdc      *m_tdc[4];
   int         m_threshold;
+  int         m_actualThreshold;
   quint64     m_chipid;
   quint8      m_pld03, m_pld03Set; // read-only register
   quint8      m_eeprom;

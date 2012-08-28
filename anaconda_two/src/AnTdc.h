@@ -45,7 +45,7 @@ public:
 	quint8  setMask(quint8 msk) { return (m_mask = msk); }
 
 private:
-	void set_mask_msg(TPCANMsg &msg) const;
+	void set_mask_msg(struct can_frame &msg) const;
 	void log(QString str) const;
 
 	quint16 m_config;

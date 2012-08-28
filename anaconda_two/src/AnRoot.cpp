@@ -4,6 +4,8 @@
  *  Created on: Nov 10, 2008
  *      Author: koheik
  */
+#include <iostream>
+using namespace std;
 
 #include "AnRoot.h"
 #include <QtCore/QVariant>
@@ -116,7 +118,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   
   // open devices and create agents 
   m_agents = AnAgent::open(m_devid_map);
-  
+
   // create THUB objects
   qry.exec("SELECT id, device_id, canbus_id, installed FROM thubs");
   while (qry.next()) {
@@ -182,7 +184,7 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   }
   readModeList();
   readTdcConfig();
-  
+
   // This starts a new thread for logging temperatures to EPICS
   m_epicsLogger = new AnEpicsLogger(this);
   m_epicsLogger->start();
@@ -704,7 +706,7 @@ void AnRoot::watcher(int sock)
     m_watch[sock]->setEnabled(false);
 
     AnAgent *ag = m_socket_agent_map[sock];
-    TPCANRdMsg rmsg;
+    struct can_frame rmsg;
     try {
       ag->read(rmsg, -1);
       received(AnRdMsg(ag->devid(), rmsg));

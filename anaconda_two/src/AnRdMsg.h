@@ -9,14 +9,17 @@
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>
 #include "locallibpcan.h"
+//#include <net/if.h>
+//#include <linux/can.h>
+//#include <linux/can/raw.h>
 #include "AnAddress.h"
 
 class AnRdMsg {
 
 public:
 	AnRdMsg();
-	AnRdMsg(const quint8 devid, const PCAN::TPCANRdMsg& rmsg);
-	AnRdMsg(const quint8 devid, const PCAN::TPCANMsg& msg);	
+	//AnRdMsg(const quint8 devid, const struct can_frame& rmsg);
+	AnRdMsg(const quint8 devid, const struct can_frame& msg);	
 	virtual ~AnRdMsg();
 
 	quint8  devid()     const { return m_devid; }
