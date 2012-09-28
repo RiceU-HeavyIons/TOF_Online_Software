@@ -17,7 +17,7 @@ if($date==""){$date='Unknown';}
 
 ?>
 <div id="main">
-<div class='title'>Component Information</div>
+<div class='title'>Component  Information: ID = <?php echo $c->id ?> </div>
 <form name='=edit_comp' action='' method='post'>
 <input name='request_type' type='hidden' value='edit_component'>
 <input name='comp_id' type='hidden' value=<?php echo $id ?>>
@@ -36,23 +36,34 @@ if($comp_type==3){echo "<option selected>TINO</option>";}
 else{echo "<option>TINO</option>";}
 if($comp_type==7){echo "<option selected>MINO</option>";}
 else{echo "<option>MINO</option>";}
+if($comp_type==8){echo "<option selected>MTRIG</option>";}
+else{echo "<option>MTRIG</option>";}
 ?>
    </select>
   </td>
   <td>Arrival Date:<br />
-   <input name='arrival_date' type='text' size='11' value=<?php echo $date ?>>
+   <input name='arrival_date' type='text' size='15' value=<?php echo $date ?>>
   </td>
  </tr>
 
  <tr>
-  <td colspan='4'>Serial Number:<br />
-   <input name='serial' type='text' size='30' value=<?php echo $c->serial ?>>
+  <td>Serial Number:<br />
+   <input name='serial' type='text' size='10' value=<?php echo $c->serial ?>>
   </td>
  </tr>
 
  <tr>
   <td colspan='4'>Chip SN:<br />
-   <input name='chip_sn' type='text' size='30' value=<?php echo $c->chip_sn ?>>
+   <input name='chip_sn' type='text' size='20' value=<?php echo $c->chip_sn ?>>
+  </td>
+ </tr>
+
+ <tr>
+  <td>Tray ID:<br />
+   <a href='../tray/view.php?id=<?php echo $c->tray_id ?>'> <?php echo $c->tray_id ?> </a>
+  </td>
+  <td>Slot:<br />
+   <?php echo $c->slot ?>
   </td>
  </tr>
 

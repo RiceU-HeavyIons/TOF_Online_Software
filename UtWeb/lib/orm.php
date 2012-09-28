@@ -1,5 +1,5 @@
 <?php
-# $Id: orm.php,v 1.66 2009/07/20 22:22:58 tofp Exp $
+# $Id: orm.php,v 1.67 2012/05/23 20:11:39 tofp Exp $
 # Copyright (C) 2007, 2008, Kohei Kajimoto. All rights reserved.
 
 class Component {
@@ -74,6 +74,7 @@ class Component {
 			case 5: return "TTRIG";
 		        case 6: return "SDetTDIG";
 		        case 7: return "MINO";
+		        case 8: return "MTRIG";
 			default: return "";
 		}
 	}

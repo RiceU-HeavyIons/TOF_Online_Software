@@ -39,6 +39,8 @@ if($comp_type==6) {echo "<option selected>SDetTDIG</option>";}
 else{echo "<option>SDetTDIG</option>";}
 if($comp_type==7){echo "<option selected>MINO</option>";}
 else{echo "<option>MINO</option>";}
+if($comp_type==8){echo "<option selected>MTRIG</option>";}
+else{echo "<option>MTRIG</option>";}
 ?>
    </select>
   </td>
