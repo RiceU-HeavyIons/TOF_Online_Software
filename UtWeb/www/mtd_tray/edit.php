@@ -21,6 +21,7 @@ function edit($id){
   echo "<input name='edit' type='submit' value='Edit Contents'/>";
   echo "</form>";
 }
+
 function tcpuform($r_tcpu, $id){
   echo "<form name='tcpu' action='update.php' method='post'/>";
   echo "<input name='id' type='hidden' value='$id'/>";
@@ -32,6 +33,23 @@ function tcpuform($r_tcpu, $id){
       echo "<option selected>*", $r_cpu->serial, "</option>\n";}
     elseif($r_cpu->tray_id ==''){
       echo "<option>", $r_cpu->serial, "</option>\n";}
+  }
+  echo "<option>----------</option>\n";
+  echo "<option>Remove</option>\n";
+  echo "</select><input type='submit' value=''/></form>\n";
+}
+
+function mtrigform($r_mtrig, $id){
+  echo "<form name='mtrig' action='update.php' method='post'/>";
+  echo "<input name='id' type='hidden' value='$id'/>";
+  echo "<input name='request_type' type='hidden' value='modify_mtrig'/>";
+  echo "<select name='mtrig_select'>\n";
+  echo "<option selected> Pick one </option>\n";
+  while($r_trig=mysql_fetch_object($r_mtrig)){
+    if($r_trig->tray_id == $id){
+      echo "<option selected>*", $r_trig->serial, "</option>\n";}
+    elseif($r_trig->tray_id ==''){
+      echo "<option>", $r_trig->serial, "</option>\n";}
   }
   echo "<option>----------</option>\n";
   echo "<option>Remove</option>\n";
@@ -152,6 +170,7 @@ echo "<br><br>\n";
 
 
 echo "<tr><th>TCPU</th>";
+echo "<th>MTRIG</th>";
 echo "<th>TDIG</th>";
 echo "<th>MINO</th>";
 echo "<th>MRPC</th></tr>";
@@ -163,23 +182,30 @@ echo "<tr><td class='tcpu' bgcolor=#ddddff>",tcpuform($newresult2, $id), "</td>\
 $l=$l+1;
 $ll=$l%2;
 
+# MTRIG:
+$newresult6=mysql_query("select * from components where (tray_id=$id and component_type_id=8) or (tray_id is null and component_type_id=8) order by serial", $con);
+echo "<td class='mtrig' bgcolor=#ddddff>",mtrigform($newresult6, $id), "</td>\n";
+
+$l=$l+1;
+$ll=$l%2;
+
 # TDIG:
 $newresult3=mysql_query("select * from components where (tray_id=$id and component_type_id=2) or (component_type_id='2' and tray_id is null) order by serial", $con);
-echo "<tr class='row$ll'><td></td><td class='tdig'>", tdigform($newresult3, $id),"</td></tr>\n";
+echo "<tr class='row$ll'><td></td><td></td><td class='tdig'>", tdigform($newresult3, $id),"</td></tr>\n";
 
 # MINO:
 $newresult4=mysql_query("select * from components where (tray_id=$id and component_type_id=7) or (component_type_id='7' and tray_id is null) order by serial", $con);
 
 $l=$l+1;
 $ll=$l%2;
-echo "<tr class='row$ll'><td></td><td></td><td class='tino'>", minoform($newresult4, $id), "</td></tr>\n";
+echo "<tr class='row$ll'><td></td><td></td><td></td><td class='tino'>", minoform($newresult4, $id), "</td></tr>\n";
 
 # MODULE
 $newresult5=mysql_query("select distinct serial, tray_id, slot from modules order by serial", $con);
 
 $l=$l+1;
 $ll=$l%2;
-echo "<tr class='row$ll'><td></td><td></td><td></td><td class='module'>", moduleform($newresult5, $id), "</td>\n";
+echo "<tr class='row$ll'><td></td><td></td><td></td><td></td><td class='module'>", moduleform($newresult5, $id), "</td>\n";
 
 echo "</tr>\n";
 ?>

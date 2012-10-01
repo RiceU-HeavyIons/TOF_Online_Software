@@ -303,7 +303,7 @@ if($num_component == 0){
     echo "<tr><td>",edit($id), "</td></tr>\n";
   }
   echo "<tr><th>TCPU</th>";
-  echo "<th>MTRG</th>";
+  echo "<th>MTRIG</th>";
   echo "<th>TDIG</th>";
   echo "<th>MINO</th>";
   echo "<th>MRPC</th></tr>";
@@ -324,10 +324,10 @@ if($num_component == 0){
    echo "  <td class='tcpu' bgcolor=#ddddff>Nothing here</td>\n";
   }
 
-#TTRG:
-  if($tray->ttrig->id){
+#MTRIG:
+  if($tray->mtrig->id){
    echo " <td class='tcpu' bgcolor=#ddddff>\n";
-   echo "   <a href=\"{$action}?id=", $tray->ttrig->id, "\">", $tray->ttrig->sn, "</a>\n";
+   echo "   <a href=\"{$action}?id=", $tray->mtrig->id, "\">", $tray->mtrig->sn, "</a>\n";
    echo " </td>\n";
   } else {
    echo "  <td class='tcpu' bgcolor=#ddddff>Nothing here</td>\n";

@@ -1186,6 +1186,8 @@ class Tray {
 	var $tray_status;
 
 	var $tcpu;
+	var $ttrig;
+	var $mtrig;
 	var $tdig;
 	var $tino;
 	var $mino;
@@ -1209,6 +1211,7 @@ class Tray {
 
 			$this->tcpu  = Component::find_one("tray_id={$id} AND component_type_id=1", "");
 			$this->ttrig = Component::find_one("tray_id={$id} AND component_type_id=5", "");
+			$this->mtrig = Component::find_one("tray_id={$id} AND component_type_id=8", "");
 			$this->tdig  = Component::find_all("tray_id={$id} AND component_type_id=2", "slot asc", "");
 			$this->tino  = Component::find_all("tray_id={$id} AND component_type_id=3", "slot asc", "");
 			$this->mino  = Component::find_all("tray_id={$id} AND component_type_id=7", "slot asc", "");

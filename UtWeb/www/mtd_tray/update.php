@@ -13,6 +13,7 @@ $old_notes    = $_POST['old_notes'];
 $user         = $_POST['user'];
 $start_date   = $_POST['start_date'];
 $tcpu         = $_POST['tcpu_select'];
+$mtrig        = $_POST['mtrig_select'];
 $ttrig        = $_POST['ttrig_select'];
 $tdig         = $_POST['tdig_select'];
 $mino         = $_POST['mino_select'];
@@ -111,12 +112,27 @@ if ($type == 'modify_ttrig') {
   if($ttrig=='Remove') {
     $edit = mysql_query("update components set tray_id=default, slot=default where component_type_id='5' and tray_id=$tray_id", $con) or die(mysql_error());
   }
-  elseif($tcpu=='----------' || $tcpu=='Pick one') {
+  elseif($ttrig=='----------' || $ttrig=='Pick one') {
     header( "Location: ./edit.php?id=$tray_id");
   }
   else {
     $edit = mysql_query("update components set tray_id=default, slot=default where component_type_id='5' and tray_id=$tray_id", $con) or die(mysql_error());
       $update = mysql_query("update components set tray_id=$tray_id, slot=default where serial='$ttrig' and component_type_id='5'", $con) or die(mysql_error());
+  }
+  header( "Location: ./edit.php?id=$tray_id");
+}
+
+if ($type == 'modify_mtrig') {
+  $mtrig=trim($mtrig, "*");
+  if($mtrig=='Remove') {
+    $edit = mysql_query("update components set tray_id=default, slot=default where component_type_id='8' and tray_id=$tray_id", $con) or die(mysql_error());
+  }
+  elseif($mtrig=='----------' || $mtrig=='Pick one') {
+    header( "Location: ./edit.php?id=$tray_id");
+  }
+  else {
+    $edit = mysql_query("update components set tray_id=default, slot=default where component_type_id='8' and tray_id=$tray_id", $con) or die(mysql_error());
+      $update = mysql_query("update components set tray_id=$tray_id, slot=default where serial='$mtrig' and component_type_id='8'", $con) or die(mysql_error());
   }
   header( "Location: ./edit.php?id=$tray_id");
 }
