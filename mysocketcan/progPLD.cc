@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
   cout.flush();
   
   if ( argc < 4 ) {
-    cout << "USAGE: " << argv[0] << " <fileName> <PLD #> <nodeID> [<devID>]\n";
+    cout << "USAGE: " << argv[0] << " <fileName> <PLD # (0=m, 1-8=s, 9=all)> <nodeID> [<devID>]\n";
     return 1;
   }
   
