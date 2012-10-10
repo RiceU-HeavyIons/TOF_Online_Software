@@ -1,0 +1,19 @@
+# $Id$
+# rules for systec CAN interface to assign sane device numbers
+
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:00:00", KERNEL=="can*", NAME="can0"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:00:01", KERNEL=="can*", NAME="can1"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:01:00", KERNEL=="can*", NAME="can2"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:01:01", KERNEL=="can*", NAME="can3"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:02:00", KERNEL=="can*", NAME="can4"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:02:01", KERNEL=="can*", NAME="can5"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:03:00", KERNEL=="can*", NAME="can6"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="??:??:??:??:03:01", KERNEL=="can*", NAME="can7"
