@@ -1,11 +1,17 @@
 <?php
-# $Id: session.php,v 1.9 2008/09/25 20:00:35 tofp Exp $
+# $Id: session.php,v 1.10 2012/05/23 20:11:39 tofp Exp $
 # Copyright (C) 2007, Kohei Kajimoto, Andrew Oldag. All rights reserved.
+
+#session_save_path("/home/tofp/sessions");
+session_save_path("/var/www/tof/sessions");
+session_start();
 
 class Session {
 	var $rel;
 
-	function Session($rel) { $this->rel = $rel; }
+	function Session($rel) {
+	  $this->rel = $rel;
+	}
 	
 	function login_button() {
 		$rel = $this->rel ? $this->rel : "..";
@@ -38,21 +44,27 @@ class Session {
 	}
 	
 	function error($arg) {
-		$ret = $_SESSION['error'];
-		if($arg['clear']) { $_SESSION['error'] = ''; }
-		return ($ret);
+	  if (isset( $_SESSION['error']) )
+	    $ret = $_SESSION['error'];
+	  else
+	    $ret = '';
+	  if($arg['clear']) { $_SESSION['error'] = ''; }
+	  return ($ret);
 	}
 		
 	function authorize($arg) {
+	  print "JS: this is authorize";
 		$usr = $_SESSION['username'] = $arg['username'];
 		$pwd = $_SESSION['password'] = $arg['password'];
 		if($usr =='tof' && md5($pwd) == '75b2ade1102b7e4d92d03408ec074da5') {
 			$_SESSION['known_user'] = 1;
 			return(true);
-		} elseif($usr =='tofmaster' && md5($pwd) == '9af930712fa5d4288d6108e079dee227') {
+		}
+		elseif($usr =='tofmaster' && md5($pwd) == '9af930712fa5d4288d6108e079dee227') {
 			$_SESSION['known_user'] = 1;
 			return(true);
-		} else {
+		}
+		else {
 			$_SESSION['known_user'] = 0;
 			return(false);
 		}
@@ -68,11 +80,16 @@ class Session {
 		header("location: ./login.php");
 	}
 	function loggedin() {
-		return ($_SESSION['known_user'] == 1);
+	  if (!isset( $_SESSION['known_user']) )
+	    $_SESSION['known_user'] = 0;
+	  return ($_SESSION['known_user'] == 1);
 	}
 
 	function username() {
-		return $_SESSION['username'];
+	  if (isset( $_SESSION['username']) )
+	    return $_SESSION['username'];
+	  else
+	    return false;
 	}
 
 # location stuff
@@ -88,6 +105,4 @@ class Session {
 		$_SESSION['ref'] = $loc;
 	}
 }
-session_save_path("/homes/tofp/sessions");
-session_start();
 ?>

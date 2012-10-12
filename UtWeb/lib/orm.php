@@ -34,7 +34,7 @@ class Component {
 		}
 	}
 	
-	function count($cnd) {
+	function count($cnd=false) {
 		$stm = "SELECT COUNT(*) as count from components";
 		if($cnd) { $stm .= " WHERE $cnd"; }
 		$q = mysql_query($stm);
@@ -1198,7 +1198,9 @@ class Tray {
 
 	function Tray($id) {
 		$q = mysql_query("SELECT * from trays where id=$id");
-		if($r = mysql_fetch_object($q)){
+		#if($r = mysql_fetch_object($q)){
+		if($q){
+		        $r = mysql_fetch_object($q);
 			$this->id = $id;
 			$this->user = new User($r->user_id);
 			$this->start = $r->start;
@@ -1225,7 +1227,7 @@ class Tray {
 		}
 	}
 
-	function find_all($cnd, $ord, $lim) {
+	function find_all($cnd=false, $ord=false, $lim=false) {
 		$table_name = "trays";
 		$stm = "SELECT * FROM " . $table_name;
 		if($cnd) { $stm .= " WHERE $cnd"; }
@@ -1246,7 +1248,7 @@ class Tray {
 		}
 	}
 	
-	function find_runs($cnd, $ord, $lim) {
+	function find_runs($cnd=false, $ord=false, $lim=false) {
 		$stm = "SELECT r.id FROM runs r";
 		$stm .= " INNER JOIN run_configs rc on r.run_config_id = rc.id";
 		$stm .= " WHERE (r.run_type_id = 4 OR r.run_type_id = 7)";
@@ -1428,7 +1430,8 @@ class TrayNote {
 		$stm .= " ORDER BY id desc LIMIT 1";
 		$q = mysql_query($stm);
 		$r = mysql_fetch_object($q);
-		return new TrayNote($r->id);
+		if ($r) return new TrayNote($r->id);
+		else return(false);
 	}
 }
 

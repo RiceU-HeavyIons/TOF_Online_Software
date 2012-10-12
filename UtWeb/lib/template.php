@@ -1,5 +1,5 @@
 <?php
-# $Id: template.php,v 1.34 2009/08/17 17:11:07 tofp Exp $
+# $Id: template.php,v 1.35 2012/05/23 20:11:39 tofp Exp $
 # Copyright (C) 2007, Kohei Kajimoto. All rights reserved.
 
 function tsw_header($title) {
@@ -171,7 +171,7 @@ class Tsw {
     echo "<div style='clear: right; margin: 0px; padding: 0px;'></div>\n";
   }
 
-  function footer($debug) {
+  function footer($debug=false) {
     if(isset($debug)) {
       echo "<address>\n";
       echo " <span style='float: right;'>\n";

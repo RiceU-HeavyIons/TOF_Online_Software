@@ -57,7 +57,7 @@ function list_pagenate($page, $total, $lines, $opt) {
   $next = $page + 1;
 
   if($page > 1) {
-    echo "<a href=\"list.php?page=$previous\">previous</a>";
+    echo "<a href=\"list.php?page=$prev\">previous</a>";
   }
 
   for($i = 1; $i <= $tpg; $i++) {
