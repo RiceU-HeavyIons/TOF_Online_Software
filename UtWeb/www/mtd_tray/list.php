@@ -3,7 +3,9 @@
 include("../../lib/orm.php");
 include("../../lib/connect.php");
 include("../../lib/session.php");
-Session::update_ref("../mtd_tray/list.php");
+$thissession = new Session("../");
+$thissession->update_ref("../mtd_tray/list.php");
+#Session::update_ref("../mtd_tray/list.php");
 
 function open_form($id){
   echo "<form name='frm_prop_search' method='post' action='http://www.rhip.utexas.edu/~tofp/xoops/modules/dms/search_prop.php'>";
@@ -115,8 +117,13 @@ $instorage = Tray::count("tray_status_id=5 and sn>199");
 $tot = Tray::count("sn>199");
 $lim = 20;
 $off = 0;
-$page = $rvar_page;
-if($page == NULL) $page = 1;
+if (isset( $_GET['page']) && !empty( $_GET['page']) )
+  $page = $_GET['page'];
+else
+   $page = 1;
+  
+#$page = NULL;
+#if($page == NULL) $page = 1;
 if($page <= 0) $page = 1;
 if($page > $tot/$lim) $page = ceil($tot/$lim);
 $off = $lim*($page - 1);
@@ -146,11 +153,13 @@ if(Session::loggedin()){
   echo "</td><td>";
   new_run();
   echo "</td><td>";
-  Session::logout_button();
+  #Session::logout_button();
+  $thissession->logout_button();
 }
 else{
   echo "</td><td>";
-  Session::login_button();
+  #Session::login_button();
+  $thissession->login_button();
 }
 ?>
 </td></tr>
@@ -214,6 +223,7 @@ foreach (Tray::find_all("sn>199", "sn desc", "$off, $lim") as $tray) {
    // Notes column
    $tn = TrayNote::last("tray_id={$tray->id}");
    if($tn) $notes = $tn->note;
+   else $notes='';
    if(strlen($notes) == 0) {
      if(Session::loggedin()) {
        $notes='Create a note';

@@ -316,7 +316,7 @@ if($num_component == 0){
   echo "<tr>\n";
 
 # TCPU:
-  if($tray->tcpu->id){
+  if($tray->tcpu){
    echo " <td class='tcpu' bgcolor=#ddddff>\n";
    echo "   <a href=\"{$action}?id=", $tray->tcpu->id, "\">", $tray->tcpu->sn, "</a>\n";
    echo " </td>\n";
@@ -325,7 +325,7 @@ if($num_component == 0){
   }
 
 #MTRIG:
-  if($tray->mtrig->id){
+  if($tray->mtrig){
    echo " <td class='tcpu' bgcolor=#ddddff>\n";
    echo "   <a href=\"{$action}?id=", $tray->mtrig->id, "\">", $tray->mtrig->sn, "</a>\n";
    echo " </td>\n";
@@ -340,8 +340,9 @@ if($num_component == 0){
   $ll=$l%2;
 
   if($tray->tdig) {
-    $i=5;
-    while (!($tdig=$tray->tdig[$i])) {$i=$i-1;}
+    #$i=5;
+    #while (!($tdig=$tray->tdig[$i])) {$i=$i-1;}
+    $tdig = $tray->tdig[0];
     echo "<tr class='row$ll'>\n";
     echo " <td></td><td></td>\n";
     echo " <td class='tdig'><a href=\"{$action}?id=",$tdig->id,"\">",$tdig->sn,"</td>\n";
@@ -354,8 +355,9 @@ if($num_component == 0){
   $ll=$l%2;
   echo "<tr class='row$ll'>\n";
   if($tray->mino){
-    $i=5;
-    while (!($mino=$tray->mino[$i])) {$i=$i-1;}
+    #$i=5;
+    #while (!($mino=$tray->mino[$i])) {$i=$i-1;}
+    $mino = $tray->mino[0];
     echo " <td></td><td></td>\n";
     echo " <td></td>\n";
     echo " <td class='tino'><a href=\"{$action}?id=", $mino->id, "\">", $mino->sn, "</td>\n";
@@ -369,8 +371,9 @@ if($num_component == 0){
   $ll=$l%2;
   echo "<tr class='row$ll'><td></td><td></td><td></td><td></td>";
   if($tray->module) {
-    $i=5;
-    while (!($mod=$tray->module[$i])) {$i=$i-1;}
+    #$i=5;
+    #while (!($mod=$tray->module[$i])) {$i=$i-1;}
+    $mod=$tray->module[0];
     echo "  <td class='module'><a href=\"../module/show.php?id=", $mod["id"], "\">", $mod["serial"], "</td>\n";
   } else {
     echo "<td> Nothing here</td>\n";
