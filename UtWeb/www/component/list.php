@@ -56,5 +56,5 @@ foreach(Component::find_all("","id desc", "$off, $lim", "") as $c) {
 }
 echo "</table>\n";
 echo "</div><!-- main -->\n";
-tws_footer();
+tsw_footer();
 ?>

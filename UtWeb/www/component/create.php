@@ -4,7 +4,7 @@ include("../../lib/connect.php");
 include("../../lib/session.php");
 Session::check_login("../tray/component.php");
 
-$id = $rvar_id;
+#$id = $rvar_id;
 function back() {}
 include("../../lib/template.php");
 tsw_header('Component Information Insertion Page');
@@ -47,5 +47,5 @@ tsw_toolbar('component');
 </table>
 
 <p>Once this information is inserted into the database the new component can be selected to be inserted into a new or existing tray by editing the contents of a tray. To edit the contents click 'Show Contents' for a tray in the list and then click 'Edit Contents' on the resulting page. Details and notes about the component can be edited once it has been 'inserted' into a tray. Clicking on the component serial number will allow you to edit the database entry. </p>
-<?php tws_footer(); ?>
+<?php tsw_footer(); ?>
 <?php mysql_close($con) ?>
