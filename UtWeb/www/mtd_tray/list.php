@@ -175,8 +175,10 @@ else{
  <th>Contents</th>
  <th>Documents</th>
  <th>Notes</th>
- <th>Small Notes</th>
- <th>Tests</th>
+ <!-- <th>Small Notes</th>
+ <th>Tests</th> -->
+ <th>BL</th>
+ <th>Slot</th>
 
 </tr>
 
@@ -239,8 +241,22 @@ foreach (Tray::find_all("sn>199", "sn desc", "$off, $lim") as $tray) {
          $tn->created_on, " ", $notes,"</a></td>\n";
    }
 
-   echo "  <td><a href=\"./info.php?id={$id}\">", sizeof($tray->info),"</a></td>\n";
-   echo "  <td><a href=\"./tests.php?id={$id}\">", sizeof($tray->find_runs()), "</a></td>\n";
+  $backleg_D = mysql_query("SELECT backleg FROM tray_backlegs where tray_id = $tray->id", $con);
+  if($blD2 = mysql_fetch_object($backleg_D)) {
+    $bl = $blD2->backleg;
+    echo " <td>", $bl , "</td>\n";
+  }
+  else {echo "<td> </td>";}
+
+  $slotr = mysql_query("SELECT slot FROM components where tray_id = $tray->id AND component_type_id=2", $con);
+  if($slot = mysql_fetch_object($slotr)) {
+    echo " <td>", $slot->slot, "</td>\n";
+  }
+  else {echo "<td> </td>";}
+
+#
+#   echo "  <td><a href=\"./info.php?id={$id}\">", sizeof($tray->info),"</a></td>\n";
+#   echo "  <td><a href=\"./tests.php?id={$id}\">", sizeof($tray->find_runs()), "</a></td>\n";
 
    echo " </tr>";
  }
