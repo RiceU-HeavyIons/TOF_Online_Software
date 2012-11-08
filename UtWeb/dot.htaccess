@@ -9,7 +9,7 @@ Require user tofp
 
 RewriteEngine On
 RewriteBase /~tofp
-RewriteRule ^(figure|photo|results|talks|var|video)(.*)$ _static/$1$2 [QSA,L]
+RewriteRule ^(figure|mtdData|photo|results|talks|var|video)(.*)$ _static/$1$2 [QSA,L]
 RewriteRule ^(account|component|config|documents|hvtest|map|module|run|scripts|style|system|tray|mtd_tray|wah)(.*)$ _www/$1$2 [QSA,L]
 #
 RewriteRule ^$ xoops/ [QSA,L]
