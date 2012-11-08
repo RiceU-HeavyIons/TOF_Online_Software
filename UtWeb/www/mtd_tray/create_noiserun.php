@@ -30,7 +30,7 @@ tsw_toolbar();
   echo "<input name='tray_1_sn' type='text' size='8'/></td></tr>";
   
   echo "<tr><td>Tray 2 Serial:<br>";
-  echo "<input name='tray_3_sn' type='text' size='8'/></td></tr>";
+  echo "<input name='tray_2_sn' type='text' size='8'/></td></tr>";
   
   echo "<tr><td>Tray 4 Serial:<br>";
   echo "<input name='tray_4_sn' type='text' size='8'/></td></tr>";
