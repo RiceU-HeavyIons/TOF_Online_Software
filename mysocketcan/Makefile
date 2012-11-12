@@ -23,7 +23,7 @@ PROGRAMS = candump cangen cansend \
 		eeprom2 x_eeprom2 \
 		progMCU progPLD \
 		x_setThreshold showSerdes x_enableChannel \
-		x_readHPTDCconfig
+		x_readHPTDCconfig x_getStatus loadExeScript
 
 all: $(PROGRAMS)
 
@@ -66,6 +66,8 @@ x_setThreshold.o:	can_utils.h
 x_enableChannel.o:	can_utils.h
 showSerdes.o:		can_utils.h
 x_readHPTDCconfig.o:	can_utils.h
+x_getStatus.o:		can_utils.h
+loadExeScript.o:	can_utils.h
 
 cansend:	cansend.o	lib.o
 cangen:		cangen.o	lib.o
@@ -131,5 +133,11 @@ x_enableChannel:	x_enableChannel.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
 x_readHPTDCconfig:	x_readHPTDCconfig.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+x_getStatus:	x_getStatus.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+loadExeScript:	loadExeScript.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
