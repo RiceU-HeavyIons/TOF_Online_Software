@@ -3,7 +3,9 @@
 include("../../lib/orm.php");
 include("../../lib/connect.php");
 include("../../lib/session.php");
-Session::update_ref("../tray/list.php");
+$thissession = new Session("../");
+$thissession->update_ref("../mtd_tray/list.php");
+#Session::update_ref("../tray/list.php");
 
 function open_form($id){
   echo "<form name='frm_prop_search' method='post' action='http://www.rhip.utexas.edu/~tofp/xoops/modules/dms/search_prop.php'>";
@@ -102,10 +104,14 @@ tsw_toolbar("tray");
 $finished  = Tray::count("tray_status_id=3");
 $workingon = Tray::count("tray_status_id!=3 and tray_status_id!=5");
 $instorage = Tray::count("tray_status_id=5");
-$tot = Tray::count();
+$tot = Tray::count("");
 $lim = 20;
 $off = 0;
-$page = $rvar_page;
+if (isset( $_GET['page']) && !empty( $_GET['page']) )
+  $page = $_GET['page'];
+else
+   $page = 1;
+#$page = $rvar_page;
 if($page == NULL) $page = 1;
 if($page <= 0) $page = 1;
 if($page > $tot/$lim) $page = ceil($tot/$lim);
@@ -142,9 +148,13 @@ if(Session::loggedin()){
   echo "</td><td>";
   new_component();
   echo "</td><td>";
-  Session::logout_button();
+  $thissession->logout_button();
+#  Session::logout_button();
 }
-else{Session::login_button();}
+else{
+  $thissession->login_button();
+#  Session::login_button();
+}
 ?>
 </td></tr>
 </table>
