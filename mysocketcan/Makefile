@@ -22,7 +22,7 @@ PROGRAMS = candump cangen cansend \
 		MCU2 x_MCU2 x_MCU2_withOffset x_MCU2_noIVT \
 		eeprom2 x_eeprom2 \
 		progMCU progPLD \
-		x_setThreshold showSerdes x_enableChannel \
+		x_setThreshold x_getThreshold showSerdes x_enableChannel \
 		x_readHPTDCconfig x_getStatus loadExeScript
 
 all: $(PROGRAMS)
@@ -63,6 +63,7 @@ x_config_scripted.o:	can_utils.h
 progMCU.o:		can_utils.h
 progPLD.o:		can_utils.h
 x_setThreshold.o:	can_utils.h
+x_getThreshold.o:	can_utils.h
 x_enableChannel.o:	can_utils.h
 showSerdes.o:		can_utils.h
 x_readHPTDCconfig.o:	can_utils.h
@@ -123,9 +124,6 @@ x_getChecksum:	x_getChecksum.o can_utils.o
 getTHUBFWIDs:	getTHUBFWIDs.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
-x_setThreshold:	x_setThreshold.o can_utils.o
-	$(CXX) -Wall $^ -o $@
-
 showSerdes:	showSerdes.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
@@ -136,6 +134,12 @@ x_readHPTDCconfig:	x_readHPTDCconfig.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
 x_getStatus:	x_getStatus.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+x_getThreshold:	x_getThreshold.o can_utils.o
+	$(CXX) -Wall $^ -o $@
+
+x_setThreshold:	x_setThreshold.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
 loadExeScript:	loadExeScript.o can_utils.o
