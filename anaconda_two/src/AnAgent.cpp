@@ -232,7 +232,7 @@ QMap<int, AnAgent*> AnAgent::open(QMap<int, int>& devid_map) {
     int dev_id = i.key();
     
     if((h = CAN_Open(dev_id)) < 0) {
-      qFatal("Device %d is not found.", i.value());
+      qFatal("Open QMamp: Device %d is not found. (key %d)", i.value(), i.key());
     }
     else {
       char dev_path[7];
@@ -258,7 +258,7 @@ int AnAgent::open(quint8 dev_id) {
   sprintf(dev_path, "can%d", dev_id);
 
   if((h = CAN_Open(dev_id)) < 0) {
-    qFatal("Device %d is not found.", dev_id);
+    qFatal("Open devid: Device %d is not found.", dev_id);
   }
 
   this->m_handle = h;
