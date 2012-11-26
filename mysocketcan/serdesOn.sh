@@ -6,7 +6,6 @@ if [ "x$1" = "x" ]; then
     exit 1
 fi
 
-# load the TCPU FPGA from Eeprom 2
 ./cansend $1 402#911f
 ./cansend $1 402#921f
 ./cansend $1 402#931f
