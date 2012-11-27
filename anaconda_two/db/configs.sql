@@ -1,7 +1,5 @@
 -- $Id$
 -- 
--- Kohei Kajimoto
---
 -- Configuration Tables
 
 drop table if exists component_types;
@@ -124,15 +122,24 @@ insert into configs values (null,   1, 33,  42,   2, 255,   5,   1,     14);
 --insert into configs values (null,   1, 86,  21,   2,  64,   0,   0,      0);
 
 -- Disable TDIG 4, 7, 8 for upVPD
-insert into configs values (null,   1, 91,  31,   2, 121,   4,   0,      0);
-insert into configs values (null,   1, 92,  31,   2, 121,   7,   0,      0);
-insert into configs values (null,   1, 93,  31,   2, 121,   8,   0,      0);
-insert into configs values (null,   1, 94,  31,   2, 122,   4,   0,      0);
-insert into configs values (null,   1, 95,  31,   2, 122,   7,   0,      0);
-insert into configs values (null,   1, 96,  31,   2, 122,   8,   0,      0);
+insert into configs values (null,   1, 81,  31,   2, 121,   4,   0,      0);
+insert into configs values (null,   1, 82,  31,   2, 121,   7,   0,      0);
+insert into configs values (null,   1, 83,  31,   2, 121,   8,   0,      0);
+insert into configs values (null,   1, 84,  31,   2, 122,   4,   0,      0);
+insert into configs values (null,   1, 85,  31,   2, 122,   7,   0,      0);
+insert into configs values (null,   1, 86,  31,   2, 122,   8,   0,      0);
 -- Disable TDIG 3 and 6 for MTD 226 (id 123)
-insert into configs values (null,   1, 97,  31,   2, 123,   3,   0,      0);
-insert into configs values (null,   1, 98,  31,   2, 123,   6,   0,      0);
+insert into configs values (null,   1, 87,  31,   2, 123,   3,   0,      0);
+insert into configs values (null,   1, 88,  31,   2, 123,   6,   0,      0);
+-- Disable TDIG 1 and 8 for GEM TOF trays (8,23,93,108)
+insert into configs values (null,   1, 89,  31,   2,   8,   1,   0,      0);
+insert into configs values (null,   1, 90,  31,   2,  23,   1,   0,      0);
+insert into configs values (null,   1, 91,  31,   2,  93,   1,   0,      0);
+insert into configs values (null,   1, 92,  31,   2, 108,   1,   0,      0);
+insert into configs values (null,   1, 93,  31,   2,   8,   8,   0,      0);
+insert into configs values (null,   1, 94,  31,   2,  23,   8,   0,      0);
+insert into configs values (null,   1, 95,  31,   2,  93,   8,   0,      0);
+insert into configs values (null,   1, 96,  31,   2, 108,   8,   0,      0);
 
 
 
