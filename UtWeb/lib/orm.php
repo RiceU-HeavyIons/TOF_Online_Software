@@ -43,7 +43,7 @@ class Component {
 	}
 
 	function find_all($cnd, $ord, $lim) {
-		$stm = "SELECT id FROM components";
+		$stm = "SELECT id,slot FROM components";
 		if($cnd) { $stm .= " WHERE $cnd"; }
 		if($ord) { $stm .= " ORDER BY $ord"; }
 		if($lim) { $stm .= " LIMIT $lim"; }
@@ -51,7 +51,10 @@ class Component {
 		$q = mysql_query( $stm );
 		$ar = array();
 		while($r = mysql_fetch_object($q)) {
-			array_push($ar, new Component($r->id));
+		  if ($r->slot)
+		    $ar[$r->slot-1] = new Component($r->id);
+		  else
+		    array_push($ar, new Component($r->id));
 		}
 		return($ar);
 	}
@@ -133,20 +136,26 @@ class Module {
 		$q = mysql_query( $stm );
 		$ar = array();
 		while($r = mysql_fetch_object($q)) {
-			array_push($ar, new Module($r->id));
+		  if ($r->slot)
+		    $ar[$r->slot-1] = new Module($r->id);
+		  else
+		    array_push($ar, new Module($r->id));
 		}
 		return($ar);
 	}
 	
 	function find_all_light($cnd, $ord, $lim) {
-		$stm = "SELECT id, serial FROM modules";
+		$stm = "SELECT id, serial, slot FROM modules";
 		if($cnd) { $stm .= " WHERE $cnd"; }
 		if($ord) { $stm .= " ORDER BY $ord"; }
 		if($lim) { $stm .= " LIMIT $lim"; } 
 		$q = mysql_query( $stm );
 		$ar = array();
 		while($r = mysql_fetch_object($q)) {
-			array_push($ar, array( "id" => $r->id, "serial" => $r->serial, "sn" => $r->serial));
+		  if ($r->slot)
+		    $ar[$r->slot-1] = array( "id" => $r->id, "serial" => $r->serial, "sn" => $r->serial);
+		  else
+		    array_push($ar, array( "id" => $r->id, "serial" => $r->serial, "sn" => $r->serial));
 		}
 		return($ar);
 	}
