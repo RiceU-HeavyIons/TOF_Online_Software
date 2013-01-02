@@ -120,8 +120,10 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   m_agents = AnAgent::open(m_devid_map);
 
   // create THUB objects
+  m_numThub = 0;
   qry.exec("SELECT id, device_id, canbus_id, installed FROM thubs");
   while (qry.next()) {
+    m_numThub++;
     int id         = qry.value(0).toInt();
     int device_id  = qry.value(1).toInt();
     int canbus_id  = qry.value(2).toInt();
@@ -138,9 +140,11 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   }
   
   // create TCPU objects
+  m_numTcpu = 0;
   qry.exec("SELECT id, device_id, canbus_id, installed, tray_sn, thub_id, serdes,"
 	   " lv_box, lv_ch, hv_box, hv_ch FROM tcpus");
   while (qry.next()) {
+    m_numTcpu++;
     int id          = qry.value(0).toInt();
     int device_id   = qry.value(1).toInt();
     int canbus_id   = qry.value(2).toInt();
@@ -555,10 +559,12 @@ QList<AnAddress> AnRoot::expand(const AnAddress &lad)
     a1 = ad.at(0);
     if (a1 == 1 && a2 == 255)
       //for(int i = 1; i <= 5; ++i) lst2 << AnAddress(a1, i, a3, a4);
-      for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      //for(int i = 1; i <= 4; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      for(int i = 1; i <= m_numThub; ++i) lst2 << AnAddress(a1, i, a3, a4);
     else if (a1 == 2 && a2 == 255)
       //for(int i = 1; i <= 125; ++i) lst2 << AnAddress(a1, i, a3, a4);
-      for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      //for(int i = 1; i <= 122; ++i) lst2 << AnAddress(a1, i, a3, a4);
+      for(int i = 1; i <= m_numTcpu; ++i) lst2 << AnAddress(a1, i, a3, a4);
     else
       lst2 << AnAddress(a1, a2, a3, a4);
   }

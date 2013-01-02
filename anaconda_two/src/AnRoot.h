@@ -174,6 +174,8 @@ private:
 	AnLog                  *m_log;
 	AnLog                  *m_tlog;
 
+	int                     m_numThub, m_numTcpu;
+
 	// AutoSync timer and coursor
 	QTimer                         *m_timer;
 	QList<AnBoard*>::const_iterator m_autoSyncIter;
