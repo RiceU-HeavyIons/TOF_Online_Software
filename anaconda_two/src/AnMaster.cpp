@@ -70,7 +70,7 @@ void AnMaster::p_setMode(int mode)
     int val       = qry.value(6).toInt();
     AnAddress addr(addr1, addr2, addr3, addr4);
     
-    m_root->log(QString("AnMaster: %1 %2").arg(id).arg(ct));
+    m_root->log(QString("AnMaster: %1 %2 %3").arg(id).arg(ct).arg(val));
     // THUB
     if (ct == "THUB_ENABLE") {
       foreach(AnAddress ad, m_root->expand(addr)) {
@@ -231,6 +231,10 @@ void AnMaster::p_setMode(int mode)
     }
     else if (ct == "USLEEP") {
       usleep(val);
+    }
+    else if (ct == "AUTOSYNC") {
+      if (val == 1) m_root->startAutoSync();
+      else m_root->stopAutoSync();
     }
 
     else if (ct == "THUB_BUNCH_RESET") {
