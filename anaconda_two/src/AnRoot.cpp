@@ -37,7 +37,7 @@ using namespace std;
 #include "version.h"
 
 // static member initialization
-int AnRoot::TCAN_AUTOREPAIR = 1;
+int AnRoot::TCAN_AUTOREPAIR = 0;
 
 //-----------------------------------------------------------------------------
 AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
