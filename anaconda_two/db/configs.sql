@@ -65,6 +65,7 @@ insert into config_types values (103, "RESET" );
 insert into config_types values (104, "QRESET");
 insert into config_types values (105, "SYNC"  );
 insert into config_types values (106, "USLEEP");
+insert into config_types values (107, "AUTOSYNC");
 
 insert into config_types values (201, "THUB_BUNCH_RESET");
 insert into config_types values (202, "THUB_RECOVERY_MSG");
@@ -270,12 +271,17 @@ insert into configs values (null, 101,  1, 201,   1,   1,   0,   0,      1);
 insert into configs values (null, 102,  1,  104,  2, 255,   0,   0,     2);
 
 ---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
-insert into configs values (null, 103,  1,  105,   1, 255,   0,   0,      1);
-insert into configs values (null, 103,  2,  213,   1, 255,   0,   0,      2);
-insert into configs values (null, 103,  3,  105,   2, 255,   0,   0,      2);
-insert into configs values (null, 103,  4,  212,   2, 255,   0,   0,      2);
-insert into configs values (null, 103,  5,  106,   0,   0,   0,   0, 700000);
-insert into configs values (null, 103,  6,  201,   1,   1,   0,   0,      2);
+insert into configs values (null, 103,  1,  107,   0,   0,   0,   0,       0);
+insert into configs values (null, 103,  2,  106,   0,   0,   0,   0, 3000000);
+insert into configs values (null, 103,  3,  105,   1, 255,   0,   0,       1);
+insert into configs values (null, 103,  4,  105,   2, 255,   0,   0,       1);
+insert into configs values (null, 103,  5,  107,   0,   0,   0,   0,       1);
+-- insert into configs values (null, 103,  1,  105,   1, 255,   0,   0,      1);
+-- insert into configs values (null, 103,  2,  213,   1, 255,   0,   0,      2);
+-- insert into configs values (null, 103,  3,  105,   2, 255,   0,   0,      2);
+-- insert into configs values (null, 103,  4,  212,   2, 255,   0,   0,      2);
+-- insert into configs values (null, 103,  5,  106,   0,   0,   0,   0, 700000);
+-- insert into configs values (null, 103,  6,  201,   1,   1,   0,   0,      2);
 
 ---- User Command 4 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
 insert into configs values (null, 104,  1,  212,   2, 255,   0,   0,      1);
