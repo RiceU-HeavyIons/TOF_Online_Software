@@ -23,7 +23,8 @@ PROGRAMS = candump cangen cansend \
 		eeprom2 x_eeprom2 \
 		progMCU progPLD \
 		x_setThreshold x_getThreshold showSerdes x_enableChannel \
-		x_readHPTDCconfig x_getStatus loadExeScript
+		x_readHPTDCconfig x_getStatus loadExeScript \
+		recoveryd
 
 all: $(PROGRAMS)
 
@@ -78,6 +79,9 @@ canlogserver:	canlogserver.o	lib.o
 log2long:	log2long.o	lib.o
 log2asc:	log2asc.o	lib.o
 asc2log:	asc2log.o	lib.o
+
+recoveryd:	recoveryd.o
+	$(CXX) -Wall $^ -o $@
 
 MCU2:		MCU2.o can_utils.o
 	$(CXX) -Wall $^ -o $@
