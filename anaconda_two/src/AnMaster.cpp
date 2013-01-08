@@ -233,8 +233,14 @@ void AnMaster::p_setMode(int mode)
       usleep(val);
     }
     else if (ct == "AUTOSYNC") {
-      if (val == 1) m_root->startAutoSync();
-      else m_root->stopAutoSync();
+      if (val == 1) {
+	//JS temporarily, to allow recovery actions again
+	m_root->doingRecovery(false);
+	m_root->startAutoSync();
+      }
+      else {
+	m_root->stopAutoSync();
+      }
     }
 
     else if (ct == "THUB_BUNCH_RESET") {
