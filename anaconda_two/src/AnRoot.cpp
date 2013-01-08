@@ -707,7 +707,7 @@ void AnRoot::watchStatus()
  */
 void AnRoot::watcher(int sock)
 {
-  log(QString("AnRoot::watcher: sock=%1").arg(sock));
+  //log(QString("AnRoot::watcher: sock=%1").arg(sock));
 
   if (m_watch.contains(sock)) {
     // disable watch again
@@ -717,7 +717,9 @@ void AnRoot::watcher(int sock)
     struct can_frame rmsg;
     try {
       ag->read(rmsg, -1);
-      received(AnRdMsg(ag->devid(), rmsg));
+      //JS: temporarily, to prevent multiple recovery actions:
+      if (!isDoingRecovery())
+	received(AnRdMsg(ag->devid(), rmsg));
     } catch (AnExCanError ex) {
       log(QString("AnRoot::watcher[%1]: CAN Communication Error Occurred: 0x%2")
 	  .arg(sock).arg(ex.status(),0,16));
@@ -730,42 +732,51 @@ void AnRoot::watcher(int sock)
 //-----------------------------------------------------------------------------
 void AnRoot::received(AnRdMsg rmsg)
 {
-  log( QString("received: %1").arg(rmsg.toString()) );
+  //log( QString("received: %1").arg(rmsg.toString()) );
   
   if (rmsg.type() == 0x80) return; // work around segmentation fault
   
-  AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
+  if ((rmsg.payload() == 0x7) && (rmsg.data() == 0xff550000)) {
+    log( QString("received: %1").arg(rmsg.toString()) );
+    log("received: CAN recovery message");
+    doingRecovery(true);
+    doUserCmd(3);
+  }
+
+ // AnBoard *brd = dynamic_cast<AnBoard*>(hfind(rmsg.source()));
   
-  if (brd != NULL) {
-    if (rmsg.payload() == 0x7) {
-      if (rmsg.data() == 0xff000000) { // greeting message
-	if(!isRunning() && (AnRoot::autorepair() == 1)) {
-	  brd->clearCommError();
-	  AnTdig *tdig = dynamic_cast<AnTdig*>( brd );
-	  if (tdig) {
-	    log( QString("%1: Running config(1)").arg(tdig->name()));
-	    tdig->config(1); // just writes the threshold
-	  }
-	  brd->sync(1);
-	  emit updated(brd);
-	}
-      } else if (rmsg.data() == 0xff550000) { // recovery message
-	log("received: got CAN recovery message");
-	doUserCmd(3);
-      } else {
-	log( QString("received: CAN alert message from %1").arg(brd->name()) );
-	brd->sync(3);
-      }
-    } else if (rmsg.payload() == 0x4) {
-      if(!isRunning()) {
-	brd->sync(1);
-	emit updated(brd);
-      }
-    }
-  }
-  else {
-    log("received: unknown source");
-  }
+  // if (brd != NULL) {
+  //   if (rmsg.payload() == 0x7) {
+  //     if (rmsg.data() == 0xff000000) { // greeting message
+  // 	if(!isRunning() && (AnRoot::autorepair() == 1)) {
+  // 	  brd->clearCommError();
+  // 	  AnTdig *tdig = dynamic_cast<AnTdig*>( brd );
+  // 	  if (tdig) {
+  // 	    log( QString("%1: Running config(1)").arg(tdig->name()));
+  // 	    tdig->config(1); // just writes the threshold
+  // 	  }
+  // 	  brd->sync(1);
+  // 	  emit updated(brd);
+  // 	}
+  //     } 
+  //     else if (rmsg.data() == 0xff550000) { // recovery message
+  // 	log("received: CAN recovery message");
+  // 	doUserCmd(3);
+  //     } 
+  //     else {
+  //     	log( QString("received: CAN alert message from %1").arg(brd->name()) );
+  //     	brd->sync(3);
+  //     }
+  //   } else if (rmsg.payload() == 0x4) {
+  //     if(!isRunning()) {
+  // 	brd->sync(1);
+  // 	emit updated(brd);
+  //     }
+  //   }
+  // }
+  // else {
+  //   log("received: unknown source");
+  // }
 }
 
 //==============================================================================
