@@ -132,6 +132,9 @@ public:
 	
 	void log(QString str);
 	void tlog(QString str, int type=0, int tray=0, int board=0, double val = 0.0);	
+	//JS: temporarily:
+	bool isDoingRecovery() const {return bDoingRecovery;}
+	void doingRecovery(bool val) {bDoingRecovery = val;}
 
 signals:
 	void updated(AnBoard*);
@@ -193,5 +196,8 @@ private:
 	QMutex mtex_watch;
 
 	int lockFileFd;
+
+	//JS: temporarily, to prevent multiple recovery actions:
+	bool bDoingRecovery;
 };
 #endif /* ANROOT_H_ */
