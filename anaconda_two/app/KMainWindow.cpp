@@ -476,7 +476,7 @@ void KMainWindow::setBusy(bool sw)
     m_combo->setEnabled(!sw);
   } else {
     m_SyncAction->setEnabled(!sw);
-    m_UserAction[2]->setEnabled(!sw);
+    //m_UserAction[2]->setEnabled(!sw);
   }
 }
 
