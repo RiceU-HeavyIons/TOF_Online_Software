@@ -63,14 +63,22 @@ void AnEpicsLogger::run()
       if (elog.type > 0) {
 	switch (elog.type) {
 	case 1:
+#ifdef MTD
+	  sprintf(tempStr, "MTDTempBL%03dTDIG%d", elog.tray, elog.board);
+#else
 	  sprintf(tempStr, "TOFTempTray%03dTDIG%d", elog.tray, elog.board);
 	  //sprintf(tempStr, "TOFTempTray%03dTDIG%d", 1, 1);
+#endif
 	  break;
 	case 2:
+#ifdef MTD
+	  sprintf(tempStr, "MTDTempBL%03dTCPU", elog.tray);
+#else
 	  sprintf(tempStr, "TOFTempTray%03dTCPU", elog.tray);
+#endif
 	  break;
 	default:
-	  sprintf(tempStr, "TOFunknown");
+	  sprintf(tempStr, "TOFMTDunknown");
 	}
       
 #ifdef WITH_EPICS

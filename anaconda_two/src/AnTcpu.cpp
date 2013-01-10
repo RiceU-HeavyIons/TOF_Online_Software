@@ -15,7 +15,11 @@ AnTcpu::AnTcpu(
 				      m_tray_id(0)
 {
   setObjectName(QString("TCPU ") + lAddress().toString());
+#ifdef MTD
+  setName(QString("BL %1").arg(lAddress().at(1)));
+#else
   setName(QString("Tray %1").arg(lAddress().at(1)));
+#endif
 
   AnAddress lad = lAddress();
   AnAddress had = hAddress();
@@ -329,7 +333,10 @@ AnAgent *AnTcpu::agent() const
 bool AnTcpu::setInstalled(bool b) {
 
   AnCanObject::setInstalled(b);
+#ifdef MTD
+#else
   if (lAddress().at(1) > 122) { 
+#endif
     // MTD: by default disable TDIG 4, 6, and 7
     for (int i = 0; i<3; i++)
       m_tdig[i]->setInstalled(installed());
@@ -338,11 +345,14 @@ bool AnTcpu::setInstalled(bool b) {
     m_tdig[3]->setInstalled(false);
     m_tdig[6]->setInstalled(false);
     m_tdig[7]->setInstalled(false);
+#ifdef MTD
+#else
   }
   else 
     // TOF Tray: by default all TDIGs enabled
     for (int i = 0; i < 8; ++i)
       m_tdig[i]->setInstalled(installed());
+#endif
 		
   return installed();
 }

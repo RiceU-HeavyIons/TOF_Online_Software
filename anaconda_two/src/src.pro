@@ -51,6 +51,11 @@ CONFIG(epics) {
 	INCLUDEPATH += $${EPICSDIR}/extensions/include
 }
 
+CONFIG(mtd) {
+	message("mtd defined")
+	DEFINES += MTD
+}
+
 DESTDIR = ../lib
 
 # Input

@@ -28,7 +28,11 @@
 
 #define DB_PATH_ENV         "ANA_DB_PATH"           // absolute path or relative to working dir
 #define DB_PATH_DEFAULT     "db/configurations.db"  // relative to binary image
+#ifdef MTD
+#define LOCK_FILENAME       "/tmp/AnacondaIIMTD.lock"  // lock file to prevent multiple instances of application
+#else
 #define LOCK_FILENAME       "/tmp/AnacondaII.lock"  // lock file to prevent multiple instances of application
+#endif
 
 class AnMaster;
 class AnEpicsLogger;
