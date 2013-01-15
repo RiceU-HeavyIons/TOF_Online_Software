@@ -14,128 +14,129 @@
 
 class AnTcpu: public AnBoard {
 
-public:
-	AnTcpu(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
-	virtual ~AnTcpu();
+ public:
+  AnTcpu(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent = 0);
+  virtual ~AnTcpu();
 
-// Inherited from AnCanObject
+  // Inherited from AnCanObject
 
-	virtual AnCanObject *at(int i);
-	virtual AnCanObject *hat(int i);
+  virtual AnCanObject *at(int i);
+  virtual AnCanObject *hat(int i);
 
-	virtual bool setInstalled(bool b);
-	virtual bool setActive(bool b);
+  virtual bool setInstalled(bool b);
+  virtual bool setActive(bool b);
 
-	virtual QString dump() const;
-	virtual void init  (int level);
-	virtual void config(int level);
-	virtual void reset (int level);
-	virtual void qreset(int level);
-	virtual void sync  (int level = 0);
-	void relink(int level);
+  virtual QString dump() const;
+  virtual void init  (int level);
+  virtual void config(int level);
+  virtual void reset (int level);
+  virtual void qreset(int level);
+  virtual void sync  (int level = 0);
+  void relink(int level);
 
-// Inherited from AnBoard
+  // Inherited from AnBoard
 
-	virtual double maxTemp() const;
-	virtual QString ecsrString(bool hilit = false) const;
-	virtual QString ecsrToolTipString() const;
+  virtual double maxTemp() const;
+  virtual QString ecsrString(bool hilit = false) const;
+  virtual QString ecsrToolTipString() const;
 
-	virtual bool isEast() const { return (lAddress().at(1) >  60); }
-	virtual bool isWest() const { return (lAddress().at(1) <= 60); }
+  virtual bool isEast() const { return (lAddress().at(1) >  60); }
+  virtual bool isWest() const { return (lAddress().at(1) <= 60); }
 
-	virtual int status() const;
+  virtual int status() const;
 
-	virtual quint32 canidr() const;
-	virtual quint32 canidw() const;
-	virtual AnAgent* agent() const;
+  virtual quint32 canidr() const;
+  virtual quint32 canidw() const;
+  virtual quint32 canida() const;
+  virtual AnAgent* agent() const;
 
-// Own Functions
-	AnTdig *tdig(int i) const { return m_tdig[i-1]; }
+  // Own Functions
+  AnTdig *tdig(int i) const { return m_tdig[i-1]; }
 
-	int     thub() const   { return m_thub; }
-	int     setThub(int t) { return (m_thub = t); }
+  int     thub() const   { return m_thub; }
+  int     setThub(int t) { return (m_thub = t); }
 	
-	int     serdes() const   { return m_serdes; }
-	int     setSerdes(int s) { return (m_serdes = s); }
+  int     serdes() const   { return m_serdes; }
+  int     setSerdes(int s) { return (m_serdes = s); }
 	
-	int     serdesPort() const   { return m_serdesPort; }
-	int     setSerdesPort(int p) { return (m_serdesPort = p); }
+  int     serdesPort() const   { return m_serdesPort; }
+  int     setSerdesPort(int p) { return (m_serdesPort = p); }
 	
-	quint8  pldReg02() const { return m_pld02; }
-	quint8  setPldReg02(quint8 v) { return (m_pld02 = v); }
-	quint8  pldReg02Set() const { return m_pld02Set; }
-	quint8  setPldReg02Set(quint8 v) { return (m_pld02Set = v); }
-	QString pldReg02ToolTipString() const;
+  quint8  pldReg02() const { return m_pld02; }
+  quint8  setPldReg02(quint8 v) { return (m_pld02 = v); }
+  quint8  pldReg02Set() const { return m_pld02Set; }
+  quint8  setPldReg02Set(quint8 v) { return (m_pld02Set = v); }
+  QString pldReg02ToolTipString() const;
 
-	quint8  pldReg03() const { return m_pld03; }
-	quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
-	quint8  pldReg03Set() const { return m_pld03Set; }
-	quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
-	QString pldReg03ToolTipString() const;
+  quint8  pldReg03() const { return m_pld03; }
+  quint8  setPldReg03(quint8 v) { return (m_pld03 = v); }
+  quint8  pldReg03Set() const { return m_pld03Set; }
+  quint8  setPldReg03Set(quint8 v) { return (m_pld03Set = v); }
+  QString pldReg03ToolTipString() const;
 
-	quint8  pldReg0e() const { return m_pld0e; }
-	quint8  setPldReg0e(quint8 v) { return (m_pld0e = v); }
-	quint8  pldReg0eSet() const { return m_pld0eSet; }
-	quint8  setPldReg0eSet(quint8 v) { return (m_pld0eSet = v); }
+  quint8  pldReg0e() const { return m_pld0e; }
+  quint8  setPldReg0e(quint8 v) { return (m_pld0e = v); }
+  quint8  pldReg0eSet() const { return m_pld0eSet; }
+  quint8  setPldReg0eSet(quint8 v) { return (m_pld0eSet = v); }
 
-	QString pldReg02String(bool hlite = false) const;
-	QString pldReg03String(bool hlite = false) const;	
-	QString pldReg0eString(bool hlite = false) const;	
+  QString pldReg02String(bool hlite = false) const;
+  QString pldReg03String(bool hlite = false) const;	
+  QString pldReg0eString(bool hlite = false) const;	
 
-	quint8 eeprom() const { return m_eeprom; }
-	quint8 setEeprom(quint8 v) { return (m_eeprom = v); }
-	QString eepromString() const { return QString::number(m_eeprom); }
+  quint8 eeprom() const { return m_eeprom; }
+  quint8 setEeprom(quint8 v) { return (m_eeprom = v); }
+  QString eepromString() const { return QString::number(m_eeprom); }
 
-	quint8 multGatePhase() const { return m_multGatePhase; }
-	quint8 setMultGatePhase(quint8 v) { return (m_multGatePhase = v); }
-	QString multGatePhaseString() const { return "0x" + QString::number(m_multGatePhase, 16); }
+  quint8 multGatePhase() const { return m_multGatePhase; }
+  quint8 setMultGatePhase(quint8 v) { return (m_multGatePhase = v); }
+  QString multGatePhaseString() const { return "0x" + QString::number(m_multGatePhase, 16); }
 
-	quint64 chipId() const { return m_chipid; }
-	quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
-	QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
+  quint64 chipId() const { return m_chipid; }
+  quint64 setChipId(quint64 cid) { return (m_chipid = cid); }
+  QString chipIdString() const { return "0x" + QString::number(m_chipid, 16); }
 
-	quint8 trayId() const { return m_tray_id; }
-	quint8 setTrayId(quint8 id) { return (m_tray_id = id); }
-	QString trayIdString() const { return QString::number(m_tray_id); }
+  quint8 trayId() const { return m_tray_id; }
+  quint8 setTrayId(quint8 id) { return (m_tray_id = id); }
+  QString trayIdString() const { return QString::number(m_tray_id); }
 
-	QString traySn() const { return m_tray_sn; }
-	QString setTraySn(QString sn) { return (m_tray_sn = sn); }
+  QString traySn() const { return m_tray_sn; }
+  QString setTraySn(QString sn) { return (m_tray_sn = sn); }
 
-	void setLvHv(int lb, int lc, int hb, int hc);
-	virtual QString lvHvString() const;
-	virtual QString lvString() const;
-	virtual QString hvString() const;
-	virtual int lvOrder() const { return 100*m_lv_box + m_lv_ch; }
-	virtual int hvOrder() const { return 100*m_hv_box + m_hv_ch; }
+  void setLvHv(int lb, int lc, int hb, int hc);
+  virtual QString lvHvString() const;
+  virtual QString lvString() const;
+  virtual QString hvString() const;
+  virtual int lvOrder() const { return 100*m_lv_box + m_lv_ch; }
+  virtual int hvOrder() const { return 100*m_hv_box + m_hv_ch; }
 
-	QString haddrString() const;
+  QString haddrString() const;
 
-	bool fibermode() const;
+  bool fibermode() const;
 	
-	QString errorDump() const;
+  QString errorDump() const;
 
-	quint32 canidbw() const; // broadcast write to this tray's TDIGs
+  quint32 canidbw() const; // broadcast write to this tray's TDIGs
 
-private:
+ private:
 	
-	void log(QString str);
+  void log(QString str);
 
-	AnTdig     *m_tdig[8];
-	quint8      m_pld02, m_pld02Set;
-	quint8      m_pld03, m_pld03Set; // read-only register
-	quint8      m_pld0e, m_pld0eSet;
-	quint64     m_chipid;
-	quint8      m_eeprom;
-	quint8      m_multGatePhase;
+  AnTdig     *m_tdig[8];
+  quint8      m_pld02, m_pld02Set;
+  quint8      m_pld03, m_pld03Set; // read-only register
+  quint8      m_pld0e, m_pld0eSet;
+  quint64     m_chipid;
+  quint8      m_eeprom;
+  quint8      m_multGatePhase;
 
-	quint8      m_tray_id;
-	QString     m_tray_sn;
-	qint8       m_lv_box, m_lv_ch;
-	qint8       m_hv_box, m_hv_ch;
+  quint8      m_tray_id;
+  QString     m_tray_sn;
+  qint8       m_lv_box, m_lv_ch;
+  qint8       m_hv_box, m_hv_ch;
 
-	int         m_thub;
-	int         m_serdes;
-	int         m_serdesPort;
+  int         m_thub;
+  int         m_serdes;
+  int         m_serdesPort;
 };
 
 #endif /* ANTCPU_H_ */

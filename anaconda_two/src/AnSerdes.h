@@ -13,57 +13,58 @@
 #include "AnTcpu.h"
 
 class AnSerdes: public AnBoard {
-public:
-	AnSerdes(const AnAddress& ladrr, const AnAddress& laddr, AnCanObject *parent = 0);
-	virtual ~AnSerdes();
+ public:
+  AnSerdes(const AnAddress& ladrr, const AnAddress& laddr, AnCanObject *parent = 0);
+  virtual ~AnSerdes();
 
-// from AnCanObject
-	virtual AnCanObject *at(int i)  { Q_UNUSED(i); return this; } // no child objs
-	virtual AnCanObject *hat(int i) { Q_UNUSED(i); return this; } // no child objs	
+  // from AnCanObject
+  virtual AnCanObject *at(int i)  { Q_UNUSED(i); return this; } // no child objs
+  virtual AnCanObject *hat(int i) { Q_UNUSED(i); return this; } // no child objs	
 
-	virtual QString dump() const;
+  virtual QString dump() const;
 
-	virtual void init (int level) { Q_UNUSED(level); /* placeholder */}
-	virtual void config(int level);
-	virtual void reset (int level) { Q_UNUSED(level); /* placeholder */}
-	virtual void qreset(int level) { Q_UNUSED(level); /* placeholder */ };
-	virtual void sync  (int level);
+  virtual void init (int level) { Q_UNUSED(level); /* placeholder */}
+  virtual void config(int level);
+  virtual void reset (int level) { Q_UNUSED(level); /* placeholder */}
+  virtual void qreset(int level) { Q_UNUSED(level); /* placeholder */ };
+  virtual void sync  (int level);
 
 
-	virtual QString firmwareString() const;
+  virtual QString firmwareString() const;
 
-// from AnBoard
-	virtual QString ecsrString() const;
-	virtual int status() const;
-	virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
-	virtual bool isWest() const { return dynamic_cast<AnBoard*>(parent())->isWest(); }
+  // from AnBoard
+  virtual QString ecsrString() const;
+  virtual int status() const;
+  virtual bool isEast() const { return dynamic_cast<AnBoard*>(parent())->isEast(); }
+  virtual bool isWest() const { return dynamic_cast<AnBoard*>(parent())->isWest(); }
 
-	virtual quint32 canidr() const;
-	virtual quint32 canidw() const;
-	virtual quint32 cantyp() const;
-	virtual AnAgent* agent() const;
+  virtual quint32 canidr() const;
+  virtual quint32 canidw() const;
+  virtual quint32 canida() const;
+  virtual quint32 cantyp() const;
+  virtual AnAgent* agent() const;
 	
 	
-//  own functions
-	AnTcpu *tcpu(int i) const { return m_tcpu[i-1]; }
-	AnTcpu *setTcpu(int i, AnTcpu *tcpu) { return (m_tcpu[i-1] = tcpu); }
+  //  own functions
+  AnTcpu *tcpu(int i) const { return m_tcpu[i-1]; }
+  AnTcpu *setTcpu(int i, AnTcpu *tcpu) { return (m_tcpu[i-1] = tcpu); }
 	
-	quint8 pld9xSet() const;
+  quint8 pld9xSet() const;
 
-	quint8 pld9xBase() const { return m_pld9xBase; }
-	quint8 setPld9xBase(quint8 s) { return (m_pld9xBase = s); }
+  quint8 pld9xBase() const { return m_pld9xBase; }
+  quint8 setPld9xBase(quint8 s) { return (m_pld9xBase = s); }
 	
-	QString pld9xString(bool hilit = false) const;
+  QString pld9xString(bool hilit = false) const;
 
-	void relink(int port);
+  void relink(int port);
 
-private:
-	enum { NPORT = 4 };
-	AnTcpu *m_tcpu[NPORT];
-	quint8  m_pld9xBase;
-	quint32   m_serdesFPGAFirmware;
+ private:
+  enum { NPORT = 4 };
+  AnTcpu *m_tcpu[NPORT];
+  quint8  m_pld9xBase;
+  quint32   m_serdesFPGAFirmware;
 
-	void log(QString str) const;
+  void log(QString str) const;
 };
 
 #endif /* AnSerdes_H_ */

@@ -70,6 +70,7 @@ class AnTdig: public AnBoard {
 
   virtual quint32 canidr() const;
   virtual quint32 canidw() const;
+  virtual quint32 canida() const;
   virtual quint32 cantyp() const;
   virtual AnAgent* agent() const;
 

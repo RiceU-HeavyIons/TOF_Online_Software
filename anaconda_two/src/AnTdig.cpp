@@ -241,6 +241,11 @@ quint32 AnTdig::canidw() const
   return (haddr().at(2) << 4 | 0x2) << 18 | haddr().at(1);
 }
 
+quint32 AnTdig::canida() const
+{
+  return (haddr().at(2) << 4 | 0x7) << 18 | haddr().at(1);
+}
+
 quint32 AnTdig::cantyp() const
 {
   return MSGTYPE_EXTENDED;

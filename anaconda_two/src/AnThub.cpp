@@ -11,42 +11,42 @@
 
 //-----------------------------------------------------------------------------
 AnThub::AnThub(const AnAddress &laddr, const AnAddress &haddr, AnCanObject *parent)
- : AnBoard(laddr, haddr, parent)
+  : AnBoard(laddr, haddr, parent)
 {
-	setObjectName(QString("THUB ") + lAddress().toString());
-	setName(QString("THUB %1").arg(lAddress().at(1)));
-	AnAddress lad = lAddress();
-	AnAddress had = hAddress();
+  setObjectName(QString("THUB ") + lAddress().toString());
+  setName(QString("THUB %1").arg(lAddress().at(1)));
+  AnAddress lad = lAddress();
+  AnAddress had = hAddress();
 
-	for(int i = 0; i < 8; ++i) {
-		lad.set(2, i+1);
-		had.set(2, i+1);
-		m_serdes[i] = new AnSerdes(lad, had, this);
-	}
+  for(int i = 0; i < 8; ++i) {
+    lad.set(2, i+1);
+    had.set(2, i+1);
+    m_serdes[i] = new AnSerdes(lad, had, this);
+  }
 }
 
 //-----------------------------------------------------------------------------
 AnThub::~AnThub()
 {
-	// do nothing
+  // do nothing
 }
 
 //-----------------------------------------------------------------------------
 AnCanObject *AnThub::at(int i)
 {
-	if (i >= 1 && i <= 8)
-		return m_serdes[i - 1];
-	return
-		this;
+  if (i >= 1 && i <= 8)
+    return m_serdes[i - 1];
+  return
+    this;
 }
 
 //-----------------------------------------------------------------------------
 AnCanObject *AnThub::hat(int i)
 {
-	if (i >= 1 && i <= 8)
-		return m_serdes[i - 1];
-	return
-		this;
+  if (i >= 1 && i <= 8)
+    return m_serdes[i - 1];
+  return
+    this;
 }
 
 //-----------------------------------------------------------------------------
@@ -60,11 +60,11 @@ QString AnThub::firmwareString() const
 //-----------------------------------------------------------------------------
 QString AnThub::ecsrString(bool hilit) const
 {
-	QString ret = "0x" + QString::number(ecsr(), 16);
-	if (hilit && (ecsr() != 0))
-		ret = QString("<font color='red'>%1</font>").arg(ret);
+  QString ret = "0x" + QString::number(ecsr(), 16);
+  if (hilit && (ecsr() != 0))
+    ret = QString("<font color='red'>%1</font>").arg(ret);
 
-	return ret;
+  return ret;
 }
 
 //-----------------------------------------------------------------------------
@@ -81,24 +81,24 @@ void AnThub::config(int level)
 //-----------------------------------------------------------------------------
 QString AnThub::dump() const
 {
-	QStringList sl;
+  QStringList sl;
 
-	sl << QString().sprintf("AnThub(%p):", this);
-	sl << QString("  Name              : ") + name();
-	sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
-	sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
-	sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
-	sl << QString("  Active            : ") + (active() ? "yes" : "no");
-	sl << QString("  Synchronized      : ") + synced().toString();
-	sl << QString("  Firmware ID       : ") + firmwareString();
-	sl << QString("  Temperature 1     : ") + tempString(0);
-	sl << QString("  Temperature 2     : ") + tempString(1);
-	sl << QString("  Temperature Alarm : ") + tempAlarmString();
-	sl << QString("  CRC               : 0x") + QString::number(ecsr(), 16);
-	sl << QString("  Status            : ") + QString::number(status());
-	sl << QString("  East / West       : ") + (isEast()? "East" : "West");
+  sl << QString().sprintf("AnThub(%p):", this);
+  sl << QString("  Name              : ") + name();
+  sl << QString("  Hardware Address  : ") + haddr().toString().toStdString().c_str();
+  sl << QString("  Logical Address   : ") + laddr().toString().toStdString().c_str();
+  sl << QString("  Installed         : ") + (installed() ? "yes" : "no");
+  sl << QString("  Active            : ") + (active() ? "yes" : "no");
+  sl << QString("  Synchronized      : ") + synced().toString();
+  sl << QString("  Firmware ID       : ") + firmwareString();
+  sl << QString("  Temperature 1     : ") + tempString(0);
+  sl << QString("  Temperature 2     : ") + tempString(1);
+  sl << QString("  Temperature Alarm : ") + tempAlarmString();
+  sl << QString("  CRC               : 0x") + QString::number(ecsr(), 16);
+  sl << QString("  Status            : ") + QString::number(status());
+  sl << QString("  East / West       : ") + (isEast()? "East" : "West");
 
-	return sl.join("\n");
+  return sl.join("\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -314,72 +314,97 @@ void AnThub::recoverAlertMsg(int val)
 }
 
 //-----------------------------------------------------------------------------
+/**
+ * THUB send alert message with second byte = val
+ */
+void AnThub::sendAlert(int val)
+{
+  log(QString("sendAlert: val=%1").arg(val));
+  
+  struct can_frame msg;
+  
+  try {
+    AnAgent::set_msg(msg, canida(), MSGTYPE_STANDARD, 4, 0xff, val, 0, 0);
+    agent()->raw_write(msg, 50000);
+  }
+  catch (AnExCanError ex) {
+    log(QString("sendAlert: CAN error occcured: 0x%1").arg(ex.status(),0,16));
+  }
+}
+
+//-----------------------------------------------------------------------------
 quint32 AnThub::canidr() const
 {
-	return haddr().at(1) << 4 | 0x4;
+  return haddr().at(1) << 4 | 0x4;
 }
 
 //-----------------------------------------------------------------------------
 quint32 AnThub::canidw() const
 {
-	return haddr().at(1) << 4 | 0x2;
+  return haddr().at(1) << 4 | 0x2;
+}
+
+//-----------------------------------------------------------------------------
+quint32 AnThub::canida() const
+{
+  return haddr().at(1) << 4 | 0x7;
 }
 
 //-----------------------------------------------------------------------------
 AnAgent *AnThub::agent() const
 {
-	return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
+  return dynamic_cast<AnRoot*>(parent())->agent(hAddress().at(0));
 }
 
 //-----------------------------------------------------------------------------
 bool AnThub::setInstalled(bool b) {
 
-	AnCanObject::setInstalled(b);
-	for (int i = 0; i < 8; ++i)
-		m_serdes[i]->setInstalled(installed());
+  AnCanObject::setInstalled(b);
+  for (int i = 0; i < 8; ++i)
+    m_serdes[i]->setInstalled(installed());
 
-	return installed();
+  return installed();
 }
 
 //-----------------------------------------------------------------------------
 bool AnThub::setActive(bool b) {
 
-	AnCanObject::setActive(b);
-	for (int i = 0; i < 8; ++i)
-		m_serdes[i]->setActive(active());
+  AnCanObject::setActive(b);
+  for (int i = 0; i < 8; ++i)
+    m_serdes[i]->setActive(active());
 
-	return active();
+  return active();
 }
 
 //-----------------------------------------------------------------------------
 int AnThub::status() const
 {
-// TO-DO implement real logic
-	if (active()) {
-		if (agent()->commError() || commError()) return STATUS_COMM_ERR;
+  // TO-DO implement real logic
+  if (active()) {
+    if (agent()->commError() || commError()) return STATUS_COMM_ERR;
 
-		int err = 0;
-		if (maxTemp() > tempAlarm()) ++err;
+    int err = 0;
+    if (maxTemp() > tempAlarm()) ++err;
 
-		int warn = 0;
-		if (ecsr() != 0x0) ++warn;
+    int warn = 0;
+    if (ecsr() != 0x0) ++warn;
 
-		for (int i = 0; i < 8; ++i)
-			if (m_serdes[i]->status() == STATUS_ERROR) ++err;
+    for (int i = 0; i < 8; ++i)
+      if (m_serdes[i]->status() == STATUS_ERROR) ++err;
 
-		if (err) return STATUS_ERROR;
-		if (warn) return STATUS_WARNING;
+    if (err) return STATUS_ERROR;
+    if (warn) return STATUS_WARNING;
 
-		return STATUS_ON;
-	} else {
-		return STATUS_UNKNOWN;
-	}
+    return STATUS_ON;
+  } else {
+    return STATUS_UNKNOWN;
+  }
 }
 
 //-----------------------------------------------------------------------------
 void AnThub::log(QString str)
 {
-	foreach(QString s, str.split("\n")) {
-		agent()->root()->log(QString("AnThub[%1]: " + s).arg(laddr().at(1)));
-	}
+  foreach(QString s, str.split("\n")) {
+    agent()->root()->log(QString("AnThub[%1]: " + s).arg(laddr().at(1)));
+  }
 }
