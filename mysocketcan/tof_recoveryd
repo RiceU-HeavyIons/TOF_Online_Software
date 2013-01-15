@@ -1,0 +1,96 @@
+#!/bin/bash
+# 
+# tof_recoveryd	This starts, stops, and reloads the TOF
+#		recovery daemon
+#
+# chkconfig: 345 91 85
+# description: TOF Recovery daemon
+#
+# Copyright 2013 J. Schambach
+#
+### BEGIN INIT INFO
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start and stop the TOF recovery daemon
+# Description: The recovery daemon listens for the DAQ recovery command
+#	on CANbus, then issues the appropriate CANbus broadcast commands
+#	that will reload the FPGAs in THUB, TCPU, and TDIG, and then
+#	configures those boards into running conditions.
+### END INIT INFO
+
+# $Id$
+#
+PIDFILE=/tmp/recoveryd.pid
+RETVAL=0
+
+prog=recoveryd
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# add PATH to executable for recoveryd.
+PATH=/usr/local/bin:$PATH
+
+
+usage ()
+{
+    echo "Usage: service $prog {start|stop|status|restart}"
+    RETVAL=1
+}
+
+
+start ()
+{
+# Make sure configuration file exists and has information we can use
+# MAILADDR or PROGRAM or both must be set in order to run mdadm --monitor
+    if [ -f "$PIDFILE" ]; then
+	checkpid `cat $PIDFILE` && return 0
+    fi
+    echo -n $"Starting $prog: "
+    cd /
+    daemon --user=tof recoveryd
+    ret=$?
+    [ $ret -eq "0" ] && touch /var/lock/subsys/$prog
+    echo
+    return $ret
+}
+
+stop ()
+{
+    [ -f /var/lock/subsys/$prog ] || return 0
+    echo -n "Killing $prog: "
+    killproc -p $PIDFILE recoveryd
+    ret=$?
+    echo
+    if [ $ret -eq "0" ]; then
+	rm -f $PIDFILE
+	rm -f /var/lock/subsys/$prog
+    fi 
+}
+
+restart ()
+{
+    stop
+    start
+}
+
+condrestart ()
+{
+    [ -e /var/lock/subsys/$prog ] && restart || return 0
+}
+
+
+case "$1" in
+    start|stop|restart|condrestart|try-restart|force-reload)
+    	[ `id -u` != "0" ] && exit 4 ;;
+esac
+
+case "$1" in
+    start) start; RETVAL=$? ;;
+    stop) stop; RETVAL=$? ;;
+    status) status -p $PIDFILE $prog ; RETVAL=$? ;;
+    restart) restart; RETVAL=$? ;;
+    *) usage ; RETVAL=2 ;;
+esac
+
+exit $RETVAL
