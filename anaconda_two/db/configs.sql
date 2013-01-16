@@ -72,6 +72,7 @@ insert into config_types values (202, "THUB_RECOVERY_MSG");
 insert into config_types values (211, "TCPU_RELINK");
 insert into config_types values (212, "TCPU_RECOVERY");
 insert into config_types values (213, "THUB_RECOVERY");
+insert into config_types values (214, "THUB_SEND_ALERT");
 commit transaction;
 
 drop table if exists configs;
@@ -100,7 +101,7 @@ insert into configs values (null,   1, 13,  24,   2, 255,   0,   0,      1);
 insert into configs values (null,   1, 14,  25,   2, 255,   0,   0,      0);
 insert into configs values (null,   1, 15,  26,   2, 255,   0,   0,      2);
 -- insert into configs values (null,   1, 15,  27,   2, 255,   0,   0,      0); -- 0x0
-insert into configs values (null,   1, 15,  27,   2, 255,   0,   0,    208); -- 0xd0
+insert into configs values (null,   1, 16,  27,   2, 255,   0,   0,    208); -- 0xd0
 -- TDIG
 insert into configs values (null,   1, 21,  32,   2, 255, 255,   0,     45);
 insert into configs values (null,   1, 22,  33,   2, 255, 255,   0,   1200);
@@ -162,53 +163,59 @@ insert into configs values (null,   2, 62, 105,   2, 255,   0,   0,      3);
 
 -- Set 3
 ---------------------------   id  set  ord, typ ad1  ad2  ad3  ad4   value
--- 1. Load TCPU FPGA from Eeprom 2, also include TDIG FPGAs (level = 2
-insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      2);
---insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      1);
+-- 1. Send THUB Alert message with value 0x55
+insert into configs values (null,   3, 11, 214,   1,   1,   0,   0,     85);
+--insert into configs values (null,   3, 12, 106,   0,   0,   0,   0, 500000);
 
--- 2. Turn off all of the Serdes
-insert into configs values (null,   3, 21,  12,   1, 255, 255,   0,      0);
-insert into configs values (null,   3, 22, 102,   1, 255, 255,   0,      1);
 
--- clear communication errors in THUB
-insert into configs values (null,   3, 23, 102,   1, 255,   0,   0,      1);
-
--- 3. Reset all TDCs on TDIG
---insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
-
--- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, and then put in run mode
-insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1200);
-insert into configs values (null,   3, 42,  33,   2, 121, 255,   0,    500);
-insert into configs values (null,   3, 42,  33,   2, 122, 255,   0,    500);
-insert into configs values (null,   3, 46,  23,   2, 255,   0,   0,     15);
-insert into configs values (null,   3, 47,  24,   2, 255,   0,   0,      2);
-insert into configs values (null,   3, 48, 102,   2, 255,   0,   0,      2);
-
--- 5. Turn on THUB serdes channels
-insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
---insert into configs values (null,   3, 52,  12,   1,   2,   5,   0,      0);
---insert into configs values (null,   3, 53,  12,   1,   2,   6,   0,      0);
---insert into configs values (null,   3, 54,  12,   1,   2,   7,   0,      0);
-insert into configs values (null,   3, 55, 102,   1, 255, 255,   0,      1);
-
--- 6. TCPU NW 0x2d (33) and 0x2f (35) seem to not always sync, toggle it
--- first sleep a little
-insert into configs values (null,   3, 60, 106,   0,   0,   0,   0, 500000);
-insert into configs values (null,   3, 61, 211,   2,  33,   0,   0,      1);
-insert into configs values (null,   3, 62, 211,   2,  35,   0,   0,      1);
-
--- 7. sleep a little (700ms)
-insert into configs values (null,   3, 70, 106,   0,   0,   0,   0, 700000);
-
--- 8. Bunch Reset
-insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
-
--- 9. Turn on (val = 0) Recovery Alert Messages from THUB 1
-insert into configs values (null,   3, 72, 202,   1,   1,   0,   0,      0);
-
--- 10. Sync All
-insert into configs values (null,   3, 81, 105,   1, 255,   0,   0,      3);
-insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      2);
+-- --------------- Old Set 3 ----------------------------------------------
+-- -- 1. Load TCPU FPGA from Eeprom 2, also include TDIG FPGAs (level = 2
+-- insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      2);
+-- --insert into configs values (null,   3, 11, 101,   2, 255,   0,   0,      1);
+-- 
+-- -- 2. Turn off all of the Serdes
+-- insert into configs values (null,   3, 21,  12,   1, 255, 255,   0,      0);
+-- insert into configs values (null,   3, 22, 102,   1, 255, 255,   0,      1);
+-- 
+-- -- clear communication errors in THUB
+-- insert into configs values (null,   3, 23, 102,   1, 255,   0,   0,      1);
+-- 
+-- -- 3. Reset all TDCs on TDIG
+-- --insert into configs values (null,   3, 31, 103,   2, 255, 255,   0,      2);
+-- 
+-- -- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, and then put in run mode
+-- insert into configs values (null,   3, 41,  33,   2, 255, 255,   0,   1200);
+-- insert into configs values (null,   3, 42,  33,   2, 121, 255,   0,    500);
+-- insert into configs values (null,   3, 42,  33,   2, 122, 255,   0,    500);
+-- insert into configs values (null,   3, 46,  23,   2, 255,   0,   0,     15);
+-- insert into configs values (null,   3, 47,  24,   2, 255,   0,   0,      2);
+-- insert into configs values (null,   3, 48, 102,   2, 255,   0,   0,      2);
+-- 
+-- -- 5. Turn on THUB serdes channels
+-- insert into configs values (null,   3, 51,  12,   1, 255, 255,   0,     16);
+-- --insert into configs values (null,   3, 52,  12,   1,   2,   5,   0,      0);
+-- --insert into configs values (null,   3, 53,  12,   1,   2,   6,   0,      0);
+-- --insert into configs values (null,   3, 54,  12,   1,   2,   7,   0,      0);
+-- insert into configs values (null,   3, 55, 102,   1, 255, 255,   0,      1);
+-- 
+-- -- 6. TCPU NW 0x2d (33) and 0x2f (35) seem to not always sync, toggle it
+-- -- first sleep a little
+-- insert into configs values (null,   3, 60, 106,   0,   0,   0,   0, 500000);
+-- insert into configs values (null,   3, 61, 211,   2,  33,   0,   0,      1);
+-- insert into configs values (null,   3, 62, 211,   2,  35,   0,   0,      1);
+-- 
+-- -- 7. sleep a little (700ms)
+-- insert into configs values (null,   3, 70, 106,   0,   0,   0,   0, 700000);
+-- 
+-- -- 8. Bunch Reset
+-- insert into configs values (null,   3, 71, 201,   1,   1,   0,   0,      1);
+-- 
+-- -- 9. Turn on (val = 0) Recovery Alert Messages from THUB 1
+-- insert into configs values (null,   3, 72, 202,   1,   1,   0,   0,      0);
+-- 
+-- -- 10. Sync All
+-- insert into configs values (null,   3, 81, 105,   1, 255,   0,   0,      3);
+-- insert into configs values (null,   3, 82, 105,   2, 255,   0,   0,      2);
 
 -------------------------------------------------------------------------------
 -- Set 4 
@@ -223,10 +230,12 @@ insert into configs values (null,   4, 21,  12,   1, 255, 255,   0,      0);
 -- 3. Reset all TDCs on TDIG
 -- insert into configs values (null,   4, 31, 103,   2, 255, 255,   0,      2);
 
--- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, and then put in run mode
+-- 4. Set TDIG threshold to 1200mV and 500mV for upVPD, mult. gate phase 0xD,
+--    and then put TCPU in run mode
 insert into configs values (null,   4, 41,  33,   2, 255, 255,   0,   1200);
 insert into configs values (null,   4, 42,  33,   2, 121, 255,   0,    500);
 insert into configs values (null,   4, 42,  33,   2, 122, 255,   0,    500);
+insert into configs values (null,   4, 43,  27,   2, 255,   0,   0,    208); -- 0xd0
 insert into configs values (null,   4, 45,  23,   2, 255,   0,   0,     15);
 insert into configs values (null,   4, 46,  24,   2, 255,   0,   0,      2);
 -- insert into configs values (null,   4, 47, 102,   2, 255,   0,   0,      2);
