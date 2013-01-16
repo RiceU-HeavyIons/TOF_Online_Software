@@ -492,7 +492,7 @@ QStringList AnRoot::modeList() const
 //-----------------------------------------------------------------------------
 void AnRoot::setMode(int i)
 {
-  log(QString("AnRoot::setMode: %1").arg(i));
+  log(QString("AnRoot::setMode: %1").arg(i+1));
   //	disableWatch();
   m_mode_idx = i;
   m_mode = m_mode_list[i].id;
