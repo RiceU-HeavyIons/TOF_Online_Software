@@ -2,8 +2,8 @@
  *  
  */
 #ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
-"$Id$";
+static char vcid[] = "$Id$";
+static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 #endif /* lint */
 
 
