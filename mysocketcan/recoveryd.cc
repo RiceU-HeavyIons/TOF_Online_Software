@@ -234,6 +234,8 @@ int main(int argc, char **argv)
 #endif
     s[i] = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (s[i] < 0) {
+      sprintf(logstr, "error opening can%d: socket", i);
+      log_message(LOG_FILE, logstr);
       perror("socket");
       return 1;
     }
@@ -243,6 +245,8 @@ int main(int argc, char **argv)
     memset(&ifr.ifr_name, 0, sizeof(ifr.ifr_name));
     sprintf(ifr.ifr_name, "can%d", i);
     if (ioctl(s[i], SIOCGIFINDEX, &ifr) < 0) {
+      sprintf(logstr, "error opening can%d: SIOCGIFINDEX", i);
+      log_message(LOG_FILE, logstr);
       perror("SIOCGIFINDEX");
       exit(1);
     }
@@ -264,6 +268,8 @@ int main(int argc, char **argv)
     }
 
     if (bind(s[i], (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+      sprintf(logstr, "error opening can%d: bind", i);
+      log_message(LOG_FILE, logstr);
       perror("bind");
       return 1;
     }
@@ -287,7 +293,11 @@ int main(int argc, char **argv)
     //FD_SET(s[i], &rdfs);
 
     if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, NULL)) < 0) {
-      if (errno != EINTR) perror("select"); // select error, exit at next iteration
+      if (errno != EINTR) {
+	sprintf(logstr, "select error: %d", errno);
+	log_message(LOG_FILE, logstr);
+	perror("select"); // select error, exit at next iteration
+      }
       running = 0;
       continue;
     }
@@ -304,6 +314,8 @@ int main(int argc, char **argv)
       
       nbytes = recvmsg(s[i], &msg, 0);
       if (nbytes < 0) {
+	sprintf(logstr, "can%d: read error %d", i, nbytes);
+	log_message(LOG_FILE, logstr);
 	perror("read");
 	running = 0; continue;
       }
@@ -312,6 +324,8 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 	fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
+	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, (int)sizeof(struct can_frame));
+	log_message(LOG_FILE, logstr);
 	running = 0; continue;
       }
       
@@ -342,6 +356,8 @@ int main(int argc, char **argv)
       
       nbytes = recvmsg(s[i], &msg, 0);
       if (nbytes < 0) {
+	sprintf(logstr, "can%d: read error %d", i, nbytes);
+	log_message(LOG_FILE, logstr);
 	perror("read");
 	running = 0; continue;
       }
@@ -350,6 +366,8 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 	fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
+	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, (int)sizeof(struct can_frame));
+	log_message(LOG_FILE, logstr);
 	running = 0; continue;
       }
       
