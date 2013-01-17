@@ -4,7 +4,7 @@
 
 TEMPLATE = app
 TARGET = AnacondaII
-DEPENDPATH += . ../lib
+DEPENDPATH += . ../lib ../src
 INCLUDEPATH += . ../inc ../src
 QT += sql
 CONFIG += debug
@@ -50,7 +50,8 @@ HEADERS += \
            KTdigView.h \
            KThubView.h \
            KSerdesModel.h KSerdesView.h \
-           KConsole.h
+           KConsole.h \
+           ../src/version.h
 
 SOURCES += main.cpp \
            KLevel1Model.cpp \

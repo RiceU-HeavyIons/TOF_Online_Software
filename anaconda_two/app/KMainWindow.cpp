@@ -23,6 +23,8 @@
 #include "KLevel2View.h"
 #include "KTcpuView.h"
 
+#include "version.h"
+
 #define AUTOSYNC_ON_DEFAULT 1
 //-----------------------------------------------------------------------------
 // Constructors
@@ -512,7 +514,7 @@ void KMainWindow::setSelection(int select)
 void KMainWindow::about()
 {
   QMessageBox::about(this, tr("About AnacondaII"),
-		     tr("<center><b>Anaconda II</b>" 
+		     tr("<center><b>Anaconda II Version " SVN_VERSION "</b>" 
 			"<br>Developed by Kohei Kajimoto and Joachim Schambach"
 			"<br>University of Texas at Austin</center>"));
 }
