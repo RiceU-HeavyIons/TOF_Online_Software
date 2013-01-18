@@ -322,11 +322,12 @@ int main(int argc, char *argv[])
 	  printf("\t");
 	  if ( (r == 1) && (trayhalf_count != 62))
 	    printf("*** ");
-	  else if ( (r == 2) && (trayhalf_count != 60))
+	  else if ( (r == 2) && (trayhalf_count != 62))
 	    printf("*** ");
 	  else if ( (r == 3) && (trayhalf_count != 60))
 	    printf("*** ");
-	  else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
+	    //else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
+	  else if ( (r == 4) && (trayhalf_count != 60))
 	    printf("*** ");
 // 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
 // 	    printf("*** ");
