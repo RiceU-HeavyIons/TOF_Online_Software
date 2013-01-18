@@ -431,14 +431,12 @@ int main(int argc, char **argv)
 	perror("write"); running=0; continue;
       }
       // VPD
-#ifdef NOTNOW
       if ((nbytes = write(s[0], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
       if ((nbytes = write(s[4], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-#endif
 	
       // Wait a while to let TCPUs reset
       sleep(1);
