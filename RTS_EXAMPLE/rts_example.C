@@ -327,7 +327,7 @@ int main(int argc, char *argv[])
 	  else if ( (r == 3) && (trayhalf_count != 60))
 	    printf("*** ");
 	    //else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
-	  else if ( (r == 4) && (trayhalf_count != 60))
+	  else if ( (r == 4) && (trayhalf_count != 58))
 	    printf("*** ");
 // 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
 // 	    printf("*** ");
@@ -440,15 +440,15 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
       // point to the start of the DDL raw data
       u_int *d = (u_int *) dd->Int32 ;	
 
-#ifdef NOTNOW
       if(do_print) {
 	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
+#ifdef NOTNOW
 	// dump all
 	for(int i=0;i<(int)(dd->ncontent/4);i++) {
 	  printf(" %2d: 0x%08X\n",i,d[i]) ;
 	}
-      }
 #endif
+      }
 
       if(do_print) {
 	//JS: start MTD analysis here (same as TOF for now)
