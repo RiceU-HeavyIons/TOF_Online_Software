@@ -13,26 +13,8 @@
 
 // only the detectors we will use need to be included
 // for their structure definitions...
-#include <DAQ_BSMD/daq_bsmd.h>
-#include <DAQ_BTOW/daq_btow.h>
-#include <DAQ_EMC/daq_emc.h>
-#include <DAQ_ESMD/daq_esmd.h>
-#include <DAQ_ETOW/daq_etow.h>
-#include <DAQ_FPD/daq_fpd.h>
-#include <DAQ_FTP/daq_ftp.h>
-#include <DAQ_L3/daq_l3.h>
-#include <DAQ_PMD/daq_pmd.h>
-#include <DAQ_PP2PP/daq_pp2pp.h>
-#include <DAQ_RIC/daq_ric.h>
-#include <DAQ_SC/daq_sc.h>
-#include <DAQ_SSD/daq_ssd.h>
-#include <DAQ_SVT/daq_svt.h>
 #include <DAQ_TOF/daq_tof.h>
-#include <DAQ_TPC/daq_tpc.h>
-#include <DAQ_TPX/daq_tpx.h>
 #include <DAQ_TRG/daq_trg.h>
-#include <DAQ_HLT/daq_hlt.h>
-#include <DAQ_FGT/daq_fgt.h>
 #include <DAQ_MTD/daq_mtd.h>
 
 #define RTS_DISABLE_LOG
@@ -193,7 +175,7 @@ int main(int argc, char *argv[])
 	unsigned int phaseNW = 0;
 	while(dd->iterate()) {
 	  int tray = 0;
-	  int r = dd->row;
+	  int r = dd->rdo;
 	  bool find0x2 = false;
 	  bool find0xe = false;
 	  bool firstHeader = true;
@@ -438,7 +420,7 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
       found = 1 ;
 
       // point to the start of the DDL raw data
-      u_int *d = (u_int *) dd->Int32 ;	
+      u_int *d = (u_int *) dd->Void ;	
 
       if(do_print) {
 	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
