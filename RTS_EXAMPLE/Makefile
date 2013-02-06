@@ -22,7 +22,7 @@ VPATH +=  $(STROOT_SRC_DIR)/DAQ_TOF \
 	$(STROOT_SRC_DIR)/DAQ_READER  $(STROOT_SRC_DIR)/SFS $(STROOT_SRC_DIR)/LOG 
 
 
-BINS = rts_example rts_errors rts_test
+BINS = rts_example rts_errors
 
 all:   $(BINS)
 
