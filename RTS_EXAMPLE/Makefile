@@ -1,9 +1,13 @@
-STROOT_SRC_DIR = /data2/stardaq/StRoot/RTS/src
-STROOT_DIR = /data2/stardaq
+STROOT_DIR = /data2/stardaq/StRoot
+# for tofcontrol.starp.bnl.gov:
+#STROOT_DIR = /home/Software/StRoot
+
+STROOT_SRC_DIR = $(STROOT_DIR)/RTS/src
+
 -include $(STROOT_SRC_DIR)/rtsmakefile.def	# for RTS
 -include $(STROOT_SRC_DIR)/rtsplus.def
 
-INCLUDES = -I. -I$(STROOT_SRC_DIR) -I$(STROOT_DIR)/StRoot/RTS/include -I$(STROOT_DIR)/StRoot/RTS/trg/include
+INCLUDES = -I. -I$(STROOT_SRC_DIR) -I$(STROOT_DIR)/RTS/include -I$(STROOT_DIR)/RTS/trg/include
 
 
 LDLIBS = 
