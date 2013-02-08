@@ -1,6 +1,3 @@
-/*
- *  
- */
 #ifndef lint
 static char vcid[] = "$Id$";
 static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
@@ -41,6 +38,15 @@ static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 
 //#define DEBUG 1
 
+const int THUB_NW = 1;
+const int THUB_NE = 2;
+const int THUB_SW = 3;
+const int THUB_SE = 6;
+const int MTD_S = 4;
+const int MTD_N = 7;
+const int VPD_E = 5;
+const int VPD_W = 0;
+
 static char devname[MAXIFNAMES][IFNAMSIZ+1];
 static int  dindex[MAXIFNAMES];
 static size_t  max_devname_len; /* to prevent frazzled device name output */ 
@@ -65,11 +71,6 @@ void log_message(const char *filename, const char *message)
   fclose(logfile);
 }
 
-
-//void sigterm(int signo)
-//{
-//  running = 0;
-//}
 
 void signal_handler(int sig)
 {
@@ -252,7 +253,7 @@ int main(int argc, char **argv)
     }
     addr.can_ifindex = ifr.ifr_ifindex;
 
-    if ( (i == 1) || (i == 5) ) {
+    if ( (i == 1) || (i == 4) ) {
       // CAN Filter and mask for this socket
       rfilter.can_id = 0x407; 
       rfilter.can_mask = 0xc00007ff;
@@ -286,8 +287,8 @@ int main(int argc, char **argv)
     doRecovery = false;
     // select set:
     FD_ZERO(&rdfs);
-    FD_SET(s[1], &rdfs); // TOF
-    FD_SET(s[5], &rdfs); // MTD
+    FD_SET(s[THUB_NW], &rdfs); // TOF
+    FD_SET(s[MTD_S], &rdfs); // MTD
 
     //    for (i=0; i<currmax; i++)
     //FD_SET(s[i], &rdfs);
@@ -302,7 +303,7 @@ int main(int argc, char **argv)
       continue;
     }
 
-    i = 1;  // THUB NW
+    i = THUB_NW;  // THUB NW
     if (FD_ISSET(s[i], &rdfs)) {
       //int idx;
 
@@ -334,7 +335,7 @@ int main(int argc, char **argv)
 	// idx = idx2dindex(addr.can_ifindex, s[i]);
 	// printf("%*s, i = %d", (int)max_devname_len, devname[idx], i);
 	//fprint_long_canframe(stdout, &frame, NULL, view);
-	printf("can1: 0x%x: 0x%x 0x%x 0x%x 0x%x", frame.can_id,
+	printf("can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
 	       frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
 	printf("\n");
 #endif
@@ -345,7 +346,7 @@ int main(int argc, char **argv)
       }
     }
     
-    i = 5;  // THUB MTD
+    i = MTD_S;  // THUB MTD
     if (FD_ISSET(s[i], &rdfs)) {
       //int idx;
 
@@ -373,7 +374,7 @@ int main(int argc, char **argv)
       
       if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
 #ifdef DEBUG
-	printf("can5: 0x%x: 0x%x 0x%x 0x%x 0x%x", frame.can_id,
+	printf("can4: 0x%x: 0x%x 0x%x 0x%x 0x%x", frame.can_id,
 	       frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
 	printf("\n");
 #endif
@@ -387,22 +388,22 @@ int main(int argc, char **argv)
     if (doRecovery) {
       log_message(LOG_FILE, "Recovery...");
       // First do all of the THUB resets
-      if ((nbytes = write(s[1], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[THUB_NW], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-      if ((nbytes = write(s[2], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[THUB_NE], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-      if ((nbytes = write(s[3], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[THUB_SW], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-      if ((nbytes = write(s[5], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[MTD_S], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-      if ((nbytes = write(s[6], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[THUB_SE], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
-      if ((nbytes = write(s[7], &thubframe, sizeof(frame))) != sizeof(frame)) {
+      if ((nbytes = write(s[MTD_N], &thubframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write"); running=0; continue;
       }
 	
@@ -411,39 +412,39 @@ int main(int argc, char **argv)
 	
       // Now do all the TCPU resets
       // TOF
-      if ((nbytes = write(s[1], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[THUB_NW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write THUB_NW"); running=0; continue;
       }
-      if ((nbytes = write(s[2], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[THUB_NE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write THUB_NE"); running=0; continue;
       }
-      if ((nbytes = write(s[3], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[THUB_SW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write THUB_SW"); running=0; continue;
       }
-      if ((nbytes = write(s[6], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[THUB_SE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write THUB_SE"); running=0; continue;
       }
       // MTD
-      if ((nbytes = write(s[5], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[MTD_S], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write MTD_S"); running=0; continue;
       }
-      if ((nbytes = write(s[7], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[MTD_N], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write MTD_N"); running=0; continue;
       }
       // VPD
-      if ((nbytes = write(s[0], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[VPD_W], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write VPD_W"); running=0; continue;
       }
-      if ((nbytes = write(s[4], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[VPD_E], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write VPD_E"); running=0; continue;
       }
 	
       // Wait a while to let TCPUs reset
       sleep(1);
 	
       // Finally do a bunch reset
-      if ((nbytes = write(s[0], &brstframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if ((nbytes = write(s[VPD_W], &brstframe, sizeof(frame))) != sizeof(frame)) {
+	perror("write VPD_W"); running=0; continue;
       }
       log_message(LOG_FILE, "...finished");
 
