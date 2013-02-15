@@ -195,7 +195,7 @@ int main(int argc, char **argv)
   struct can_frame tcpuframe;
   struct can_frame brstframe;
   int nbytes, i;
-  bool doRecovery;
+  bool doRecovery, doRecoveryMTD, doRecoveryTOF;
   struct ifreq ifr;
 
   daemonize();
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
   msg.msg_control = &ctrlmsg;
 
   while (running) {
-    doRecovery = false;
+    doRecovery = doRecoveryMTD = doRecoveryTOF = false;
     // select set:
     FD_ZERO(&rdfs);
     FD_SET(s[THUB_NW], &rdfs); // TOF
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 	sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
 		frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
 	log_message(LOG_FILE, logstr);
-	doRecovery = true;
+	doRecoveryTOF = doRecovery = true;
       }
     }
     
@@ -381,62 +381,74 @@ int main(int argc, char **argv)
 	sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
 		frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
 	log_message(LOG_FILE, logstr);
-	doRecovery = true;
+	doRecoveryMTD = doRecovery = true;
       }
     }
 
     if (doRecovery) {
       log_message(LOG_FILE, "Recovery...");
       // First do all of the THUB resets
-      if ((nbytes = write(s[THUB_NW], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+      if (doRecoveryTOF) {
+	log_message(LOG_FILE, "TOF...");
+	if ((nbytes = write(s[THUB_NW], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_NE], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_SW], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_SE], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
       }
-      if ((nbytes = write(s[THUB_NE], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
-      }
-      if ((nbytes = write(s[THUB_SW], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
-      }
-      if ((nbytes = write(s[MTD_S], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
-      }
-      if ((nbytes = write(s[THUB_SE], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
-      }
-      if ((nbytes = write(s[MTD_N], &thubframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write"); running=0; continue;
+
+      if (doRecoveryMTD) {
+	log_message(LOG_FILE, "MTD...");
+	if ((nbytes = write(s[MTD_S], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
+	if ((nbytes = write(s[MTD_N], &thubframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write"); running=0; continue;
+	}
       }
 	
       // Wait a little to let the THUBs reset first
       usleep(300000);
 	
       // Now do all the TCPU resets
-      // TOF
-      if ((nbytes = write(s[THUB_NW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write THUB_NW"); running=0; continue;
+      if (doRecoveryTOF) {
+	// TOF
+	if ((nbytes = write(s[THUB_NW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write THUB_NW"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_NE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write THUB_NE"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_SW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write THUB_SW"); running=0; continue;
+	}
+	if ((nbytes = write(s[THUB_SE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write THUB_SE"); running=0; continue;
+	}
+	// VPD
+	if ((nbytes = write(s[VPD_W], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write VPD_W"); running=0; continue;
+	}
+	if ((nbytes = write(s[VPD_E], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write VPD_E"); running=0; continue;
+	}
       }
-      if ((nbytes = write(s[THUB_NE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write THUB_NE"); running=0; continue;
-      }
-      if ((nbytes = write(s[THUB_SW], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write THUB_SW"); running=0; continue;
-      }
-      if ((nbytes = write(s[THUB_SE], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write THUB_SE"); running=0; continue;
-      }
-      // MTD
-      if ((nbytes = write(s[MTD_S], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write MTD_S"); running=0; continue;
-      }
-      if ((nbytes = write(s[MTD_N], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write MTD_N"); running=0; continue;
-      }
-      // VPD
-      if ((nbytes = write(s[VPD_W], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write VPD_W"); running=0; continue;
-      }
-      if ((nbytes = write(s[VPD_E], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
-	perror("write VPD_E"); running=0; continue;
+
+      if (doRecoveryMTD) {
+	// MTD
+	if ((nbytes = write(s[MTD_S], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write MTD_S"); running=0; continue;
+	}
+	if ((nbytes = write(s[MTD_N], &tcpuframe, sizeof(frame))) != sizeof(frame)) {
+	  perror("write MTD_N"); running=0; continue;
+	}
       }
 	
       // Wait a while to let TCPUs reset
