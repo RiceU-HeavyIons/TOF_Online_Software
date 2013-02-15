@@ -36,7 +36,7 @@ KTdigView::KTdigView(QWidget *parent) : QGroupBox("TDIG", parent) {
   grid->addWidget(l_pld03 = new QLabel("PLD Reg[03]:"), ++row, 0);
   grid->addWidget(m_pld03 = new QLabel("--"),    row, 1);
 
-  grid->addWidget(l_thrs = new QLabel("Threhosld:"), ++row, 0);
+  grid->addWidget(l_thrs = new QLabel("Threshold:"), ++row, 0);
   grid->addWidget(m_thrs = new QLabel("--"),    row, 1);
 
   grid->addWidget(l_eeprom = new QLabel("EEPROM:"), ++row, 0);
