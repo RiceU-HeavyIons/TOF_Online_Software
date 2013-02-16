@@ -314,15 +314,16 @@ int main(int argc, char **argv)
       checkTOF = checkMTD = true;
     }
     else {
-      FD_ZERO(&rdfs);
       if (FD_ISSET(s[THUB_NW], &rdfs)) {
 	checkTOF = true;
 	checkMTD = false;
+	FD_ZERO(&rdfs);
 	FD_SET(s[MTD_S], &rdfs); // MTD
       }
       else {
 	checkTOF = false;
 	checkMTD = true;
+	FD_ZERO(&rdfs);
 	FD_SET(s[THUB_NW], &rdfs); // TOF
       }	
 	
@@ -340,7 +341,7 @@ int main(int argc, char **argv)
       if (ret > 0) {
 	if (FD_ISSET(s[THUB_NW], &rdfs)) 
 	  checkTOF = true;
-	else
+	else if (FD_ISSET(s[MTD_S], &rdfs))
 	  checkMTD = true;
       }
     }
