@@ -196,8 +196,10 @@ int main(int argc, char **argv)
   struct can_frame brstframe;
   int nbytes, i;
   bool doRecovery, doRecoveryMTD, doRecoveryTOF;
+  bool checkTOF, checkMTD;
   struct ifreq ifr;
-
+  struct timeval t;
+		
   daemonize();
 
   // THUB FPGA reset command
@@ -253,7 +255,7 @@ int main(int argc, char **argv)
     }
     addr.can_ifindex = ifr.ifr_ifindex;
 
-    if ( (i == 1) || (i == 4) ) {
+    if ( (i == THUB_NW) || (i == MTD_S) ) {
       // CAN Filter and mask for this socket
       rfilter.can_id = 0x407; 
       rfilter.can_mask = 0xc00007ff;
@@ -283,6 +285,11 @@ int main(int argc, char **argv)
   msg.msg_iovlen = 1;
   msg.msg_control = &ctrlmsg;
 
+  // timeout values
+  t.tv_sec  = 0;
+  t.tv_usec = 500000; // 0.5 seconds
+
+
   while (running) {
     doRecovery = doRecoveryMTD = doRecoveryTOF = false;
     // select set:
@@ -303,10 +310,44 @@ int main(int argc, char **argv)
       continue;
     }
 
-    i = THUB_NW;  // THUB NW
-    if (FD_ISSET(s[i], &rdfs)) {
-      //int idx;
+    if ( FD_ISSET(s[THUB_NW], &rdfs) && FD_ISSET(s[MTD_S], &rdfs) ) {
+      checkTOF = checkMTD = true;
+    }
+    else {
+      FD_ZERO(&rdfs);
+      if (FD_ISSET(s[THUB_NW], &rdfs)) {
+	checkTOF = true;
+	checkMTD = false;
+	FD_SET(s[MTD_S], &rdfs); // MTD
+      }
+      else {
+	checkTOF = false;
+	checkMTD = true;
+	FD_SET(s[THUB_NW], &rdfs); // TOF
+      }	
+	
+      // Now try one more time with a timeout of 0.5s to make sure
+      // we catch all canbus messages
+      if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, &t)) < 0) {
+	if (errno != EINTR) {
+	  sprintf(logstr, "select with timeout error: %d", errno);
+	  log_message(LOG_FILE, logstr);
+	  perror("select"); // select error, exit at next iteration
+	}
+	running = 0;
+	continue;
+      }
+      if (ret > 0) {
+	if (FD_ISSET(s[THUB_NW], &rdfs)) 
+	  checkTOF = true;
+	else
+	  checkMTD = true;
+      }
+    }
 
+    i = THUB_NW;  // THUB NW
+    if (checkTOF) {
+      //int idx;
       /* these settings may be modified by recvmsg() */
       iov.iov_len = sizeof(frame);
       msg.msg_namelen = sizeof(addr);
@@ -325,7 +366,8 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 	fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, (int)sizeof(struct can_frame));
+	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
+		(int)sizeof(struct can_frame));
 	log_message(LOG_FILE, logstr);
 	running = 0; continue;
       }
@@ -347,9 +389,7 @@ int main(int argc, char **argv)
     }
     
     i = MTD_S;  // THUB MTD
-    if (FD_ISSET(s[i], &rdfs)) {
-      //int idx;
-
+    if (checkMTD) {
       iov.iov_len = sizeof(frame);
       msg.msg_namelen = sizeof(addr);
       msg.msg_controllen = sizeof(ctrlmsg);  
@@ -367,7 +407,8 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 	fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, (int)sizeof(struct can_frame));
+	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes,
+		(int)sizeof(struct can_frame));
 	log_message(LOG_FILE, logstr);
 	running = 0; continue;
       }
