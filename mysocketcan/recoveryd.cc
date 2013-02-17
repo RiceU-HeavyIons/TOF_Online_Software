@@ -287,7 +287,7 @@ int main(int argc, char **argv)
 
   // timeout values
   t.tv_sec  = 0;
-  t.tv_usec = 500000; // 0.5 seconds
+  t.tv_usec = 700000; // 0.7 seconds
 
 
   while (running) {
@@ -327,7 +327,7 @@ int main(int argc, char **argv)
 	FD_SET(s[THUB_NW], &rdfs); // TOF
       }	
 	
-      // Now try one more time with a timeout of 0.5s to make sure
+      // Now try one more time with a timeout of 0.7s to make sure
       // we catch all canbus messages
       if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, &t)) < 0) {
 	if (errno != EINTR) {
@@ -457,7 +457,7 @@ int main(int argc, char **argv)
       }
 	
       // Wait a little to let the THUBs reset first
-      usleep(300000);
+      usleep(100000);
 	
       // Now do all the TCPU resets
       if (doRecoveryTOF) {
@@ -494,7 +494,7 @@ int main(int argc, char **argv)
       }
 	
       // Wait a while to let TCPUs reset
-      sleep(1);
+      usleep(500000);
 	
       // Finally do a bunch reset
       if ((nbytes = write(s[VPD_W], &brstframe, sizeof(frame))) != sizeof(frame)) {
