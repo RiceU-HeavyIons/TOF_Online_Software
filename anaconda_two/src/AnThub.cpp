@@ -204,7 +204,9 @@ void AnThub::sync(int level)
 	rdata = agent()->write_read(msg, rmsg, 2);
 	rdata = (rdata << 8) + rmsg.data[0];
 	setEcsr(rdata);
-	
+	if (ecsr() != 0)
+	  log( QString("THUB: %1 CRC Error, CRC = %2").arg(name()).arg(ecsrString()) );
+
 	// readout serdes infomation
 	if (--level >= 1)
 	  for(quint8 i = 0; i < 8; ++i) m_serdes[i]->sync(level);
