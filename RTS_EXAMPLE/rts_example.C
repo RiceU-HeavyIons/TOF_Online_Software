@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
   int good=0;
   int bad=0;
   int tofevt=0;
+  int mtdevt=0;
 	
   for(;;) {
     char *ret = evp->get(0,EVP_TYPE_ANY);
@@ -167,7 +168,6 @@ int main(int argc, char *argv[])
 
     dd = evp->det("tof")->get("raw") ;
     if(dd) {
-      printf("TOF found\n") ;
       tofevt++;
       if(strcasecmp(print_det,"tof")==0) {
 	//JS: start TOF analysis here
@@ -302,7 +302,8 @@ int main(int argc, char *argv[])
 	    printf("\n");
 	  }
 	  printf("\t");
-	  if ( (r == 1) && (trayhalf_count != 62))
+	  //if ( (r == 1) && (trayhalf_count != 62)) // tray 46 disabled
+	  if ( (r == 1) && (trayhalf_count != 60))
 	    printf("*** ");
 	  else if ( (r == 2) && (trayhalf_count != 62))
 	    printf("*** ");
@@ -324,7 +325,7 @@ int main(int argc, char *argv[])
 
     if(trg_doer(evp, print_det)) LOG(INFO,"TRG found") ;
 		
-    if(mtd_doer(evp,print_det)) LOG(INFO,"MTD found") ;
+    if(mtd_doer(evp,print_det)) mtdevt++;
 		
 
   }
@@ -332,7 +333,8 @@ int main(int argc, char *argv[])
   delete evp ;	// cleanup i.e. if running through a set of files.
 
   printf("\n\n\n");
-  printf("*** Found %d good events, %d of these with TOF\n", good, tofevt);
+  printf("*** Found %d good events, %d of these with TOF, %d with MTD\n", 
+	 good, tofevt, mtdevt);
 
   return 0 ;
 }
@@ -415,24 +417,24 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
   // right now only the "raw" pointer is available/known
   dd = rdr->det("mtd")->get("raw") ;
   if(dd) {
-    printf("MTD found\n");
     while(dd->iterate()) {
       found = 1 ;
 
       // point to the start of the DDL raw data
       u_int *d = (u_int *) dd->Void ;	
 
+#ifdef NOTNOW
       if(do_print) {
 	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
-#ifdef NOTNOW
 	// dump all
 	for(int i=0;i<(int)(dd->ncontent/4);i++) {
 	  printf(" %2d: 0x%08X\n",i,d[i]) ;
 	}
-#endif
       }
+#endif
 
       if(do_print) {
+	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
 	//JS: start MTD analysis here (same as TOF for now)
 	unsigned int parity = 0;
 	bool find0x2 = false;
