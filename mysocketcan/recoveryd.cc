@@ -285,11 +285,6 @@ int main(int argc, char **argv)
   msg.msg_iovlen = 1;
   msg.msg_control = &ctrlmsg;
 
-  // timeout values
-  t.tv_sec  = 0;
-  t.tv_usec = 700000; // 0.7 seconds
-
-
   while (running) {
     doRecovery = doRecoveryMTD = doRecoveryTOF = false;
     // select set:
@@ -314,6 +309,11 @@ int main(int argc, char **argv)
       checkTOF = checkMTD = true;
     }
     else {
+      // timeout values (watch out, select may change this)
+      t.tv_sec  = 0;
+      t.tv_usec = 500000; // 0.5 seconds
+
+
       if (FD_ISSET(s[THUB_NW], &rdfs)) {
 	checkTOF = true;
 	checkMTD = false;
@@ -327,7 +327,7 @@ int main(int argc, char **argv)
 	FD_SET(s[THUB_NW], &rdfs); // TOF
       }	
 	
-      // Now try one more time with a timeout of 0.7s to make sure
+      // Now try one more time with a timeout of 0.5s to make sure
       // we catch all canbus messages
       if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, &t)) < 0) {
 	if (errno != EINTR) {
