@@ -202,6 +202,9 @@ int main(int argc, char **argv)
 		
   daemonize();
 
+  // output svn version to log
+  log_message(LOG_FILE, vcid);
+
   // THUB FPGA reset command
   thubframe.can_id = 0x402;
   thubframe.can_dlc = 1;
