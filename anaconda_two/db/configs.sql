@@ -280,10 +280,15 @@ insert into configs values (null, 101,  1, 201,   1,   1,   0,   0,      1);
 insert into configs values (null, 102,  1,  104,  2, 255,   0,   0,     2);
 
 ---- User Command 3 -------   id  set  ord, typ ad1  ad2  ad3  ad4  value
+--                          turn off AUTOSYNC
 insert into configs values (null, 103,  1,  107,   0,   0,   0,   0,       0);
+--                          wait 3 seconds
 insert into configs values (null, 103,  2,  106,   0,   0,   0,   0, 3000000);
-insert into configs values (null, 103,  3,  105,   1, 255,   0,   0,       1);
-insert into configs values (null, 103,  4,  105,   2, 255,   0,   0,       1);
+--                          sync THUBs (level 2)
+--insert into configs values (null, 103,  3,  105,   1, 255,   0,   0,       2);
+--                          sync TCPUs (level 2)
+--insert into configs values (null, 103,  4,  105,   2, 255,   0,   0,       2);
+--                          turn on AUTOSYNC
 insert into configs values (null, 103,  5,  107,   0,   0,   0,   0,       1);
 -- insert into configs values (null, 103,  1,  105,   1, 255,   0,   0,      1);
 -- insert into configs values (null, 103,  2,  213,   1, 255,   0,   0,      2);
