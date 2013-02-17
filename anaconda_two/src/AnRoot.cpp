@@ -643,6 +643,14 @@ void AnRoot::autosync()
   if (!isRunning()) {
     disableWatch();
     (*m_autoSyncIter)->sync(2);
+    AnTdig *tdig = dynamic_cast<AnTdig*>(*m_autoSyncIter);
+    AnTcpu *tcpu = dynamic_cast<AnTcpu*>(*m_autoSyncIter);
+    if (tdig) {
+      if (tdig->status() > AnBoard::STATUS_ON) log(tdig->errorDump());
+    }
+    else if (tcpu) {
+      if (tcpu->status() > AnBoard::STATUS_ON) log(tcpu->errorDump());
+    }
     enableWatch();
     emit updated(*m_autoSyncIter);
     ++m_autoSyncIter;
