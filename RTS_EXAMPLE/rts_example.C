@@ -23,6 +23,7 @@
 // for this example
 static int trg_doer(daqReader *rdr, const char *do_print) ;
 static int mtd_doer(daqReader *rdr, const char *do_print) ;
+static int tof_doer(daqReader *rdr, const char *do_print) ;
 
 int main(int argc, char *argv[])
 {
@@ -72,7 +73,6 @@ int main(int argc, char *argv[])
        
     if(ret) {
       if(evp->status) {
-	//LOG(ERR,"evp status is non-null [0x08X, %d dec]",evp->status,evp->status) ;
 	printf("evp status is non-null [0x%08X, %d dec]\n",evp->status,evp->status) ;
 	continue ;
       }
@@ -83,21 +83,17 @@ int main(int argc, char *argv[])
       case EVP_STAT_OK:   // just a burp!
 	continue;
       case EVP_STAT_EOR:
-	LOG(DBG, "End of Run/File");
 	if(evp->IsEvp()) {   // but event pool, keep trying...
-	  LOG(DBG, "Wait a second...");
 	  sleep(1);
 	  continue;
 	}
 	break;        // file, we're done...
       case EVP_STAT_EVT:
 	bad++;
-	//LOG(WARN, "Problem getting event - skipping [good %d, bad %d]",good,bad);
 	printf( "Problem getting event - skipping [good %d, bad %d]\n",good,bad);
 	sleep(1);
 	continue;
       case EVP_STAT_CRIT:
-	//LOG(CRIT,"evp->status CRITICAL (?)") ;
 	printf("evp->status CRITICAL (?)\n") ;
 	return -1;
       }
@@ -105,21 +101,15 @@ int main(int argc, char *argv[])
 
 		
     if(evp->status == EVP_STAT_EOR) {
-      LOG(INFO,"End of File reached...") ;
       break ;	// of the for() loop...
     }
 
-    daq_dta *dd ;	// generic data pointer; reused all the time
+    printf("File name \"%s\": \n", evp->file_name);
+    printf("sequence %d: token %4d, trgcmd %2d, daqcmd %2d, time %u, detectors 0x%08X (status 0x%X)\n",
+	   evp->seq, evp->token, evp->trgcmd, evp->daqcmd,
+	   evp->evt_time, evp->detectors, evp->status) ;
 
 
-    //    LOG(INFO,"sequence %d: token %4d, trgcmd %2d, daqcmd %2d, time %u, detectors 0x%08X (status 0x%X)",
-    //    evp->seq, evp->token, evp->trgcmd, evp->daqcmd,
-    //evp->evt_time, evp->detectors, evp->status) ;
-    printf("File name \"%s\": sequence %d: token %4d, trgcmd 0x%X, daqcmd 0x%X (evp status 0x%X)\n",
-	   evp->file_name, evp->seq, evp->token, evp->trgcmd, evp->daqcmd,evp->status) ;
-
-
-    //if(print_det[0]) printf("***** Seq #%d, token %d\n",evp->seq,evp->token) ;
     /***************** let's do simple detectors; the ones which only have legacy *****/
 
     if(print_det[0]) {
@@ -152,180 +142,11 @@ int main(int argc, char *argv[])
       }
     }
 
-#ifdef NOTNOW
-    dd = evp->det("tof")->get("raw",0); //"sector" = 0, ignored
-    if(dd) {
-      printf("TOF found\n") ;
-    
-      while(dd->iterate()) { // iterates over "rows" (RDOs) from 1 to 4
-	printf("TOF: sec %d, RDO %d, %4d bytes\n",dd->sec,dd->row,dd->ncontent) ;
-	for (int ii=0; ii<(int)(dd->ncontent/4); ii++) {
-	  printf("\t%4d: 0x%08X\n",ii,dd->Int32[ii]) ;
-	}
-      }
-    }
-#endif
-
-    dd = evp->det("tof")->get("raw") ;
-    if(dd) {
-      tofevt++;
-      if(strcasecmp(print_det,"tof")==0) {
-	//JS: start TOF analysis here
-	unsigned int parity = 0;
-	unsigned int phaseNW = 0;
-	while(dd->iterate()) {
-	  int tray = 0;
-	  int r = dd->rdo;
-	  bool find0x2 = false;
-	  bool find0xe = false;
-	  bool firstHeader = true;
-	  unsigned int firstPhase = 0;
-	  printf("RDO %d: words %d:\n",r,dd->ncontent/4);
-	  unsigned int prevWord = 0xffffffff;
-	  unsigned int item_count = 0;
-	  int trayhalf_count = 0;
-	  for(u_int i=0;i<(dd->ncontent/4);i++) {
-	    item_count++;
-	    printf("\t%4d: 0x%08X",i,dd->Int32[i]);
-
-	    // ****************** repeated word ***************************
-	    if (dd->Int32[i] == prevWord) {
-	      printf(" *** repeat word?");
-	    }
-	    prevWord = dd->Int32[i];
-
-	    // ****************** geographical word ***********************
-	    if((dd->Int32[i] & 0xF0000000) == 0xC0000000) {
-	      item_count = 0;
-	      printf(" - tray %d-%d", 
-		     (dd->Int32[i] & 0xFF)/2, 
-		     ((dd->Int32[i] & 0x1) == 1) ? 1 : 0);
-	      if((dd->Int32[i] & 0xFFFFFF00) != 0xC0000000) {
-		printf(" *** bit error");
-	      }
-	      if((dd->Int32[i] & 0x1) == parity) {
-		printf(" *** tray half missing?");
-	      }
-	      parity = dd->Int32[i] & 0x1;
-	      if (find0xe) {
-		printf(" *** separator missing");
-	      }
-	      find0x2 = true;
-	      find0xe = true;
-	      tray = (int)(dd->Int32[i] & 0xFF)/2;
-	      trayhalf_count++; 
-	    }
-
-	    // ****************** TDC local header word ***************************
-	    else if((dd->Int32[i] & 0xF0000000) == 0x20000000) {
-	      if (firstHeader) {
-		if(r == 1) {
-		  firstPhase  = (dd->Int32[i]) & 0xFFF;
-		  phaseNW = firstPhase + 0x1000;
-		}
-		else {
-		  firstPhase  = (dd->Int32[i]) & 0xFFF;
-		  printf(" - phase%d %d", r, (phaseNW - firstPhase) & 0xFFF);
-		}
-		firstHeader = false;
-	      }
-	      else if ((tray != 121) && (tray != 122)) {
-		// start detectors have different phase, don't check for now
-		if (((dd->Int32[i]) & 0xFFF) != firstPhase)  {
-		  printf(" *** tray %d wrong phase 0x%x (should be 0x%x)", tray,
-			 dd->Int32[i] & 0xFFF, 
-			 firstPhase);
-
-		}
-	      }
-	      if (!find0x2 && (dd->Int32[i] & 0xFF000000) == 0x20000000) // first header 
-		printf(" *** geographical word missing");
-	      find0x2 = false;
-	    }
-
-	    // *********************** separator word *****************************
-	    else if((dd->Int32[i] & 0xF0000000) == 0xe0000000) {
-	      find0xe = false;
-	      if (find0x2) {
-		printf(" *** header  missing");
-		find0x2 = false;
-	      }
-	      else {
-		unsigned int reported_count;
-		reported_count = (dd->Int32[i] & 0x3ff00) >> 8;
-		if ((reported_count == 1022) && (item_count == 1021)) {
-		}
-		else if (reported_count != --item_count) {
-		  printf(" *** item count incorrect: reported %d, actual count %d",
-			 reported_count, item_count);
-		}
-	      }
-	      // reset item_count
-	      item_count = 0;
-	    }
-
-	    // *************************** trigger word ***************************
-	    else if((dd->Int32[i] & 0xF0000000) == 0xA0000000) {
-	      item_count = 0;
-	      if(parity == 1) {
-		printf(" *** tray half missing?");
-	      }
-	      parity = 0;
-	      if (find0xe) {
-		printf(" *** separator missing");
-	      }
-	      if (find0x2) {
-		printf(" *** header missing");
-	      }
-	      find0xe = find0x2 = false;
-	    }
-
-	    // ***************************** tag word *****************************
-	    else if(dd->Int32[i] == 0xDEADFACE) {
-	      item_count = 0;
-	    }
-
-	    // ************************* HPTDC data word *************************
-	    else if(((dd->Int32[i] & 0xF0000000) == 0x40000000) ||
-		    ((dd->Int32[i] & 0xF0000000) == 0x50000000)) {
-	    }
-
-	    // ******************* HPTDC Error word ******************************
-	    else if((dd->Int32[i] & 0xF0000000) == 0x60000000) {
-	      printf(" *** HPTDC Error");
-	    }
-
-	    // ********************* unexpected data word ************************
-	    else {
-	      printf(" *** unexpected data word!!!!");
-	    }
-	    printf("\n");
-	  }
-	  printf("\t");
-	  //if ( (r == 1) && (trayhalf_count != 62)) // tray 46 disabled
-	  if ( (r == 1) && (trayhalf_count != 60))
-	    printf("*** ");
-	  else if ( (r == 2) && (trayhalf_count != 62))
-	    printf("*** ");
-	  else if ( (r == 3) && (trayhalf_count != 60))
-	    printf("*** ");
-	    //else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
-	  else if ( (r == 4) && (trayhalf_count != 58))
-	    printf("*** ");
-// 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
-// 	    printf("*** ");
-	  printf("RDO %d tray half count = %d\n", r, trayhalf_count);
-	}
-	//JSend: end of TOF analysis
-	  
-
-	//} // while (dd->iterate)
-      }
-    } // if (dd)
-
     if(trg_doer(evp, print_det)) LOG(INFO,"TRG found") ;
 		
     if(mtd_doer(evp,print_det)) mtdevt++;
+ 
+    if(tof_doer(evp,print_det)) tofevt++;
 		
 
   }
@@ -422,16 +243,6 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 
       // point to the start of the DDL raw data
       u_int *d = (u_int *) dd->Void ;	
-
-#ifdef NOTNOW
-      if(do_print) {
-	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
-	// dump all
-	for(int i=0;i<(int)(dd->ncontent/4);i++) {
-	  printf(" %2d: 0x%08X\n",i,d[i]) ;
-	}
-      }
-#endif
 
       if(do_print) {
 	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
@@ -559,21 +370,178 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 
       } //if(do_print)
 
-
-#ifdef NOTNOW
-      //JS: start MTD analysis (for later, once the MTD pointer is known)
-      mtd_t *mtd = (mtd_t *)dd->Void;
-
-      for(int r=0;r<2;r++) {
-	printf("RDO %d: words %d:\n",r+1,mtd->ddl_words[r]) ;
-      }
-      //JSend: end MTD analysis
-
-#endif // NOTNOW
-      
     }
   }
 
   return found ;
 }
 
+///////////////////////////////////////////////////////////
+///////////////////// TOF /////////////////////////////////
+///////////////////////////////////////////////////////////
+static int tof_doer(daqReader *rdr, const char *do_print)
+{
+  int found = 0 ;
+  daq_dta *dd ;
+
+  if(strcasestr(do_print,"tof")) ;	// leave as is...
+  else do_print = 0 ;
+
+  dd = rdr->det("tof")->get("raw") ;
+  if(dd) {
+
+    //JS: start TOF analysis here
+    unsigned int parity = 0;
+    unsigned int phaseNW = 0;
+    while(dd->iterate()) {
+      found = 1 ;
+
+      if(do_print) {
+	int tray = 0;
+	int r = dd->rdo;
+	bool find0x2 = false;
+	bool find0xe = false;
+	bool firstHeader = true;
+	unsigned int firstPhase = 0;
+	
+	printf("RDO %d: words %d:\n",r,dd->ncontent/4);
+	unsigned int prevWord = 0xffffffff;
+	unsigned int item_count = 0;
+	int trayhalf_count = 0;
+	for(u_int i=0;i<(dd->ncontent/4);i++) {
+	  item_count++;
+	  printf("\t%4d: 0x%08X",i,dd->Int32[i]);
+
+	  // ****************** repeated word ***************************
+	  if (dd->Int32[i] == prevWord) {
+	    printf(" *** repeat word?");
+	  }
+	  prevWord = dd->Int32[i];
+
+	  // ****************** geographical word ***********************
+	  if((dd->Int32[i] & 0xF0000000) == 0xC0000000) {
+	    item_count = 0;
+	    printf(" - tray %d-%d", 
+		   (dd->Int32[i] & 0xFF)/2, 
+		   ((dd->Int32[i] & 0x1) == 1) ? 1 : 0);
+	    if((dd->Int32[i] & 0xFFFFFF00) != 0xC0000000) {
+	      printf(" *** bit error");
+	    }
+	    if((dd->Int32[i] & 0x1) == parity) {
+	      printf(" *** tray half missing?");
+	    }
+	    parity = dd->Int32[i] & 0x1;
+	    if (find0xe) {
+	      printf(" *** separator missing");
+	    }
+	    find0x2 = true;
+	    find0xe = true;
+	    tray = (int)(dd->Int32[i] & 0xFF)/2;
+	    trayhalf_count++; 
+	  }
+
+	  // ****************** TDC local header word ***************************
+	  else if((dd->Int32[i] & 0xF0000000) == 0x20000000) {
+	    if (firstHeader) {
+	      if(r == 1) {
+		firstPhase  = (dd->Int32[i]) & 0xFFF;
+		phaseNW = firstPhase + 0x1000;
+	      }
+	      else {
+		firstPhase  = (dd->Int32[i]) & 0xFFF;
+		printf(" - phase%d %d", r, (phaseNW - firstPhase) & 0xFFF);
+	      }
+	      firstHeader = false;
+	    }
+	    else if ((tray != 121) && (tray != 122)) {
+	      // start detectors have different phase, don't check for now
+	      if (((dd->Int32[i]) & 0xFFF) != firstPhase)  {
+		printf(" *** tray %d wrong phase 0x%x (should be 0x%x)", tray,
+		       dd->Int32[i] & 0xFFF, 
+		       firstPhase);
+
+	      }
+	    }
+	    if (!find0x2 && (dd->Int32[i] & 0xFF000000) == 0x20000000) // first header 
+	      printf(" *** geographical word missing");
+	    find0x2 = false;
+	  }
+
+	  // *********************** separator word *****************************
+	  else if((dd->Int32[i] & 0xF0000000) == 0xe0000000) {
+	    find0xe = false;
+	    if (find0x2) {
+	      printf(" *** header  missing");
+	      find0x2 = false;
+	    }
+	    else {
+	      unsigned int reported_count;
+	      reported_count = (dd->Int32[i] & 0x3ff00) >> 8;
+	      if ((reported_count == 1022) && (item_count == 1021)) {
+	      }
+	      else if (reported_count != --item_count) {
+		printf(" *** item count incorrect: reported %d, actual count %d",
+		       reported_count, item_count);
+	      }
+	    }
+	    // reset item_count
+	    item_count = 0;
+	  }
+
+	  // *************************** trigger word ***************************
+	  else if((dd->Int32[i] & 0xF0000000) == 0xA0000000) {
+	    item_count = 0;
+	    if(parity == 1) {
+	      printf(" *** tray half missing?");
+	    }
+	    parity = 0;
+	    if (find0xe) {
+	      printf(" *** separator missing");
+	    }
+	    if (find0x2) {
+	      printf(" *** header missing");
+	    }
+	    find0xe = find0x2 = false;
+	  }
+
+	  // ***************************** tag word *****************************
+	  else if(dd->Int32[i] == 0xDEADFACE) {
+	    item_count = 0;
+	  }
+
+	  // ************************* HPTDC data word *************************
+	  else if(((dd->Int32[i] & 0xF0000000) == 0x40000000) ||
+		  ((dd->Int32[i] & 0xF0000000) == 0x50000000)) {
+	  }
+
+	  // ******************* HPTDC Error word ******************************
+	  else if((dd->Int32[i] & 0xF0000000) == 0x60000000) {
+	    printf(" *** HPTDC Error");
+	  }
+
+	  // ********************* unexpected data word ************************
+	  else {
+	    printf(" *** unexpected data word!!!!");
+	  }
+	  printf("\n");
+	}
+	printf("\t");
+	//if ( (r == 1) && (trayhalf_count != 62)) // tray 46 disabled
+	if ( (r == 1) && (trayhalf_count != 60))
+	  printf("*** ");
+	else if ( (r == 2) && (trayhalf_count != 62))
+	  printf("*** ");
+	else if ( (r == 3) && (trayhalf_count != 60))
+	  printf("*** ");
+	//else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
+	else if ( (r == 4) && (trayhalf_count != 58))
+	  printf("*** ");
+	// 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
+	// 	    printf("*** ");
+	printf("RDO %d tray half count = %d\n", r, trayhalf_count);
+      } // do_print       
+    } // while iterate: end of TOF analysis
+  } // if (dd)
+
+  return found ;
+}
