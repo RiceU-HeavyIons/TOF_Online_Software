@@ -250,10 +250,11 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 	unsigned int parity = 0;
 	bool find0x2 = false;
 	bool find0xe = false;
-	//bool firstHeader = true;
+	// bool firstHeader = true;
 	unsigned int prevWord = 0xffffffff;
 	//unsigned int firstPhase = 0;
 	unsigned int item_count = 0;
+	int trayhalf_count = 0;
 	for(int i=0;i<(int)(dd->ncontent/4);i++) {
 	  item_count++;
 	  printf("\t%4d: 0x%08X",i,d[i]) ;
@@ -282,6 +283,7 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 	    }
 	    find0x2 = true;
 	    find0xe = true;
+	    trayhalf_count++;
 	  }
 
 	  // ****************** TDC local header word ***************************
@@ -367,8 +369,15 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 	  printf("\n");
 	}
 	//JSend: end MTD analysis
+	printf("\t");
+	if ( (dd->rdo == 1) && (trayhalf_count != 14))
+	  printf("*** ");
+	else if ( (dd->rdo == 2) && (trayhalf_count != 14))
+	  printf("*** ");
+	printf("RDO %d tray half count = %d\n", dd->rdo, trayhalf_count);
 
       } //if(do_print)
+	
 
     }
   }
