@@ -46,70 +46,76 @@ AnCanObject *AnTdig::hat(int i)
 
 void AnTdig::sync(int level)
 {
-  if (active() && level >= 1 && commError() < 2) {
+  if (active()) {
+    if ((level >= 1) && (commError() < 10)) {
 
-    struct can_frame msg;
-    struct can_frame rmsg;
-    quint64     rdata;
-    QStringList btrace;
+      struct can_frame msg;
+      struct can_frame rmsg;
+      quint64     rdata;
+      QStringList btrace;
 
-    try {
-      AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
-      btrace << AnRdMsg(haddr().at(0), msg).toString();
-      rdata = agent()->write_read(msg, rmsg, 8);
-      btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-      // since communication succeeded, make sure commError is cleared
-      clearCommError();
-      setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
-      setEcsr(rmsg.data[3]);
-#ifdef WITH_EPICS
-      agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()),
-			    1, laddr().at(1), laddr().at(2), temp());
-#else
-      agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()));
-#endif
-      AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
-      agent()->write_read(msg, rmsg, 3);
-      m_pld03 = rmsg.data[2];
-      // get Threshold
-      AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0x8);
-      agent()->write_read(msg, rmsg, 3);
-      m_actualThreshold = (int)((rmsg.data[1] + (rmsg.data[2] << 8))*3300.0/4095.0 + 0.5); 
-      
-      if (level >= 3) {
-	// get firmware version
-	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
-	btrace << AnRdMsg(haddr().at(0), msg).toString();
-	rdata = agent()->write_read(msg, rmsg, 4);
-	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-	setFirmwareId(0xFFFFFF & rdata);
-
-	// get chip id
-	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
+      try {
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb0);
 	btrace << AnRdMsg(haddr().at(0), msg).toString();
 	rdata = agent()->write_read(msg, rmsg, 8);
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
-	setChipId(0xFFFFFFFFFFFFFFULL & rdata);
+	// since communication succeeded, make sure commError is cleared
+	clearCommError();
+	setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
+	setEcsr(rmsg.data[3]);
+#ifdef WITH_EPICS
+	agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()),
+			      1, laddr().at(1), laddr().at(2), temp());
+#else
+	agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()));
+#endif
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 2, 0xe, 0x3);
+	agent()->write_read(msg, rmsg, 3);
+	m_pld03 = rmsg.data[2];
+	// get Threshold
+	AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0x8);
+	agent()->write_read(msg, rmsg, 3);
+	m_actualThreshold = (int)((rmsg.data[1] + (rmsg.data[2] << 8))*3300.0/4095.0 + 0.5); 
+	
+	if (level >= 3) {
+	  // get firmware version
+	  AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb1);
+	  btrace << AnRdMsg(haddr().at(0), msg).toString();
+	  rdata = agent()->write_read(msg, rmsg, 4);
+	  btrace << AnRdMsg(haddr().at(0), rmsg).toString();
+	  setFirmwareId(0xFFFFFF & rdata);
+	  
+	  // get chip id
+	  AnAgent::set_msg(msg, canidr(), MSGTYPE_EXTENDED, 1, 0xb2);
+	  btrace << AnRdMsg(haddr().at(0), msg).toString();
+	  rdata = agent()->write_read(msg, rmsg, 8);
+	  btrace << AnRdMsg(haddr().at(0), rmsg).toString();
+	  setChipId(0xFFFFFFFFFFFFFFULL & rdata);
+	}
+	
+	if ((--level >= 1) || (m_pld03 > 0)) {
+	  for (quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
+	}
+	setSynced();
+	
+      } catch (AnExCanError ex) {
+	//if (ex.status() == CAN_ERR_QRCVEMPTY) {
+	if (ex.status() == 0) {
+	  // probably harmless, only print log message
+	  log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
+	  log(btrace.join("\n"));
+	} 
+	else {
+	  log(QString("sync: CAN error occurred: 0x%1").arg(ex.status(),0,16));
+	  log(btrace.join("\n"));
+	  incCommError();
+	}
+	log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
       }
-
-      if (--level >= 1) {
-	for (quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
-      }
-      setSynced();
-
-    } catch (AnExCanError ex) {
-      //if (ex.status() == CAN_ERR_QRCVEMPTY) {
-      if (ex.status() == 0) {
-	// probably harmless, only print log message
-	log(QString("sync: CAN QRCVEMPTY error occurred: 0x%1").arg(ex.status(),0,16));
-	log(btrace.join("\n"));
-      } 
-      else {
-	log(QString("sync: CAN error occurred: 0x%1").arg(ex.status(),0,16));
-	log(btrace.join("\n"));
-	incCommError();
-      }
-      log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
+    }
+    else {
+      log(QString("sync: wasn't issued, level=%1, commError=%2")
+	  .arg(level).arg(commError()));
     }
   }
 }

@@ -8,11 +8,9 @@
 #include "AnTcpu.h"
 #include "AnExceptions.h"
 //-----------------------------------------------------------------------------
-AnTcpu::AnTcpu(
-	       const AnAddress &laddr,
+AnTcpu::AnTcpu(const AnAddress &laddr,
 	       const AnAddress &haddr,
-	       AnCanObject *parent) : AnBoard(laddr, haddr, parent),
-				      m_tray_id(0)
+	       AnCanObject *parent) : AnBoard(laddr, haddr, parent), m_tray_id(0)
 {
   setObjectName(QString("TCPU ") + lAddress().toString());
 #ifdef MTD
@@ -98,9 +96,10 @@ void AnTcpu::config(int level)
 	incCommError();
       }
       
-    } else {
-      log(QString("config: wasn't issued, active=%1, level=%2, commError=%3")
-	  .arg(active()).arg(level).arg(commError()));
+    } 
+    else {
+      log(QString("config: wasn't issued, level=%1, commError=%2")
+	  .arg(level).arg(commError()));
     }
   }
 }
@@ -111,7 +110,7 @@ void AnTcpu::init(int level)
   // don't want to init TCPUs for upVPD
   //	if (haddr().at(1) == 0x20) return;
 
-  if (active() && level >= 1) {
+  if (active() && (level >= 1)) {
 
     struct can_frame msg;
     struct can_frame rmsg;
@@ -140,11 +139,6 @@ void AnTcpu::init(int level)
       incCommError();
     }
   } 
-  // This log really isn't necessary
-//   else {
-//     log(QString("init: wasn't issued, active=%1, level=%2, commError=%3")
-// 	.arg(active()).arg(level).arg(commError()));
-//   }
 }
 
 //-----------------------------------------------------------------------------
@@ -176,22 +170,18 @@ void AnTcpu::reset(int level)
 //-----------------------------------------------------------------------------
 void AnTcpu::qreset(int level)
 {
-
   if (active() && level >= 1) {
     clearCommError();
     agent()->clearCommError();
-
+    
     try {
       if (--level >= 1)
 	for (int i = 0; i < 8; ++i) m_tdig[i]->qreset(level);
-
+      
     } catch (AnExCanError ex) {
       log(QString("qreset: CAN error occurred: 0x%1").arg(ex.status(),0,16));
       incCommError();
     }
-  } else {
-    log(QString("qreset: wasn't issued, active=%1, level=%2, commError=%3")
-	.arg(active()).arg(level).arg(commError()));
   }
 }
 
@@ -200,7 +190,6 @@ void AnTcpu::sync(int level)
 {
   if (active()) {
     if (level >= 1 && commError() < 10) { // give up after 10 tries
-
       struct can_frame msg;
       struct can_frame rmsg;
       quint64     rdata;
@@ -214,6 +203,7 @@ void AnTcpu::sync(int level)
 	agent()->write_read(msg, rmsg, 8);
 	// since communication succeeded, make sure commError is cleared
 	clearCommError();
+	agent()->clearCommError();
 	btrace << AnRdMsg(haddr().at(0), rmsg).toString();
 	setEcsr(rmsg.data[3]);
 	setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
@@ -271,9 +261,10 @@ void AnTcpu::sync(int level)
 	}
 	log(QString("sync: latest msg " + AnRdMsg(haddr().at(0), msg).toString() + "\n"));
       }
-    } else {
-      log(QString("sync: wasn't issued, active=%1, level=%2, commError=%3")
-	  .arg(active()).arg(level).arg(commError()));
+    }
+    else {
+      log(QString("sync: wasn't issued, level=%1, commError=%2")
+	  .arg(level).arg(commError()));
     }
   }
 }
@@ -281,28 +272,30 @@ void AnTcpu::sync(int level)
 //-----------------------------------------------------------------------------
 void AnTcpu::relink(int level)
 {
+  if (active()) {
+    if ((level >= 1) && (commError() == 0)) {
+      try {
+	struct can_frame msg;
+	struct can_frame rmsg;
+	AnAgent::set_msg(msg, canidw(),
+			 MSGTYPE_STANDARD,
+			 5, 0xe, 0x2, 0x0, 0x2, m_pld02Set);
+	agent()->write_read(msg, rmsg, 2);
 	
-  if (active() && level >= 1 && commError() == 0) {
-    try {
-      struct can_frame msg;
-      struct can_frame rmsg;
-      AnAgent::set_msg(msg, canidw(),
-		       MSGTYPE_STANDARD,
-		       5, 0xe, 0x2, 0x0, 0x2, m_pld02Set);
-      agent()->write_read(msg, rmsg, 2);
-      
-      AnAddress ad(1, m_thub, m_serdes, 0);
-      AnSerdes *serdes = dynamic_cast<AnSerdes*>( agent()->root()->find(ad) );
-      serdes->relink(m_serdesPort);
-      
-      
-    } catch (AnExCanError ex) {
-      log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
-      incCommError();
+	AnAddress ad(1, m_thub, m_serdes, 0);
+	AnSerdes *serdes = dynamic_cast<AnSerdes*>( agent()->root()->find(ad) );
+	serdes->relink(m_serdesPort);
+	
+	
+      } catch (AnExCanError ex) {
+	log(QString("relink: CAN error occurred: 0x%1").arg(ex.status(),0,16));
+	incCommError();
+      }
     }
-  } else {
-    log(QString("relink: wasn't issued, active=%1, level=%2, commError=%3")
-	.arg(active()).arg(level).arg(commError()));
+    else {
+      log(QString("relink: wasn't issued, level=%1, commError=%2")
+	  .arg(level).arg(commError()));
+    }
   }
 }
 
@@ -336,7 +329,7 @@ AnAgent *AnTcpu::agent() const
 
 //-----------------------------------------------------------------------------
 bool AnTcpu::setInstalled(bool b) {
-
+  
   AnCanObject::setInstalled(b);
 #ifdef MTD
 #else
@@ -495,9 +488,9 @@ int AnTcpu::status() const
     stat = STATUS_COMM_ERR;
     // since we can't communicate with the TCPU, tell the TDIGs
     // they have communication errors as well
-    for (int i = 0; i < 8; ++i) {
-      m_tdig[i]->incCommError();
-    }
+    //for (int i = 0; i < 8; ++i) {
+    //  m_tdig[i]->incCommError();
+    //}
   }
   else if (err)
     stat = STATUS_ERROR;
