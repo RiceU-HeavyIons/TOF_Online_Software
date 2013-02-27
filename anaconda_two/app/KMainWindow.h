@@ -80,6 +80,8 @@ public slots:
 	void setMode(int i);
 	void setExpertMode(bool em);
 
+	void setAutoSyncChecked(bool b) {m_ToggleAutoSyncAction->setChecked(b);}
+
 protected:
 	void mouseReleaseEvent(QMouseEvent *event);
 

@@ -85,6 +85,7 @@ KMainWindow::KMainWindow(QWidget *parent) : QMainWindow(parent)
   
   QObject::connect(m_root, SIGNAL(aboutStart()), this, SLOT(agentStart()));
   QObject::connect(m_root, SIGNAL(finished()),  this, SLOT(agentFinished()));
+  QObject::connect(m_root, SIGNAL(setAutoSyncChecked(bool)),  this, SLOT(setAutoSyncChecked(bool)));
   
   setCentralWidget(center);
   

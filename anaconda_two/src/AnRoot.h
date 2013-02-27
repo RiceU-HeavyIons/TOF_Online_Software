@@ -133,6 +133,8 @@ public:
 
 	void emit_updated()  { emit updated(); }
 	void emit_finished() { emit finished(); }
+
+	void emit_autoSyncChecked(bool b) { emit setAutoSyncChecked(b); }
 	
 	void log(QString str);
 	void tlog(QString str, int type=0, int tray=0, int board=0, double val = 0.0);	
@@ -146,6 +148,8 @@ signals:
 
 	void aboutStart();
 	void finished();
+	
+	void setAutoSyncChecked(bool b);
 
 public slots:
 	void autosync();

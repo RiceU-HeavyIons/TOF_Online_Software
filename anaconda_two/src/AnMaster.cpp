@@ -237,8 +237,10 @@ void AnMaster::p_setMode(int mode)
 	//JS temporarily, to allow recovery actions again
 	m_root->doingRecovery(false);
 	m_root->startAutoSync();
+	m_root->emit_autoSyncChecked(true);
       }
       else {
+	m_root->emit_autoSyncChecked(false);
 	m_root->stopAutoSync();
       }
     }
