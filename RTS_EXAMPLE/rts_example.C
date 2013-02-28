@@ -238,6 +238,8 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
   // right now only the "raw" pointer is available/known
   dd = rdr->det("mtd")->get("raw") ;
   if(dd) {
+    unsigned int phaseNW = 0;
+
     while(dd->iterate()) {
       found = 1 ;
 
@@ -248,11 +250,12 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 	printf("MTD: RDO %d: %d bytes\n", dd->rdo, dd->ncontent) ;
 	//JS: start MTD analysis here (same as TOF for now)
 	unsigned int parity = 0;
+	int r = dd->rdo;
 	bool find0x2 = false;
 	bool find0xe = false;
-	// bool firstHeader = true;
+	bool firstHeader = true;
 	unsigned int prevWord = 0xffffffff;
-	//unsigned int firstPhase = 0;
+	unsigned int firstPhase = 0;
 	unsigned int item_count = 0;
 	int trayhalf_count = 0;
 	for(int i=0;i<(int)(dd->ncontent/4);i++) {
@@ -288,23 +291,24 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 
 	  // ****************** TDC local header word ***************************
 	  else if((d[i] & 0xF0000000) == 0x20000000) {
-	    //if (firstHeader) {
-	    //if(r == 0) {
-	    //firstPhase  = (d[i]) & 0xFFF;
-	    //phaseNW = firstPhase + 0x1000;
-	    //}
-	    //else {
-	    //firstPhase  = (d[i]) & 0xFFF;
-	    //printf(" - phase%d %d", r, (phaseNW - firstPhase) & 0xFFF);
-	    //}
-	    //firstHeader = false;
-	    //}
-	    //else if (((d[i]) & 0xFFF) != firstPhase)  {
-	    //  printf(" *** wrong phase 0x%x (should be 0x%x)", d[i] & 0xFFF, 
-	    //firstPhase);
-	    //
-	    //}
-			      
+	    if (firstHeader) {
+	      if(r == 1) {
+		firstPhase  = (d[i]) & 0xFFF;
+		// phaseNW = firstPhase + 0x1000;
+		phaseNW = firstPhase;
+	      }
+	      else {
+		firstPhase  = (d[i]) & 0xFFF;
+		printf(" - phase%d: %d", r, (firstPhase - phaseNW) & 0xFFF);
+	      }
+	      firstHeader = false;
+	    }
+	    else if (((d[i]) & 0xFFF) != firstPhase)  {
+	      printf(" *** wrong phase 0x%x (should be 0x%x)", d[i] & 0xFFF, 
+		     firstPhase);
+	      
+	    }
+	    
 	    if (!find0x2 && (d[i] & 0xFF000000) == 0x20000000) // first header 
 	      printf(" *** geographical word missing");
 	    find0x2 = false;
