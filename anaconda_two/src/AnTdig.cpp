@@ -94,6 +94,7 @@ void AnTdig::sync(int level)
 	}
 	
 	if ((--level >= 1) || (m_pld03 > 0)) {
+	  if (level < 1) level = 1; // needed for m_pld03 condition
 	  for (quint8 i = 1; i < 4; ++i) m_tdc[i]->sync(level);
 	}
 	setSynced();
