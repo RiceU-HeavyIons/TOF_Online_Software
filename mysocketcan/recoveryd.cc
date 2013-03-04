@@ -460,7 +460,7 @@ int main(int argc, char **argv)
       }
 	
       // Wait a little to let the THUBs reset first
-      usleep(100000);
+      usleep(500000); // 500 ms
 	
       // Now do all the TCPU resets
       if (doRecoveryTOF) {
