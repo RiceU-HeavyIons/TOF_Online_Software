@@ -63,6 +63,7 @@ void AnTdig::sync(int level)
 	clearCommError();
 	setTemp((double)rmsg.data[2] + (double)(rmsg.data[1])/256.0);
 	setEcsr(rmsg.data[3]);
+	if ( (ecsr() & 0x4) == 0x4) log("TDIG CRC error");
 #ifdef WITH_EPICS
 	agent()->root()->tlog(QString("TDIG %1 %2: %3").arg(laddr().at(1)).arg(laddr().at(2)).arg(temp()),
 			      1, laddr().at(1), laddr().at(2), temp());
