@@ -91,8 +91,10 @@ AnRoot::AnRoot(AnCanObject *parent) : AnCanObject (parent)
   QDateTime now = QDateTime::currentDateTime();
   char *logdir = getenv("AII_LOG_DIR");
   if (logdir != NULL && *logdir != '\0') {
-    m_log   = new AnLog(QString("%1/%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
-    m_tlog  = new AnLog(QString("%1/temp%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+    // m_log   = new AnLog(QString("%1/%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+    // m_tlog  = new AnLog(QString("%1/temp%2").arg(logdir).arg(now.toString("yyyyMMdd.log")));
+    m_log   = new AnLog(QString("%1/anaconda.log").arg(logdir));
+    m_tlog  = new AnLog(QString("%1/temperature.log").arg(logdir));
   }
   else {
     m_log  = new AnLog(default_path.filePath(now.toString("log/yyyyMMdd.log")));
