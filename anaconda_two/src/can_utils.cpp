@@ -50,6 +50,10 @@ int LINUX_CAN_Read_Timeout(int cansock, struct can_frame *frame, int nMicroSecon
   // JSJSJSJSJSJS: temporarily make timeout small
   //nMicroSeconds = 50000;
 
+#ifdef VCAN
+  nMicroSeconds = 5000;
+#endif
+
   // calculate timeout values
   t.tv_sec  = nMicroSeconds / 1000000L;
   t.tv_usec = nMicroSeconds % 1000000L;
@@ -92,7 +96,11 @@ int CAN_Open(int devID)
 
   addr.can_family = AF_CAN;
   
+#ifdef VCAN
+  sprintf(ifr.ifr_name, "vcan%d", devID);
+#else
   sprintf(ifr.ifr_name, "can%d", devID);
+#endif
 
   if (ioctl(cansock, SIOCGIFINDEX, &ifr) < 0) {
     perror("SIOCGIFINDEX");

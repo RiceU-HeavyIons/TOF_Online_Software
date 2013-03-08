@@ -56,6 +56,11 @@ CONFIG(mtd) {
 	DEFINES += MTD
 }
 
+CONFIG(vcan) {
+	message("vcan defined")
+	DEFINES += VCAN
+}
+
 DESTDIR = ../lib
 
 # Input
