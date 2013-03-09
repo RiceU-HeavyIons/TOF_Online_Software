@@ -376,7 +376,7 @@ static int mtd_doer(daqReader *rdr, const char *do_print)
 	printf("\t");
 	if ( (dd->rdo == 1) && (trayhalf_count != 14))
 	  printf("*** ");
-	else if ( (dd->rdo == 2) && (trayhalf_count != 14))
+	else if ( (dd->rdo == 2) && (trayhalf_count != 16))
 	  printf("*** ");
 	printf("RDO %d tray half count = %d\n", dd->rdo, trayhalf_count);
 
@@ -546,8 +546,8 @@ static int tof_doer(daqReader *rdr, const char *do_print)
 	  printf("*** ");
 	else if ( (r == 3) && (trayhalf_count != 60))
 	  printf("*** ");
-	//else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 disabled
-	else if ( (r == 4) && (trayhalf_count != 58))
+	//else if ( (r == 4) && (trayhalf_count != 58)) // run 12 has tray 102 & 106 disabled
+	else if ( (r == 4) && (trayhalf_count != 56))
 	  printf("*** ");
 	// 	  else if ( (r != 4) && (trayhalf_count != 60) && (trayhalf_count != 62) )
 	// 	    printf("*** ");
