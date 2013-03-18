@@ -345,8 +345,16 @@ int main(int argc, char **argv)
     }
     // else if (ret == 0) continue; // timeout
 
+    // select set: all THUBs
+    FD_ZERO(&rdfs);
+    for(vector<int>::iterator it = tofTHUBs.begin(); it != tofTHUBs.end(); ++it) {
+      FD_SET(s[*it], &rdfs);
+    }
+    for(vector<int>::iterator it = mtdTHUBs.begin(); it != mtdTHUBs.end(); ++it) {
+      FD_SET(s[*it], &rdfs);
+    }
     // Wait a little
-    usleep(500000); // 500 ms
+    usleep(400000); //  0.4 sec
 
     // now check one more time to see if additional THUBs are ready
     // do this with 0 timeout to return immediately
