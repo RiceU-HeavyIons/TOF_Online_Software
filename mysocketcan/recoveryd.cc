@@ -3,6 +3,8 @@ static char vcid[] = "$Id$";
 static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 #endif /* lint */
 
+#include <vector>
+using namespace std;
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -196,9 +198,11 @@ int main(int argc, char **argv)
   struct can_frame brstframe;
   int nbytes, i;
   bool doRecovery, doRecoveryMTD, doRecoveryTOF;
-  bool checkTOF, checkMTD;
   struct ifreq ifr;
   struct timeval t;
+  int max_socket_fd;
+  vector<int> tofTHUBs;
+  vector<int> mtdTHUBs;
 		
   daemonize();
 
@@ -232,8 +236,10 @@ int main(int argc, char **argv)
   //print_usage(basename(argv[0]));
 
   currmax = 8;
-
+  max_socket_fd = 0;
   log_message(LOG_FILE, "Opening can interfaces");
+  
+
   for (i=0; i < currmax; i++) {
 #ifdef DEBUG
     printf("opening can%d.\n", i);
@@ -258,19 +264,19 @@ int main(int argc, char **argv)
     }
     addr.can_ifindex = ifr.ifr_ifindex;
 
-    if ( (i == THUB_NW) || (i == MTD_S) ) {
-      // CAN Filter and mask for this socket
-      rfilter.can_id = 0x407; 
-      rfilter.can_mask = 0xc00007ff;
-      setsockopt(s[i], SOL_CAN_RAW, CAN_RAW_FILTER,
-		 &rfilter, sizeof(struct can_filter));
-    } 
-    else {
+    if ( (i == VPD_E) || (i == VPD_W) ) {
       // disable default receive filter on this RAW socket
       // This is obsolete as we do not read from the socket at all, but for 
       // this reason we can remove the receive list in the Kernel to save a 
       // little (really a very little!) CPU usage.
       setsockopt(s[i], SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
+    }
+    else {
+      // CAN Filter and mask for this socket
+      rfilter.can_id = 0x407; 
+      rfilter.can_mask = 0xc00007ff;
+      setsockopt(s[i], SOL_CAN_RAW, CAN_RAW_FILTER,
+		 &rfilter, sizeof(struct can_filter));
     }
 
     if (bind(s[i], (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -281,6 +287,29 @@ int main(int argc, char **argv)
     }
   }
 
+  // fill vectors:
+  tofTHUBs.push_back(THUB_NW);
+  tofTHUBs.push_back(THUB_SW);
+  tofTHUBs.push_back(THUB_NE);
+  tofTHUBs.push_back(THUB_SE);
+
+  mtdTHUBs.push_back(MTD_S);
+  mtdTHUBs.push_back(MTD_N);
+		     
+  // check the highest socket we are interested in:
+  for(vector<int>::iterator it = tofTHUBs.begin(); it != tofTHUBs.end(); ++it) {
+    if(s[*it] > max_socket_fd) max_socket_fd = s[*it];
+  }
+
+  for(vector<int>::iterator it = mtdTHUBs.begin(); it != mtdTHUBs.end(); ++it) {
+    if(s[*it] > max_socket_fd) max_socket_fd = s[*it];
+  }
+
+  // nfds argument of select is max socket + 1
+  max_socket_fd += 1;
+
+
+
   /* these settings are static and can be held out of the hot path */
   iov.iov_base = &frame;
   msg.msg_name = &addr;
@@ -290,15 +319,43 @@ int main(int argc, char **argv)
 
   while (running) {
     doRecovery = doRecoveryMTD = doRecoveryTOF = false;
-    // select set:
+    // select set: all THUBs
     FD_ZERO(&rdfs);
-    FD_SET(s[THUB_NW], &rdfs); // TOF
-    FD_SET(s[MTD_S], &rdfs); // MTD
+    for(vector<int>::iterator it = tofTHUBs.begin(); it != tofTHUBs.end(); ++it) {
+      FD_SET(s[*it], &rdfs);
+    }
+    for(vector<int>::iterator it = mtdTHUBs.begin(); it != mtdTHUBs.end(); ++it) {
+      FD_SET(s[*it], &rdfs);
+    }
 
     //    for (i=0; i<currmax; i++)
     //FD_SET(s[i], &rdfs);
 
-    if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, NULL)) < 0) {
+
+    // wait forever
+    ret = select(max_socket_fd, &rdfs, NULL, NULL, NULL);
+    if (ret <= 0) {
+      if (errno != EINTR) {
+	sprintf(logstr, "select error: %d", errno);
+	log_message(LOG_FILE, logstr);
+	perror("select"); // select error, exit at next iteration
+      }
+      running = 0;
+      continue;
+    }
+    // else if (ret == 0) continue; // timeout
+
+    // Wait a little
+    usleep(500000); // 500 ms
+
+    // now check one more time to see if additional THUBs are ready
+    // do this with 0 timeout to return immediately
+    // timeout values (watch out, select may change this)
+    t.tv_sec  = 0;
+    t.tv_usec = 0;
+    //t.tv_usec = 500000; // 0.5 seconds
+    ret = select(max_socket_fd, &rdfs, NULL, NULL, &t);
+    if (ret < 0) {
       if (errno != EINTR) {
 	sprintf(logstr, "select error: %d", errno);
 	log_message(LOG_FILE, logstr);
@@ -308,128 +365,102 @@ int main(int argc, char **argv)
       continue;
     }
 
-    if ( FD_ISSET(s[THUB_NW], &rdfs) && FD_ISSET(s[MTD_S], &rdfs) ) {
-      checkTOF = checkMTD = true;
-    }
-    else {
-      // timeout values (watch out, select may change this)
-      t.tv_sec  = 0;
-      t.tv_usec = 500000; // 0.5 seconds
+    // Now iterate over TOF THUBs
+    for(vector<int>::iterator it = tofTHUBs.begin(); it != tofTHUBs.end(); ++it) {
+      i = *it;
+      if ( FD_ISSET(s[i], &rdfs) ) {
 
-
-      if (FD_ISSET(s[THUB_NW], &rdfs)) {
-	checkTOF = true;
-	checkMTD = false;
-	FD_ZERO(&rdfs);
-	FD_SET(s[MTD_S], &rdfs); // MTD
-      }
-      else {
-	checkTOF = false;
-	checkMTD = true;
-	FD_ZERO(&rdfs);
-	FD_SET(s[THUB_NW], &rdfs); // TOF
-      }	
+	//int idx;
+	/* these settings may be modified by recvmsg() */
+	iov.iov_len = sizeof(frame);
+	msg.msg_namelen = sizeof(addr);
+	msg.msg_controllen = sizeof(ctrlmsg);  
+	msg.msg_flags = 0;
 	
-      // Now try one more time with a timeout of 0.5s to make sure
-      // we catch all canbus messages
-      if ((ret = select(s[currmax-1]+1, &rdfs, NULL, NULL, &t)) < 0) {
-	if (errno != EINTR) {
-	  sprintf(logstr, "select with timeout error: %d", errno);
+	nbytes = recvmsg(s[i], &msg, 0);
+	if (nbytes < 0) {
+	  sprintf(logstr, "can%d: read error %d", i, nbytes);
 	  log_message(LOG_FILE, logstr);
-	  perror("select"); // select error, exit at next iteration
+	  perror("read");
+	  running = 0; continue;
 	}
-	running = 0;
-	continue;
-      }
-      if (ret > 0) {
-	if (FD_ISSET(s[THUB_NW], &rdfs)) 
-	  checkTOF = true;
-	else if (FD_ISSET(s[MTD_S], &rdfs))
-	  checkMTD = true;
-      }
-    }
-
-    i = THUB_NW;  // THUB NW
-    if (checkTOF) {
-      //int idx;
-      /* these settings may be modified by recvmsg() */
-      iov.iov_len = sizeof(frame);
-      msg.msg_namelen = sizeof(addr);
-      msg.msg_controllen = sizeof(ctrlmsg);  
-      msg.msg_flags = 0;
-      
-      nbytes = recvmsg(s[i], &msg, 0);
-      if (nbytes < 0) {
-	sprintf(logstr, "can%d: read error %d", i, nbytes);
-	log_message(LOG_FILE, logstr);
-	perror("read");
-	running = 0; continue;
-      }
-      
-      if ((size_t)nbytes < sizeof(struct can_frame)) {
+	
+	if ((size_t)nbytes < sizeof(struct can_frame)) {
 #ifdef DEBUG
-	fprintf(stderr, "read: incomplete CAN frame\n");
+	  fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
-		(int)sizeof(struct can_frame));
-	log_message(LOG_FILE, logstr);
-	running = 0; continue;
-      }
-      
-      if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
+	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
+		  (int)sizeof(struct can_frame));
+	  log_message(LOG_FILE, logstr);
+	  running = 0; continue;
+	}
+	
+	if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
 #ifdef DEBUG
-	// idx = idx2dindex(addr.can_ifindex, s[i]);
-	// printf("%*s, i = %d", (int)max_devname_len, devname[idx], i);
-	//fprint_long_canframe(stdout, &frame, NULL, view);
-	printf("can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
-	       frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
-	printf("\n");
+	  // idx = idx2dindex(addr.can_ifindex, s[i]);
+	  // printf("%*s, i = %d", (int)max_devname_len, devname[idx], i);
+	  //fprint_long_canframe(stdout, &frame, NULL, view);
+	  printf("can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
+		 frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
+	  printf("\n");
 #endif
-	sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
-		frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
-	log_message(LOG_FILE, logstr);
-	doRecoveryTOF = doRecovery = true;
+	  sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
+		  frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
+	  log_message(LOG_FILE, logstr);
+	  doRecoveryTOF = doRecovery = true;
+	}
       }
     }
     
-    i = MTD_S;  // THUB MTD
-    if (checkMTD) {
-      iov.iov_len = sizeof(frame);
-      msg.msg_namelen = sizeof(addr);
-      msg.msg_controllen = sizeof(ctrlmsg);  
-      msg.msg_flags = 0;
-      
-      nbytes = recvmsg(s[i], &msg, 0);
-      if (nbytes < 0) {
-	sprintf(logstr, "can%d: read error %d", i, nbytes);
-	log_message(LOG_FILE, logstr);
-	perror("read");
-	running = 0; continue;
-      }
-      
-      if ((size_t)nbytes < sizeof(struct can_frame)) {
+    // Now iterate over MTD THUBs
+    for(vector<int>::iterator it = mtdTHUBs.begin(); it != mtdTHUBs.end(); ++it) {
+      i = *it;
+      if ( FD_ISSET(s[i], &rdfs) ) {
+
+	//int idx;
+	/* these settings may be modified by recvmsg() */
+	iov.iov_len = sizeof(frame);
+	msg.msg_namelen = sizeof(addr);
+	msg.msg_controllen = sizeof(ctrlmsg);  
+	msg.msg_flags = 0;
+	
+	nbytes = recvmsg(s[i], &msg, 0);
+	if (nbytes < 0) {
+	  sprintf(logstr, "can%d: read error %d", i, nbytes);
+	  log_message(LOG_FILE, logstr);
+	  perror("read");
+	  running = 0; continue;
+	}
+	
+	if ((size_t)nbytes < sizeof(struct can_frame)) {
 #ifdef DEBUG
-	fprintf(stderr, "read: incomplete CAN frame\n");
+	  fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes,
-		(int)sizeof(struct can_frame));
-	log_message(LOG_FILE, logstr);
-	running = 0; continue;
-      }
-      
-      if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
+	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
+		  (int)sizeof(struct can_frame));
+	  log_message(LOG_FILE, logstr);
+	  running = 0; continue;
+	}
+	
+	if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
 #ifdef DEBUG
-	printf("can4: 0x%x: 0x%x 0x%x 0x%x 0x%x", frame.can_id,
-	       frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
-	printf("\n");
+	  // idx = idx2dindex(addr.can_ifindex, s[i]);
+	  // printf("%*s, i = %d", (int)max_devname_len, devname[idx], i);
+	  //fprint_long_canframe(stdout, &frame, NULL, view);
+	  printf("can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
+		 frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
+	  printf("\n");
 #endif
-	sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
-		frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
-	log_message(LOG_FILE, logstr);
-	doRecoveryMTD = doRecovery = true;
+	  sprintf(logstr, "can%d: 0x%x: 0x%x 0x%x 0x%x 0x%x", i, frame.can_id,
+		  frame.data[0], frame.data[1], frame.data[2], frame.data[3]);
+	  log_message(LOG_FILE, logstr);
+	  doRecoveryMTD = doRecovery = true;
+	}
       }
     }
+    
 
+    // Now do the actual recovery
     if (doRecovery) {
       log_message(LOG_FILE, "Recovery...");
       // First do all of the THUB resets
@@ -460,7 +491,7 @@ int main(int argc, char **argv)
       }
 	
       // Wait a little to let the THUBs reset first
-      usleep(500000); // 500 ms
+      usleep(700000); // 0.7 sec
 	
       // Now do all the TCPU resets
       if (doRecoveryTOF) {
@@ -497,7 +528,7 @@ int main(int argc, char **argv)
       }
 	
       // Wait a while to let TCPUs reset
-      usleep(500000);
+      usleep(700000); // 0.7 sec
 	
       // Finally do a bunch reset
       if ((nbytes = write(s[VPD_W], &brstframe, sizeof(frame))) != sizeof(frame)) {
