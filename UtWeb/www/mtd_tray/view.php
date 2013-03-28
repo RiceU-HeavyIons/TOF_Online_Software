@@ -342,7 +342,12 @@ if($num_component == 0){
   if($tray->tdig) {
     #$i=5;
     #while (!($tdig=$tray->tdig[$i])) {$i=$i-1;}
-    $tdig = $tray->tdig[0];
+    if($slot->slot) {
+      $tdig = $tray->tdig[$slot->slot-1];
+    }
+    else {
+      $tdig = $tray->tdig[0];
+    }
     echo "<tr class='row$ll'>\n";
     echo " <td></td><td></td>\n";
     echo " <td class='tdig'><a href=\"{$action}?id=",$tdig->id,"\">",$tdig->sn,"</td>\n";
