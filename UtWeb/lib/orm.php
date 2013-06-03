@@ -62,7 +62,8 @@ class Component {
 	function find_one($cond, $ord) {
 		$ar = Component::find_all($cond, $ord, 1);
 		if (sizeof($ar)) {
-		   return $ar[0];
+		  return $ar[min(array_keys($ar))];
+#		   return $ar[0];
 		} else {
 		   return null;
 		}
