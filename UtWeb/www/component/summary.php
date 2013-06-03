@@ -104,5 +104,5 @@ tsw_toolbar('component');
 </table>
 </div><!-- main -->
 <?php
-tws_footer();
+tsw_footer();
 ?>

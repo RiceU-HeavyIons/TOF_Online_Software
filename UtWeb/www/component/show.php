@@ -75,5 +75,5 @@ else{echo "<option>MTRIG</option>";}
  </tr>
 </table>
 
-<?php tws_footer(); ?>
+<?php tsw_footer(); ?>
 <?php mysql_close($con) ?>

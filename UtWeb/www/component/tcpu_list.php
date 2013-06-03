@@ -58,5 +58,5 @@ foreach(Component::find_all("component_type_id=1","cast(serial as signed) desc",
 }
 echo "</table>\n";
 echo "</div><!-- main -->\n";
-tws_footer();
+tsw_footer();
 ?>
