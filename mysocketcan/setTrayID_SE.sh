@@ -48,7 +48,7 @@ usleep 200000
 
 ./cansend can6 402#2614007600
 usleep 200000
-./cansend can6 402#2615007700
+./cansend can6 402#2615007e00
 usleep 200000
 ./cansend can6 402#2616007400
 usleep 200000
@@ -64,7 +64,7 @@ usleep 200000
 ./cansend can6 402#261b003d00
 usleep 200000
 
-./cansend can6 402#261c007c00
+./cansend can6 402#261c007700
 usleep 200000
 ./cansend can6 402#261d007f00
 usleep 200000
