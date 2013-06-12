@@ -122,7 +122,8 @@ class Tsw {
           array('search', "{$this->top}/component/search.php"),
           array('tcpu', "{$this->top}/component/tcpu_list.php"),
           array('tdig', "{$this->top}/component/tdig_list.php"),
-          array('tino', "{$this->top}/component/tino_list.php")
+          array('tino', "{$this->top}/component/tino_list.php"),
+          array('mino', "{$this->top}/component/mino_list.php")
       )),
       array('hvtest', "{$this->top}/hvtest/index.php",
         array(
