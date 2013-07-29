@@ -21,8 +21,8 @@ class Configurator:
         # Create and set the default values
         self.setDefaultVals()
         
-	# Create the Balloon.
-	self.balloon = Pmw.Balloon(parent)
+        # Create the Balloon.
+        self.balloon = Pmw.Balloon(parent)
 
         # Create the "about" dialog
         Pmw.aboutversion(version)
@@ -31,43 +31,43 @@ class Configurator:
         self.about = Pmw.AboutDialog(parent, applicationname = 'HPTDC Configurator')
         self.about.withdraw()
         
-	# Create and pack the MenuBar.
-	menuBar = Pmw.MenuBar(parent,
-		hull_relief = 'raised',
-		hull_borderwidth = 1,
-		balloon = self.balloon)
-	menuBar.pack(fill = 'x')
-	self.menuBar = menuBar
+        # Create and pack the MenuBar.
+        menuBar = Pmw.MenuBar(parent,
+                hull_relief = 'raised',
+                hull_borderwidth = 1,
+                balloon = self.balloon)
+        menuBar.pack(fill = 'x')
+        self.menuBar = menuBar
 
-	# Add some buttons to the MenuBar.
-	menuBar.addmenu('File', 'Close this window or exit')
-	menuBar.addmenuitem('File', 'command', 'Load values from config file',
-		#command = PrintOne('Action: load config'),
-		command = self.readFile,
-		label = 'Load Config')
-	menuBar.addmenuitem('File', 'command', 'Load values from include file',
-		#command = PrintOne('Action: load inc'),
-		command = self.readIncFile,
-		label = 'Load Inc')
-	menuBar.addmenuitem('File', 'command', 'Write to Configuration File',
-		#command = PrintOne('Action: go button pressed'),
-		command = self.writeFile,
-		label = 'Write Config File')
-	menuBar.addmenuitem('File', 'command', 'Write to Include File',
-		#command = PrintOne('Action: go button pressed'),
-		command = self.writeInclude,
-		label = 'Write Include File')
-	#menuBar.addmenuitem('File', 'command', 'Test this window',
-	#	command = self.print_testSelect,
-	#	label = 'Test')
-	menuBar.addmenuitem('File', 'separator')
-	menuBar.addmenuitem('File', 'command', 'Exit the application',
+        # Add some buttons to the MenuBar.
+        menuBar.addmenu('File', 'Close this window or exit')
+        menuBar.addmenuitem('File', 'command', 'Load values from config file',
+                #command = PrintOne('Action: load config'),
+                command = self.readFile,
+                label = 'Load Config')
+        menuBar.addmenuitem('File', 'command', 'Load values from include file',
+                #command = PrintOne('Action: load inc'),
+                command = self.readIncFile,
+                label = 'Load Inc')
+        menuBar.addmenuitem('File', 'command', 'Write to Configuration File',
+                #command = PrintOne('Action: go button pressed'),
+                command = self.writeFile,
+                label = 'Write Config File')
+        menuBar.addmenuitem('File', 'command', 'Write to Include File',
+                #command = PrintOne('Action: go button pressed'),
+                command = self.writeInclude,
+                label = 'Write Include File')
+        #menuBar.addmenuitem('File', 'command', 'Test this window',
+        #       command = self.print_testSelect,
+        #       label = 'Test')
+        menuBar.addmenuitem('File', 'separator')
+        menuBar.addmenuitem('File', 'command', 'Exit the application',
                             command = parent.destroy,
                             label = 'Exit')
 
 
-	menuBar.addmenu('Help', 'User manuals', side = 'right')
-	menuBar.addmenuitem('Help', 'command', 'About this application',
+        menuBar.addmenu('Help', 'User manuals', side = 'right')
+        menuBar.addmenuitem('Help', 'command', 'About this application',
                             command = self.aboutShow,
 ##                            command = PrintOne('Action: about'),
                             label = 'About...')
@@ -968,7 +968,7 @@ class Configurator:
 
         ##### Trigger Matching Features
         self.maxEventSizeOptions = [
-            	"0", "1", "2", "4", "8", "16", "32", "64", "128",
+                "0", "1", "2", "4", "8", "16", "32", "64", "128",
                 "no limit"]
         self.maxEventSizeNum = StringVar()
         self.maxEventSizeNum.set(self.maxEventSizeOptions[9])
