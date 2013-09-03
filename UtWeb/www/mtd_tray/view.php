@@ -353,7 +353,7 @@ if($num_component == 0){
     echo " <td class='tdig'><a href=\"{$action}?id=",$tdig->id,"\">",$tdig->sn,"</td>\n";
     echo "</tr>\n";
   } else {
-    echo "<tr class='row$ll'><td></td><td class='tdig'>Nothing here </td></tr>\n";
+    echo "<tr class='row$ll'><td></td><td></td><td class='tdig'>Nothing here </td></tr>\n";
   }
 
   $l=$l+1;
