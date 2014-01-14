@@ -44,7 +44,7 @@ insert into tcpus values ( 20, 1, 52, 231, 301, 1, 'B0',  1,  9,  1,  1,  1);
 insert into tcpus values ( 21, 1, 53, 248, 317, 1, 'B1',  1, 10,  1,  1,  1);
 insert into tcpus values ( 22, 1, 54, 181, 250, 1, 'B2',  1, 11,  1,  1,  1);
 insert into tcpus values ( 23, 1, 55,   0,   0, 1, 'B3', -1,  0,  1,  1,  0);
-insert into tcpus values ( 24, 1, 56, 229, 298, 1, 'C0', -1,  0,  1,  1,  0);
+insert into tcpus values ( 24, 1, 56, 229, 298, 1, 'C0', -1,  0,  1,  1,  1);
 insert into tcpus values ( 25, 1, 57, 156, 218, 1, 'C1',  0,  0,  1,  1,  1);
 insert into tcpus values ( 26, 1, 58, 140, 211, 1, 'C2',  0,  1,  1,  1,  1);
 insert into tcpus values ( 27, 1, 59, 135, 206, 1, 'C3',  0,  2,  1,  1,  1);
