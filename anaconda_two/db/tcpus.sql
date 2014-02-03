@@ -54,7 +54,7 @@ insert into tcpus values ( 31, 1, 43,  11,   8,  1, 'C2',  9,  6,  3,  7,  1);
 insert into tcpus values ( 32, 1, 44,  24,  20,  1, 'C3',  9,  7,  3,  8,  1);
 insert into tcpus values ( 33, 1, 45,  35,  31,  1, 'D0',  9,  8,  3,  9,  1);
 insert into tcpus values ( 34, 1, 46,  31,  27,  1, 'D1',  9,  9,  3, 10,  1);
-insert into tcpus values ( 35, 1, 47,  15,  12,  1, 'D2',  9, 10,  3, 11,  1);
+insert into tcpus values ( 35, 1, 47,  15,  12,  1, 'D2',  9, 10,  3, 11,  0);
 insert into tcpus values ( 36, 1, 48,  12,   9,  1, 'D3',  9, 11,  3, 12,  1);
 insert into tcpus values ( 37, 1, 49,  13,  10,  1, 'E0',  0,  0,  4,  1,  1);
 insert into tcpus values ( 38, 1, 50,   6,  29,  1, 'E1',  0,  1,  4,  2,  1);
@@ -127,8 +127,8 @@ insert into tcpus values ( 98, 4, 35, 118, 114,  4, 'A2',  5,  1,  9,  2,  1);
 insert into tcpus values ( 99, 4, 36, 126, 123,  4, 'A3',  5,  2,  9,  3,  1);
 insert into tcpus values (100, 4, 37,  94,  90,  4, 'B0',  5,  3,  9,  4,  1);
 insert into tcpus values (101, 4, 38,  97,  93,  4, 'B1',  5,  4,  9,  5,  1);
-insert into tcpus values (102, 4, 39,  69,  65,  4, 'B2',  5,  5,  9,  6,  1);
-insert into tcpus values (103, 4, 40,  55,  51,  4, 'B3',  5,  6,  9,  7,  1);
+insert into tcpus values (102, 4, 39,  69,  65,  4, 'B2',  5,  5,  9,  6,  0);
+insert into tcpus values (103, 4, 40,  55,  51,  4, 'B3',  5,  6,  9,  7,  0);
 insert into tcpus values (104, 4, 41,  77,  73,  4, 'C2',  5,  7,  9,  8,  1);
 insert into tcpus values (105, 4, 42,  80,  76,  4, 'C1',  5,  8,  9,  9,  1);
 insert into tcpus values (106, 4, 43, 116, 112,  4, 'C0',  5,  9,  9, 10,  1);
@@ -149,12 +149,8 @@ insert into tcpus values (119, 4, 56, 100,  96,  4, 'F3', 11, 10, 10, 11,  1);
 insert into tcpus values (120, 4, 57, 107, 103,  4, 'G0', 11, 11, 10, 12,  1);
 
 -- upVPD WEST
-insert into tcpus values (121, 5, 32,   0,  'W', 1, 'H2', 1,  9,  0,  0,  0);
+insert into tcpus values (121, 5, 32,   0,  'W', 1, 'H2', 1,  9,  0,  0,  1);
 -- upVPD EAST
-insert into tcpus values (122, 6, 32,   0,  'E', 2, 'H2', 1,  8,  0,  0,  0);
+insert into tcpus values (122, 6, 32,   0,  'E', 2, 'H2', 1,  8,  0,  0,  1);
 
--- MTD
--- insert into tcpus values (123, 7, 58,  26,  26, 5, 'A0',  1,  6,  0,  0,  0);
--- insert into tcpus values (124, 7, 59,  27,  27, 5, 'A1',  1, 10,  0,  0,  0);
--- insert into tcpus values (125, 7, 60,  28,  28, 5, 'A2',  1,  5,  0,  0,  0);
 commit transaction;
