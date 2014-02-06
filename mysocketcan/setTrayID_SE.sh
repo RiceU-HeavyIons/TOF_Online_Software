@@ -10,7 +10,7 @@ usleep 200000
 ./cansend can6 402#2603006100
 usleep 200000
 
-./cansend can6 402#2604006b00
+./cansend can6 402#2604006600
 usleep 200000
 ./cansend can6 402#2605006700
 usleep 200000
@@ -19,11 +19,11 @@ usleep 200000
 ./cansend can6 402#2607006500
 usleep 200000
 
-./cansend can6 402#2608006a00
+./cansend can6 402#2608006800
 usleep 200000
-./cansend can6 402#2609006600
+./cansend can6 402#2609006b00
 usleep 200000
-./cansend can6 402#260a006800
+./cansend can6 402#260a006a00
 usleep 200000
 ./cansend can6 402#260b006900
 usleep 200000
@@ -48,7 +48,7 @@ usleep 200000
 
 ./cansend can6 402#2614007600
 usleep 200000
-./cansend can6 402#2615007e00
+./cansend can6 402#2615007700
 usleep 200000
 ./cansend can6 402#2616007400
 usleep 200000
@@ -64,12 +64,31 @@ usleep 200000
 ./cansend can6 402#261b003d00
 usleep 200000
 
-./cansend can6 402#261c007700
+./cansend can6 402#261c007e00
 usleep 200000
 ./cansend can6 402#261d007f00
 usleep 200000
 ./cansend can6 402#261e004000
 usleep 200000
 ./cansend can6 402#261f004100
+usleep 200000
+
+./cansend can6 402#2620001f00
+usleep 200000
+./cansend can6 402#2621001300
+usleep 200000
+./cansend can6 402#2622001f00
+usleep 200000
+./cansend can6 402#2623001f00
+usleep 200000
+
+./cansend can6 402#2624001f00
+usleep 200000
+./cansend can6 402#2625001f00
+usleep 200000
+./cansend can6 402#2626001f00
+usleep 200000
+./cansend can6 402#2627001300
+usleep 200000
 
 exit
