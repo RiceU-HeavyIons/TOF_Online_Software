@@ -40,29 +40,36 @@ CONFIG(epics) {
 DESTDIR = ../
 
 # Input
-HEADERS += \
-           KLevel1Model.h \
-           KLevel2View.h \
-           KLevel3View.h \
-           KMainWindow.h KProgressIndicator.h KSimpleWindow.h \
-           KTcpuView.h \
-           KTdigModel.h \
-           KTdigView.h \
-           KThubView.h \
-           KSerdesModel.h KSerdesView.h \
-           KConsole.h \
-           ../src/version.h
+HEADERS += ../src/version.h
+SOURCES += main.cpp
 
-SOURCES += main.cpp \
-           KLevel1Model.cpp \
-           KLevel2View.cpp \
-           KLevel3View.cpp \
-           KMainWindow.cpp KProgressIndicator.cpp KSimpleWindow.cpp \
-           KTcpuView.cpp \
-           KTdigModel.cpp \
-           KTdigView.cpp \
-           KThubView.cpp \
-           KSerdesModel.cpp KSerdesView.cpp \
-           KConsole.cpp
+CONFIG(gui) {
+	message("gui defined")
+ 	DEFINES += WITH_GUI
+        
+        HEADERS += \
+        KLevel1Model.h \
+        KLevel2View.h \
+        KLevel3View.h \
+        KMainWindow.h KProgressIndicator.h KSimpleWindow.h \
+        KTcpuView.h \
+        KTdigModel.h \
+        KTdigView.h \
+        KThubView.h \
+        KSerdesModel.h KSerdesView.h \
+        KConsole.h
 
-RESOURCES += toolbar.qrc
+        SOURCES += \
+        KLevel1Model.cpp \
+        KLevel2View.cpp \
+        KLevel3View.cpp \
+        KMainWindow.cpp KProgressIndicator.cpp KSimpleWindow.cpp \
+        KTcpuView.cpp \
+        KTdigModel.cpp \
+        KTdigView.cpp \
+        KThubView.cpp \
+        KSerdesModel.cpp KSerdesView.cpp \
+        KConsole.cpp
+
+        RESOURCES += toolbar.qrc
+}

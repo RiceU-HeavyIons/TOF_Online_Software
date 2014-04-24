@@ -28,8 +28,14 @@ int main(int argc, char **argv)
 
 	qRegisterMetaType<AnRdMsg>("AnRdMsg");
 
+#ifdef WITH_GUI
 	KMainWindow kmw;
-//	kmw.show();
+	//kmw.show();
+#else
+	AnRoot *m_root = new AnRoot(0);
+	m_root->startAutoSync();
+	m_root->setMode(3);
+#endif
 
 	return app.exec();
 }
