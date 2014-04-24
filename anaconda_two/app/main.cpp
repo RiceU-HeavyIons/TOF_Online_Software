@@ -22,8 +22,6 @@ int main(int argc, char **argv)
 	// i don't know whey i need to do this though...
 	app.setApplicationName(QFileInfo(app.applicationFilePath()).baseName());
 	app.setApplicationVersion(SVN_VERSION);
-	//app.setApplicationVersion("2.0.0");
-
 //	app.setFont(QFont("Lucida Grande", 9));
 
 	qRegisterMetaType<AnRdMsg>("AnRdMsg");
@@ -31,11 +29,15 @@ int main(int argc, char **argv)
 #ifdef WITH_GUI
 	KMainWindow kmw;
 	//kmw.show();
+	return app.exec();
 #else
 	AnRoot *m_root = new AnRoot(0);
-	m_root->startAutoSync();
+	sleep(1);
 	m_root->setMode(3);
+	sleep(1);
+	m_root->startAutoSync();
+	int ret = app.exec();
+	delete m_root;
+	return ret;
 #endif
-
-	return app.exec();
 }
