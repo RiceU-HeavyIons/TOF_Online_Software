@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
   
   if (argc == 2) {
     devID = strtol(argv[1], (char **)NULL, 0);
-    if ((devID < 0) || (devID > 7)) {
-      cerr << "devID = " << devID << " invalid entry. Use 0..7 instead." << endl;
+    if ((devID < 0) || (devID > 10)) {
+      cerr << "devID = " << devID << " invalid entry. Use 0..10 instead." << endl;
       return -1;
     }
   }
