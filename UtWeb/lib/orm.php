@@ -51,10 +51,11 @@ class Component {
 		$q = mysql_query( $stm );
 		$ar = array();
 		while($r = mysql_fetch_object($q)) {
-		  if ($r->slot)
-		    $ar[$r->slot-1] = new Component($r->id);
-		  else
-		    array_push($ar, new Component($r->id));
+		  #if ($r->slot)
+		  #  $ar[$r->slot-1] = new Component($r->id);
+		  #else
+		  #  array_push($ar, new Component($r->id));
+		  array_push($ar, new Component($r->id));
 		}
 		return($ar);
 	}
