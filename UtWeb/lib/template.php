@@ -93,6 +93,7 @@ class Tsw {
       array('xoop', "{$this->top}", null), 
       array('tray', "{$this->top}/tray/index.php",
         array(
+	  array('tdig list', "{$this->top}/tray/tdig_list.php"),
           array('status', "{$this->top}/tray/status.php"),
           array('status_in_xls', "{$this->top}/tray/status_in_xls.php"),
           array('storage', "{$this->top}/tray/storage.php"),
