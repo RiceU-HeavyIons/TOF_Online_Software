@@ -40,7 +40,8 @@ $off = $lim*($page - 1);
 if($tot > $lim) { list_pagenate($page, $tot, $lim, ""); }
 
 $ln = 0;
-foreach(Component::find_all("","id desc", "$off, $lim", "") as $c) {
+#foreach(Component::find_all("","id desc", "$off, $lim", "") as $c) {
+foreach(Component::find_all("","id DESC", "$off, $lim") as $c) {
   $ll = $ln % 2;
   $try = new Tray($c->tray_id);
   echo " <tr class='row$ll'>\n";
