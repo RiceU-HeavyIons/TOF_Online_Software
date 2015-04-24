@@ -629,33 +629,6 @@ QStringList AnRoot::deviceNames() const
 //==============================================================================
 // Public Slots
 
-/**
- * Stop AutoSync
- */
-void AnRoot::stopAutoSync()
-{
-  if (m_timer->isActive()) m_timer->stop();
-}
-
-/**
- * AutoSync main function
- */
-void AnRoot::autosync()
-{
-  if (!isRunning()) {
-    disableWatch();
-    (*m_autoSyncIter)->sync(2);
-    AnTcpu *tcpu = dynamic_cast<AnTcpu*>(*m_autoSyncIter);
-    if (tcpu) {
-      if (tcpu->status() >= AnBoard::STATUS_ERROR) log(tcpu->errorDump());
-    }
-    enableWatch();
-    emit updated(*m_autoSyncIter);
-    ++m_autoSyncIter;
-    if (m_autoSyncIter == m_autoSyncList.constEnd())
-      m_autoSyncIter = m_autoSyncList.constBegin();
-  }
-}
 
 /**
  * Enable all socket watches
@@ -849,7 +822,35 @@ void AnRoot::initAutoSync() {
  */
 void AnRoot::startAutoSync()
 {
-  if (!m_timer->isActive()) m_timer->start();
+  m_timer->start();
+}
+
+/**
+ * Stop AutoSync
+ */
+void AnRoot::stopAutoSync()
+{
+  m_timer->stop();
+}
+
+/**
+ * AutoSync main function
+ */
+void AnRoot::autosync()
+{
+  if (!isRunning()) {
+    disableWatch();
+    (*m_autoSyncIter)->sync(2);
+    AnTcpu *tcpu = dynamic_cast<AnTcpu*>(*m_autoSyncIter);
+    if (tcpu) {
+      if (tcpu->status() >= AnBoard::STATUS_ERROR) log(tcpu->errorDump());
+    }
+    enableWatch();
+    emit updated(*m_autoSyncIter);
+    ++m_autoSyncIter;
+    if (m_autoSyncIter == m_autoSyncList.constEnd())
+      m_autoSyncIter = m_autoSyncList.constBegin();
+  }
 }
 
 void AnRoot::log(QString str)
