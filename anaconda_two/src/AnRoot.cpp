@@ -809,7 +809,9 @@ void AnRoot::readTdcConfig()
  * Initialize AutoSync
  */
 void AnRoot::initAutoSync() {
+  qDebug("AnRoot::initAutoSync");
   m_timer = new QTimer(this);
+  //m_timer = new QTimer(0);
   m_autoSyncList = list();
   m_autoSyncIter = m_autoSyncList.constBegin();
   connect(m_timer, SIGNAL(timeout()), this, SLOT(autosync()));
@@ -822,6 +824,7 @@ void AnRoot::initAutoSync() {
  */
 void AnRoot::startAutoSync()
 {
+  qDebug("AnRoot::startAutoSync");
   m_timer->start();
 }
 
@@ -830,6 +833,7 @@ void AnRoot::startAutoSync()
  */
 void AnRoot::stopAutoSync()
 {
+  qDebug("AnRoot::stopAutoSync");
   m_timer->stop();
 }
 
@@ -838,7 +842,13 @@ void AnRoot::stopAutoSync()
  */
 void AnRoot::autosync()
 {
-  if (!isRunning()) {
+  AnCanObject *ab = dynamic_cast<AnCanObject*>(*m_autoSyncIter);
+  qDebug() << "AnRoot::autoSync;"
+	   << "isRunning" << isRunning()
+	   << "isDoingRecovery" << isDoingRecovery()
+	   << "lAddress" << ab->lAddress().toString();
+
+  if ((!isRunning()) && (!isDoingRecovery())) {
     disableWatch();
     (*m_autoSyncIter)->sync(2);
     AnTcpu *tcpu = dynamic_cast<AnTcpu*>(*m_autoSyncIter);

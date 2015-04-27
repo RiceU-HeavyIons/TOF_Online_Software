@@ -233,15 +233,12 @@ void AnMaster::p_setMode(int mode)
       usleep(val);
     }
     else if (ct == "AUTOSYNC") {
+      // turn on and off the auto sync action
       if (val == 1) {
-	//JS temporarily, to allow recovery actions again
 	m_root->doingRecovery(false);
-	m_root->startAutoSync();
-	m_root->emit_autoSyncChecked(true);
       }
       else {
-	m_root->emit_autoSyncChecked(false);
-	m_root->stopAutoSync();
+	m_root->doingRecovery(true);
       }
     }
 
