@@ -111,7 +111,9 @@ insert into configs values (null,   1, 31,  42,   2, 255, 255, 255,     13);
 insert into configs values (null,   1, 32,  42,   2, 255,   1,   1,     14);
 insert into configs values (null,   1, 33,  42,   2, 255,   5,   1,     14);
 
--- Disable TDIG 3 and 6 for MTDs 12, 13, 14, 15, 16, 17, 18, 19, 20
+-- Disable TDIG 3 and 6 for MTDs 9, 12, 13, 14, 15, 16, 17, 18, 19, 20
+insert into configs values (null,   1, 78,  31,   2,  9,   3,   0,      0);
+insert into configs values (null,   1, 79,  31,   2,  9,   6,   0,      0);
 insert into configs values (null,   1, 80,  31,   2, 12,   3,   0,      0);
 insert into configs values (null,   1, 81,  31,   2, 12,   6,   0,      0);
 insert into configs values (null,   1, 82,  31,   2, 13,   3,   0,      0);
