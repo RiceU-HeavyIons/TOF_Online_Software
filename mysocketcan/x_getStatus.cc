@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id$";
+"$Id: x_getStatus.cc 787 2012-11-05 21:38:11Z jschamba $";
 #endif /* lint */
 
 //****************************************************************************
@@ -20,6 +20,7 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <net/if.h>
 #include <linux/can.h>
