@@ -1,0 +1,68 @@
+THUB SE: with serdes A firmware "serdes_fpga_15deg.rpd":
+
+$Id: getTHUBFWIDs.cc 756 2012-07-05 20:44:12Z jschamba $
+FPGA 0: Firmware User ID = 0x5b81ce
+FPGA 1: Firmware User ID = 0x415cd9
+FPGA 2: Firmware User ID = 0x419796
+FPGA 3: Firmware User ID = 0x419796
+FPGA 4: Firmware User ID = 0x419796
+FPGA 5: Firmware User ID = 0x419796
+FPGA 6: Firmware User ID = 0x419796
+FPGA 7: Firmware User ID = 0x419796
+FPGA 8: Firmware User ID = 0x419796
+
+MCU Firmware ID = 0x10f
+
+THUB NW with serdes firmware serdes_fpga_BNL20130320.rpd:
+
+$Id: getTHUBFWIDs.cc 756 2012-07-05 20:44:12Z jschamba $
+FPGA 0: Firmware User ID = 0x5b81ce
+FPGA 1: Firmware User ID = 0x419796
+FPGA 2: Firmware User ID = 0x419796
+FPGA 3: Firmware User ID = 0x419796
+FPGA 4: Firmware User ID = 0x419796
+FPGA 5: Firmware User ID = 0x419796
+FPGA 6: Firmware User ID = 0x419796
+FPGA 7: Firmware User ID = 0x419796
+FPGA 8: Firmware User ID = 0x419796
+
+MCU Firmware ID = 0x10f
+
+TOF trays:
+$Id: getFWIDs.cc 756 2012-07-05 20:44:12Z jschamba $
+TDIG 0x10: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x11: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x12: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x13: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x14: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x15: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x16: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+TDIG 0x17: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0x79
+
+TCPU 0x21: MCU Firmware ID = 0x257 ("2W"); FPGA Firmware ID = 0x8f
+
+MTD trays:
+$Id: getFWIDs.cc 756 2012-07-05 20:44:12Z jschamba $
+TDIG 0x10: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x11: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x12: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x13: did not respond
+TDIG 0x14: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x15: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x16: did not respond
+TDIG 0x17: did not respond
+
+TCPU 0x21: MCU Firmware ID = 0x257 ("2W"); FPGA Firmware ID = 0x8f
+ 
+TOF GEM tray:
+$Id: getFWIDs.cc 756 2012-07-05 20:44:12Z jschamba $
+TDIG 0x10: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x11: did not respond
+TDIG 0x12: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x13: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x14: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x15: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x16: MCU Firmware ID = 0x1242 ("12B"); FPGA Firmware ID = 0xa9
+TDIG 0x17: did not respond
+
+TCPU 0x23: MCU Firmware ID = 0x257 ("2W"); FPGA Firmware ID = 0x8f

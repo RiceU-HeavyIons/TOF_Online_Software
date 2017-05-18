@@ -1,0 +1,543 @@
+cd ../../
+ls
+cd ..
+ls
+cd Tools/
+ls
+exit
+cd tof/mysocketcan/
+ls
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+./candump any
+svn status
+status resetTray.sh
+svn status resetTray.sh
+svn add resetTray.sh
+svn commit
+export EDITOR=vi
+svn commit
+vi resetTray.sh
+./candump any
+./candump any
+exit
+cd tof/mysocketcan/
+./getFWIDs 0x21 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./getFWIDs 0x21 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+ls
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./getFWIDs 0x21 0
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./getFWIDs 0x21 0
+./getFWIDs 0x21 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./getFWIDs 0x21 0
+./getFWIDs 0x21 0
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./getFWIDs 0x21 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0200
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0200
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0200
+./cansend can0 212#0e0201
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_enableChannel 
+./x_enableChannel 0 0x10 0x21 3
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./getFWIDs 0x21 0
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./getFWIDs 0x21 0
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./resetTray.sh 21 can0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+vi resetTray.sh
+./getFWIDs 0x21 0
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_enableChannel 0 0x10 0x21 3
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_eeprom2 0x10 0x21 fpga/TDIG_UT20090507b.rbf 0
+./x_config_pm 0 0x10 0x21 hptdc/submarine20100527.txt 0
+./x_config_pm 1 0x10 0x21 hptdc/submarine20100527a.txt 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_enableChannel 0 0x
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+./x_enableChannel 0 0x10 0x21 3
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+ls fpga/
+./eeprom2 
+./eeprom2 0x20 fpga/TCPU_C_BNL20090408.rbf 0
+./resetTray.sh 21 can0
+./getFWIDs 0x21 0
+./cansend can0 212#0e0e00
+./cansend can0 212#0e0e08
+./cansend can0 212#0e0e00
+exit
+ls
+cd tof
+ls
+cd ..
+tar ztvf pegasus.tgz 
+cd tof
+ls -l
+ls
+tar zxf anaconda_two_socketcan.tgz 
+ls
+rm anaconda_two_socketcan.tgz 
+/bin/rm -rf anaconda_two
+mv anaconda_two_socketcan anaconda_two
+ls -l
+cd anaconda_two/
+ls
+cd anaconda_two.pro 
+pwd
+svn status
+cd db/
+ls
+vi devices.sql 
+vi devices
+vi devices.sql 
+cd ..
+svn status
+svn diff env.sh
+svn commit env.sh
+export EDITOR=vi
+svn commit env.sh
+svn status
+svn diff anaconda_two.pro 
+svn status
+cd app/
+svn diff app.pro 
+cd ..
+ls
+svn status
+svn diff anaconda_two.pro 
+cd src/
+svn diff src.pro 
+cd ..
+svn status
+cd src/
+svn add can_utils.cpp
+cd ..
+svn commit
+svn status
+make special
+more Makefile 
+cd app
+ls
+more Makefile 
+cd ../src/
+more Makefile 
+make extra
+more version.h 
+cd ..
+svn update
+cd src/
+make extra
+cd ..
+make
+cd db
+make
+cd ../
+./AnacondaII 
+more db/devices.sql 
+cd db
+make
+cd ..
+pwd
+cd ..
+ls
+cd anaconda_two/
+ls
+svn status
+cd src/
+grep "is not found" *
+vi AnAgent.cpp 
+cd ..
+./AnacondaII 
+vi src/AnAgent.cpp 
+make
+./AnacondaII 
+vi src/AnAgent.cpp 
+make
+./AnacondaII 
+./AnacondaII 
+ls src/
+vi src/can_utils.cpp
+make
+./AnacondaII 
+vi db/devices.sql 
+telnet tofunps
+exit
+cd tof/mysocketcan/
+./candump any
+./candump any
+./candump any
+./candump any
+cd tof/mysocketcan/
+./getTHUBFWIDs 0
+ls
+ls fpga/
+ls ~/lone
+ls ~/lone/tof/pcan/fpga/
+cd fpga
+cp ~/lone/tof/pcan/fpga/master_fpga_BNL20120530.rpd .
+ls
+cd ..
+./progPLD 
+./progPLD fpga/master_fpga_BNL20120530.rpd 10
+more progPLD.cc 
+./progPLD fpga/master_fpga_BNL20120530.rpd 0
+./progPLD fpga/master_fpga_BNL20120530.rpd 0 0x40 0
+./getTHUBFWIDs 0
+ls
+more resetTray.sh
+./resetTray.sh 20 0
+./resetTray.sh 20 can0
+./getFWIDs 0x20 0
+more resetTray.sh
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9100
+./cansend can0 202#0e0201
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./getFWIDs 0x20 0
+./resetTray.sh 20 0
+./resetTray.sh 20 can0
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./x_config_pm 
+./x_config_pm 1 0x14 0x20 hptdc/submarine20100527a.txt 
+./resetTray.sh 20 can0
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./x_config_pm 0 0x10 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x11 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x12 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x13 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x14 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x15 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x16 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 0 0x17 0x20 hptdc/submarine20100527.txt 
+./x_config_pm 1 0x10 0x20 hptdc/submarine20100527a.txt 
+./x_config_pm 1 0x14 0x20 hptdc/submarine20100527a.txt 
+./resetTray.sh 20 can0
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./x_enableChannel 
+./x_enableChannel 0 0x17 0x20  3
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./resetTray.sh 20 can0
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+ls
+ls *.sh
+more resetTray.sh
+./cansend can0 402#9901
+vi resetTray.sh
+./resetTray.sh 20 can0
+./cansend can0 402#911f
+./cansend can0 202#0e020f
+./cansend can0 404#91
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9901
+vi resetTray.sh
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9100
+./cansend can0 402#911f
+./cansend can0 404#91
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#911f
+./cansend can0 404#91
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 402#920
+./cansend can0 402#9200
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 202#0e0200
+./cansend can0 202#0e020f
+./cansend can0 404#92
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#921f
+./cansend can0 404#92
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 404#93
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e020f
+./cansend can0 402#931f
+./cansend can0 404#93
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 402#941f
+./cansend can0 202#0e020f
+./cansend can0 404#94
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 402#941f
+./cansend can0 202#0e020f
+./cansend can0 404#94
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 402#941f
+ ./cansend can0 202#0e020f
+./cansend can0 404#94
+./cansend can0 402#9901
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 402#941f
+./cansend can0 202#0e020f
+./cansend can0 404#94
+./cansend can0 402#9901
+cd tof/mysocketcan/
+./candump any
+exit
+cd tof/mysocketcan/
+./resetTray.sh
+./resetTray.sh 20 can0
+./getFWIDs 0x20 0
+./x_config_pm 
+./x_config_pm 1 0x11 0x20 hptdc/submarine20100527a.txt 0
+./resetTray.sh 20 can0
+./x_enableChannel 0 0x13 0x20  3
+./cansend can0 202#0e0e00
+./cansend can0 202#0e0e08
+./cansend can0 202#0e0e00
+exit
+
+get board serial number
+./cansend can0 04100021#b2
+or
+./cansend can0 05100021#b2
+
+output from candump:
+
+  can0  212  [3] 0E 02 01
+  can0  213  [2] 0E 00
+  can0  212  [3] 0E 0E 00
+  can0  213  [2] 0E 00
+  can0  212  [3] 0E 0E 08
+  can0  213  [2] 0E 00
+  can0  211  [8] 01 00 00 C0 4B 0F 00 20
+  can0  211  [8] 01 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 0D 00 20 01 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 1F 00 20
+  can0  211  [8] 02 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 1D 00 20 02 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 2F 00 20
+  can0  211  [8] 03 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 2D 00 20 03 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 3F 00 20
+  can0  211  [8] 04 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 3D 00 20 04 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 4F 00 20
+  can0  211  [8] 05 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 4D 00 20 05 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 5F 00 20
+  can0  211  [8] 06 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 5D 00 20 06 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 6F 00 20
+  can0  211  [8] 07 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 6D 00 20 07 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 7F 00 20
+  can0  211  [8] 08 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 7D 00 20 08 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 8F 00 20
+  can0  211  [8] 09 01 00 E1 00 00 00 C0
+  can0  211  [8] E8 8D 00 20 09 01 00 E0
+  can0  211  [8] 01 00 00 C0 4B 9F 00 20
+  can0  211  [8] 0A 01 00 E1 00 00 00 C0
