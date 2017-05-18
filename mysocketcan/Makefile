@@ -1,5 +1,5 @@
 #
-#  $Id$
+#  $Id: Makefile 812 2013-01-07 23:57:29Z jschamba $
 #
 
 DESTDIR =
@@ -149,3 +149,5 @@ x_setThreshold:	x_setThreshold.o can_utils.o
 loadExeScript:	loadExeScript.o can_utils.o
 	$(CXX) -Wall $^ -o $@
 
+x_oldconfig:	x_oldconfig.o can_utils.o
+	$(CXX) -Wall $^ -o $@

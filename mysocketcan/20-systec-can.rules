@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 20-systec-can.rules 782 2012-10-10 19:54:11Z jschamba $
 # rules for systec CAN interface to assign sane device numbers
 
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \

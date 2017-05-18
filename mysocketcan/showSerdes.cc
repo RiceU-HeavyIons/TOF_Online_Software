@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id$";
+"$Id: showSerdes.cc 767 2012-07-20 13:52:20Z jschamba $";
 #endif /* lint */
 
 //****************************************************************************
@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
   
   if (argc == 2) {
     devID = strtol(argv[1], (char **)NULL, 0);
-    if ((devID < 0) || (devID > 10)) {
-      cerr << "devID = " << devID << " invalid entry. Use 0..10 instead." << endl;
+    if ((devID < 0) || (devID > 7)) {
+      cerr << "devID = " << devID << " invalid entry. Use 0..7 instead." << endl;
       return -1;
     }
   }

@@ -5,7 +5,7 @@
  *               : 
  */
 
-static char vcid[] = "$Id$";
+static char vcid[] = "$Id: x_readHPTDCconfig.cc 756 2012-07-05 20:44:12Z jschamba $";
 static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 
 //****************************************************************************

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$
+# $Id: testpatternOff.sh 809 2013-01-07 23:53:36Z jschamba $
 
 # NW:
 ./cansend can1 7f2\#0e0900

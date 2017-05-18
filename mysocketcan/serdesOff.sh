@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$
+# $Id: serdesOff.sh 797 2012-11-26 16:04:07Z jschamba $
 
 if [ "x$1" = "x" ]; then
     echo $"Usage: $0 <canX>"

@@ -1,5 +1,5 @@
 #ifndef lint
-static char vcid[] = "$Id$";
+static char vcid[] = "$Id: recoveryd.cc 874 2013-03-18 20:45:38Z jschamba $";
 static const char __attribute__ ((used )) *Get_vcid(){return vcid;}
 #endif /* lint */
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$
+# $Id: setTrayID_SW.sh 810 2013-01-07 23:54:57Z jschamba $
 
 ./cansend can3 402#2600003500
 usleep 200000

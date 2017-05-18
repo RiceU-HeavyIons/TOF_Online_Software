@@ -1,5 +1,5 @@
 /*
- *  $Id$
+ *  $Id: terminal.h 755 2012-07-05 14:21:42Z jschamba $
  */
 
 /*

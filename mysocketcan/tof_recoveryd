@@ -18,7 +18,7 @@
 #	configures those boards into running conditions.
 ### END INIT INFO
 
-# $Id$
+# $Id: tof_recoveryd 820 2013-01-15 20:46:12Z jschamba $
 #
 PIDFILE=/tmp/recoveryd.pid
 RETVAL=0

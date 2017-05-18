@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: can_utils.h 755 2012-07-05 14:21:42Z jschamba $ */
 #ifndef __CAN_UTILS_H__
 #define __CAN_UTILS_H__
 
