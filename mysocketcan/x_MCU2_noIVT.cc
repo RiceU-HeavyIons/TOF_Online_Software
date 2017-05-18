@@ -7,7 +7,7 @@
 
 #ifndef lint
 static char  __attribute__ ((unused)) vcid[] = 
-"$Id$";
+"$Id: x_MCU2_noIVT.cc 769 2012-07-20 18:45:38Z jschamba $";
 #endif /* lint */
 
 /* 
@@ -563,7 +563,6 @@ int main(int argc, char *argv[])
 {
   unsigned int tdigNodeID, tcpuNodeID;
   int devID = 0;
-  int retVal;
 
 
   cout << vcid << endl;
@@ -628,9 +627,9 @@ int main(int argc, char *argv[])
   if (tcpuNodeID != 0xff)
     if (tdigNodeID == 0xff)
       for (unsigned int i=0x10; i<0x18; i++)
-	retVal = change_mcu_program(argv[3], i, tcpuNodeID, devID);
+	change_mcu_program(argv[3], i, tcpuNodeID, devID);
     else
-      retVal = change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
+      change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
   else {
     // for nodeID = 0xff, do all TCPUs serially
     vector<unsigned int> tcpuIDs;
@@ -642,9 +641,9 @@ int main(int argc, char *argv[])
       for (it=tcpuIDs.begin(); it<tcpuIDs.end(); it++)
 	if (tdigNodeID == 0xff)
 	  for (unsigned int i=0x10; i<0x18; i++)
-	    retVal = change_mcu_program(argv[3], i, tcpuNodeID, devID);
+	    change_mcu_program(argv[3], i, tcpuNodeID, devID);
 	else
-	  retVal = change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
+	  change_mcu_program(argv[3], tdigNodeID, tcpuNodeID, devID);
     }
     else
       cout << "findAllTCPUs returned " << numTCPUs << ". Exiting...\n";
