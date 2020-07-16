@@ -1,0 +1,5 @@
+*.FCS
+*.*~
+*.save
+*.new
+.svn*
