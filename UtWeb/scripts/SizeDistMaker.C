@@ -1,4 +1,4 @@
-// $Id$
+// $Id: SizeDistMaker.C,v 1.2 2007/08/21 11:45:32 tofp Exp $
 //
 // Author: Kohei Kajimoto 2007
 // Copyright (C) 2007, Kohei Kajimoto. All rights reserved.

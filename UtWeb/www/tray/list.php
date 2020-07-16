@@ -216,20 +216,22 @@ foreach (Tray::find_all("", "id desc", "$off, $lim") as $tray) {
 
    // Notes column
    $tn = TrayNote::last("tray_id={$tray->id}");
-   if($tn) $notes = $tn->note;
-   if(strlen($notes) == 0) {
+   if($tn) {
+    $notes = $tn->note;
+    if(strlen($notes) == 0) {
      if(Session::loggedin()) {
        $notes='Create a note';
        echo "  <td><a href=\"./notes.php?id=",$id, "\">",$notes,"</a></td>";
      } else {
        echo "  <td></td>";
      }
-   } else {
+    } else {
       if(strlen($notes) >= 40) { 
          $notes = substr($notes, 0, 40) . '...';
       }
       echo "  <td><a href=\"./notes.php?id={$id}\">", 
          $tn->created_on, " ", $notes,"</a></td>\n";
+    }
    }
 
    echo "  <td><a href=\"./info.php?id={$id}\">", sizeof($tray->info),"</a></td>\n";

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: TRDistMaker.C,v 1.12 2007/05/23 16:52:32 tofp Exp $
 // A script to look at noise rate differences
 // Orignial :Kohei Kajimoto
 // Poorly Modified: Drew Oldag
