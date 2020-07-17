@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id$
+# $Id: hptdc_MTD.sh 891 2014-01-15 15:48:11Z jschamba $
 
 # 5 tray backlegs:
 for ((i=21; i<28; i+=1)); do 

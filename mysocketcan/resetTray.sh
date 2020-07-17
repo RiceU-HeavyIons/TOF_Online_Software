@@ -22,9 +22,5 @@ usleep 1000000
 
 ./cansend $2 "$1"2#0e0201
 
-#usleep 500000
-
-#./cansend $2 402#9901
-
 exit
 
