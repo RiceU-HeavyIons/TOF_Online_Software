@@ -1,12 +1,12 @@
 /* File name     : x_getStatus.cc
  * Creation date : 11/05/2012
  * Author        : J. Schambach, UT Physics
- * Modified date : 
- *               : 
+ * Modified date :
+ *               :
  */
 
 #ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
+static char  __attribute__ ((unused)) vcid[] =
 "$Id: x_getStatus.cc 787 2012-11-05 21:38:11Z jschamba $";
 #endif /* lint */
 
@@ -20,6 +20,7 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <net/if.h>
 #include <linux/can.h>
@@ -38,19 +39,19 @@ using namespace std;
 int h = -1;
 
 //****************************************************************************
-// CODE 
+// CODE
 
 
 //****************************************************************************
 // Method to convert a decimal value to a binary value
 void decToBin(int number) {
   int remainder;
-  
+
   if(number <= 1) {
     cout << number;
     return;
   }
-  
+
   remainder = number%2;
   decToBin(number >> 1);
   cout << remainder;
@@ -130,7 +131,7 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
     close(h);
     return -1;
   }
-    
+
 
     // convert to binary and put in array for processing
   int dat; // temp variable to hold DATA byte
@@ -143,7 +144,7 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
       bitNum++;
     } // end loop over bits in byte
   } // end loop over bytes in message payload
-    
+
 
 
   // second message:
@@ -168,9 +169,9 @@ int getStatus(int tdcNum, int tdigNodeID, int tcpuNodeID, int devID)
       bitNum++;
     } // end loop over bits in byte
   } // end loop over bytes in message payload
-  
-  
-  
+
+
+
   // tell pcanloop that we no longer want response messages
   close(h);
 
@@ -240,13 +241,13 @@ int main(int argc, char *argv[])
 
   cout << vcid << endl;
   cout.flush();
-  
+
   if ( argc < 4 ) {
     cout << "USAGE: " << argv[0] << " <TDC #> <TDIG nodeID> <TCPU nodeID> [<devID>]\n";
     return 1;
   }
-  
-  
+
+
   int tdcNum = atoi(argv[1]);
   if ((tdcNum < 1) || (tdcNum > 3)) {
     cerr << "TDC # = " << tdcNum << " invalid entry. Use 1..3 instead." << endl;
