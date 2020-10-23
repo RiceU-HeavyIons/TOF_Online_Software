@@ -3,3 +3,5 @@
 *.save
 *.new
 .svn*
+*.o
+
