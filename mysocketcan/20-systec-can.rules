@@ -1,19 +1,37 @@
 # $Id: 20-systec-can.rules 782 2012-10-10 19:54:11Z jschamba $
 # rules for systec CAN interface to assign sane device numbers
 
+
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:00:00", KERNEL=="can*", NAME="can0"
+ATTR{address}=="0c:d9:00:61:00:00", KERNEL=="can*", NAME="can0"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:00:01", KERNEL=="can*", NAME="can1"
+ATTR{address}=="0c:d9:00:61:00:01", KERNEL=="can*", NAME="can1"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:01:00", KERNEL=="can*", NAME="can2"
+ATTR{address}=="0c:d9:00:62:01:00", KERNEL=="can*", NAME="can2"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:01:01", KERNEL=="can*", NAME="can3"
+ATTR{address}=="0c:d9:00:62:01:01", KERNEL=="can*", NAME="can3"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:02:00", KERNEL=="can*", NAME="can4"
+ATTR{address}=="0c:d9:00:63:02:00", KERNEL=="can*", NAME="can24"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:02:01", KERNEL=="can*", NAME="can5"
+ATTR{address}=="0c:d9:00:63:02:01", KERNEL=="can*", NAME="can5"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:03:00", KERNEL=="can*", NAME="can6"
+ATTR{address}=="0c:d9:00:64:03:00", KERNEL=="can*", NAME="can6"
 SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
-ATTR{address}=="??:??:??:??:03:01", KERNEL=="can*", NAME="can7"
+ATTR{address}=="0c:d9:00:64:03:01", KERNEL=="can*", NAME="can7"
+#
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:a9:00:00", KERNEL=="can*", NAME="can10"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:a9:00:01", KERNEL=="can*", NAME="can11"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:aa:01:00", KERNEL=="can*", NAME="can12"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:aa:01:01", KERNEL=="can*", NAME="can13"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:ab:02:00", KERNEL=="can*", NAME="can4"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:ab:02:01", KERNEL=="can*", NAME="can15"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:ac:03:00", KERNEL=="can*", NAME="can16"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="systec_can", \
+ATTR{address}=="0f:92:b5:ac:03:01", KERNEL=="can*", NAME="can17"
