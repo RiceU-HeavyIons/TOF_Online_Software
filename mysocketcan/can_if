@@ -31,7 +31,8 @@ test -x /sbin/modprobe || exit 0
 
 # The syntax for the CAN devices is: devname[@bitrate][,restart-ms]
 # example CAN_IF="can0 can1@500000 can2@500000,200 can3,500"
-CAN_IF="can0@500000,100 can1@500000,100 can2@500000,100 can3@500000,100 can4@500000,100 can5@500000,100 can6@500000,100 can7@500000,100 can10@500000,100"
+# CAN_IF="can100@500000,100 can101@500000,100 can102@500000,100 can103@500000,100 can104@500000,100 can105@500000,100 can106@500000,100 can107@500000,100 can110@500000,100 can124@500000,100 can111@500000,100 can115@500000,100 can112@500000,100 can113@500000,100 can116@500000,100 can117@500000,100"
+CAN_IF="can100@500000,100 can101@500000,100 can102@500000,100 can103@500000,100 can104@500000,100 can105@500000,100 can106@500000,100 can107@500000,100 can110@500000,100"
 
 # To modify the sampling-point and SJW settings for the in-kernel bittiming
 # calculation. "0" =&gt; set default values (CAN CIA sampling-point / sjw=1)
@@ -43,6 +44,9 @@ SJW="0"      # example for max. sjw : SJW="4"
 PROBE="vcan"
 
 case "$1" in
+        status)
+         /sbin/ip link show type can up
+        ;;
         start|force-reload)
         if [ -n "$PROBE" ] ; then
                 echo -n "Extra probing CAN modules:"
@@ -131,7 +135,7 @@ case "$1" in
 	rm -f /var/lock/subsys/can_if
         ;;
         *)
-        echo "Usage: /etc/init.d/can_if {start|stop|restart|reload|force-reload}"
+        echo "Usage: /etc/init.d/can_if {start|stop|restart|reload|force-reload|status}"
         exit 1
 esac
 

@@ -40,14 +40,14 @@ using namespace std;
 
 //#define DEBUG 1
 
-const int THUB_NW = 1;
-const int THUB_NE = 2;
-const int THUB_SW = 3;
-const int THUB_SE = 6;
-const int MTD_S = 4;
-const int MTD_N = 7;
-const int VPD_E = 5;
-const int VPD_W = 0;
+const int THUB_NW = 101;
+const int THUB_NE = 102;
+const int THUB_SW = 103;
+const int THUB_SE = 106;
+const int MTD_S = 104;
+const int MTD_N = 107;
+const int VPD_E = 105;
+const int VPD_W = 100;
 
 static char devname[MAXIFNAMES][IFNAMSIZ+1];
 static int  dindex[MAXIFNAMES];
