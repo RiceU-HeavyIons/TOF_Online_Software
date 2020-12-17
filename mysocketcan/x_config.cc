@@ -297,8 +297,8 @@ int main(int argc, char *argv[])
   
   if (argc == 6) {
     devID = atoi(argv[5]);
-    if (devID > 7) {
-      printf("Invalid Device ID 0x%x. Use a device ID between 0 and 7\n", devID);
+    if (devID < 100 || devID > 107) {
+      printf("Invalid Device ID 0x%x. Use a device ID between 100 and 107\n", devID);
       return -1;
     }
   }
