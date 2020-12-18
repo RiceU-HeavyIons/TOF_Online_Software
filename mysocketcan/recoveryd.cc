@@ -51,7 +51,7 @@ const int VPD_W = 100;
 
 static char devname[MAXIFNAMES][IFNAMSIZ+1];
 static int  dindex[MAXIFNAMES];
-static size_t  max_devname_len; /* to prevent frazzled device name output */ 
+static size_t  max_devname_len; /* to prevent frazzled device name output */
 
 extern int optind, opterr, optopt;
 
@@ -95,7 +95,7 @@ void daemonize()
 {
   int i,lfp;
   char str[10];
-  
+
   if(getppid() == 1) return; // already a daemon
   i = fork();
   if (i < 0) exit(1); // fork error
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 {
   char logstr[80];
   fd_set rdfs;
-  int s[MAXSOCK];
+  int s[MAXSOCK+100]; //fg the range of active canbus IDs is moved up from 0-7 to 100-107
   int ret;
   int currmax;
   struct sockaddr_can addr;
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
   int max_socket_fd;
   vector<int> tofTHUBs;
   vector<int> mtdTHUBs;
-		
+
   daemonize();
 
   // output svn version to log
@@ -238,9 +238,9 @@ int main(int argc, char **argv)
   currmax = 8;
   max_socket_fd = 0;
   log_message(LOG_FILE, "Opening can interfaces");
-  
 
-  for (i=0; i < currmax; i++) {
+
+  for (i=100; i < 100+currmax; i++) { //fg the range of active canbus IDs is moved up from 0-7 to 100-107
 #ifdef DEBUG
     printf("opening can%d.\n", i);
 #endif
@@ -266,14 +266,14 @@ int main(int argc, char **argv)
 
     if ( (i == VPD_E) || (i == VPD_W) ) {
       // disable default receive filter on this RAW socket
-      // This is obsolete as we do not read from the socket at all, but for 
-      // this reason we can remove the receive list in the Kernel to save a 
+      // This is obsolete as we do not read from the socket at all, but for
+      // this reason we can remove the receive list in the Kernel to save a
       // little (really a very little!) CPU usage.
       setsockopt(s[i], SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
     }
     else {
       // CAN Filter and mask for this socket
-      rfilter.can_id = 0x407; 
+      rfilter.can_id = 0x407;
       rfilter.can_mask = 0xc00007ff;
       setsockopt(s[i], SOL_CAN_RAW, CAN_RAW_FILTER,
 		 &rfilter, sizeof(struct can_filter));
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
 
   mtdTHUBs.push_back(MTD_S);
   mtdTHUBs.push_back(MTD_N);
-		     
+
   // check the highest socket we are interested in:
   for(vector<int>::iterator it = tofTHUBs.begin(); it != tofTHUBs.end(); ++it) {
     if(s[*it] > max_socket_fd) max_socket_fd = s[*it];
@@ -382,9 +382,9 @@ int main(int argc, char **argv)
 	/* these settings may be modified by recvmsg() */
 	iov.iov_len = sizeof(frame);
 	msg.msg_namelen = sizeof(addr);
-	msg.msg_controllen = sizeof(ctrlmsg);  
+	msg.msg_controllen = sizeof(ctrlmsg);
 	msg.msg_flags = 0;
-	
+
 	nbytes = recvmsg(s[i], &msg, 0);
 	if (nbytes < 0) {
 	  sprintf(logstr, "can%d: read error %d", i, nbytes);
@@ -392,17 +392,17 @@ int main(int argc, char **argv)
 	  perror("read");
 	  running = 0; continue;
 	}
-	
+
 	if ((size_t)nbytes < sizeof(struct can_frame)) {
 #ifdef DEBUG
 	  fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
+	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes,
 		  (int)sizeof(struct can_frame));
 	  log_message(LOG_FILE, logstr);
 	  running = 0; continue;
 	}
-	
+
 	if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
 #ifdef DEBUG
 	  // idx = idx2dindex(addr.can_ifindex, s[i]);
@@ -419,7 +419,7 @@ int main(int argc, char **argv)
 	}
       }
     }
-    
+
     // Now iterate over MTD THUBs
     for(vector<int>::iterator it = mtdTHUBs.begin(); it != mtdTHUBs.end(); ++it) {
       i = *it;
@@ -429,9 +429,9 @@ int main(int argc, char **argv)
 	/* these settings may be modified by recvmsg() */
 	iov.iov_len = sizeof(frame);
 	msg.msg_namelen = sizeof(addr);
-	msg.msg_controllen = sizeof(ctrlmsg);  
+	msg.msg_controllen = sizeof(ctrlmsg);
 	msg.msg_flags = 0;
-	
+
 	nbytes = recvmsg(s[i], &msg, 0);
 	if (nbytes < 0) {
 	  sprintf(logstr, "can%d: read error %d", i, nbytes);
@@ -439,17 +439,17 @@ int main(int argc, char **argv)
 	  perror("read");
 	  running = 0; continue;
 	}
-	
+
 	if ((size_t)nbytes < sizeof(struct can_frame)) {
 #ifdef DEBUG
 	  fprintf(stderr, "read: incomplete CAN frame\n");
 #endif
-	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes, 
+	  sprintf(logstr, "can%d: read only %d bytes, expected %d", i, nbytes,
 		  (int)sizeof(struct can_frame));
 	  log_message(LOG_FILE, logstr);
 	  running = 0; continue;
 	}
-	
+
 	if ((frame.data[0] == 0xff) && (frame.data[1] == 0x55)) {
 #ifdef DEBUG
 	  // idx = idx2dindex(addr.can_ifindex, s[i]);
@@ -466,7 +466,7 @@ int main(int argc, char **argv)
 	}
       }
     }
-    
+
 
     // Now do the actual recovery
     if (doRecovery) {
@@ -497,10 +497,10 @@ int main(int argc, char **argv)
 	  perror("write"); running=0; continue;
 	}
       }
-	
+
       // Wait a little to let the THUBs reset first
       usleep(700000); // 0.7 sec
-	
+
       // Now do all the TCPU resets
       if (doRecoveryTOF) {
 	// TOF
@@ -534,10 +534,10 @@ int main(int argc, char **argv)
 	  perror("write MTD_N"); running=0; continue;
 	}
       }
-	
+
       // Wait a while to let TCPUs reset
       usleep(700000); // 0.7 sec
-	
+
       // Finally do a bunch reset
       if ((nbytes = write(s[VPD_W], &brstframe, sizeof(frame))) != sizeof(frame)) {
 	perror("write VPD_W"); running=0; continue;
