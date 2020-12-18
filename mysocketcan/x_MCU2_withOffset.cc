@@ -563,6 +563,7 @@ int main(int argc, char *argv[])
 {
   unsigned int tdigNodeID, tcpuNodeID;
   int devID = 0;
+  int retVal;
 
 
   cout << vcid << endl;
