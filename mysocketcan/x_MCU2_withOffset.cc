@@ -1,16 +1,16 @@
 /* File name     : x_MCU2_withOffset.cc
  * Creation date : 7/20/2012
  * Author        : J. Schambach, UT Physics
- * Modified date : 
- *               : 
+ * Modified date :
+ *               :
  */
 
 #ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
+static char  __attribute__ ((unused)) vcid[] =
 "$Id: x_MCU2_withOffset.cc 769 2012-07-20 18:45:38Z jschamba $";
 #endif /* lint */
 
-/* 
+/*
  * This program is used to re-program the MCU on TDIG
  * and TCPU according to Bill Burton's instructions
  */
@@ -61,14 +61,14 @@ unsigned int validh[] = {          0x000,       0x3FFF};  // this tells the high
 
 
 //****************************************************************************
-// CODE 
+// CODE
 
 // centralized entry point for all exits
 static void my_private_exit(int error)
 {
   if (h>0)
   {
-    close(h); 
+    close(h);
   }
   if (hexfile.is_open()) hexfile.close();
 #ifdef LOCAL_DEBUG
@@ -103,20 +103,20 @@ int xwrite_mcu_block(unsigned char *bytes,
 
     checksum = 0;
     // ************** MCU2:WriteBlockStart ****************************************
-  
+
     ms.can_id = msgIDVal | CAN_EFF_FLAG;
     ms.can_dlc = 1;
     ms.data[0] = 0x10;	// Block Start
 #ifdef LOCAL_DEBUG
     printCANMsg(ms, "x_MCU2: Sending BlockStart command:");
 #endif
-    
+
 #ifndef NO_CAN
     if ( sendCAN_and_Compare(h, ms, "x_MCU2:BlockStart", 4000000, 2, true) != 0) { // timeout = 4 sec
       my_private_exit(errno);
     }
 #endif
-    
+
     unsigned char *tmpPtr = bytes;
     int numFullMsgs = bytecount/7;
     int remainingToSend = bytecount%7;
@@ -134,13 +134,13 @@ int xwrite_mcu_block(unsigned char *bytes,
 #ifdef LOCAL_DEBUG
       printCANMsg(ms, "x_MCU2: Sending BlockData command:");
 #endif
-      
+
 #ifndef NO_CAN
       if ( sendCAN_and_Compare(h, ms, "x_MCU2:BlockData", 4000000, 2, true) != 0) { // timeout = 4 sec
 	my_private_exit(errno);
       }
 #endif
-      
+
     }
 
     // Now send the remainingToSend bytes in an extra packet:
@@ -161,15 +161,15 @@ int xwrite_mcu_block(unsigned char *bytes,
 #endif
 
     }
-    
+
     // ************** MCU2:BlockEnd ****************************************
-    
+
     ms.data[0] = 0x30;	// Block End
     ms.can_dlc = 1;
 #ifdef LOCAL_DEBUG
     printCANMsg(ms, "x_MCU2: Sending BlockEnd command:");
 #endif
-    
+
 #ifndef NO_CAN
     if (write(h, &ms, sizeof(ms)) != sizeof(ms)) {
       perror("x_MCU2:BlockEnd: write()");
@@ -177,7 +177,7 @@ int xwrite_mcu_block(unsigned char *bytes,
     }
     errno = CAN_Read_Timeout(h, &mr, 4000000); // timeout = 4 second
     if (errno < 0) {
-      cout << "CAN_Read_Timeout returned " << errno 
+      cout << "CAN_Read_Timeout returned " << errno
 	   << " during x_MCU2:BlockEnd \n";
       return -1;
     }
@@ -187,34 +187,34 @@ int xwrite_mcu_block(unsigned char *bytes,
     unsigned int expectedResponseID = ms.can_id | (0x1 <<18);
     // Now check and compare
     if ( mr.can_id != expectedResponseID ) {
-      cout << "ERROR: BlockEnd Command " 
-	   << " request: Got something other than writeResponse: ID " 
-	   << showbase << hex << (unsigned int)(mr.can_id & CAN_EFF_MASK) 
-	   << ", expected response to " << (unsigned int)(ms.can_id & CAN_EFF_MASK) << endl;	
+      cout << "ERROR: BlockEnd Command "
+	   << " request: Got something other than writeResponse: ID "
+	   << showbase << hex << (unsigned int)(mr.can_id & CAN_EFF_MASK)
+	   << ", expected response to " << (unsigned int)(ms.can_id & CAN_EFF_MASK) << endl;
       printCANMsg(mr, "response:");
       my_private_exit(-2);
     }
 
     if (mr.can_dlc != 8) { // check for correct length
-      cout << "ERROR: BlockEnd Command" 
-	   << " request: Got msg with incorrect data length " 
+      cout << "ERROR: BlockEnd Command"
+	   << " request: Got msg with incorrect data length "
 	   << dec << (int)mr.can_dlc << ", expected 8\n";
-      cout << "BlockEnd Command response: first byte: " 
-	   << showbase << hex << (unsigned int)mr.data[0] 
+      cout << "BlockEnd Command response: first byte: "
+	   << showbase << hex << (unsigned int)mr.data[0]
 	   << " expected " << (unsigned int)ms.data[0] << endl;
       printCANMsg(mr, "response");
       my_private_exit(-3);
     }
     if (mr.data[0] != ms.data[0]) { 	// check for correct echo
-      cout << "ERROR: BlockEnd Command response: first byte: " 
-	   << showbase << hex << (unsigned int)mr.data[0] 
+      cout << "ERROR: BlockEnd Command response: first byte: "
+	   << showbase << hex << (unsigned int)mr.data[0]
 	   << " expected " << (unsigned int)ms.data[0] << endl;
       printCANMsg(mr, "response:");
       my_private_exit(-4);
     }
     if (mr.data[1] != 0) {	// check for correct status
-      cout << "ERROR: BlockEnd Command response: second (status) byte: " 
-	   << showbase << hex << (unsigned int)mr.data[0] << endl; 
+      cout << "ERROR: BlockEnd Command response: second (status) byte: "
+	   << showbase << hex << (unsigned int)mr.data[0] << endl;
       printCANMsg(mr, "response:");
       my_private_exit(-8);
     }
@@ -225,7 +225,7 @@ int xwrite_mcu_block(unsigned char *bytes,
 	   << " not " << bytecount << endl;
       printCANMsg(mr, "response:");
       my_private_exit(-9);
-    }      
+    }
 
     unsigned int lwork;
     memcpy ((unsigned char *)&lwork, (unsigned char *)&(mr.data[4]), 4); // checksum
@@ -234,11 +234,11 @@ int xwrite_mcu_block(unsigned char *bytes,
 	   << "; expected " << checksum << endl;
       printCANMsg(mr, "response:");
       my_private_exit(-10);
-    }      
+    }
 #endif
-    
+
     // ************** MCU2:BlockTargetMCU2 ****************************************
-    
+
     unsigned int startAddr2 = startAddr + 0x6000; // for use with offset
     //unsigned int startAddr2 = startAddr;
 
@@ -265,7 +265,7 @@ int xwrite_mcu_block(unsigned char *bytes,
 #endif
 
   } // if (bytecount != 0)
-  
+
   return 0;
 }
 
@@ -273,9 +273,9 @@ int xwrite_mcu_block(unsigned char *bytes,
 
 //**********************************************
 // here all is done
-int change_mcu_program(const char *filename, 
-		       unsigned int tdigNodeID, 
-		       unsigned int tcpuNodeID, 
+int change_mcu_program(const char *filename,
+		       unsigned int tdigNodeID,
+		       unsigned int tcpuNodeID,
 		       int devID)
 {
   string buf;
@@ -284,16 +284,16 @@ int change_mcu_program(const char *filename,
   unsigned int extendAddress = 0;
   int downloadbytes = 0;
   int eraseflag;
-  
+
 
   cout << "Downloading MCU second image on TDIG NodeID 0x" << hex << tdigNodeID
        << " through TCPU NodeID 0x" << tcpuNodeID
-       << "\n with filename " << filename 
+       << "\n with filename " << filename
        << " at devID " << dec << devID << "...\n";
 
 
   unsigned int msgIDVal = (((tdigNodeID<<4) | 0x002) << 18) | tcpuNodeID;
- 
+
   hexfile.open(filename); // "in" is default
   if ( !hexfile.good() ) {
     cerr << filename << ": file open error\n";
@@ -304,7 +304,7 @@ int change_mcu_program(const char *filename,
 
   errno = 0;
 
-  
+
   // swallow any packets that might be present first
 #ifndef NO_CAN
   struct can_frame mr;
@@ -331,28 +331,28 @@ int change_mcu_program(const char *filename,
 
 
   // determine number of pages:
-  int numPages = (int)((validh[1] - validl[1])/ 0x800); 
+  int numPages = (int)((validh[1] - validl[1])/ 0x800);
   // determine number of rows:
   int numRows = numPages * 8;
-  
+
   unsigned char *pageEmpty, *rowEmpty;
   pageEmpty = (unsigned char *)malloc(numPages);
   rowEmpty = (unsigned char *)malloc(numRows);
   memset((void *)pageEmpty, 1, numPages);
   memset((void *)rowEmpty, 1, numRows);
-		       
+
 
   while (hexfile.good()) {
     string subs;
     unsigned int subInt, addr, rtype;
     int len;
-    
+
     /*	read a record (line) from the hex file. Each record has the following format:
-      
+
     	":BBAAAATTHHHH...HHCC"
-    
+
     	where:
-    
+
     	BB	number of data bytes
     	AAAA	start address of data record
     	TT	record type:
@@ -362,17 +362,17 @@ int change_mcu_program(const char *filename,
     		04 - linear address record (address in data bytes)
     	HH	data byte
     	CC	checksum (2's complement of sum of preceding bytes)
-    
-    	addresses greater than 0x1ffff are not valid for internal flash memory, 
+
+    	addresses greater than 0x1ffff are not valid for internal flash memory,
 	except for configuration bits.
 
 	it looks like the length produced by MPLAB is at most "16", so we'll assume this
 	from now on to make the program easier!!!!
     */
-    
+
     hexfile >> buf;
     //cout << "read line: " << buf << endl;
-    
+
     subs = buf.substr(1,2);
     len = strtol(subs.c_str(), 0, 16);
     subs = buf.substr(3,4);
@@ -383,11 +383,11 @@ int change_mcu_program(const char *filename,
     address = (addr + extendAddress);
 
 
-    
+
 #ifdef LOCAL_DEBUG
-    cout << "length = " << setw(2) << dec << len 
+    cout << "length = " << setw(2) << dec << len
 	 <<" type = " << rtype
-	 << " address = " << showbase << hex << setw(6) << addr 
+	 << " address = " << showbase << hex << setw(6) << addr
          << " addr + ext = " << address
 	 << " prog address = " << (address/2)
 	 << endl;
@@ -435,21 +435,21 @@ int change_mcu_program(const char *filename,
       }
 
     }
-      
-      
+
+
     // **************** All others: invalid ***************************
     else // invalid record type
       cerr << ":  unexpected record type\n";
-      
+
   }
-      
+
   hexfile.close();
 
   // ******************** NOW START DOWNLOADING VALID DATA **************
   if (ivtBytes != (unsigned char *)NULL) { // a valid interrupt vector table range
     unsigned char *dataByte;
     int ivtRows;
-    ivtRows = (int)((validh[0] + 0xFE - validl[0])/ 0x100); 
+    ivtRows = (int)((validh[0] + 0xFE - validl[0])/ 0x100);
     // for now assume we are doing "real" ivt, which are contained in one page
     // and downloaded in two rows or four rows
 
@@ -461,14 +461,14 @@ int change_mcu_program(const char *filename,
 
 #ifdef LOCAL_DEBUG
     cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
-	 << " downloadbytes = " << dec << downloadbytes 
+	 << " downloadbytes = " << dec << downloadbytes
 	 << " eraseflag = " << eraseflag << endl;
 #endif
     xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
 
 
     // second row or third row
-    // eraseflag = ERASE_NONE; // this won't work 
+    // eraseflag = ERASE_NONE; // this won't work
     // eraseflag needs to be ERASE_PRESERVE here, since the previous ERASE_PRESERVE was followed
     // by a ROW Write for the whole page, and thus this address needs to be erased again
     if (ivtRows > 2) {
@@ -476,15 +476,15 @@ int change_mcu_program(const char *filename,
 	baseAddress += downloadbytes/2;
 	dataByte += downloadbytes;
 	downloadbytes = 0x100;
-	     
+
 #ifdef LOCAL_DEBUG
 	cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
-	     << " downloadbytes = " << dec << downloadbytes 
+	     << " downloadbytes = " << dec << downloadbytes
 	     << " eraseflag = " << eraseflag << endl;
 #endif
 	xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
       }
-    }    
+    }
 
     // last row
     baseAddress += downloadbytes/2;
@@ -492,7 +492,7 @@ int change_mcu_program(const char *filename,
     downloadbytes = validh[0] - baseAddress*2;
 #ifdef LOCAL_DEBUG
     cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
-	 << " downloadbytes = " << dec << downloadbytes 
+	 << " downloadbytes = " << dec << downloadbytes
 	 << " eraseflag = " << eraseflag << endl;
 #endif
     xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
@@ -504,7 +504,7 @@ int change_mcu_program(const char *filename,
 //   ttt += 0x6800;
 //   cout << hex;
 //   for (int i=0; i<32; i++) {
-//     for (int j=0; j<8; j++) 
+//     for (int j=0; j<8; j++)
 //       cout << (unsigned int)(*ttt++) << " ";
 //     cout << endl;
 //   }
@@ -523,11 +523,11 @@ int change_mcu_program(const char *filename,
 	baseAddress = validl[1]/2 + page * 0x400;
 #ifdef LOCAL_DEBUG
 	cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
-	     << " downloadbytes = " << dec << downloadbytes 
+	     << " downloadbytes = " << dec << downloadbytes
 	     << " eraseflag = " << eraseflag << endl;
 #endif
 	xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
-	
+
 	eraseflag = 0;
 	for (int row=1; row<8; row++) {
 	  baseAddress += 0x80;
@@ -535,17 +535,17 @@ int change_mcu_program(const char *filename,
 	  if (rowEmpty[page*8 + row] == 0) {
 #ifdef LOCAL_DEBUG
 	    cout << "xwrite_mcu_block: baseAddress = " << hex << baseAddress
-		 << " downloadbytes = " << dec << downloadbytes 
+		 << " downloadbytes = " << dec << downloadbytes
 		 << " eraseflag = " << eraseflag << endl;
 #endif
 	    xwrite_mcu_block(dataByte, baseAddress, downloadbytes, eraseflag, msgIDVal);
 	  }
-	}	    
-	
+	}
+
       }
     }
 
-    
+
   }
 
   free((void *)ivtBytes);
@@ -554,7 +554,7 @@ int change_mcu_program(const char *filename,
   cout << "... Download of new MCU program successful!\n";
 
   errno = 0;
-  
+
   return 0;
 }
 
@@ -563,7 +563,6 @@ int main(int argc, char *argv[])
 {
   unsigned int tdigNodeID, tcpuNodeID;
   int devID = 0;
-  int retVal;
 
 
   cout << vcid << endl;
@@ -573,23 +572,23 @@ int main(int argc, char *argv[])
     cout << "USAGE: " << argv[0] << " <TDIG node ID> <TCPU node ID> <fileName> [<devID>]\n";
     return 1;
   }
-  
+
   tdigNodeID = strtol(argv[1], (char **)NULL, 0);
 //   if ((tdigNodeID < 1) || (tdigNodeID > 0x3F)) {
-//     cerr << "TDIG nodeID = " << tdigNodeID 
-// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
+//     cerr << "TDIG nodeID = " << tdigNodeID
+// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."
 // 	 << endl;
 //     return -1;
 //   }
-  
+
   tcpuNodeID = strtol(argv[2], (char **)NULL, 0);
 //   if ((tcpuNodeID < 1) || (tcpuNodeID > 0x3F)) {
-//     cerr << "TCPU nodeID = " << tcpuNodeID 
-// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."  
+//     cerr << "TCPU nodeID = " << tcpuNodeID
+// 	 << " is an invalid entry.  Use a value between 1 and 0x3F (63) instead."
 // 	 << endl;
 //     return -1;
 //   }
-  
+
   if (argc == 5) {
     devID = strtol(argv[4],(char **)NULL, 0);
     if (devID < 100 || devID > 107) {
@@ -617,7 +616,7 @@ int main(int argc, char *argv[])
 
   // install signal handler for manual break
   signal(SIGINT, signal_handler);
-  
+
 
 #ifndef NO_CAN
   if((h = CAN_Open(devID)) < 0) {
@@ -635,7 +634,7 @@ int main(int argc, char *argv[])
     // for nodeID = 0xff, do all TCPUs serially
     vector<unsigned int> tcpuIDs;
     vector<unsigned int>::iterator it;
-   
+
     int numTCPUs = findAllTCPUs(h, &tcpuIDs);
     if (numTCPUs > 0) {
       cout << "found " << numTCPUs << " TCPUs on this network. Starting...\n";
