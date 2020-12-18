@@ -1,0 +1,11 @@
+//  BTOF CanID mapping
+// this map is used by tofrecovery.cc and several shell scripts
+const int THUB_NW = 101 ;
+const int THUB_NE = 102 ;
+const int THUB_SW = 103 ;
+const int THUB_SE = 106 ;
+const int MTD_S   = 104 ;
+const int MTD_N   = 107 ;
+const int VPD_E   = 105 ;
+const int VPD_W   = 100 ;
+
