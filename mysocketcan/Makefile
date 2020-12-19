@@ -33,7 +33,13 @@ clean:
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp -f $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
+	cp -vf $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
+	cp -vf 20-systec-can.rules /etc/udev/rules.d/
+	cp -vf can_if tof_recoveryd /etc/rc.d/init.d/
+	echo "Add the following lines to /etc/rc.d/rc.local and chmod +x /etc/rc.d/rc.local"
+	echo "### STAR-BTOF system services"
+	echo "/etc/rc.d/init.d/can_if start"
+	echo "/etc/rc.d/init.d/tof_recoveryd start"
 
 distclean:
 	rm -f $(PROGRAMS) *.o *~
