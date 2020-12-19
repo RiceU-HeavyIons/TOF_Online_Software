@@ -1,12 +1,12 @@
 /* File name     : showSerdes.cc
  * Creation date : 7/3/2012
  * Author        : J. Schambach, UT Physics
- * Modified date : 
- *               : 
+ * Modified date :
+ *               :
  */
 
 #ifndef lint
-static char  __attribute__ ((unused)) vcid[] = 
+static char  __attribute__ ((unused)) vcid[] =
 "$Id: showSerdes.cc 901 2014-11-10 19:57:48Z jschamba $";
 #endif /* lint */
 
@@ -38,7 +38,7 @@ using namespace std;
 int h = -1;
 
 //****************************************************************************
-// CODE 
+// CODE
 
 
 //****************************************************************************
@@ -61,13 +61,13 @@ int showSerdes(int devID)
 
   for (unsigned int serdesnum = 0x91; serdesnum<0x99; serdesnum++) {
     ms.data[0] = serdesnum;
-    
-    
+
+
     // send the "GET_FIRMWARE_ID" CANbus HLP message
 #ifdef LOCAL_DEBUG
     cout << "sending command\n";
 #endif
-    
+
     if (write(h, &ms, sizeof(ms)) != sizeof(ms)) {
       perror("showSerdes:write()");
       return -1;
@@ -80,8 +80,8 @@ int showSerdes(int devID)
       close(h);
       return -1;
     }
-    
-    
+
+
     // print response
     cout << "Serdes " << (char)(serdesnum - 0x50)
 	 << " = " << showbase << hex << (unsigned int)mr.data[0] << endl;
@@ -104,11 +104,11 @@ int main(int argc, char *argv[])
 
   cout << vcid << endl;
   cout.flush();
-  
+
   if (argc == 2) {
     devID = strtol(argv[1], (char **)NULL, 0);
-    if ((devID < 0) || (devID > 10)) {
-      cerr << "devID = " << devID << " invalid entry. Use 0..10 instead." << endl;
+    if ((devID < 100) || (devID > 110)) {
+      cerr << "devID = " << devID << " invalid entry. Use 100..110 instead." << endl;
       return -1;
     }
   }
